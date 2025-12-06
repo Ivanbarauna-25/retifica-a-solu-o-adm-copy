@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Peca } from '@/entities/Peca';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -28,7 +28,7 @@ export default function EstoquePage() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await Peca.list('-created_date');
+      const data = await base44.entities.Peca.list('-created_date');
       setPecas(data);
     } catch (err) {
       console.error("Erro ao buscar peças:", err);
@@ -46,9 +46,9 @@ export default function EstoquePage() {
     setError(null); 
     try {
       if (selectedPeca) {
-        await Peca.update(selectedPeca.id, data);
+        await base44.entities.Peca.update(selectedPeca.id, data);
       } else {
-        await Peca.create(data);
+        await base44.entities.Peca.create(data);
       }
       setIsFormOpen(false);
       setSelectedPeca(null);
@@ -66,7 +66,7 @@ export default function EstoquePage() {
       async () => {
         setError(null);
         try {
-          await Peca.delete(peca.id);
+          await base44.entities.Peca.delete(peca.id);
           toast({
             title: '✅ Sucesso',
             description: 'Peça excluída com sucesso.'

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Cliente } from '../entities/Cliente';
-import { Veiculo } from '../entities/Veiculo';
+import React, { useState, useEffect, useMemo } from 'react';
+import { base44 } from '@/api/base44Client';
 import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { Plus, Edit, Trash2, Car, Printer, AlertCircle, UploadCloud, Users } from 'lucide-react';
+import { Plus, Edit, Trash2, Car, Printer, AlertCircle, UploadCloud, Users, Search, Filter } from 'lucide-react';
+import { Input } from '../components/ui/input';
 import ClienteForm from '../components/ClienteForm';
 import VeiculoForm from '../components/VeiculoForm';
 import ImportarClientesModal from '../components/clientes/ImportarClientesModal';
@@ -29,8 +29,8 @@ export default function ClientesPage() {
     setError(null);
     try {
       const [clientesData, veiculosData] = await Promise.all([
-        Cliente.list('-created_date'),
-        Veiculo.list('-created_date')
+        base44.entities.Cliente.list('-created_date'),
+        base44.entities.Veiculo.list('-created_date')
       ]);
       setClientes(clientesData);
       setVeiculos(veiculosData);
@@ -49,9 +49,9 @@ export default function ClientesPage() {
   const handleSaveCliente = async (data) => {
     try {
       if (selectedCliente) {
-        await Cliente.update(selectedCliente.id, data);
+        await base44.entities.Cliente.update(selectedCliente.id, data);
       } else {
-        await Cliente.create(data);
+        await base44.entities.Cliente.create(data);
       }
       await fetchData();
       setIsClienteFormOpen(false);
@@ -65,9 +65,9 @@ export default function ClientesPage() {
   const handleSaveVeiculo = async (data) => {
     try {
       if (selectedVeiculo) {
-        await Veiculo.update(selectedVeiculo.id, data);
+        await base44.entities.Veiculo.update(selectedVeiculo.id, data);
       } else {
-        await Veiculo.create(data);
+        await base44.entities.Veiculo.create(data);
       }
       await fetchData();
       setIsVeiculoForm(false);
@@ -82,7 +82,7 @@ export default function ClientesPage() {
   const handleDeleteCliente = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este cliente?')) {
       try {
-        await Cliente.delete(id);
+        await base44.entities.Cliente.delete(id);
         await fetchData();
       } catch (err) {
         console.error("Erro ao excluir cliente:", err);
@@ -94,7 +94,7 @@ export default function ClientesPage() {
   const handleDeleteVeiculo = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este veículo?')) {
       try {
-        await Veiculo.delete(id);
+        await base44.entities.Veiculo.delete(id);
         await fetchData();
       } catch (err) {
         console.error("Erro ao excluir veículo:", err);

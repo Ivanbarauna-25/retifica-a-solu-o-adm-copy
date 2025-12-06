@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Servico } from '@/entities/Servico';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -18,7 +18,7 @@ export default function ServicosPage() {
 
   const fetchServicos = async () => {
     setIsLoading(true);
-    const data = await Servico.list('-created_date');
+    const data = await base44.entities.Servico.list('-created_date');
     setServicos(data);
     setIsLoading(false);
   };
@@ -29,9 +29,9 @@ export default function ServicosPage() {
 
   const handleSave = async (data) => {
     if (selectedServico) {
-      await Servico.update(selectedServico.id, data);
+      await base44.entities.Servico.update(selectedServico.id, data);
     } else {
-      await Servico.create(data);
+      await base44.entities.Servico.create(data);
     }
     await fetchServicos();
     setIsFormOpen(false);
@@ -40,7 +40,7 @@ export default function ServicosPage() {
 
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este serviço?')) {
-      await Servico.delete(id);
+      await base44.entities.Servico.delete(id);
       await fetchServicos();
     }
   };
