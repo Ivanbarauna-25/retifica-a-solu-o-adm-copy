@@ -155,7 +155,7 @@ export default function EstoquePage() {
 
   return (
     <>
-      <style>{`
+      <style dangerouslySetInnerHTML={{__html: `
         @media print {
           body {
             -webkit-print-color-adjust: exact !important;
@@ -243,7 +243,7 @@ export default function EstoquePage() {
             margin-top: 5px;
           }
         }
-      `}</style>
+      `}} />
       
       <div className="min-h-screen bg-slate-50 printable-content">
         <div className="print-header hidden">
