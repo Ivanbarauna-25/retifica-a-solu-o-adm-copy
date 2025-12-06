@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
-import { ControlePonto } from '@/entities/ControlePonto';
-import { Funcionario } from '@/entities/Funcionario';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -28,8 +26,8 @@ export default function PontoPage() {
     setError(null);
     try {
       const [pontosData, funcionariosData] = await Promise.all([
-        ControlePonto.list('-created_date'),
-        Funcionario.list()
+        base44.entities.ControlePonto.list('-created_date'),
+        base44.entities.Funcionario.list()
       ]);
       setPontos(pontosData.filter(Boolean));
       setFuncionarios(funcionariosData.filter(Boolean));
@@ -60,9 +58,9 @@ export default function PontoPage() {
       };
 
       if (selectedPonto) {
-        await ControlePonto.update(selectedPonto.id, payload);
+        await base44.entities.ControlePonto.update(selectedPonto.id, payload);
       } else {
-        await ControlePonto.create(payload);
+        await base44.entities.ControlePonto.create(payload);
       }
       await fetchData();
     } catch (err) {
@@ -73,7 +71,7 @@ export default function PontoPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este registro?')) {
       try {
-        await ControlePonto.delete(id);
+        await base44.entities.ControlePonto.delete(id);
         await fetchData();
       } catch (err) {
         setError('Erro ao excluir registro: ' + err.message);

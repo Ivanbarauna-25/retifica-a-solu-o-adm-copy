@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Patrimonio } from '@/entities/Patrimonio';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -38,7 +38,7 @@ export default function PatrimonioPage() {
 
   const fetchPatrimonios = async () => {
     setIsLoading(true);
-    const data = await Patrimonio.list('-created_date');
+    const data = await base44.entities.Patrimonio.list('-created_date');
     setPatrimonios(data);
     setIsLoading(false);
   };
@@ -49,9 +49,9 @@ export default function PatrimonioPage() {
 
   const handleSave = async (data) => {
     if (selectedPatrimonio) {
-      await Patrimonio.update(selectedPatrimonio.id, data);
+      await base44.entities.Patrimonio.update(selectedPatrimonio.id, data);
     } else {
-      await Patrimonio.create(data);
+      await base44.entities.Patrimonio.create(data);
     }
     await fetchPatrimonios();
     setIsFormOpen(false);
@@ -60,7 +60,7 @@ export default function PatrimonioPage() {
 
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este item do patrimônio?')) {
-      await Patrimonio.delete(id);
+      await base44.entities.Patrimonio.delete(id);
       await fetchPatrimonios();
     }
   };

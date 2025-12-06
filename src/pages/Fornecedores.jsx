@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Fornecedor } from '@/entities/Fornecedor';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -34,7 +34,7 @@ export default function FornecedoresPage() {
 
   const fetchFornecedores = async () => {
     setIsLoading(true);
-    const data = await Fornecedor.list('-created_date');
+    const data = await base44.entities.Fornecedor.list('-created_date');
     setFornecedores(data);
     setIsLoading(false);
   };
@@ -45,9 +45,9 @@ export default function FornecedoresPage() {
 
   const handleSave = async (data) => {
     if (selectedFornecedor) {
-      await Fornecedor.update(selectedFornecedor.id, data);
+      await base44.entities.Fornecedor.update(selectedFornecedor.id, data);
     } else {
-      await Fornecedor.create(data);
+      await base44.entities.Fornecedor.create(data);
     }
     await fetchFornecedores();
     setIsFormOpen(false);
@@ -56,7 +56,7 @@ export default function FornecedoresPage() {
 
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este fornecedor?')) {
-      await Fornecedor.delete(id);
+      await base44.entities.Fornecedor.delete(id);
       await fetchFornecedores();
     }
   };

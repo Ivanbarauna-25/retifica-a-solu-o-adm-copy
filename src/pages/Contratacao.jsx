@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Candidato } from '@/entities/Candidato';
-import { Cargo } from '@/entities/Cargo';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Edit, Settings, Printer, UserCheck, UserX, Trash2, UserPlus } from 'lucide-react';
+import { Plus, MoreHorizontal, Edit, Settings, Printer, UserCheck, UserX, Trash2, UserPlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CandidatoForm from '@/components/CandidatoForm';
@@ -42,8 +41,8 @@ export default function ContratacaoPage() {
     setError(null);
     try {
       const [data, cargosData] = await Promise.all([
-        Candidato.list('-created_date'),
-        Cargo.list()
+        base44.entities.Candidato.list('-created_date'),
+        base44.entities.Cargo.list()
       ]);
       setCandidatos(data.filter(Boolean));
       setCargos(cargosData.filter(Boolean));
@@ -75,9 +74,9 @@ export default function ContratacaoPage() {
 
       // 2) Segundo: operação de dados (update/create)
       if (selectedCandidato) {
-        await Candidato.update(selectedCandidato.id, payload);
+        await base44.entities.Candidato.update(selectedCandidato.id, payload);
       } else {
-        await Candidato.create(payload);
+        await base44.entities.Candidato.create(payload);
       }
 
       // 3) Terceiro: atualizar a lista
@@ -97,7 +96,7 @@ export default function ContratacaoPage() {
   const handleReprovar = async (candidatoId) => {
     if (window.confirm('Tem certeza que deseja reprovar/cancelar esta ficha? Esta ação não pode ser desfeita.')) {
       try {
-        await Candidato.update(candidatoId, { status_contratacao: 'reprovado' });
+        await base44.entities.Candidato.update(candidatoId, { status_contratacao: 'reprovado' });
         await fetchData();
       } catch (err) {
         setError('Erro ao reprovar candidato: ' + err.message);
@@ -108,7 +107,7 @@ export default function ContratacaoPage() {
   const handleDelete = async (candidatoId) => {
     if (window.confirm('TEM CERTEZA? Esta ação excluirá a ficha permanentemente e não poderá ser desfeita.')) {
       try {
-        await Candidato.delete(candidatoId);
+        await base44.entities.Candidato.delete(candidatoId);
         await fetchData();
       } catch (err) {
         setError('Erro ao excluir candidato: ' + err.message);
