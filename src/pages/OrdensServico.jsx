@@ -1,0 +1,591 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Plus,
+  Pencil,
+  Eye,
+  Trash2,
+  FileText,
+  Clock,
+  CheckCircle,
+  Upload,
+  Loader2,
+  ClipboardList,
+  XCircle
+} from 'lucide-react';
+import { formatCurrency, formatDate } from '@/components/formatters';
+import OrdemServicoViewer from '@/components/os/OrdemServicoViewer';
+import OrdemServicoForm from '@/components/os/OrdemServicoForm';
+import RelatorioOSFiltersModal from '@/components/os/RelatorioOSFiltersModal';
+import ImportarOSModal from '@/components/os/ImportarOSModal';
+import ProtectedPage from '@/components/ProtectedPage';
+import { usePermissions } from '@/components/ProtectedPage';
+import { useToast } from '@/components/ui/use-toast';
+import { Toaster } from '@/components/ui/toaster';
+import { useNavigate } from 'react-router-dom';
+
+
+import AdvancedSearchFilters from '@/components/filters/AdvancedSearchFilters';
+import { useAdvancedFilters } from '@/components/filters/useAdvancedFilters';
+import StandardDialog from '@/components/ui/StandardDialog';
+
+function OrdensServicoContent() {
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isRelatorioFiltersModalOpen, setIsRelatorioFiltersModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [viewingOS, setViewingOS] = useState(null);
+  const [editingOS, setEditingOS] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState(null);
+  const [osToDelete, setOsToDelete] = useState(null);
+  const [pendingReportUrl, setPendingReportUrl] = useState(null);
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { canCreate, canEdit, canDelete } = usePermissions();
+  const navigate = useNavigate();
+
+  const { data: ordensServico = [], isLoading: loadingOS } = useQuery({
+    queryKey: ['ordens-servico'],
+    queryFn: async () => {
+      const data = await base44.entities.OrdemServico.list('-data_abertura');
+      return data || [];
+    }
+  });
+
+  const { data: clientes = [] } = useQuery({
+    queryKey: ['clientes'],
+    queryFn: async () => {
+      const data = await base44.entities.Cliente.list();
+      return data || [];
+    }
+  });
+
+  const { data: veiculos = [] } = useQuery({
+    queryKey: ['veiculos'],
+    queryFn: async () => {
+      const data = await base44.entities.Veiculo.list();
+      return data || [];
+    }
+  });
+
+  const { data: funcionarios = [] } = useQuery({
+    queryKey: ['funcionarios'],
+    queryFn: async () => {
+      const data = await base44.entities.Funcionario.list();
+      return data || [];
+    }
+  });
+
+  const { data: configuracoes } = useQuery({
+    queryKey: ['configuracoes'],
+    queryFn: async () => {
+      const data = await base44.entities.Configuracoes.list();
+      return data?.[0] || null;
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.OrdemServico.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['ordens-servico']);
+      toast({
+        title: 'Sucesso!',
+        description: 'Ordem de serviço excluída com sucesso.'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Erro ao excluir OS',
+        description: error.message,
+        variant: 'destructive'
+      });
+    }
+  });
+
+  const handleEdit = (os) => {
+    setEditingOS(os);
+    setIsFormOpen(true);
+  };
+
+  const handleView = (os) => {
+    setViewingOS(os);
+    setIsViewerOpen(true);
+  };
+
+  const handleDelete = async (os) => {
+    setOsToDelete(os);
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmarExclusao = async () => {
+    if (!osToDelete) return;
+    try {
+      await base44.entities.OrdemServico.delete(osToDelete.id);
+      toast({
+        title: '✅ OS excluída',
+        description: `A ordem de serviço ${osToDelete.numero_os} foi excluída com sucesso.`
+      });
+      setConfirmDeleteOpen(false);
+      setOsToDelete(null);
+      queryClient.invalidateQueries(['ordens-servico']);
+    } catch (error) {
+      toast({
+        title: 'Erro ao excluir',
+        description: error.message,
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleNewOS = () => {
+    setEditingOS(null);
+    setIsFormOpen(true);
+  };
+
+  const handleFormSaved = async (savedOS) => {
+    await queryClient.invalidateQueries(['ordens-servico']);
+    setIsFormOpen(false);
+    setEditingOS(null);
+    
+    if (savedOS?.id) {
+      setViewingOS(savedOS);
+      setIsViewerOpen(true);
+    }
+  };
+
+  const handleGenerateRelatorio = (filters) => {
+    const params = new URLSearchParams();
+    
+    if (filters.status && filters.status !== "todos") {
+      params.append("status", filters.status);
+      params.append("statusLabel", statusLabels[filters.status] || "");
+    }
+
+    if (filters.numeroOS) {
+      params.append("numeroOS", filters.numeroOS);
+    }
+
+    if (filters.clienteId && filters.clienteId !== "todos") {
+      params.append("clienteId", filters.clienteId);
+      const cliente = clientes.find(c => c.id === filters.clienteId);
+      if (cliente) params.append("clienteNome", cliente.nome);
+    }
+
+    if (filters.responsavelId && filters.responsavelId !== "todos") {
+      params.append("responsavelId", filters.responsavelId);
+      const func = funcionarios.find(f => f.id === filters.responsavelId);
+      if (func) params.append("responsavelNome", func.nome);
+    }
+
+    if (filters.vendedorId && filters.vendedorId !== "todos") {
+      params.append("vendedorId", filters.vendedorId);
+      const func = funcionarios.find(f => f.id === filters.vendedorId);
+      if (func) params.append("vendedorNome", func.nome);
+    }
+
+    if (filters.veiculoId && filters.veiculoId !== "todos") {
+      params.append("veiculoId", filters.veiculoId);
+      params.append("veiculoInfo", getVeiculoInfo(filters.veiculoId));
+    }
+
+    if (filters.dataInicio) {
+      params.append("dataInicio", filters.dataInicio);
+    }
+
+    if (filters.dataFim) {
+      params.append("dataFim", filters.dataFim);
+    }
+
+    if (filters.somenteCanceladas) {
+      params.append("somenteCanceladas", "true");
+    }
+
+    const url = `/RelatorioOS?${params.toString()}`;
+    setPendingReportUrl(url);
+    setIsRelatorioFiltersModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (!isRelatorioFiltersModalOpen && pendingReportUrl) {
+      window.open(pendingReportUrl, "_blank");
+      setPendingReportUrl(null);
+    }
+  }, [isRelatorioFiltersModalOpen, pendingReportUrl]);
+
+  const getContatoNome = (ordem) => {
+    if (!ordem) return '—';
+    if (ordem.contato_tipo === 'cliente' && ordem.contato_id) {
+      const cliente = clientes.find((c) => c.id === ordem.contato_id);
+      return cliente?.nome || '—';
+    }
+    if (ordem.contato_tipo === 'funcionario' && ordem.contato_id) {
+      const func = funcionarios.find((f) => f.id === ordem.contato_id);
+      return func?.nome || '—';
+    }
+    if (ordem.cliente_id) {
+      const cliente = clientes.find((c) => c.id === ordem.cliente_id);
+      return cliente?.nome || '—';
+    }
+    return '—';
+  };
+
+  const getVeiculoInfo = (id) => {
+    if (!id) return '';
+    const v = veiculos.find((v) => v.id === id);
+    if (!v) return '';
+    const parts = [v.marca, v.modelo].filter(Boolean).join(' ');
+    const placa = v.placa ? ` - ${v.placa}` : '';
+    return parts ? `${parts}${placa}` : v.placa || '';
+  };
+
+  const getFuncionarioNome = (id) => {
+    if (!id) return '—';
+    const func = funcionarios.find((f) => f.id === id);
+    return func?.nome || '—';
+  };
+
+  const statusMap = {
+    'em_andamento': { label: 'Em Andamento', icon: Clock, bgClass: 'bg-amber-50', textClass: 'text-amber-700', borderClass: 'border-amber-200' },
+    'finalizado': { label: 'Finalizado', icon: CheckCircle, bgClass: 'bg-emerald-50', textClass: 'text-emerald-700', borderClass: 'border-emerald-200' },
+    'cancelado': { label: 'Cancelado', icon: XCircle, bgClass: 'bg-rose-50', textClass: 'text-rose-700', borderClass: 'border-rose-200' }
+  };
+
+  const getStatusBadge = (status) => {
+    const config = statusMap[status] || statusMap['em_andamento'];
+    const Icon = config.icon;
+    return (
+      <Badge className={`${config.bgClass} ${config.textClass} ${config.borderClass} border hover:${config.bgClass} font-medium flex items-center gap-1.5 px-2.5 py-1`}>
+        <Icon className="w-3.5 h-3.5" />
+        {config.label}
+      </Badge>
+    );
+  };
+
+  const statusLabels = {
+    'em_andamento': 'Em Andamento',
+    'finalizado': 'Finalizado',
+    'cancelado': 'Cancelado'
+  };
+
+  const statusColors = {
+    'em_andamento': 'bg-yellow-100 text-yellow-800',
+    'finalizado': 'bg-green-100 text-green-800',
+    'cancelado': 'bg-red-100 text-red-800'
+  };
+
+  // Preparar dados com campos de busca expandidos para o hook de filtros
+  const ordensComCamposBusca = useMemo(() => {
+    return ordensServico.map(os => ({
+      ...os,
+      _clienteNome: getContatoNome(os),
+      _funcionarioNome: getFuncionarioNome(os.funcionario_id),
+      _veiculoInfo: getVeiculoInfo(os.veiculo_id)
+    }));
+  }, [ordensServico, clientes, funcionarios, veiculos]);
+
+  // Usar hook de filtros avançados
+  const filteredOS = useAdvancedFilters(ordensComCamposBusca, advancedFilters);
+
+  // Configuração dos campos de busca e filtro
+  const osSearchFields = [
+    { key: 'numero_os', label: 'Nº OS' },
+    { key: '_clienteNome', label: 'Cliente' },
+    { key: '_funcionarioNome', label: 'Responsável' },
+    { key: '_veiculoInfo', label: 'Veículo' }
+  ];
+
+  const osFilterFields = [
+    {
+      key: 'status',
+      label: 'Status',
+      options: [
+        { value: 'em_andamento', label: 'Em Andamento' },
+        { value: 'finalizado', label: 'Finalizado' },
+        { value: 'cancelado', label: 'Cancelado' }
+      ]
+    }
+  ];
+
+  const osSortFields = [
+    { key: 'data_abertura', label: 'Data Abertura' },
+    { key: 'numero_os', label: 'Número OS' },
+    { key: 'valor_total', label: 'Valor Total' },
+    { key: 'created_date', label: 'Data Criação' }
+  ];
+
+  const resumo = {
+    total: ordensServico.length,
+    emAndamento: ordensServico.filter((os) => os.status === 'em_andamento').length,
+    finalizadas: ordensServico.filter((os) => os.status === 'finalizado').length,
+    valorTotal: ordensServico.reduce((sum, os) => sum + (os.valor_total || 0), 0)
+  };
+
+  if (loadingOS) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-black mx-auto" />
+          <p className="mt-4 text-black">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Toaster />
+
+      <div className="min-h-screen bg-slate-50">
+        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+          <div className="max-w-[1800px] mx-auto">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                  <ClipboardList className="w-8 h-8" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold mb-1.5 tracking-tight">Ordens de Serviço</h1>
+                  <p className="text-slate-200 text-base">Gestão completa de ordens de serviço</p>
+                </div>
+              </div>
+              <div className="flex gap-2.5 flex-wrap">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsRelatorioFiltersModalOpen(true)}
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                >
+                  <FileText className="w-4 h-4" />
+                  Relatório
+                </Button>
+
+                {canCreate('os') && (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsImportModalOpen(true)}
+                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      Importar
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      onClick={handleNewOS}
+                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Nova OS
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-[1800px] mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card className="border-l-4 border-l-slate-600 shadow-sm">
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Total</p>
+                  <div className="text-2xl font-bold text-slate-900">{resumo.total}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-amber-500 shadow-sm">
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Em Andamento</p>
+                  <div className="text-2xl font-bold text-amber-600">{resumo.emAndamento}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-emerald-500 shadow-sm">
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Finalizadas</p>
+                  <div className="text-2xl font-bold text-emerald-600">{resumo.finalizadas}</div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-blue-500 shadow-sm">
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Valor Total</p>
+                  <div className="text-2xl font-bold text-blue-600">{formatCurrency(resumo.valorTotal)}</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filtros Avançados */}
+          <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+            <AdvancedSearchFilters
+              entityName="ordens_servico"
+              searchFields={osSearchFields}
+              filterFields={osFilterFields}
+              dateField="data_abertura"
+              sortFields={osSortFields}
+              defaultSort={{ field: 'data_abertura', direction: 'desc' }}
+              onFiltersChange={setAdvancedFilters}
+            />
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-700 hover:bg-slate-700">
+                    <TableHead className="text-white font-semibold">Nº OS</TableHead>
+                    <TableHead className="text-white font-semibold">Data</TableHead>
+                    <TableHead className="text-white font-semibold">Cliente</TableHead>
+                    <TableHead className="text-white font-semibold">Veículo</TableHead>
+                    <TableHead className="text-white font-semibold">Valor Total</TableHead>
+                    <TableHead className="text-white font-semibold">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-center">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredOS.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
+                        <p className="text-slate-600">Nenhuma ordem de serviço encontrada</p>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredOS.map((os) => (
+                      <TableRow key={os.id} className="hover:bg-slate-50">
+                        <TableCell className="font-medium text-blue-600 py-3">{os.numero_os}</TableCell>
+                        <TableCell className="text-slate-900 py-3">{formatDate(os.data_abertura)}</TableCell>
+                        <TableCell className="text-slate-900 py-3">{getContatoNome(os)}</TableCell>
+                        <TableCell className="text-slate-900 py-3">{getVeiculoInfo(os.veiculo_id)}</TableCell>
+                        <TableCell className="font-semibold text-slate-900 py-3">{formatCurrency(os.valor_total)}</TableCell>
+                        <TableCell className="py-3">{getStatusBadge(os.status)}</TableCell>
+                        <TableCell className="py-3">
+                          <div className="flex items-center justify-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleView(os)}
+                              title="Visualizar"
+                              className="hover:bg-blue-50 text-blue-600"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            {canEdit('os') && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEdit(os)}
+                                title="Editar"
+                                className="hover:bg-amber-50 text-amber-600"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {canDelete('os') && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDelete(os)}
+                                title="Excluir"
+                                className="text-red-600 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {isViewerOpen &&
+        <OrdemServicoViewer
+          isOpen={isViewerOpen}
+          onClose={() => {
+            setIsViewerOpen(false);
+            setViewingOS(null);
+          }}
+          ordem={viewingOS}
+          clientes={clientes}
+          veiculos={veiculos}
+          funcionarios={funcionarios}
+          nomeEmpresa={configuracoes?.nome_empresa}
+          logoEmpresa={configuracoes?.logo_url}
+          onUpdated={() => queryClient.invalidateQueries(['ordens-servico'])}
+        />
+      }
+
+      {isFormOpen &&
+        <OrdemServicoForm
+          isOpen={isFormOpen}
+          onClose={() => {
+            setIsFormOpen(false);
+            setEditingOS(null);
+          }}
+          ordem={editingOS}
+          onSaved={handleFormSaved}
+        />
+      }
+
+      <RelatorioOSFiltersModal
+        isOpen={isRelatorioFiltersModalOpen}
+        onClose={() => setIsRelatorioFiltersModalOpen(false)}
+        onGenerate={handleGenerateRelatorio}
+        clientes={clientes}
+        funcionarios={funcionarios}
+        veiculos={veiculos}
+      />
+
+      {canCreate('os') && isImportModalOpen &&
+        <ImportarOSModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries(['ordens-servico']);
+            setIsImportModalOpen(false);
+          }}
+        />
+      }
+
+      <StandardDialog
+        isOpen={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={confirmarExclusao}
+        title="Excluir Ordem de Serviço"
+        description={osToDelete ? `A ordem de serviço ${osToDelete.numero_os} será permanentemente excluída. Esta ação não pode ser desfeita.` : ''}
+        variant="danger"
+        confirmText="Sim, excluir"
+        cancelText="Cancelar"
+      />
+    </>
+  );
+}
+
+export default function OrdensServicoPage() {
+  return (
+    <ProtectedPage pageName="OrdensServico">
+      <OrdensServicoContent />
+    </ProtectedPage>
+  );
+}
