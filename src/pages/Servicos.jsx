@@ -65,12 +65,12 @@ export default function ServicosPage() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @media print {
           .no-print { display: none !important; }
           .printable-content { width: 100%; }
         }
-      `}} />
+      `}</style>
 
       <div className="min-h-screen bg-slate-50 printable-content">
         {/* Header */}

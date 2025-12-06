@@ -61,7 +61,7 @@ export default function RelatorioFuncionariosViewer({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-auto p-0">
-        <style dangerouslySetInnerHTML={{__html: `
+        <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
           
           * {
@@ -221,7 +221,7 @@ export default function RelatorioFuncionariosViewer({
               padding: 14px 12px;
             }
           }
-        `}} />
+        `}</style>
 
         <DialogHeader className="p-4 border-b no-print">
           <div className="flex items-center justify-between">

@@ -126,7 +126,7 @@ export default function FichaFuncionarioPage() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style>{`
         @media print {
           @page {
             size: A4 portrait;
@@ -146,7 +146,7 @@ export default function FichaFuncionarioPage() {
             background: #f1f5f9;
           }
         }
-      `}} />
+      `}</style>
 
       <div className="p-8 bg-white max-w-4xl mx-auto my-8 shadow-lg print:shadow-none print:my-0">
         {/* Botão de Impressão - Apenas na tela */}
