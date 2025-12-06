@@ -3,7 +3,7 @@ import { Servico } from '@/entities/Servico';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit, Trash2, Wrench, Printer, Search, DollarSign } from 'lucide-react';
+import { Plus, Edit, Trash2, Wrench, Printer, Search, Filter, DollarSign } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ServicoForm from '@/components/ServicoForm';
 import { formatCurrency } from '@/components/formatters';
@@ -65,7 +65,7 @@ export default function ServicosPage() {
 
   return (
     <>
-      <style jsx global>{`
+      <style>{`
         @media print {
           .no-print { display: none !important; }
           .printable-content { width: 100%; }

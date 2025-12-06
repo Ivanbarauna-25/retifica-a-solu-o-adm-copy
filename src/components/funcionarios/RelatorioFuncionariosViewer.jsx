@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Printer, X } from 'lucide-react';
+import { Printer, X, FileDown } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
 
 // Função auxiliar para formatar CPF
@@ -61,7 +61,7 @@ export default function RelatorioFuncionariosViewer({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[95vw] max-h-[95vh] overflow-auto p-0">
-        <style jsx global>{`
+        <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
           
           * {

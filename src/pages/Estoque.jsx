@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Peca } from '@/entities/Peca';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, AlertTriangle, Package, Printer, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, AlertTriangle, Package, Banknote, Printer, Loader2, Search, Filter, BarChart3 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import EstoqueForm from '@/components/EstoqueForm';
 import { formatCurrency } from '@/components/formatters';
 import AdvancedSearchFilters from '@/components/filters/AdvancedSearchFilters';
 import { useAdvancedFilters } from '@/components/filters/useAdvancedFilters';
-import { useStandardDialog } from '@/components/ui/StandardDialog';
+import StandardDialog, { useStandardDialog } from '@/components/ui/StandardDialog';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function EstoquePage() {
@@ -154,7 +155,7 @@ export default function EstoquePage() {
 
   return (
     <>
-      <style jsx global>{`
+      <style>{`
         @media print {
           body {
             -webkit-print-color-adjust: exact !important;

@@ -126,7 +126,7 @@ export default function FichaFuncionarioPage() {
 
   return (
     <>
-      <style jsx global>{`
+      <style>{`
         @media print {
           @page {
             size: A4 portrait;
