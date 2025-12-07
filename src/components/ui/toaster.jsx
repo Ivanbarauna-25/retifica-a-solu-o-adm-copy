@@ -1,4 +1,4 @@
-import * as React from "react"
+import React from "react"
 import { useToast } from "@/components/ui/use-toast"
 import { Toast, ToastClose, ToastDescription, ToastTitle, ToastViewport } from "@/components/ui/toast"
 

@@ -1,4 +1,4 @@
-import * as React from "react"
+import React from "react"
 
 const Input = React.forwardRef(({ className, type, label, ...props }, ref) => {
   if (label) {
