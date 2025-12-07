@@ -9,6 +9,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
+  TrendingUp,
+  TrendingDown,
   Loader2,
   RefreshCw,
   FileText,
@@ -234,8 +236,8 @@ export default function MonitoramentoAgentePage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {dashboardData.reports.map((report) => (
-                      <Card key={report.id || `report-${report.created_date}`} className="hover:bg-slate-50 transition-colors">
+                   {(dashboardData.reports || []).map((report, index) => (
+                     <Card key={report.id || `report-${report.created_date || index}`} className="hover:bg-slate-50 transition-colors">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
