@@ -1,4 +1,5 @@
-import * as React from "react"
+
+import React from "react"
 
 const Separator = React.forwardRef(({ className, orientation = "horizontal", decorative = true, ...props }, ref) => (
   <div
