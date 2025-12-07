@@ -1,6 +1,5 @@
-// ... keep existing code (imports and most of the file) ...
+import React from "react"
 
-// ✅ CORREÇÃO: Configurar duração padrão e permitir fechar toasts
 export function useToast() {
   const [toasts, setToasts] = React.useState([])
 

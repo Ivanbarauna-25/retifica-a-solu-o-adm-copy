@@ -1,4 +1,4 @@
-import * as React from "react"
+import React from "react"
 
 const Checkbox = React.forwardRef(({ className, checked, onCheckedChange, ...props }, ref) => {
   const [isChecked, setIsChecked] = React.useState(checked || false)
