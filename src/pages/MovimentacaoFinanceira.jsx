@@ -1,27 +1,26 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
-import { MovimentacaoFinanceira } from '@/entities/MovimentacaoFinanceira';
-import { Cliente } from '@/entities/Cliente';
-import { Funcionario } from '@/entities/Funcionario';
-import { Fornecedor } from '@/entities/Fornecedor';
-import { ContaBancaria } from '@/entities/ContaBancaria';
-import { FormaPagamento } from '@/entities/FormaPagamento';
-import { CondicaoPagamento } from '@/entities/CondicaoPagamento';
-import { PlanoContas } from '@/entities/PlanoContas';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import {
   Plus,
   Edit,
+  Trash2,
   FileSignature,
   ArrowDownCircle,
   XCircle,
   Eye,
+  Filter,
+  ChevronDown,
+  ChevronUp,
   MoreVertical,
   ArrowRightLeft
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import ModalNovaMovimentacao from '@/components/modals/ModalNovaMovimentacao';
 import BaixaModal from '@/components/modals/BaixaModal';
 import ExcluirModal from '@/components/modals/ExcluirModal';
@@ -30,6 +29,8 @@ import MovimentacaoDetailViewer from '@/components/MovimentacaoDetailViewer';
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { formatCurrency, formatDate } from '@/components/formatters';
+import SearchableContactSelect from '@/components/SearchableContactSelect';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useLocation } from 'react-router-dom';
 import {
   DropdownMenu,
@@ -116,14 +117,14 @@ export default function MovimentacaoFinanceiraPage() {
             movData, cliData, funData, forData,
             cbData, fpData, cpData, pcData
         ] = await Promise.all([
-            MovimentacaoFinanceira.list('-created_date'),
-            Cliente.list(),
-            Funcionario.list(),
-            Fornecedor.list(),
-            ContaBancaria.list(),
-            FormaPagamento.list(),
-            CondicaoPagamento.list(),
-            PlanoContas.list()
+            base44.entities.MovimentacaoFinanceira.list('-created_date'),
+            base44.entities.Cliente.list(),
+            base44.entities.Funcionario.list(),
+            base44.entities.Fornecedor.list(),
+            base44.entities.ContaBancaria.list(),
+            base44.entities.FormaPagamento.list(),
+            base44.entities.CondicaoPagamento.list(),
+            base44.entities.PlanoContas.list()
         ]);
         setMovimentacoes(movData || []);
         setClientes(cliData || []);
@@ -194,10 +195,10 @@ export default function MovimentacaoFinanceiraPage() {
           });
           return;
         }
-        await MovimentacaoFinanceira.update(selectedMovimentacao.id, data);
+        await base44.entities.MovimentacaoFinanceira.update(selectedMovimentacao.id, data);
         toast({ title: "Sucesso!", description: "Movimentação atualizada." });
       } else {
-        await MovimentacaoFinanceira.create(data);
+        await base44.entities.MovimentacaoFinanceira.create(data);
         toast({ title: "Sucesso!", description: "Nova movimentação criada." });
       }
       setIsModalOpen(false);
@@ -251,7 +252,7 @@ export default function MovimentacaoFinanceiraPage() {
         payload.conta_bancaria_baixa_id = null;
       }
 
-      await MovimentacaoFinanceira.update(movId, payload);
+      await base44.entities.MovimentacaoFinanceira.update(movId, payload);
       toast({ title: `Status alterado para ${newStatus}!` });
       await fetchData();
     } catch (err) {
@@ -275,7 +276,7 @@ export default function MovimentacaoFinanceiraPage() {
 
      if (window.confirm("Tem certeza que deseja excluir esta movimentação?")) {
         try {
-            await MovimentacaoFinanceira.delete(movId);
+            await base44.entities.MovimentacaoFinanceira.delete(movId);
             toast({ title: "Movimentação excluída com sucesso." });
             setIsDetailViewOpen(false); // Close detail view if open
             setViewingMovimentacao(null); // Clear viewingMovimentacao
@@ -354,7 +355,7 @@ export default function MovimentacaoFinanceiraPage() {
       const allPaid = updatedParcelas.length > 0 && updatedParcelas.every(p => p.status === 'pago');
       const novoStatus = allPaid ? 'pago' : 'parcial';
 
-      await MovimentacaoFinanceira.update(movimentacaoId, {
+      await base44.entities.MovimentacaoFinanceira.update(movimentacaoId, {
         parcelas: updatedParcelas,
         status: novoStatus,
         data_baixa: allPaid ? baixa.data_baixa : movAtual.data_baixa,
@@ -377,7 +378,7 @@ export default function MovimentacaoFinanceiraPage() {
       await fetchData();
 
       try {
-        const atualizado = await MovimentacaoFinanceira.get(movimentacaoId);
+        const atualizado = await base44.entities.MovimentacaoFinanceira.get(movimentacaoId);
         setViewingMovimentacao(atualizado);
       } catch (_) {}
     } catch (err) {
