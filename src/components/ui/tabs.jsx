@@ -36,7 +36,7 @@ const TabsList = React.forwardRef(({ className, ...props }, ref) => (
 ))
 TabsList.displayName = "TabsList"
 
-const TabsTrigger = React.forwardRef(({ className, value, ...props }, ref) => {
+const TabsTrigger = React.forwardRef(({ className, value, children, ...props }, ref) => {
   const { activeTab, setActiveTab } = React.useContext(TabsContext)
   const isActive = activeTab === value
 
@@ -51,12 +51,14 @@ const TabsTrigger = React.forwardRef(({ className, value, ...props }, ref) => {
       } ${className || ''}`}
       onClick={() => setActiveTab(value)}
       {...props}
-    />
+    >
+      {children}
+    </button>
   )
 })
 TabsTrigger.displayName = "TabsTrigger"
 
-const TabsContent = React.forwardRef(({ className, value, ...props }, ref) => {
+const TabsContent = React.forwardRef(({ className, value, children, ...props }, ref) => {
   const { activeTab } = React.useContext(TabsContext)
   
   if (activeTab !== value) return null
@@ -66,7 +68,9 @@ const TabsContent = React.forwardRef(({ className, value, ...props }, ref) => {
       ref={ref}
       className={`mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${className || ''}`}
       {...props}
-    />
+    >
+      {children}
+    </div>
   )
 })
 TabsContent.displayName = "TabsContent"
