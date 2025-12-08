@@ -405,25 +405,33 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
             // Criar itens baseados nos valores
             const itens = [];
             
-            if (linha.valor_produtos > 0) {
+            const valorProdutos = Number(linha.valor_produtos) || 0;
+            const valorServicos = Number(linha.valor_servicos) || 0;
+            
+            if (valorProdutos > 0) {
               itens.push({
                 tipo: 'produto',
                 descricao: 'Produtos importados',
                 quantidade: 1,
-                valor_unitario: Number(linha.valor_produtos),
-                valor_total: Number(linha.valor_produtos)
+                valor_unitario: valorProdutos,
+                valor_total: valorProdutos,
+                desconto: 0
               });
             }
 
-            if (linha.valor_servicos > 0) {
+            if (valorServicos > 0) {
               itens.push({
                 tipo: 'servico',
                 descricao: 'Serviços importados',
                 quantidade: 1,
-                valor_unitario: Number(linha.valor_servicos),
-                valor_total: Number(linha.valor_servicos)
+                valor_unitario: valorServicos,
+                valor_total: valorServicos,
+                desconto: 0
               });
             }
+
+            // Calcular valor total: (produtos + serviços + despesas - desconto)
+            const valorTotalCalculado = valorProdutos + valorServicos + (Number(linha.outras_despesas) || 0) - (Number(linha.desconto) || 0);
 
             // Validar status
             const statusValidos = ['em_andamento', 'finalizado', 'cancelado'];
@@ -440,7 +448,7 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
               desconto_tipo: 'valor',
               desconto_valor: Number(linha.desconto) || 0,
               outras_despesas: Number(linha.outras_despesas) || 0,
-              valor_total: Number(linha.valor_total) || 0,
+              valor_total: valorTotalCalculado,
               itens: itens,
               observacoes: linha.observacoes || ''
             };
