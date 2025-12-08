@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Printer, X } from 'lucide-react';
@@ -27,6 +26,22 @@ export default function RelatorioOS({
   };
 
   const totalGeral = ordens.reduce((acc, os) => acc + (os.valor_total || 0), 0);
+  const totalProdutos = ordens.reduce((acc, os) => {
+    const produtos = (os.itens || [])
+      .filter(item => item.tipo === 'produto')
+      .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+    return acc + produtos;
+  }, 0);
+  const totalServicos = ordens.reduce((acc, os) => {
+    const servicos = (os.itens || [])
+      .filter(item => item.tipo === 'servico')
+      .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+    return acc + servicos;
+  }, 0);
+  const totalDespesas = ordens.reduce((acc, os) => acc + (os.outras_despesas || 0), 0);
+  const totalDescontos = ordens.reduce((acc, os) => acc + (os.desconto_valor || 0), 0);
+  const totalLiquido = totalGeral - totalDespesas;
+  const margemGeralPercentual = totalGeral > 0 ? ((totalLiquido / totalGeral) * 100) : 0;
 
   // Formatar filtros aplicados
   const getFiltrosAplicados = () => {
@@ -357,50 +372,70 @@ export default function RelatorioOS({
         <table>
           <thead>
             <tr>
-              <th translate="no">Funcionário</th>
-              <th translate="no">Departamento</th>
-              <th className="text-center" translate="no">Competência</th>
-              <th className="text-center" translate="no">Dias</th>
-              <th className="text-right" translate="no">Sal. Base</th>
-              <th className="text-right" translate="no">Comissões</th>
-              <th className="text-right" translate="no">H. Extras</th>
-              <th className="text-right" translate="no">Bônus</th>
-              <th className="text-right" style={{color: '#10b981'}} translate="no">Total (+)</th>
-              <th className="text-right" style={{color: '#ef4444'}} translate="no">Total (-)</th>
-              <th className="text-right" translate="no">Líquido</th>
-              <th className="text-center" translate="no">Data Pag.</th>
+              <th translate="no">Nº OS</th>
+              <th className="text-center" translate="no">Data Abertura</th>
+              <th className="text-center" translate="no">Data Conclusão</th>
+              <th translate="no">Cliente</th>
+              <th translate="no">Veículo</th>
+              <th translate="no">Responsável</th>
+              <th translate="no">Vendedor</th>
+              <th className="text-right" translate="no">Produtos</th>
+              <th className="text-right" translate="no">Serviços</th>
+              <th className="text-right" translate="no">Despesas</th>
+              <th className="text-right" translate="no">Desconto</th>
+              <th className="text-right" translate="no">Valor Total</th>
+              <th className="text-right" translate="no">Valor Líquido</th>
+              <th className="text-right" translate="no">Margem %</th>
               <th className="text-center" translate="no">Status</th>
             </tr>
           </thead>
           <tbody>
             {ordens.length === 0 ? (
               <tr>
-                <td colSpan={13} className="text-center" style={{padding: '40px', color: '#94a3b8'}} translate="no">
+                <td colSpan={15} className="text-center" style={{padding: '40px', color: '#94a3b8'}} translate="no">
                   Nenhuma ordem de serviço encontrada com os filtros aplicados
                 </td>
               </tr>
             ) : (
-              ordens.map((ordem) => (
-                <tr key={ordem.id}>
-                  <td style={{fontWeight: 500}} translate="no">{getContatoNome(ordem)}</td> {/* Mapeado de Contato Cliente */}
-                  <td style={{color: '#64748b'}} translate="no">{getVeiculoInfo(ordem.veiculo_id)}</td> {/* Mapeado de Veículo */}
-                  <td className="text-center" translate="no">{formatDate(ordem.data_abertura)}</td> {/* Mapeado de Data Abertura */}
-                  <td className="text-center" translate="no">{getFuncionarioNome ? getFuncionarioNome(ordem.funcionario_id) : '—'}</td> {/* Mapeado de Responsável */}
-                  <td className="text-right" translate="no">{formatCurrency(ordem.valor_total)}</td> {/* Mapeado de Valor Total */}
-                  <td className="text-right" translate="no">—</td> {/* Sem equivalente direto no OS */}
-                  <td className="text-right" translate="no">—</td> {/* Sem equivalente direto no OS */}
-                  <td className="text-right" translate="no">—</td> {/* Sem equivalente direto no OS */}
-                  <td className="text-right" style={{color: '#10b981'}} translate="no">{formatCurrency(ordem.valor_total)}</td> {/* Mapeado de Valor Total */}
-                  <td className="text-right" style={{color: '#ef4444'}} translate="no">—</td> {/* Sem equivalente direto no OS */}
-                  <td className="text-right" translate="no">{formatCurrency(ordem.valor_total)}</td> {/* Mapeado de Valor Total */}
-                  <td className="text-center" translate="no">{formatDate(ordem.data_abertura)}</td> {/* Mapeado de Data Abertura (como "data de pagamento" para contexto do relatório) */}
-                  <td className="text-center">
-                    <span className={`status-badge ${statusColors[ordem.status]}`} translate="no">
-                      {statusLabels[ordem.status]}
-                    </span>
-                  </td> {/* Mapeado de Status */}
-                </tr>
-              ))
+              ordens.map((ordem) => {
+                const valorProdutos = (ordem.itens || [])
+                  .filter(item => item.tipo === 'produto')
+                  .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+                
+                const valorServicos = (ordem.itens || [])
+                  .filter(item => item.tipo === 'servico')
+                  .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+                
+                const valorDespesas = ordem.outras_despesas || 0;
+                const valorDesconto = ordem.desconto_valor || 0;
+                const valorTotal = ordem.valor_total || 0;
+                const valorLiquido = valorTotal - valorDespesas;
+                const margemPercentual = valorTotal > 0 ? ((valorLiquido / valorTotal) * 100) : 0;
+
+                return (
+                  <tr key={ordem.id}>
+                    <td style={{fontWeight: 500}} translate="no">{ordem.numero_os}</td>
+                    <td className="text-center" translate="no">{formatDate(ordem.data_abertura)}</td>
+                    <td className="text-center" translate="no">{ordem.data_conclusao ? formatDate(ordem.data_conclusao) : '—'}</td>
+                    <td translate="no">{getContatoNome(ordem)}</td>
+                    <td style={{color: '#64748b'}} translate="no">{getVeiculoInfo(ordem.veiculo_id)}</td>
+                    <td translate="no">{getFuncionarioNome ? getFuncionarioNome(ordem.funcionario_id) : '—'}</td>
+                    <td translate="no">{getFuncionarioNome && ordem.vendedor_id ? getFuncionarioNome(ordem.vendedor_id) : '—'}</td>
+                    <td className="text-right" translate="no">{formatCurrency(valorProdutos)}</td>
+                    <td className="text-right" translate="no">{formatCurrency(valorServicos)}</td>
+                    <td className="text-right" translate="no">{formatCurrency(valorDespesas)}</td>
+                    <td className="text-right" translate="no">{formatCurrency(valorDesconto)}</td>
+                    <td className="text-right" style={{fontWeight: 600}} translate="no">{formatCurrency(valorTotal)}</td>
+                    <td className="text-right" style={{color: '#10b981', fontWeight: 600}} translate="no">{formatCurrency(valorLiquido)}</td>
+                    <td className="text-right" style={{color: margemPercentual >= 0 ? '#10b981' : '#ef4444', fontWeight: 600}} translate="no">{margemPercentual.toFixed(1)}%</td>
+                    <td className="text-center">
+                      <span className={`status-badge ${statusColors[ordem.status]}`} translate="no">
+                        {statusLabels[ordem.status]}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
@@ -409,8 +444,32 @@ export default function RelatorioOS({
         {ordens.length > 0 && (
           <div className="summary-box" translate="no">
             <div className="summary-item">
-              <span>Total Geral:</span>
-              <span>{formatCurrency(totalGeral)}</span>
+              <span>Total Produtos:</span>
+              <span>{formatCurrency(totalProdutos)}</span>
+            </div>
+            <div className="summary-item">
+              <span>Total Serviços:</span>
+              <span>{formatCurrency(totalServicos)}</span>
+            </div>
+            <div className="summary-item">
+              <span>Total Despesas:</span>
+              <span style={{color: '#ef4444'}}>{formatCurrency(totalDespesas)}</span>
+            </div>
+            <div className="summary-item">
+              <span>Total Descontos:</span>
+              <span style={{color: '#ef4444'}}>{formatCurrency(totalDescontos)}</span>
+            </div>
+            <div className="summary-item" style={{borderTop: '2px solid #e2e8f0', paddingTop: '0.5rem', marginTop: '0.5rem'}}>
+              <span>Total Geral (Cliente):</span>
+              <span style={{fontSize: '1.2rem'}}>{formatCurrency(totalGeral)}</span>
+            </div>
+            <div className="summary-item">
+              <span>Total Líquido (Empresa):</span>
+              <span style={{color: '#10b981', fontSize: '1.2rem', fontWeight: 'bold'}}>{formatCurrency(totalLiquido)}</span>
+            </div>
+            <div className="summary-item">
+              <span>Margem Geral:</span>
+              <span style={{color: margemGeralPercentual >= 0 ? '#10b981' : '#ef4444', fontSize: '1.2rem', fontWeight: 'bold'}}>{margemGeralPercentual.toFixed(1)}%</span>
             </div>
           </div>
         )}
