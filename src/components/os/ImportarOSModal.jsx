@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Eye, Trash2, X, Loader2 } from 'lucide-react';
@@ -42,9 +43,9 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
   };
 
   const downloadTemplate = () => {
-    const csvContent = 'numero_os,data_abertura,contato_nome,veiculo_placa,responsavel_nome,valor_produtos,valor_servicos,desconto,valor_total,status,observacoes\n' +
-                      'OS-001,2024-01-15,João Silva,ABC-1234,Carlos Santos,500.00,350.00,50.00,800.00,em_andamento,Troca de óleo e filtros\n' +
-                      'OS-002,2024-01-16,Maria Santos,XYZ-5678,Pedro Oliveira,800.00,400.00,0.00,1200.00,finalizado,Revisão completa';
+    const csvContent = 'numero_os,data_abertura,contato_nome,veiculo_placa,responsavel_nome,valor_produtos,valor_servicos,desconto,outras_despesas,observacoes\n' +
+                      'OS-001,2024-01-15,João Silva,ABC-1234,Carlos Santos,500.00,350.00,50.00,100.00,Troca de óleo e filtros\n' +
+                      'OS-002,2024-01-16,Maria Santos,XYZ-5678,Pedro Oliveira,800.00,400.00,0.00,150.00,Revisão completa';
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -239,6 +240,7 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
             valor_produtos: extrairNumero(d.valor_produtos || d.produtos || d['Produtos'] || 0),
             valor_servicos: extrairNumero(d.valor_servicos || d.servicos || d['Serviços'] || d['Servicos'] || 0),
             desconto: extrairNumero(d.desconto || d['Desconto'] || 0),
+            outras_despesas: extrairNumero(d.outras_despesas || d.despesas || d['Despesas'] || d['Outras Despesas'] || 0),
             valor_total: extrairNumero(d.valor_total || d.total || d['Total'] || 0),
             status: (d.status || d['Status'] || 'em_andamento')
               .toLowerCase()
@@ -423,6 +425,7 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
               status: status,
               desconto_tipo: 'valor',
               desconto_valor: Number(linha.desconto) || 0,
+              outras_despesas: Number(linha.outras_despesas) || 0,
               valor_total: Number(linha.valor_total) || 0,
               itens: itens,
               observacoes: linha.observacoes || ''
@@ -538,7 +541,7 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-blue-900 mb-1">Formato esperado</p>
-                  <p className="text-xs text-blue-700">Nº OS, Data Abertura, Contato, Veículo, Responsável, Produtos, Serviços, Desconto, Total, Status</p>
+                  <p className="text-xs text-blue-700">Nº OS, Data Abertura, Contato, Veículo, Responsável, Produtos, Serviços, Desconto, Despesas, Observações</p>
                 </div>
               </div>
 
@@ -621,8 +624,8 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
                       <TableHead className="text-slate-700 font-semibold text-xs">Produtos</TableHead>
                       <TableHead className="text-slate-700 font-semibold text-xs">Serviços</TableHead>
                       <TableHead className="text-slate-700 font-semibold text-xs">Desconto</TableHead>
-                      <TableHead className="text-slate-700 font-semibold text-xs">Total</TableHead>
-                      <TableHead className="text-slate-700 font-semibold text-xs">Status</TableHead>
+                      <TableHead className="text-slate-700 font-semibold text-xs">Despesas</TableHead>
+                      <TableHead className="text-slate-700 font-semibold text-xs">Observações</TableHead>
                       <TableHead className="text-slate-700 font-semibold text-xs w-14">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -696,15 +699,15 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
                           <Input
                             type="number"
                             step="0.01"
-                            value={row.valor_total}
-                            onChange={(e) => handleEditRow(row.id, 'valor_total', e.target.value)}
+                            value={row.outras_despesas}
+                            onChange={(e) => handleEditRow(row.id, 'outras_despesas', e.target.value)}
                             className="h-8"
                           />
                         </TableCell>
                         <TableCell>
                           <Input
-                            value={row.status}
-                            onChange={(e) => handleEditRow(row.id, 'status', e.target.value)}
+                            value={row.observacoes || ''}
+                            onChange={(e) => handleEditRow(row.id, 'observacoes', e.target.value)}
                             className="h-8"
                           />
                         </TableCell>
