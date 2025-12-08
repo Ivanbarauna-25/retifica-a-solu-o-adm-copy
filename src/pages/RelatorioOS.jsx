@@ -23,6 +23,7 @@ export default function RelatorioOSPage() {
   const [veiculos, setVeiculos] = useState([]);
   const [configuracoes, setConfiguracoes] = useState(null);
   const [filtros, setFiltros] = useState({});
+  const [despesasOS, setDespesasOS] = useState([]);
 
   // Impedir que o layout seja renderizado
   useEffect(() => {
@@ -40,12 +41,13 @@ export default function RelatorioOSPage() {
     try {
       const params = new URLSearchParams(window.location.search);
       
-      const [ordensData, clientesData, funcionariosData, veiculosData, configData] = await Promise.all([
+      const [ordensData, clientesData, funcionariosData, veiculosData, configData, despesasData] = await Promise.all([
         base44.entities.OrdemServico.list('-data_abertura'),
         base44.entities.Cliente.list(),
         base44.entities.Funcionario.list(),
         base44.entities.Veiculo.list(),
-        base44.entities.Configuracoes.list()
+        base44.entities.Configuracoes.list(),
+        base44.entities.DespesaOS.list()
       ]);
 
       let filtered = ordensData || [];
@@ -75,6 +77,7 @@ export default function RelatorioOSPage() {
       setFuncionarios(funcionariosData || []);
       setVeiculos(veiculosData || []);
       setConfiguracoes(configData?.[0] || null);
+      setDespesasOS(despesasData || []);
       setFiltros({
         status: params.get('statusLabel'),
         numeroOS: params.get('numeroOS'),
@@ -104,7 +107,12 @@ export default function RelatorioOSPage() {
       .reduce((sum, item) => sum + (item.valor_total || 0), 0);
     return acc + servicos;
   }, 0), [ordens]);
-  const totalDespesas = useMemo(() => ordens.reduce((acc, os) => acc + (os.outras_despesas || 0), 0), [ordens]);
+  const totalDespesas = useMemo(() => ordens.reduce((acc, os) => {
+    const despesasDaOS = despesasOS
+      .filter(d => d.ordem_servico_id === os.id)
+      .reduce((sum, d) => sum + (d.valor || 0), 0);
+    return acc + (os.outras_despesas || 0) + despesasDaOS;
+  }, 0), [ordens, despesasOS]);
   const totalDescontos = useMemo(() => ordens.reduce((acc, os) => acc + (os.desconto_valor || 0), 0), [ordens]);
   const totalLiquido = useMemo(() => totalGeral - totalDespesas, [totalGeral, totalDespesas]);
   const margemGeralPercentual = useMemo(() => totalGeral > 0 ? ((totalLiquido / totalGeral) * 100) : 0, [totalGeral, totalLiquido]);
@@ -263,7 +271,11 @@ export default function RelatorioOSPage() {
                   .filter(item => item.tipo === 'servico')
                   .reduce((sum, item) => sum + (item.valor_total || 0), 0);
 
-                const valorDespesas = ordem.outras_despesas || 0;
+                // Calcular despesas da OS (outras_despesas + DespesaOS)
+                const despesasDaOS = despesasOS
+                  .filter(d => d.ordem_servico_id === ordem.id)
+                  .reduce((sum, d) => sum + (d.valor || 0), 0);
+                const valorDespesas = (ordem.outras_despesas || 0) + despesasDaOS;
                 const valorDesconto = ordem.desconto_valor || 0;
                 const valorTotal = ordem.valor_total || 0;
                 const valorLiquido = valorTotal - valorDespesas;
