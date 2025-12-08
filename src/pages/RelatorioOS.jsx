@@ -92,6 +92,22 @@ export default function RelatorioOSPage() {
   };
 
   const totalGeral = useMemo(() => ordens.reduce((acc, os) => acc + (os.valor_total || 0), 0), [ordens]);
+  const totalProdutos = useMemo(() => ordens.reduce((acc, os) => {
+    const produtos = (os.itens || [])
+      .filter(item => item.tipo === 'produto')
+      .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+    return acc + produtos;
+  }, 0), [ordens]);
+  const totalServicos = useMemo(() => ordens.reduce((acc, os) => {
+    const servicos = (os.itens || [])
+      .filter(item => item.tipo === 'servico')
+      .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+    return acc + servicos;
+  }, 0), [ordens]);
+  const totalDespesas = useMemo(() => ordens.reduce((acc, os) => acc + (os.outras_despesas || 0), 0), [ordens]);
+  const totalDescontos = useMemo(() => ordens.reduce((acc, os) => acc + (os.desconto_valor || 0), 0), [ordens]);
+  const totalLiquido = useMemo(() => totalGeral - totalDespesas, [totalGeral, totalDespesas]);
+  const margemGeralPercentual = useMemo(() => totalGeral > 0 ? ((totalLiquido / totalGeral) * 100) : 0, [totalGeral, totalLiquido]);
 
   const textoFiltros = useMemo(() => {
     const items = [];
@@ -196,16 +212,18 @@ export default function RelatorioOSPage() {
               <th>Vendedor</th>
               <th className="text-right">Produtos</th>
               <th className="text-right">Serviços</th>
-              <th className="text-right">Despesas</th>
               <th className="text-right">Desconto</th>
-              <th className="text-right">Valor Total</th>
+              <th className="text-right">Valor Total Cliente</th>
+              <th className="text-right">Despesas</th>
+              <th className="text-right">Valor Líquido Empresa</th>
+              <th className="text-right">Margem %</th>
               <th className="text-center">Status</th>
             </tr>
           </thead>
           <tbody>
             {ordens.length === 0 ? (
               <tr>
-                <td colSpan={13} className="text-center" style={{ padding: '40px', color: '#94a3b8' }}>
+                <td colSpan={15} className="text-center" style={{ padding: '40px', color: '#94a3b8' }}>
                   Nenhuma ordem de serviço encontrada com os filtros aplicados
                 </td>
               </tr>
@@ -245,6 +263,12 @@ export default function RelatorioOSPage() {
                   .filter(item => item.tipo === 'servico')
                   .reduce((sum, item) => sum + (item.valor_total || 0), 0);
 
+                const valorDespesas = ordem.outras_despesas || 0;
+                const valorDesconto = ordem.desconto_valor || 0;
+                const valorTotal = ordem.valor_total || 0;
+                const valorLiquido = valorTotal - valorDespesas;
+                const margemPercentual = valorTotal > 0 ? ((valorLiquido / valorTotal) * 100) : 0;
+
                 return (
                   <tr key={ordem.id}>
                     <td style={{fontWeight: 500}}>{ordem.numero_os}</td>
@@ -256,9 +280,11 @@ export default function RelatorioOSPage() {
                     <td>{nomeVendedor}</td>
                     <td className="text-right">{formatCurrency(valorProdutos)}</td>
                     <td className="text-right">{formatCurrency(valorServicos)}</td>
-                    <td className="text-right">{formatCurrency(ordem.outras_despesas || 0)}</td>
-                    <td className="text-right">{formatCurrency(ordem.desconto_valor || 0)}</td>
-                    <td className="text-right" style={{fontWeight: 600}}>{formatCurrency(ordem.valor_total)}</td>
+                    <td className="text-right">{formatCurrency(valorDesconto)}</td>
+                    <td className="text-right" style={{fontWeight: 600}}>{formatCurrency(valorTotal)}</td>
+                    <td className="text-right">{formatCurrency(valorDespesas)}</td>
+                    <td className="text-right" style={{color: '#10b981', fontWeight: 600}}>{formatCurrency(valorLiquido)}</td>
+                    <td className="text-right" style={{color: margemPercentual >= 0 ? '#10b981' : '#ef4444', fontWeight: 600}}>{margemPercentual.toFixed(1)}%</td>
                     <td className="text-center">
                       <span className={`status-badge ${statusColors[ordem.status]}`}>
                         {statusLabels[ordem.status]}
@@ -272,8 +298,14 @@ export default function RelatorioOSPage() {
           {ordens.length > 0 && (
             <tfoot>
               <tr>
-                <td colSpan={11} className="text-center font-bold uppercase text-white">TOTAIS</td>
+                <td colSpan={7} className="text-right font-bold uppercase text-white">TOTAIS:</td>
+                <td className="text-right font-bold text-white">{formatCurrency(totalProdutos)}</td>
+                <td className="text-right font-bold text-white">{formatCurrency(totalServicos)}</td>
+                <td className="text-right font-bold text-white">{formatCurrency(totalDescontos)}</td>
                 <td className="text-right font-bold text-white">{formatCurrency(totalGeral)}</td>
+                <td className="text-right font-bold text-white">{formatCurrency(totalDespesas)}</td>
+                <td className="text-right font-bold text-white">{formatCurrency(totalLiquido)}</td>
+                <td className="text-right font-bold text-white">{margemGeralPercentual.toFixed(1)}%</td>
                 <td></td>
               </tr>
             </tfoot>
