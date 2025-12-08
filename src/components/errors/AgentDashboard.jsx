@@ -8,15 +8,19 @@ import {
   Clock,
   AlertCircle,
   Zap,
+  TrendingUp,
   FileText,
   Code,
   Bot,
   Eye,
-  MessageSquare
+  MessageSquare,
+  Mail,
+  PlayCircle,
+  PauseCircle
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
-export default function AgentDashboard({ acoes, onViewError, onViewTask }) {
+export default function AgentDashboard({ acoes = [], onViewError, onViewTask }) {
   const [expandedAcao, setExpandedAcao] = useState(null);
 
   const getStatusColor = (status) => {
