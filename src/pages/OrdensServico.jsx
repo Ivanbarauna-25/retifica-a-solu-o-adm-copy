@@ -541,7 +541,11 @@ function OrdensServicoContent() {
                     <TableHead className="text-white font-semibold">Data</TableHead>
                     <TableHead className="text-white font-semibold">Cliente</TableHead>
                     <TableHead className="text-white font-semibold">Veículo</TableHead>
-                    <TableHead className="text-white font-semibold">Valor Total</TableHead>
+                    <TableHead className="text-white font-semibold text-right">Produtos</TableHead>
+                    <TableHead className="text-white font-semibold text-right">Serviços</TableHead>
+                    <TableHead className="text-white font-semibold text-right">Despesas</TableHead>
+                    <TableHead className="text-white font-semibold text-right">Desconto</TableHead>
+                    <TableHead className="text-white font-semibold text-right">Valor Total</TableHead>
                     <TableHead className="text-white font-semibold">Status</TableHead>
                     <TableHead className="text-white font-semibold text-center">Ações</TableHead>
                   </TableRow>
@@ -549,65 +553,79 @@ function OrdensServicoContent() {
                 <TableBody>
                   {filteredOS.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isAdmin ? 8 : 7} className="text-center py-8">
+                      <TableCell colSpan={isAdmin ? 12 : 11} className="text-center py-8">
                         <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
                         <p className="text-slate-600">Nenhuma ordem de serviço encontrada</p>
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredOS.map((os) => (
-                      <TableRow key={os.id} className="hover:bg-slate-50">
-                        {isAdmin && (
+                    filteredOS.map((os) => {
+                      const valorProdutos = (os.itens || [])
+                        .filter(item => item.tipo === 'produto')
+                        .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+
+                      const valorServicos = (os.itens || [])
+                        .filter(item => item.tipo === 'servico')
+                        .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+
+                      return (
+                        <TableRow key={os.id} className="hover:bg-slate-50">
+                          {isAdmin && (
+                            <TableCell className="py-3">
+                              <Checkbox
+                                checked={selectedOS.includes(os.id)}
+                                onCheckedChange={() => handleSelectOS(os.id)}
+                              />
+                            </TableCell>
+                          )}
+                          <TableCell className="font-medium text-blue-600 py-3">{os.numero_os}</TableCell>
+                          <TableCell className="text-slate-900 py-3">{formatDate(os.data_abertura)}</TableCell>
+                          <TableCell className="text-slate-900 py-3">{getContatoNome(os)}</TableCell>
+                          <TableCell className="text-slate-900 py-3">{getVeiculoInfo(os.veiculo_id)}</TableCell>
+                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorProdutos)}</TableCell>
+                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorServicos)}</TableCell>
+                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(os.outras_despesas || 0)}</TableCell>
+                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(os.desconto_valor || 0)}</TableCell>
+                          <TableCell className="font-semibold text-slate-900 py-3 text-right">{formatCurrency(os.valor_total)}</TableCell>
+                          <TableCell className="py-3">{getStatusBadge(os.status)}</TableCell>
                           <TableCell className="py-3">
-                            <Checkbox
-                              checked={selectedOS.includes(os.id)}
-                              onCheckedChange={() => handleSelectOS(os.id)}
-                            />
+                            <div className="flex items-center justify-center gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleView(os)}
+                                title="Visualizar"
+                                className="hover:bg-blue-50 text-blue-600"
+                              >
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                              {canEdit('os') && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEdit(os)}
+                                  title="Editar"
+                                  className="hover:bg-amber-50 text-amber-600"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {canDelete('os') && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDelete(os)}
+                                  title="Excluir"
+                                  className="text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
                           </TableCell>
-                        )}
-                        <TableCell className="font-medium text-blue-600 py-3">{os.numero_os}</TableCell>
-                        <TableCell className="text-slate-900 py-3">{formatDate(os.data_abertura)}</TableCell>
-                        <TableCell className="text-slate-900 py-3">{getContatoNome(os)}</TableCell>
-                        <TableCell className="text-slate-900 py-3">{getVeiculoInfo(os.veiculo_id)}</TableCell>
-                        <TableCell className="font-semibold text-slate-900 py-3">{formatCurrency(os.valor_total)}</TableCell>
-                        <TableCell className="py-3">{getStatusBadge(os.status)}</TableCell>
-                        <TableCell className="py-3">
-                          <div className="flex items-center justify-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleView(os)}
-                              title="Visualizar"
-                              className="hover:bg-blue-50 text-blue-600"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            {canEdit('os') && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit(os)}
-                                title="Editar"
-                                className="hover:bg-amber-50 text-amber-600"
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                            )}
-                            {canDelete('os') && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDelete(os)}
-                                title="Excluir"
-                                className="text-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
+                        </TableRow>
+                      );
+                    })
                   )}
                 </TableBody>
               </Table>
