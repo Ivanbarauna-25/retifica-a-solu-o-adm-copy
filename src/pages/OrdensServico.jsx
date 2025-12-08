@@ -22,7 +22,8 @@ import {
   ClipboardList,
   DollarSign,
   XCircle,
-  Trash
+  Trash,
+  Merge
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
 import OrdemServicoViewer from '@/components/os/OrdemServicoViewer';
@@ -30,6 +31,7 @@ import OrdemServicoForm from '@/components/os/OrdemServicoForm';
 import RelatorioOSFiltersModal from '@/components/os/RelatorioOSFiltersModal';
 import RelatorioOS from '@/components/os/RelatorioOS';
 import ImportarOSModal from '@/components/os/ImportarOSModal';
+import AgruparOSModal from '@/components/os/AgruparOSModal';
 import ProtectedPage from '@/components/ProtectedPage';
 import { usePermissions } from '@/components/ProtectedPage';
 import { useToast } from '@/components/ui/use-toast';
@@ -64,6 +66,7 @@ function OrdensServicoContent() {
   const [pendingReportUrl, setPendingReportUrl] = useState(null);
   const [selectedOS, setSelectedOS] = useState([]);
   const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
+  const [showAgruparModal, setShowAgruparModal] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -175,6 +178,31 @@ function OrdensServicoContent() {
     } else {
       setSelectedOS([]);
     }
+  };
+
+  const handleAgrupar = () => {
+    if (selectedOS.length < 2) {
+      toast({
+        title: 'Seleção inválida',
+        description: 'Selecione pelo menos 2 OSs para agrupar',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    const ossSelecionadas = ordensServico.filter(os => selectedOS.includes(os.id));
+    const clienteIds = [...new Set(ossSelecionadas.map(os => os.contato_id))];
+    
+    if (clienteIds.length > 1) {
+      toast({
+        title: 'Clientes diferentes',
+        description: 'Só é possível agrupar OSs do mesmo cliente',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setShowAgruparModal(true);
   };
 
   const handleBulkDelete = () => {
@@ -426,14 +454,25 @@ function OrdensServicoContent() {
               </div>
               <div className="flex gap-2.5 flex-wrap">
                 {isAdmin && selectedOS.length > 0 && (
-                  <Button
-                    variant="outline"
-                    onClick={handleBulkDelete}
-                    className="bg-red-600 border-red-600 text-white hover:bg-red-700 hover:text-white gap-2"
-                  >
-                    <Trash className="w-4 h-4" />
-                    Excluir Selecionadas ({selectedOS.length})
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={handleAgrupar}
+                      disabled={selectedOS.length < 2}
+                      className="bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:text-white gap-2"
+                    >
+                      <Merge className="w-4 h-4" />
+                      Agrupar OSs ({selectedOS.length})
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleBulkDelete}
+                      className="bg-red-600 border-red-600 text-white hover:bg-red-700 hover:text-white gap-2"
+                    >
+                      <Trash className="w-4 h-4" />
+                      Excluir Selecionadas ({selectedOS.length})
+                    </Button>
+                  </>
                 )}
                 
                 <Button
@@ -682,6 +721,19 @@ function OrdensServicoContent() {
           }}
         />
       }
+
+      <AgruparOSModal
+        isOpen={showAgruparModal}
+        onClose={() => {
+          setShowAgruparModal(false);
+          setSelectedOS([]);
+        }}
+        osIds={selectedOS}
+        onSuccess={() => {
+          queryClient.invalidateQueries(['ordens-servico']);
+          setSelectedOS([]);
+        }}
+      />
 
       <StandardDialog
         isOpen={confirmDeleteOpen}
