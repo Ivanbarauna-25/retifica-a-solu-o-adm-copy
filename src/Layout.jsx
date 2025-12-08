@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import ErrorBoundary from "@/components/errors/ErrorBoundary";
@@ -17,6 +17,7 @@ import {
   Timer,
   Wallet,
   CalendarCheck,
+  Truck,
   ShoppingCart,
   Banknote,
   FileText,
@@ -414,7 +415,8 @@ export default function Layout({ children, currentPageName }) {
       currentPageName === 'RelatorioFolhaPagamento' ||
       currentPageName === 'RelatorioContasPagar' ||
       currentPageName === 'RelatorioContasReceber' ||
-      currentPageName === 'Relatorio13Salario') {
+      currentPageName === 'Relatorio13Salario' ||
+      currentPageName === 'RelatorioOS') {
     return <>{children}</>;
   }
 

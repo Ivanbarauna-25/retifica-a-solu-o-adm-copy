@@ -24,6 +24,14 @@ export default function RelatorioOSPage() {
   const [configuracoes, setConfiguracoes] = useState(null);
   const [filtros, setFiltros] = useState({});
 
+  // Impedir que o layout seja renderizado
+  useEffect(() => {
+    document.body.style.overflow = 'auto';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   useEffect(() => {
     carregarDados();
   }, []);
@@ -180,10 +188,16 @@ export default function RelatorioOSPage() {
           <thead>
             <tr>
               <th>Nº OS</th>
-              <th>Data</th>
+              <th>Data Abertura</th>
+              <th>Data Conclusão</th>
               <th>Cliente</th>
               <th>Veículo</th>
               <th>Responsável</th>
+              <th>Vendedor</th>
+              <th className="text-right">Produtos</th>
+              <th className="text-right">Serviços</th>
+              <th className="text-right">Despesas</th>
+              <th className="text-right">Desconto</th>
               <th className="text-right">Valor Total</th>
               <th className="text-center">Status</th>
             </tr>
@@ -191,7 +205,7 @@ export default function RelatorioOSPage() {
           <tbody>
             {ordens.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center" style={{ padding: '40px', color: '#94a3b8' }}>
+                <td colSpan={13} className="text-center" style={{ padding: '40px', color: '#94a3b8' }}>
                   Nenhuma ordem de serviço encontrada com os filtros aplicados
                 </td>
               </tr>
@@ -217,13 +231,33 @@ export default function RelatorioOSPage() {
                   return funcionarios.find((f) => f.id === ordem.funcionario_id)?.nome || '—';
                 })();
 
+                const nomeVendedor = (() => {
+                  if (!ordem.vendedor_id) return '—';
+                  return funcionarios.find((f) => f.id === ordem.vendedor_id)?.nome || '—';
+                })();
+
+                // Calcular valores de produtos e serviços
+                const valorProdutos = (ordem.itens || [])
+                  .filter(item => item.tipo === 'produto')
+                  .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+
+                const valorServicos = (ordem.itens || [])
+                  .filter(item => item.tipo === 'servico')
+                  .reduce((sum, item) => sum + (item.valor_total || 0), 0);
+
                 return (
                   <tr key={ordem.id}>
                     <td style={{fontWeight: 500}}>{ordem.numero_os}</td>
                     <td>{formatDate(ordem.data_abertura)}</td>
+                    <td>{ordem.data_conclusao ? formatDate(ordem.data_conclusao) : '—'}</td>
                     <td>{nomeContato}</td>
                     <td style={{color: '#64748b'}}>{infoVeiculo}</td>
                     <td>{nomeFuncionario}</td>
+                    <td>{nomeVendedor}</td>
+                    <td className="text-right">{formatCurrency(valorProdutos)}</td>
+                    <td className="text-right">{formatCurrency(valorServicos)}</td>
+                    <td className="text-right">{formatCurrency(ordem.outras_despesas || 0)}</td>
+                    <td className="text-right">{formatCurrency(ordem.desconto_valor || 0)}</td>
                     <td className="text-right" style={{fontWeight: 600}}>{formatCurrency(ordem.valor_total)}</td>
                     <td className="text-center">
                       <span className={`status-badge ${statusColors[ordem.status]}`}>
@@ -238,7 +272,7 @@ export default function RelatorioOSPage() {
           {ordens.length > 0 && (
             <tfoot>
               <tr>
-                <td colSpan={5} className="text-center font-bold uppercase text-white">TOTAIS</td>
+                <td colSpan={11} className="text-center font-bold uppercase text-white">TOTAIS</td>
                 <td className="text-right font-bold text-white">{formatCurrency(totalGeral)}</td>
                 <td></td>
               </tr>
