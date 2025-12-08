@@ -381,10 +381,10 @@ export default function RelatorioOS({
               <th translate="no">Vendedor</th>
               <th className="text-right" translate="no">Produtos</th>
               <th className="text-right" translate="no">Serviços</th>
-              <th className="text-right" translate="no">Despesas</th>
               <th className="text-right" translate="no">Desconto</th>
-              <th className="text-right" translate="no">Valor Total</th>
-              <th className="text-right" translate="no">Valor Líquido</th>
+              <th className="text-right" translate="no">Valor Total Cliente</th>
+              <th className="text-right" translate="no">Despesas</th>
+              <th className="text-right" translate="no">Valor Líquido Empresa</th>
               <th className="text-right" translate="no">Margem %</th>
               <th className="text-center" translate="no">Status</th>
             </tr>
@@ -423,9 +423,9 @@ export default function RelatorioOS({
                     <td translate="no">{getFuncionarioNome && ordem.vendedor_id ? getFuncionarioNome(ordem.vendedor_id) : '—'}</td>
                     <td className="text-right" translate="no">{formatCurrency(valorProdutos)}</td>
                     <td className="text-right" translate="no">{formatCurrency(valorServicos)}</td>
-                    <td className="text-right" translate="no">{formatCurrency(valorDespesas)}</td>
                     <td className="text-right" translate="no">{formatCurrency(valorDesconto)}</td>
                     <td className="text-right" style={{fontWeight: 600}} translate="no">{formatCurrency(valorTotal)}</td>
+                    <td className="text-right" translate="no">{formatCurrency(valorDespesas)}</td>
                     <td className="text-right" style={{color: '#10b981', fontWeight: 600}} translate="no">{formatCurrency(valorLiquido)}</td>
                     <td className="text-right" style={{color: margemPercentual >= 0 ? '#10b981' : '#ef4444', fontWeight: 600}} translate="no">{margemPercentual.toFixed(1)}%</td>
                     <td className="text-center">
