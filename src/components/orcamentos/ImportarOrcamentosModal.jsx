@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Eye, Trash2, Loader2 } from 'lucide-react';
+import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Eye, Trash2, Loader2, X } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
@@ -58,9 +59,9 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
   };
 
   const downloadTemplate = () => {
-    const csvContent = 'numero_orcamento,cliente_nome,data_orcamento,data_validade,status,valor_total,observacoes\n' +
-                      'ORC-001,João Silva,2024-01-15,2024-02-15,pendente,1500.00,Orçamento exemplo\n' +
-                      'ORC-002,Maria Santos,2024-01-16,2024-02-16,aprovado,2300.50,Outro exemplo';
+    const csvContent = 'numero_orcamento,data_orcamento,cliente_nome,vendedor_nome,valor_produtos,valor_servicos,desconto,outras_despesas,observacoes\n' +
+                      'ORC-001,2024-01-15,João Silva,Maria Vendedora,1000.00,500.00,50.00,100.00,Orçamento exemplo\n' +
+                      'ORC-002,2024-01-16,José Santos,Pedro Vendedor,1500.00,800.00,100.00,150.00,Outro exemplo';
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -721,7 +722,7 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
               <Alert className="bg-blue-50 border-blue-200">
                 <FileSpreadsheet className="w-4 h-4 text-blue-600" />
                 <AlertDescription className="text-sm text-neutral-700">
-                  <strong>Formato esperado:</strong> O arquivo deve conter as colunas: Nº, Data, Cliente, Vendedor, Produtos, Desconto, Total ao Cliente.
+                  <strong>Formato esperado:</strong> O arquivo deve conter as colunas: Nº, Data, Cliente, Vendedor, Produtos, Serviços, Desconto, Despesas, Observações.
                 </AlertDescription>
               </Alert>
 
@@ -824,7 +825,8 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                       <TableHead className="text-white font-semibold w-32">Produtos</TableHead>
                       <TableHead className="text-white font-semibold w-32">Serviços</TableHead>
                       <TableHead className="text-white font-semibold w-32">Desconto</TableHead>
-                      <TableHead className="text-white font-semibold w-40">Total ao Cliente</TableHead>
+                      <TableHead className="text-white font-semibold w-32">Despesas</TableHead>
+                      <TableHead className="text-white font-semibold w-56">Observações</TableHead>
                       <TableHead className="text-white w-20 font-semibold">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -891,8 +893,15 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                           <Input
                             type="number"
                             step="0.01"
-                            value={row.valor_total}
-                            onChange={(e) => handleEditRow(row.id, 'valor_total', e.target.value)}
+                            value={row.outras_despesas}
+                            onChange={(e) => handleEditRow(row.id, 'outras_despesas', e.target.value)}
+                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            value={row.observacoes || ''}
+                            onChange={(e) => handleEditRow(row.id, 'observacoes', e.target.value)}
                             className="h-9 bg-white text-neutral-900 border-neutral-300"
                           />
                         </TableCell>
