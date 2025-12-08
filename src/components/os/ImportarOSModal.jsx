@@ -102,10 +102,10 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
                 contato_nome: { type: "string", description: "Nome do contato/cliente" },
                 veiculo_placa: { type: "string", description: "Placa do veículo" },
                 responsavel_nome: { type: "string", description: "Nome do responsável técnico" },
-                valor_produtos: { type: "number", description: "Valor dos produtos" },
-                valor_servicos: { type: "number", description: "Valor dos serviços" },
-                desconto: { type: "number", description: "Valor do desconto" },
-                valor_total: { type: "number", description: "Valor total" },
+                valor_produtos: { type: "string", description: "Valor dos produtos (aceita formato R$ X.XXX,XX)" },
+                valor_servicos: { type: "string", description: "Valor dos serviços (aceita formato R$ X.XXX,XX)" },
+                desconto: { type: "string", description: "Valor do desconto (aceita formato R$ X.XXX,XX)" },
+                outras_despesas: { type: "string", description: "Outras despesas (aceita formato R$ X.XXX,XX)" },
                 status: { type: "string", description: "Status da OS" },
                 observacoes: { type: "string", description: "Observações" }
               }
@@ -131,10 +131,10 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
                     contato_nome: { type: "string" },
                     veiculo_placa: { type: "string" },
                     responsavel_nome: { type: "string" },
-                    valor_produtos: { type: "number" },
-                    valor_servicos: { type: "number" },
-                    desconto: { type: "number" },
-                    valor_total: { type: "number" },
+                    valor_produtos: { type: "string" },
+                    valor_servicos: { type: "string" },
+                    desconto: { type: "string" },
+                    outras_despesas: { type: "string" },
                     status: { type: "string" },
                     observacoes: { type: "string" }
                   }
@@ -172,16 +172,16 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
         throw new Error(
           'Nenhum dado válido encontrado no arquivo.\n\n' +
           'Certifique-se de que o arquivo Excel/CSV contém as colunas:\n' +
-          '- Nº OS (ou numero_os)\n' +
-          '- Data Abertura (ou data_abertura)\n' +
-          '- Contato\n' +
-          '- Veículo (opcional)\n' +
-          '- Responsável\n' +
-          '- Produtos (valor)\n' +
-          '- Serviços (valor)\n' +
-          '- Desconto (valor)\n' +
-          '- Total\n' +
-          '- Status'
+          '- numero_os (Nº da OS)\n' +
+          '- data_abertura (Data de Abertura)\n' +
+          '- contato_nome (Nome do Contato/Cliente)\n' +
+          '- veiculo_placa (Placa - opcional)\n' +
+          '- responsavel_nome (Responsável - opcional)\n' +
+          '- valor_produtos (Valor de Produtos)\n' +
+          '- valor_servicos (Valor de Serviços)\n' +
+          '- desconto (Desconto)\n' +
+          '- outras_despesas (Outras Despesas)\n' +
+          '- observacoes (Observações - opcional)'
         );
       }
 
@@ -196,8 +196,22 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
             if (valor === null || valor === undefined || valor === '') return 0;
             if (typeof valor === 'number') return valor;
             if (typeof valor === 'string') {
-              // Remover "R$", espaços, e trocar vírgula por ponto
-              const limpo = valor.replace(/R\$\s*/g, '').replace(/\./g, '').replace(',', '.').trim();
+              // Tratar casos especiais: "R$-", "-", "R$ -", etc.
+              const valorTrimmed = valor.trim();
+              if (valorTrimmed === '-' || valorTrimmed === 'R$-' || valorTrimmed === 'R$ -' || valorTrimmed === 'RS-' || valorTrimmed === 'RS -') {
+                return 0;
+              }
+              // Remover "R$", "RS", espaços, e trocar vírgula por ponto
+              const limpo = valor
+                .replace(/R\$\s*/gi, '')
+                .replace(/RS\s*/gi, '')
+                .replace(/\./g, '') // Remove pontos (separador de milhar)
+                .replace(',', '.') // Troca vírgula por ponto (decimal)
+                .replace(/-/g, '') // Remove hífens restantes
+                .trim();
+              
+              if (limpo === '' || limpo === '.') return 0;
+              
               const num = parseFloat(limpo);
               return isNaN(num) ? 0 : num;
             }
