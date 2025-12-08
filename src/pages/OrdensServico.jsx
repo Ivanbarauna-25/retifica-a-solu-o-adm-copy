@@ -21,7 +21,8 @@ import {
   Loader2,
   ClipboardList,
   DollarSign,
-  XCircle
+  XCircle,
+  Trash
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
 import OrdemServicoViewer from '@/components/os/OrdemServicoViewer';
@@ -48,6 +49,7 @@ import {
 import AdvancedSearchFilters from '@/components/filters/AdvancedSearchFilters';
 import { useAdvancedFilters } from '@/components/filters/useAdvancedFilters';
 import StandardDialog from '@/components/ui/StandardDialog';
+import { Checkbox } from '@/components/ui/checkbox';
 
 function OrdensServicoContent() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
@@ -60,10 +62,12 @@ function OrdensServicoContent() {
   const [advancedFilters, setAdvancedFilters] = useState(null);
   const [osToDelete, setOsToDelete] = useState(null);
   const [pendingReportUrl, setPendingReportUrl] = useState(null);
+  const [selectedOS, setSelectedOS] = useState([]);
+  const [confirmBulkDeleteOpen, setConfirmBulkDeleteOpen] = useState(false);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { canCreate, canEdit, canDelete } = usePermissions();
+  const { canCreate, canEdit, canDelete, isAdmin } = usePermissions();
   const navigate = useNavigate();
 
   const { data: ordensServico = [], isLoading: loadingOS } = useQuery({
@@ -149,6 +153,56 @@ function OrdensServicoContent() {
       });
       setConfirmDeleteOpen(false);
       setOsToDelete(null);
+      queryClient.invalidateQueries(['ordens-servico']);
+    } catch (error) {
+      toast({
+        title: 'Erro ao excluir',
+        description: error.message,
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const handleSelectOS = (osId) => {
+    setSelectedOS(prev => 
+      prev.includes(osId) ? prev.filter(id => id !== osId) : [...prev, osId]
+    );
+  };
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedOS(filteredOS.map(os => os.id));
+    } else {
+      setSelectedOS([]);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedOS.length === 0) {
+      toast({
+        title: 'Nenhuma OS selecionada',
+        description: 'Selecione pelo menos uma OS para excluir',
+        variant: 'destructive'
+      });
+      return;
+    }
+    setConfirmBulkDeleteOpen(true);
+  };
+
+  const confirmarExclusaoEmMassa = async () => {
+    try {
+      const deletePromises = selectedOS.map(id => 
+        base44.entities.OrdemServico.delete(id)
+      );
+      await Promise.all(deletePromises);
+      
+      toast({
+        title: '✅ Exclusão concluída',
+        description: `${selectedOS.length} ordem(ns) de serviço excluída(s) com sucesso.`
+      });
+      
+      setConfirmBulkDeleteOpen(false);
+      setSelectedOS([]);
       queryClient.invalidateQueries(['ordens-servico']);
     } catch (error) {
       toast({
@@ -371,6 +425,17 @@ function OrdensServicoContent() {
                 </div>
               </div>
               <div className="flex gap-2.5 flex-wrap">
+                {isAdmin && selectedOS.length > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={handleBulkDelete}
+                    className="bg-red-600 border-red-600 text-white hover:bg-red-700 hover:text-white gap-2"
+                  >
+                    <Trash className="w-4 h-4" />
+                    Excluir Selecionadas ({selectedOS.length})
+                  </Button>
+                )}
+                
                 <Button
                   variant="outline"
                   onClick={() => setIsRelatorioFiltersModalOpen(true)}
@@ -463,6 +528,15 @@ function OrdensServicoContent() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
+                    {isAdmin && (
+                      <TableHead className="text-white font-semibold w-12">
+                        <Checkbox
+                          checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-white"
+                        />
+                      </TableHead>
+                    )}
                     <TableHead className="text-white font-semibold">Nº OS</TableHead>
                     <TableHead className="text-white font-semibold">Data</TableHead>
                     <TableHead className="text-white font-semibold">Cliente</TableHead>
@@ -475,7 +549,7 @@ function OrdensServicoContent() {
                 <TableBody>
                   {filteredOS.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
+                      <TableCell colSpan={isAdmin ? 8 : 7} className="text-center py-8">
                         <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
                         <p className="text-slate-600">Nenhuma ordem de serviço encontrada</p>
                       </TableCell>
@@ -483,6 +557,14 @@ function OrdensServicoContent() {
                   ) : (
                     filteredOS.map((os) => (
                       <TableRow key={os.id} className="hover:bg-slate-50">
+                        {isAdmin && (
+                          <TableCell className="py-3">
+                            <Checkbox
+                              checked={selectedOS.includes(os.id)}
+                              onCheckedChange={() => handleSelectOS(os.id)}
+                            />
+                          </TableCell>
+                        )}
                         <TableCell className="font-medium text-blue-600 py-3">{os.numero_os}</TableCell>
                         <TableCell className="text-slate-900 py-3">{formatDate(os.data_abertura)}</TableCell>
                         <TableCell className="text-slate-900 py-3">{getContatoNome(os)}</TableCell>
@@ -591,6 +673,17 @@ function OrdensServicoContent() {
         description={osToDelete ? `A ordem de serviço ${osToDelete.numero_os} será permanentemente excluída. Esta ação não pode ser desfeita.` : ''}
         variant="danger"
         confirmText="Sim, excluir"
+        cancelText="Cancelar"
+      />
+
+      <StandardDialog
+        isOpen={confirmBulkDeleteOpen}
+        onClose={() => setConfirmBulkDeleteOpen(false)}
+        onConfirm={confirmarExclusaoEmMassa}
+        title="Excluir Múltiplas Ordens de Serviço"
+        description={`${selectedOS.length} ordem(ns) de serviço será(ão) permanentemente excluída(s). Esta ação não pode ser desfeita.`}
+        variant="danger"
+        confirmText="Sim, excluir todas"
         cancelText="Cancelar"
       />
     </>
