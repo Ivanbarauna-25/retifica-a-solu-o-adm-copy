@@ -7,8 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Plus, Trash2, Save, Info, Package, FileText, X, Loader2, Wrench } from 'lucide-react';
+import { Plus, Trash2, Save, Info, Package, FileText, CreditCard, X, Loader2, Wrench, Calendar, User, Car, DollarSign } from 'lucide-react';
 import { formatCurrency } from '@/components/formatters';
 import SmartInput from '@/components/SmartInput';
 import { useToast } from '@/components/ui/use-toast';
@@ -56,6 +57,7 @@ export default function OrdemServicoForm({
   const [condicoesPagamento, setCondicoesPagamento] = useState([]);
   const [formasPagamento, setFormasPagamento] = useState([]);
   const [orcamentos, setOrcamentos] = useState([]);
+  const [despesasExternas, setDespesasExternas] = useState(0);
   
   const [novoItem, setNovoItem] = useState({
     tipo: 'produto',
@@ -96,7 +98,7 @@ export default function OrdemServicoForm({
   const loadData = async () => {
     setIsLoadingData(true);
     try {
-      const [clientesData, veiculosData, funcionariosData, pecasData, servicosData, condicoesData, formasData, orcamentosData] = await Promise.all([
+      const promises = [
         base44.entities.Cliente.list(),
         base44.entities.Veiculo.list(),
         base44.entities.Funcionario.list(),
@@ -105,7 +107,14 @@ export default function OrdemServicoForm({
         base44.entities.CondicaoPagamento.list(),
         base44.entities.FormaPagamento.list(),
         base44.entities.Orcamento.list('-data_orcamento')
-      ]);
+      ];
+      
+      if (ordem?.id) {
+        promises.push(base44.entities.DespesaOS.filter({ ordem_id: ordem.id }));
+      }
+      
+      const results = await Promise.all(promises);
+      const [clientesData, veiculosData, funcionariosData, pecasData, servicosData, condicoesData, formasData, orcamentosData, despesasOSData] = results;
       
       setClientes(clientesData || []);
       setVeiculos(veiculosData || []);
@@ -115,6 +124,11 @@ export default function OrdemServicoForm({
       setCondicoesPagamento(condicoesData || []);
       setFormasPagamento(formasData || []);
       setOrcamentos((orcamentosData || []).filter(o => o.status === 'aprovado'));
+      
+      if (despesasOSData) {
+        const totalDespesasOS = despesasOSData.reduce((sum, d) => sum + (Number(d.valor) || 0), 0);
+        setDespesasExternas(totalDespesasOS);
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast({
@@ -192,8 +206,9 @@ export default function OrdemServicoForm({
     const desconto = formData.desconto_tipo === 'percentual' 
       ? (subtotal * (formData.desconto_valor || 0)) / 100 
       : (formData.desconto_valor || 0);
-    return Math.max(0, subtotal + (formData.outras_despesas || 0) - desconto);
-  }, [formData.itens, formData.outras_despesas, formData.desconto_tipo, formData.desconto_valor]);
+    const totalDespesas = (formData.outras_despesas || 0) + despesasExternas;
+    return Math.max(0, subtotal + totalDespesas - desconto);
+  }, [formData.itens, formData.outras_despesas, formData.desconto_tipo, formData.desconto_valor, despesasExternas]);
 
   useEffect(() => {
     const total = calcularValorTotal();
@@ -698,7 +713,7 @@ export default function OrdemServicoForm({
                           <h3 className="text-sm font-bold text-slate-700">Valores</h3>
                         </div>
                         <div className="p-5 space-y-4">
-                           <div className="grid grid-cols-2 gap-4">
+                           <div className="grid grid-cols-3 gap-4">
                               <div>
                                 <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Outras Despesas</Label>
                                 <Input
@@ -709,6 +724,17 @@ export default function OrdemServicoForm({
                                   className="modern-input text-right"
                                 />
                               </div>
+                              {isEditing && (
+                                <div>
+                                  <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Despesas Lançadas</Label>
+                                  <Input
+                                    type="text"
+                                    value={formatCurrency(despesasExternas)}
+                                    disabled
+                                    className="modern-input text-right bg-slate-100 text-slate-700 font-semibold"
+                                  />
+                                </div>
+                              )}
                               <div>
                                 <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Entrada</Label>
                                 <Input
