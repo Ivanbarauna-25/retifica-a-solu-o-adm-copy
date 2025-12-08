@@ -407,31 +407,37 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
             
             const valorProdutos = Number(linha.valor_produtos) || 0;
             const valorServicos = Number(linha.valor_servicos) || 0;
+            const valorDesconto = Number(linha.desconto) || 0;
+            const valorDespesas = Number(linha.outras_despesas) || 0;
             
             if (valorProdutos > 0) {
               itens.push({
+                id: crypto.randomUUID(),
                 tipo: 'produto',
                 descricao: 'Produtos importados',
                 quantidade: 1,
                 valor_unitario: valorProdutos,
-                valor_total: valorProdutos,
-                desconto: 0
+                desconto_tipo: 'valor',
+                desconto_valor: 0,
+                valor_total: valorProdutos
               });
             }
 
             if (valorServicos > 0) {
               itens.push({
+                id: crypto.randomUUID(),
                 tipo: 'servico',
                 descricao: 'Serviços importados',
                 quantidade: 1,
                 valor_unitario: valorServicos,
-                valor_total: valorServicos,
-                desconto: 0
+                desconto_tipo: 'valor',
+                desconto_valor: 0,
+                valor_total: valorServicos
               });
             }
 
             // Calcular valor total: (produtos + serviços + despesas - desconto)
-            const valorTotalCalculado = valorProdutos + valorServicos + (Number(linha.outras_despesas) || 0) - (Number(linha.desconto) || 0);
+            const valorTotalCalculado = valorProdutos + valorServicos + valorDespesas - valorDesconto;
 
             // Validar status
             const statusValidos = ['em_andamento', 'finalizado', 'cancelado'];
@@ -446,12 +452,22 @@ export default function ImportarOSModal({ isOpen, onClose, onSuccess }) {
               funcionario_id: responsavel?.id || '',
               status: status,
               desconto_tipo: 'valor',
-              desconto_valor: Number(linha.desconto) || 0,
-              outras_despesas: Number(linha.outras_despesas) || 0,
+              desconto_valor: valorDesconto,
+              outras_despesas: valorDespesas,
               valor_total: valorTotalCalculado,
               itens: itens,
               observacoes: linha.observacoes || ''
             };
+
+            console.log(`💰 Valores da OS ${linha.numero_os}:`, {
+              produtos: valorProdutos,
+              servicos: valorServicos,
+              despesas: valorDespesas,
+              desconto: valorDesconto,
+              total: valorTotalCalculado,
+              cliente: cliente?.nome || 'Não encontrado',
+              itens: itens.length
+            });
 
             console.log(`📝 Criando OS ${linha.numero_os}:`, osData);
 
