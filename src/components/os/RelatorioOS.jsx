@@ -359,7 +359,7 @@ export default function RelatorioOS({
         </div>
 
         {/* Título */}
-        <div className="report-title" translate="no">Relatório de Ordens de Serviço</div>
+        <div className="report-title" translate="no">RELATÓRIO DE ORDENS DE SERVIÇO</div>
 
         {/* Filtros */}
         {getFiltrosAplicados() && (
