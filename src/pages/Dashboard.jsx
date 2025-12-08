@@ -2,16 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ClipboardList,
   Package,
+  Landmark,
   ListTodo,
   Users,
+  Building2,
   User,
+  Timer,
+  Wallet,
+  CalendarCheck,
+  Truck,
+  ShoppingCart,
+  FileBarChart2,
   Banknote,
+  FileText,
   BarChart3,
   TrendingUp,
+  Activity,
   Loader2,
   AlertCircle
 } from 'lucide-react';
@@ -116,6 +126,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
     const fetchDashboardData = async () => {
       setLoading(true);
       setError(null);
@@ -139,6 +150,8 @@ export default function Dashboard() {
           base44.entities.Tarefa.filter({ status: 'pendente' })
         ]);
 
+        if (!mounted) return;
+
         const osEmAndamento = ordensServico.filter(os => os.status === 'em_andamento').length;
 
         setStats({
@@ -152,14 +165,16 @@ export default function Dashboard() {
           tarefasPendentes: tarefas.length
         });
       } catch (err) {
+        if (!mounted) return;
         console.error('Erro ao carregar dados do dashboard:', err);
         setError('Não foi possível carregar os dados. Tente novamente.');
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     fetchDashboardData();
+    return () => { mounted = false; };
   }, []);
 
   const statsData = [

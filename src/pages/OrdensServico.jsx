@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,26 +11,40 @@ import {
   Pencil,
   Eye,
   Trash2,
+  Search,
+  Filter,
   FileText,
   Clock,
   CheckCircle,
+  TrendingUp,
   Upload,
   Loader2,
   ClipboardList,
+  DollarSign,
   XCircle
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
 import OrdemServicoViewer from '@/components/os/OrdemServicoViewer';
 import OrdemServicoForm from '@/components/os/OrdemServicoForm';
 import RelatorioOSFiltersModal from '@/components/os/RelatorioOSFiltersModal';
+import RelatorioOS from '@/components/os/RelatorioOS';
 import ImportarOSModal from '@/components/os/ImportarOSModal';
 import ProtectedPage from '@/components/ProtectedPage';
 import { usePermissions } from '@/components/ProtectedPage';
 import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
-
-
+import { createPageUrl } from '@/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import AdvancedSearchFilters from '@/components/filters/AdvancedSearchFilters';
 import { useAdvancedFilters } from '@/components/filters/useAdvancedFilters';
 import StandardDialog from '@/components/ui/StandardDialog';
@@ -288,7 +303,7 @@ function OrdensServicoContent() {
       _funcionarioNome: getFuncionarioNome(os.funcionario_id),
       _veiculoInfo: getVeiculoInfo(os.veiculo_id)
     }));
-  }, [ordensServico, clientes, funcionarios, veiculos]);
+  }, [ordensServico, clientes, funcionarios, veiculos, getContatoNome, getFuncionarioNome, getVeiculoInfo]);
 
   // Usar hook de filtros avançados
   const filteredOS = useAdvancedFilters(ordensComCamposBusca, advancedFilters);

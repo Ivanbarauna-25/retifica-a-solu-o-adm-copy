@@ -518,7 +518,7 @@ export default function MovimentacaoFinanceiraPage() {
       ...mov,
       _contatoNome: getContatoNome(mov)
     }));
-  }, [movimentacoes, getContatoNome]);
+  }, [movimentacoes, clientes, funcionarios, fornecedores]);
 
   // Filtrar por origem específica da URL primeiro
   const movimentacoesPreFiltradas = useMemo(() => {
