@@ -113,6 +113,14 @@ function OrdensServicoContent() {
     }
   });
 
+  const { data: despesasOS = [] } = useQuery({
+    queryKey: ['despesas-os'],
+    queryFn: async () => {
+      const data = await base44.entities.DespesaOS.list();
+      return data || [];
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.OrdemServico.delete(id),
     onSuccess: () => {
@@ -607,6 +615,11 @@ function OrdensServicoContent() {
                         .filter(item => item.tipo === 'servico')
                         .reduce((sum, item) => sum + (item.valor_total || 0), 0);
 
+                      const despesasDaOS = despesasOS
+                        .filter(d => d.ordem_id === os.id)
+                        .reduce((sum, d) => sum + (d.valor || 0), 0);
+                      const valorDespesas = (os.outras_despesas || 0) + despesasDaOS;
+
                       return (
                         <TableRow key={os.id} className="hover:bg-slate-50">
                           {isAdmin && (
@@ -623,7 +636,7 @@ function OrdensServicoContent() {
                           <TableCell className="text-slate-900 py-3">{getVeiculoInfo(os.veiculo_id)}</TableCell>
                           <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorProdutos)}</TableCell>
                           <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorServicos)}</TableCell>
-                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(os.outras_despesas || 0)}</TableCell>
+                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorDespesas)}</TableCell>
                           <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(os.desconto_valor || 0)}</TableCell>
                           <TableCell className="font-semibold text-slate-900 py-3 text-right">{formatCurrency(os.valor_total)}</TableCell>
                           <TableCell className="py-3">{getStatusBadge(os.status)}</TableCell>
