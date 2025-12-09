@@ -109,7 +109,7 @@ export default function RelatorioOSPage() {
   }, 0), [ordens]);
   const totalDespesas = useMemo(() => ordens.reduce((acc, os) => {
     const despesasDaOS = despesasOS
-      .filter(d => d.ordem_servico_id === os.id)
+      .filter(d => d.ordem_id === os.id)
       .reduce((sum, d) => sum + (d.valor || 0), 0);
     return acc + (os.outras_despesas || 0) + despesasDaOS;
   }, 0), [ordens, despesasOS]);
@@ -273,7 +273,7 @@ export default function RelatorioOSPage() {
 
                 // Calcular despesas da OS (outras_despesas + DespesaOS)
                 const despesasDaOS = despesasOS
-                  .filter(d => d.ordem_servico_id === ordem.id)
+                  .filter(d => d.ordem_id === ordem.id)
                   .reduce((sum, d) => sum + (d.valor || 0), 0);
                 const valorDespesas = (ordem.outras_despesas || 0) + despesasDaOS;
                 const valorDesconto = ordem.desconto_valor || 0;

@@ -14,7 +14,8 @@ export default function RelatorioOS({
   statusColors,
   nomeEmpresa,
   cnpj,
-  filtros = {}
+  filtros = {},
+  despesasOS = []
 }) {
 
   const handlePrint = () => {
@@ -38,7 +39,12 @@ export default function RelatorioOS({
       .reduce((sum, item) => sum + (item.valor_total || 0), 0);
     return acc + servicos;
   }, 0);
-  const totalDespesas = ordens.reduce((acc, os) => acc + (os.outras_despesas || 0), 0);
+  const totalDespesas = ordens.reduce((acc, os) => {
+    const despesasDaOS = despesasOS
+      .filter(d => d.ordem_id === os.id)
+      .reduce((sum, d) => sum + (d.valor || 0), 0);
+    return acc + (os.outras_despesas || 0) + despesasDaOS;
+  }, 0);
   const totalDescontos = ordens.reduce((acc, os) => acc + (os.desconto_valor || 0), 0);
   const totalLiquido = totalGeral - totalDespesas;
   const margemGeralPercentual = totalGeral > 0 ? ((totalLiquido / totalGeral) * 100) : 0;
@@ -406,7 +412,10 @@ export default function RelatorioOS({
                   .filter(item => item.tipo === 'servico')
                   .reduce((sum, item) => sum + (item.valor_total || 0), 0);
                 
-                const valorDespesas = ordem.outras_despesas || 0;
+                const despesasDaOS = despesasOS
+                  .filter(d => d.ordem_id === ordem.id)
+                  .reduce((sum, d) => sum + (d.valor || 0), 0);
+                const valorDespesas = (ordem.outras_despesas || 0) + despesasDaOS;
                 const valorDesconto = ordem.desconto_valor || 0;
                 const valorTotal = ordem.valor_total || 0;
                 const valorLiquido = valorTotal - valorDespesas;
