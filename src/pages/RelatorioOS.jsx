@@ -211,21 +211,21 @@ export default function RelatorioOSPage() {
         <table translate="no">
           <thead>
             <tr>
-              <th>Nº OS</th>
-              <th>Data Abertura</th>
-              <th>Data Conclusão</th>
-              <th>Cliente</th>
-              <th>Veículo</th>
-              <th>Responsável</th>
-              <th>Vendedor</th>
-              <th className="text-right">Produtos</th>
-              <th className="text-right">Serviços</th>
-              <th className="text-right">Desconto</th>
-              <th className="text-right">Valor Total Cliente</th>
-              <th className="text-right">Despesas</th>
-              <th className="text-right">Valor Líquido Empresa</th>
-              <th className="text-right">Margem %</th>
-              <th className="text-center">Status</th>
+              <th style={{width: '6%'}}>Nº OS</th>
+              <th style={{width: '7%'}}>Data Abertura</th>
+              <th style={{width: '7%'}}>Data Conclusão</th>
+              <th style={{width: '15%'}}>Cliente</th>
+              <th style={{width: '10%'}}>Veículo</th>
+              <th style={{width: '9%'}}>Responsável</th>
+              <th style={{width: '9%'}}>Vendedor</th>
+              <th className="text-right" style={{width: '7%'}}>Produtos</th>
+              <th className="text-right" style={{width: '7%'}}>Serviços</th>
+              <th className="text-right" style={{width: '6%'}}>Desconto</th>
+              <th className="text-right" style={{width: '8%'}}>Valor Total Cliente</th>
+              <th className="text-right" style={{width: '6%'}}>Despesas</th>
+              <th className="text-right" style={{width: '8%'}}>Valor Líquido Empresa</th>
+              <th className="text-right" style={{width: '4%'}}>Margem %</th>
+              <th className="text-center" style={{width: '5%'}}>Status</th>
             </tr>
           </thead>
           <tbody>
