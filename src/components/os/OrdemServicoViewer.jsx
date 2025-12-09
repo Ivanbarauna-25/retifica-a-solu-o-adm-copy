@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { formatCurrency, formatDate } from '@/components/formatters';
-import { Printer, FileText, CheckCircle2, XCircle, RotateCcw, Receipt, DollarSign, Package, Info, X } from 'lucide-react';
+import { Printer, Wrench, FileText, Pencil, CheckCircle2, XCircle, RotateCcw, BadgeCheck, Wallet, Loader2, Receipt, ArrowRight, DollarSign, Package, Info, X } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import DespesasOSModal from "@/components/os/DespesasOSModal";
 import GerarFinanceiroOSModal from "@/components/os/GerarFinanceiroOSModal";
@@ -108,7 +109,7 @@ export default function OrdemServicoViewer({
   const loadDespesas = async () => {
     if (!ordem?.id) return;
     try {
-      const despesasData = await base44.entities.DespesaOS.filter({ os_id: ordem.id });
+      const despesasData = await base44.entities.DespesaOS.filter({ ordem_id: ordem.id });
       setDespesas(despesasData || []);
     } catch (error) {
       console.error("Erro ao carregar despesas:", error);
