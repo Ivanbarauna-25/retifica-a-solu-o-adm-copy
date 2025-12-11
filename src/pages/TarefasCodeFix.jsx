@@ -199,117 +199,114 @@ export default function TarefasCodeFix() {
   return (
     <>
       <Toaster />
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header Minimalista Dark */}
-        <div className="bg-slate-800 rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-white">Tarefas CodeFix</h1>
-              <p className="text-slate-300 text-sm mt-1">
-                Gestão de tarefas de correção e melhorias
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={carregarTarefas}
-                variant="outline"
-                className="border-slate-600 text-white hover:bg-slate-700"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Atualizar
-              </Button>
-              <Button
-                onClick={handleNovaTarefa}
-                className="bg-white text-slate-800 hover:bg-slate-100"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Nova Tarefa
-              </Button>
-            </div>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Tarefas CodeFix</h1>
+            <p className="text-slate-600 mt-1">Gestão de tarefas de correção e melhorias</p>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={carregarTarefas} variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Atualizar
+            </Button>
+            <Button onClick={handleNovaTarefa}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Tarefa
+            </Button>
           </div>
         </div>
 
-        {/* Stats Dark */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-slate-800 border-slate-700 shadow-md">
-            <CardContent className="pt-6">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-400">Total</p>
-                  <p className="text-3xl font-semibold text-white">{stats.total}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Total</p>
+                  <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
                 </div>
-                <ClipboardList className="h-10 w-10 text-slate-400" />
+                <div className="p-3 bg-slate-100 rounded-lg">
+                  <ClipboardList className="h-6 w-6 text-slate-600" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700 shadow-md">
-            <CardContent className="pt-6">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-400">Abertas</p>
-                  <p className="text-3xl font-semibold text-yellow-400">{stats.abertas}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Abertas</p>
+                  <p className="text-2xl font-bold text-yellow-600">{stats.abertas}</p>
                 </div>
-                <AlertCircle className="h-10 w-10 text-slate-400" />
+                <div className="p-3 bg-yellow-50 rounded-lg">
+                  <AlertCircle className="h-6 w-6 text-yellow-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700 shadow-md">
-            <CardContent className="pt-6">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-400">Em Progresso</p>
-                  <p className="text-3xl font-semibold text-blue-400">{stats.em_progresso}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Em Progresso</p>
+                  <p className="text-2xl font-bold text-blue-600">{stats.em_progresso}</p>
                 </div>
-                <Clock className="h-10 w-10 text-slate-400" />
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <Clock className="h-6 w-6 text-blue-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-800 border-slate-700 shadow-md">
-            <CardContent className="pt-6">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-400">Concluídas</p>
-                  <p className="text-3xl font-semibold text-green-400">{stats.concluidas}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">Concluídas</p>
+                  <p className="text-2xl font-bold text-green-600">{stats.concluidas}</p>
                 </div>
-                <CheckCircle2 className="h-10 w-10 text-slate-400" />
+                <div className="p-3 bg-green-50 rounded-lg">
+                  <CheckCircle2 className="h-6 w-6 text-green-500" />
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Filtros Dark */}
-        <Card className="bg-slate-800 border-slate-700 shadow-md">
-          <CardHeader className="bg-slate-900 border-b border-slate-700">
-            <CardTitle className="text-base font-medium flex items-center gap-2 text-white">
-              <Filter className="h-4 w-4 text-slate-400" />
+        {/* Filtros */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Filter className="h-5 w-5" />
               Filtros
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm font-medium text-slate-300 mb-2 block">Buscar</label>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Buscar</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="Buscar tarefas..."
                     value={filtros.busca}
                     onChange={(e) => setFiltros(prev => ({ ...prev, busca: e.target.value }))}
-                    className="pl-10 bg-slate-700 border-slate-600 text-white placeholder-slate-400"
+                    className="pl-10"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-300 mb-2 block">Status</label>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Status</label>
                 <Select
                   value={filtros.status}
                   onValueChange={(value) => setFiltros(prev => ({ ...prev, status: value }))}
                 >
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -323,12 +320,12 @@ export default function TarefasCodeFix() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-300 mb-2 block">Prioridade</label>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Prioridade</label>
                 <Select
                   value={filtros.priority}
                   onValueChange={(value) => setFiltros(prev => ({ ...prev, priority: value }))}
                 >
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -344,21 +341,21 @@ export default function TarefasCodeFix() {
           </CardContent>
         </Card>
 
-        {/* Lista de Tarefas Dark */}
-        <Card className="bg-slate-800 border-slate-700 shadow-md">
-          <CardHeader className="bg-slate-900 border-b border-slate-700">
-            <CardTitle className="text-base font-medium text-white">
+        {/* Lista de Tarefas */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">
               {tarefasFiltradas.length} tarefa(s) encontrada(s)
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent>
             {loading ? (
               <div className="flex justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
               </div>
             ) : tarefasFiltradas.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <CheckCircle2 className="h-12 w-12 mx-auto mb-3 text-slate-500" />
+              <div className="text-center py-12 text-slate-500">
+                <CheckCircle2 className="h-12 w-12 mx-auto mb-3 text-slate-300" />
                 <p>Nenhuma tarefa encontrada</p>
               </div>
             ) : (
@@ -366,7 +363,7 @@ export default function TarefasCodeFix() {
                 {tarefasFiltradas.map((tarefa) => (
                   <div
                     key={tarefa.id}
-                    className="bg-slate-700 border border-slate-600 rounded-lg p-4 hover:border-slate-500 hover:bg-slate-600/50 transition-all"
+                    className="border rounded-lg p-4 hover:bg-slate-50 transition-colors"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
@@ -382,18 +379,18 @@ export default function TarefasCodeFix() {
                               {tarefa.category}
                             </Badge>
                           )}
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-slate-500">
                             {new Date(tarefa.updated_date || tarefa.created_date).toLocaleString('pt-BR')}
                           </span>
                         </div>
-                        <h3 className="font-semibold text-sm mb-1 text-white">{tarefa.title}</h3>
+                        <h3 className="font-semibold text-base mb-1 text-slate-900">{tarefa.title}</h3>
                         {tarefa.description && (
-                          <p className="text-sm text-slate-300 line-clamp-2">
+                          <p className="text-sm text-slate-600 line-clamp-2">
                             {tarefa.description}
                           </p>
                         )}
                         {tarefa.assignee && (
-                          <p className="text-xs text-slate-400 mt-2">
+                          <p className="text-xs text-slate-500 mt-2">
                             Responsável: {tarefa.assignee}
                           </p>
                         )}
@@ -401,17 +398,16 @@ export default function TarefasCodeFix() {
                       <div className="flex gap-2 flex-shrink-0">
                         <Button
                           size="sm"
-                          variant="outline"
+                          variant="ghost"
                           onClick={() => handleEditarTarefa(tarefa)}
-                          className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                         >
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
-                          variant="destructive"
+                          variant="ghost"
                           onClick={() => handleDeletar(tarefa)}
-                          className="bg-red-900/50 hover:bg-red-900 border-red-700"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -428,43 +424,41 @@ export default function TarefasCodeFix() {
       {/* Modal de Tarefa */}
       {modalTarefa && (
         <Dialog open={modalTarefa} onOpenChange={setModalTarefa}>
-          <DialogContent className="max-w-2xl bg-slate-900 text-white border-slate-700">
-            <DialogHeader className="border-b border-slate-700 pb-4">
-              <DialogTitle className="text-lg text-white">
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
                 {tarefaSelecionada ? 'Editar Tarefa' : 'Nova Tarefa'}
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-4 pt-4">
+            <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-300 mb-2 block">Título *</label>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Título *</label>
                 <Input
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Ex: Corrigir erro de autenticação"
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-300 mb-2 block">Descrição</label>
+                <label className="text-sm font-medium text-slate-700 mb-2 block">Descrição</label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Descreva a tarefa em detalhes..."
                   rows={4}
-                  className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-300 mb-2 block">Status</label>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Status</label>
                   <Select
                     value={formData.status}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
                   >
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -477,12 +471,12 @@ export default function TarefasCodeFix() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-slate-300 mb-2 block">Prioridade</label>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Prioridade</label>
                   <Select
                     value={formData.priority}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, priority: value }))}
                   >
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -497,12 +491,12 @@ export default function TarefasCodeFix() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-300 mb-2 block">Categoria</label>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Categoria</label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
                   >
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -517,29 +511,21 @@ export default function TarefasCodeFix() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-slate-300 mb-2 block">Responsável</label>
+                  <label className="text-sm font-medium text-slate-700 mb-2 block">Responsável</label>
                   <Input
                     value={formData.assignee}
                     onChange={(e) => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
                     placeholder="Email do responsável"
-                    className="bg-slate-700 border-slate-600 text-white placeholder-slate-400"
                   />
                 </div>
               </div>
             </div>
 
-            <DialogFooter className="border-t border-slate-700 pt-4 mt-6">
-              <Button 
-                variant="outline" 
-                onClick={() => setModalTarefa(false)} 
-                className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-              >
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setModalTarefa(false)}>
                 Cancelar
               </Button>
-              <Button 
-                onClick={handleSalvar} 
-                className="bg-slate-700 hover:bg-slate-600"
-              >
+              <Button onClick={handleSalvar}>
                 Salvar
               </Button>
             </DialogFooter>

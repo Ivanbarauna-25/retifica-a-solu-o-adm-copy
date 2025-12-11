@@ -115,45 +115,35 @@ export default function MonitoramentoAgentePage() {
   return (
     <>
       <Toaster />
-      <div className="container mx-auto p-4 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
-        <Card className="border-0 shadow-lg bg-gradient-to-r from-slate-700 to-slate-800">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Activity className="h-6 w-6" />
-                  Monitoramento do Agente CodeFix
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  Acompanhamento em tempo real das atividades e performance do agente autônomo
-                </CardDescription>
-              </div>
-              <Button
-                onClick={fetchDashboardData}
-                variant="outline"
-                size="sm"
-                className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Atualizar
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <Activity className="h-6 w-6" />
+              Monitoramento do Agente CodeFix
+            </h1>
+            <p className="text-slate-600 mt-1">
+              Acompanhamento em tempo real das atividades e performance do agente autônomo
+            </p>
+          </div>
+          <Button onClick={fetchDashboardData} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Atualizar
+          </Button>
+        </div>
 
-        {/* Métricas Principais - Com keys únicas e estáveis */}
+        {/* Métricas */}
         {metricas && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card key="metrica-erros">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-600">
-                  Total de Erros
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
+                <p className="text-sm font-medium text-slate-600 mb-1">Total de Erros</p>
                 <div className="flex items-center justify-between">
                   <div className="text-3xl font-bold">{metricas.totalErros}</div>
-                  <AlertTriangle className="h-8 w-8 text-orange-500" />
+                  <div className="p-3 bg-orange-50 rounded-lg">
+                    <AlertTriangle className="h-6 w-6 text-orange-500" />
+                  </div>
                 </div>
                 {metricas.errosCriticos > 0 && (
                   <p className="text-xs text-red-600 mt-2">
@@ -164,15 +154,13 @@ export default function MonitoramentoAgentePage() {
             </Card>
 
             <Card key="metrica-resolvidos">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-600">
-                  Erros Resolvidos
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
+                <p className="text-sm font-medium text-slate-600 mb-1">Erros Resolvidos</p>
                 <div className="flex items-center justify-between">
                   <div className="text-3xl font-bold text-green-600">{metricas.errosResolvidos}</div>
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <CheckCircle2 className="h-6 w-6 text-green-500" />
+                  </div>
                 </div>
                 <p className="text-xs text-slate-500 mt-2">
                   Taxa: {metricas.taxaResolucao}%
@@ -181,29 +169,25 @@ export default function MonitoramentoAgentePage() {
             </Card>
 
             <Card key="metrica-tarefas">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-600">
-                  Tarefas Abertas
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
+                <p className="text-sm font-medium text-slate-600 mb-1">Tarefas Abertas</p>
                 <div className="flex items-center justify-between">
                   <div className="text-3xl font-bold">{metricas.tarefasAbertas}</div>
-                  <Clock className="h-8 w-8 text-blue-500" />
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <Clock className="h-6 w-6 text-blue-500" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card key="metrica-acoes">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-slate-600">
-                  Ações Hoje
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
+                <p className="text-sm font-medium text-slate-600 mb-1">Ações Hoje</p>
                 <div className="flex items-center justify-between">
                   <div className="text-3xl font-bold">{metricas.acoesHoje}</div>
-                  <Zap className="h-8 w-8 text-purple-500" />
+                  <div className="p-3 bg-purple-50 rounded-lg">
+                    <Zap className="h-6 w-6 text-purple-500" />
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
+  Filter,
   Search,
   Eye,
   Trash2,
@@ -25,6 +26,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 import {
   Dialog,
   DialogContent,
@@ -310,158 +312,151 @@ Relatório gerado em: ${new Date().toLocaleString('pt-BR')}
 
   return (
   <>
-  <div className="min-h-screen bg-slate-50">
-  <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
-  <div className="max-w-[1800px] mx-auto">
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div className="flex items-center gap-4">
-        <div className="bg-slate-700 p-3 rounded-lg">
-          <AlertTriangle className="w-8 h-8 text-red-400" />
-        </div>
+    <Toaster />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-1">Gerenciar Erros</h1>
-          <p className="text-slate-300">Sistema de gestão e análise de erros</p>
+          <h1 className="text-2xl font-bold text-slate-900">Gerenciar Erros</h1>
+          <p className="text-slate-600 mt-1">Sistema de gestão e análise de erros</p>
         </div>
-      </div>
-
-      <div className="flex gap-2">
-        <Button
-          onClick={carregarErros}
-          variant="outline"
-          className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
+        <Button onClick={carregarErros} variant="outline">
+          <RefreshCw className="h-4 w-4 mr-2" />
           Atualizar
         </Button>
       </div>
-    </div>
-  </div>
-  </div>
 
-  <div className="max-w-[1800px] mx-auto px-6">
-  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-    <Card className="border-l-4 border-l-slate-600 shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-600 mb-1">Total</p>
-            <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
-          </div>
-          <div className="p-2 bg-slate-100 rounded-lg">
-            <AlertTriangle className="h-6 w-6 text-slate-600" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">Total</p>
+                <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+              </div>
+              <div className="p-3 bg-slate-100 rounded-lg">
+                <AlertTriangle className="h-6 w-6 text-slate-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-    <Card className="border-l-4 border-l-red-500 shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-600 mb-1">Críticos</p>
-            <div className="text-2xl font-bold text-red-600">{stats.criticos}</div>
-          </div>
-          <div className="p-2 bg-red-50 rounded-lg">
-            <AlertTriangle className="h-6 w-6 text-red-500" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">Críticos</p>
+                <div className="text-2xl font-bold text-red-600">{stats.criticos}</div>
+              </div>
+              <div className="p-3 bg-red-50 rounded-lg">
+                <AlertTriangle className="h-6 w-6 text-red-500" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-    <Card className="border-l-4 border-l-orange-500 shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-600 mb-1">Novos</p>
-            <div className="text-2xl font-bold text-orange-600">{stats.novos}</div>
-          </div>
-          <div className="p-2 bg-orange-50 rounded-lg">
-            <Clock className="h-6 w-6 text-orange-500" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">Novos</p>
+                <div className="text-2xl font-bold text-orange-600">{stats.novos}</div>
+              </div>
+              <div className="p-3 bg-orange-50 rounded-lg">
+                <Clock className="h-6 w-6 text-orange-500" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-    <Card className="border-l-4 border-l-green-500 shadow-sm">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-600 mb-1">Resolvidos</p>
-            <div className="text-2xl font-bold text-green-600">{stats.resolvidos}</div>
-          </div>
-          <div className="p-2 bg-green-50 rounded-lg">
-            <CheckCircle2 className="h-6 w-6 text-green-500" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-
-  <Card className="mb-6 border-0 shadow-sm">
-    <CardContent className="pt-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="text-sm font-medium text-slate-700 mb-2 block">Buscar</label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Buscar por mensagem ou arquivo..."
-              value={filtros.busca}
-              onChange={(e) => setFiltros((prev) => ({ ...prev, busca: e.target.value }))}
-              className="pl-10"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-slate-700 mb-2 block">Severidade</label>
-          <Select
-            value={filtros.severity}
-            onValueChange={(value) => setFiltros((prev) => ({ ...prev, severity: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="critical">Crítico</SelectItem>
-              <SelectItem value="error">Erro</SelectItem>
-              <SelectItem value="warning">Aviso</SelectItem>
-              <SelectItem value="info">Info</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-slate-700 mb-2 block">Status</label>
-          <Select
-            value={filtros.status}
-            onValueChange={(value) => setFiltros((prev) => ({ ...prev, status: value }))}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="novo">Novo</SelectItem>
-              <SelectItem value="em_analise">Em Análise</SelectItem>
-              <SelectItem value="resolvido">Resolvido</SelectItem>
-              <SelectItem value="ignorado">Ignorado</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-600 mb-1">Resolvidos</p>
+                <div className="text-2xl font-bold text-green-600">{stats.resolvidos}</div>
+              </div>
+              <div className="p-3 bg-green-50 rounded-lg">
+                <CheckCircle2 className="h-6 w-6 text-green-500" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </CardContent>
-  </Card>
 
-  <Card className="bg-white border-0 shadow-sm">
-    <CardHeader className="border-b border-slate-100 pb-4">
-      <CardTitle className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-        <div className="h-2 w-2 rounded-full bg-red-500"></div>
-        {errosFiltrados.length} erro(s) encontrado(s)
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="p-0">
+      {/* Filtros */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filtros
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Buscar</label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Buscar por mensagem ou arquivo..."
+                  value={filtros.busca}
+                  onChange={(e) => setFiltros((prev) => ({ ...prev, busca: e.target.value }))}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Severidade</label>
+              <Select
+                value={filtros.severity}
+                onValueChange={(value) => setFiltros((prev) => ({ ...prev, severity: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas</SelectItem>
+                  <SelectItem value="critical">Crítico</SelectItem>
+                  <SelectItem value="error">Erro</SelectItem>
+                  <SelectItem value="warning">Aviso</SelectItem>
+                  <SelectItem value="info">Info</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 mb-2 block">Status</label>
+              <Select
+                value={filtros.status}
+                onValueChange={(value) => setFiltros((prev) => ({ ...prev, status: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="novo">Novo</SelectItem>
+                  <SelectItem value="em_analise">Em Análise</SelectItem>
+                  <SelectItem value="resolvido">Resolvido</SelectItem>
+                  <SelectItem value="ignorado">Ignorado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Lista de Erros */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">
+            {errosFiltrados.length} erro(s) encontrado(s)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
       {loading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
@@ -563,21 +558,20 @@ Relatório gerado em: ${new Date().toLocaleString('pt-BR')}
           </table>
         </div>
       )}
-    </CardContent>
-  </Card>
-  </div>
-  </div>
+        </CardContent>
+      </Card>
+    </div>
 
-      {/* Modal de Detalhes */}
-      {modalDetalhes && erroSelecionado && (
-        <Dialog open={modalDetalhes} onOpenChange={setModalDetalhes}>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white">
-            <DialogHeader className="border-b border-slate-200 pb-4">
-              <DialogTitle className="flex items-center gap-2 text-lg text-slate-800">
-                <AlertTriangle className="h-5 w-5 text-red-500" />
-                Detalhes do Erro
-              </DialogTitle>
-            </DialogHeader>
+    {/* Modal de Detalhes */}
+    {modalDetalhes && erroSelecionado && (
+      <Dialog open={modalDetalhes} onOpenChange={setModalDetalhes}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              Detalhes do Erro
+            </DialogTitle>
+          </DialogHeader>
 
             <Tabs defaultValue="relatorio" className="mt-4">
               <TabsList className="grid w-full grid-cols-2">
@@ -688,16 +682,16 @@ Relatório gerado em: ${new Date().toLocaleString('pt-BR')}
         </Dialog>
       )}
 
-      {/* Modal de Chat */}
-      {modalChat && erroSelecionado && (
-        <Dialog open={modalChat} onOpenChange={setModalChat}>
-          <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col bg-white">
-            <DialogHeader className="border-b border-slate-200 pb-4">
-              <DialogTitle className="flex items-center gap-2 text-lg text-slate-800">
-                <MessageSquare className="h-5 w-5 text-blue-600" />
-                Chat com CodeFixer AI
-              </DialogTitle>
-            </DialogHeader>
+    {/* Modal de Chat */}
+    {modalChat && erroSelecionado && (
+      <Dialog open={modalChat} onOpenChange={setModalChat}>
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-blue-600" />
+              Chat com CodeFixer AI
+            </DialogTitle>
+          </DialogHeader>
 
             <div className="flex-1 overflow-y-auto space-y-4 min-h-[400px] max-h-[500px] border border-slate-200 rounded-lg p-4 bg-slate-50">
               {conversaChat.length === 0 ? (
