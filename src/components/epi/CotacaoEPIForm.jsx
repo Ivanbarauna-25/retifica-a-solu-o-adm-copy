@@ -295,92 +295,88 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
               Selecione os funcionários e marque os EPIs necessários. Os EPIs disponíveis são baseados no cargo de cada funcionário.
             </p>
 
-            <div className="space-y-4 max-h-[400px] overflow-y-auto border rounded-lg p-4 bg-slate-50">
+            <div className="space-y-3 max-h-[500px] overflow-y-auto border rounded-lg p-4 bg-slate-50">
               {Object.entries(funcionariosPorCargo).map(([cargoNome, grupo]) => {
                 const episDoCargo = getEPIsDoCargo(grupo.cargo_id);
 
                 if (episDoCargo.length === 0) return null;
 
                 return (
-                  <div key={cargoNome} className="border rounded-lg bg-white p-4">
-                    <h4 className="font-medium text-slate-800 mb-3 flex items-center gap-2">
-                      <HardHat className="w-4 h-4" />
-                      {cargoNome}
-                      <span className="text-xs text-slate-500 font-normal">
-                        ({episDoCargo.length} EPIs vinculados)
-                      </span>
-                    </h4>
+                  <div key={cargoNome} className="border rounded-lg bg-white">
+                    <div className="bg-slate-100 px-4 py-2 border-b rounded-t-lg">
+                      <h4 className="font-medium text-slate-800 flex items-center gap-2">
+                        <HardHat className="w-4 h-4" />
+                        {cargoNome}
+                        <span className="text-xs text-slate-500 font-normal">
+                          ({episDoCargo.length} EPIs vinculados)
+                        </span>
+                      </h4>
+                    </div>
 
-                    <Table>
-                      <TableHeader className="bg-slate-100">
-                        <TableRow>
-                          <TableHead className="w-8"></TableHead>
-                          <TableHead>Funcionário</TableHead>
-                          {episDoCargo.map((epi) =>
-                          <TableHead key={epi.id} className="text-center text-xs">
-                              {epi.nome}
-                              <div className="text-slate-400 font-normal">
-                                {formatCurrency(epi.preco_referencia || 0)}
-                              </div>
-                            </TableHead>
-                          )}
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {grupo.funcionarios.map((func) => {
-                          const funcSelecionado = funcionariosSelecionados[func.id]?.selecionado;
+                    <div className="divide-y">
+                      {grupo.funcionarios.map((func) => {
+                        const funcSelecionado = funcionariosSelecionados[func.id]?.selecionado;
 
-                          return (
-                            <TableRow key={func.id} className={funcSelecionado ? 'bg-blue-50' : ''}>
-                              <TableCell>
-                                <Checkbox
-                                  checked={funcSelecionado}
-                                  onCheckedChange={() => handleToggleFuncionario(func.id)} />
+                        return (
+                          <div key={func.id} className={`p-3 ${funcSelecionado ? 'bg-blue-50' : ''}`}>
+                            {/* Linha do funcionário */}
+                            <div className="flex items-center gap-3 mb-2">
+                              <Checkbox
+                                checked={funcSelecionado}
+                                onCheckedChange={() => handleToggleFuncionario(func.id)}
+                              />
+                              <span className="font-medium text-slate-900">{func.nome}</span>
+                            </div>
 
-                              </TableCell>
-                              <TableCell className="font-medium">{func.nome}</TableCell>
-                              {episDoCargo.map((epi) => {
-                                const epiSelecionado = funcionariosSelecionados[func.id]?.epis[epi.id]?.selecionado;
-                                const quantidade = funcionariosSelecionados[func.id]?.epis[epi.id]?.quantidade || 1;
+                            {/* Lista de EPIs do funcionário */}
+                            {funcSelecionado && (
+                              <div className="ml-7 mt-2 space-y-2">
+                                {episDoCargo.map((epi) => {
+                                  const epiSelecionado = funcionariosSelecionados[func.id]?.epis[epi.id]?.selecionado;
+                                  const quantidade = funcionariosSelecionados[func.id]?.epis[epi.id]?.quantidade || 1;
 
-                                return (
-                                  <TableCell key={epi.id} className="text-slate-950 p-4 text-center align-middle [&:has([role=checkbox])]:pr-0">
-                                    {funcSelecionado ?
-                                    <div className="flex flex-col items-center gap-1">
-                                        <Checkbox
+                                  return (
+                                    <div key={epi.id} className="flex items-center gap-3 bg-white border rounded-lg px-3 py-2">
+                                      <Checkbox
                                         checked={epiSelecionado}
-                                        onCheckedChange={() => handleToggleEPI(func.id, epi.id)} />
-
-                                        {epiSelecionado &&
-                                      <Input
-                                        type="number"
-                                        min="1"
-                                        value={quantidade}
-                                        onChange={(e) => handleUpdateQuantidade(func.id, epi.id, e.target.value)}
-                                        className="w-16 h-7 text-center text-xs" />
-
-                                      }
-                                      </div> :
-
-                                    <span className="text-slate-300">-</span>
-                                    }
-                                  </TableCell>);
-
-                              })}
-                            </TableRow>);
-
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>);
-
+                                        onCheckedChange={() => handleToggleEPI(func.id, epi.id)}
+                                      />
+                                      <div className="flex-1 min-w-0">
+                                        <span className="text-sm text-slate-800">{epi.nome}</span>
+                                        <span className="text-xs text-slate-500 ml-2">
+                                          ({formatCurrency(epi.preco_referencia || 0)})
+                                        </span>
+                                      </div>
+                                      {epiSelecionado && (
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-xs text-slate-500">Qtd:</span>
+                                          <Input
+                                            type="number"
+                                            min="1"
+                                            value={quantidade}
+                                            onChange={(e) => handleUpdateQuantidade(func.id, epi.id, e.target.value)}
+                                            className="w-16 h-8 text-center text-sm"
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
               })}
 
-              {Object.keys(funcionariosPorCargo).length === 0 &&
-              <p className="text-center text-slate-500 py-8">
+              {Object.keys(funcionariosPorCargo).length === 0 && (
+                <p className="text-center text-slate-500 py-8">
                   Nenhum funcionário encontrado. Cadastre funcionários e vincule EPIs aos cargos.
                 </p>
-              }
+              )}
             </div>
           </div>
 
