@@ -135,7 +135,9 @@ const navigationGroups = [
       { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
       { title: "Folha de Pagamento", url: "FolhaPagamento", icon: Wallet, module: "folha" },
       { title: "13º Salário", url: "Folha13", icon: Wallet, module: "folha" },
-      { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" }
+      { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" },
+      { title: "EPIs", url: "EPIs", icon: Shield, module: "funcionarios" },
+      { title: "Cotações EPI", url: "CotacoesEPI", icon: ShoppingCart, module: "funcionarios" }
     ]
   },
   {
