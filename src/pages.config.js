@@ -58,6 +58,7 @@ import EPIs from './pages/EPIs';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import CotacoesEPI from './pages/CotacoesEPI';
 import RelatorioCotacaoEPI from './pages/RelatorioCotacaoEPI';
+import RelatorioEntregasEPI from './pages/RelatorioEntregasEPI';
 import __Layout from './Layout.jsx';
 
 
@@ -122,6 +123,7 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "CotacoesEPI": CotacoesEPI,
     "RelatorioCotacaoEPI": RelatorioCotacaoEPI,
+    "RelatorioEntregasEPI": RelatorioEntregasEPI,
 }
 
 export const pagesConfig = {

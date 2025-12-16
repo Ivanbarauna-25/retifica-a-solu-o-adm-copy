@@ -138,7 +138,8 @@ const navigationGroups = [
       { title: "13º Salário", url: "Folha13", icon: Wallet, module: "folha" },
       { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" },
       { title: "EPIs", url: "EPIs", icon: HardHat, module: "funcionarios" },
-      { title: "Cotações EPI", url: "CotacoesEPI", icon: ShoppingCart, module: "funcionarios" }
+      { title: "Cotações EPI", url: "CotacoesEPI", icon: ShoppingCart, module: "funcionarios" },
+      { title: "Relatório Entregas EPI", url: "RelatorioEntregasEPI", icon: FileText, module: "funcionarios" }
     ]
   },
   {
