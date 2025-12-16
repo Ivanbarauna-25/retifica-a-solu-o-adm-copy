@@ -250,7 +250,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 text-black">
           {/* Dados Gerais */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
