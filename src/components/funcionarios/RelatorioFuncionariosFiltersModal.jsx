@@ -5,15 +5,23 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { createPageUrl } from '@/utils';
 import { FileText, Printer, FileSpreadsheet, X, Users } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function RelatorioFuncionariosFiltersModal({ 
   isOpen, 
   onClose, 
   funcionarios = [],
   cargos = [],
-  departamentos = []
+  departamentos = [],
+  filtroStatus = '',
+  filtroDepartamento = '',
+  filtroCargo = ''
 }) {
   const [formato, setFormato] = useState('visualizar');
+  const [statusSelecionado, setStatusSelecionado] = useState(filtroStatus || '');
+  const [departamentoSelecionado, setDepartamentoSelecionado] = useState(filtroDepartamento || '');
+  const [cargoSelecionado, setCargoSelecionado] = useState(filtroCargo || '');
+  const [ordenacao, setOrdenacao] = useState('nome');
   const [camposSelecionados, setCamposSelecionados] = useState({
     nome: true,
     cpf: true,
@@ -53,7 +61,15 @@ export default function RelatorioFuncionariosFiltersModal({
       .filter(key => camposSelecionados[key])
       .join(',');
     
-    const url = `${createPageUrl('RelatorioFuncionarios')}?formato=${formato}&campos=${encodeURIComponent(campos)}`;
+    const params = new URLSearchParams();
+    params.set('formato', formato);
+    params.set('campos', campos);
+    if (statusSelecionado && statusSelecionado !== 'todos') params.set('status', statusSelecionado);
+    if (departamentoSelecionado && departamentoSelecionado !== 'todos') params.set('departamento_id', departamentoSelecionado);
+    if (cargoSelecionado && cargoSelecionado !== 'todos') params.set('cargo_id', cargoSelecionado);
+    params.set('ordenacao', ordenacao);
+    
+    const url = `${createPageUrl('RelatorioFuncionarios')}?${params.toString()}`;
     const newWindow = window.open(url, '_blank');
     
     if (newWindow) {
@@ -134,6 +150,71 @@ export default function RelatorioFuncionariosFiltersModal({
         </DialogHeader>
 
         <div className="p-6 space-y-6">
+          {/* Filtros */}
+          <div className="space-y-3">
+            <Label className="text-base font-semibold text-slate-900">Filtros do Relatório</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm text-slate-700 mb-1 block">Status</Label>
+                <Select value={statusSelecionado} onValueChange={setStatusSelecionado}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    <SelectItem value="ativo">Ativo</SelectItem>
+                    <SelectItem value="experiencia">Experiência</SelectItem>
+                    <SelectItem value="ferias">Férias</SelectItem>
+                    <SelectItem value="afastado">Afastado</SelectItem>
+                    <SelectItem value="demitido">Demitido</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm text-slate-700 mb-1 block">Departamento</Label>
+                <Select value={departamentoSelecionado} onValueChange={setDepartamentoSelecionado}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    {departamentos.map(dept => (
+                      <SelectItem key={dept.id} value={dept.id}>{dept.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm text-slate-700 mb-1 block">Cargo</Label>
+                <Select value={cargoSelecionado} onValueChange={setCargoSelecionado}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    {cargos.map(cargo => (
+                      <SelectItem key={cargo.id} value={cargo.id}>{cargo.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm text-slate-700 mb-1 block">Ordenação</Label>
+                <Select value={ordenacao} onValueChange={setOrdenacao}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Nome" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="nome">Nome</SelectItem>
+                    <SelectItem value="salario">Salário</SelectItem>
+                    <SelectItem value="data_inicio">Data de Início</SelectItem>
+                    <SelectItem value="departamento">Departamento</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-3">
             <Label className="text-base font-semibold text-slate-900">Formato de Exportação</Label>
             <div className="space-y-2">

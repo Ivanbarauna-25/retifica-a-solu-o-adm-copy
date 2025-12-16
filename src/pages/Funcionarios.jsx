@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -27,6 +27,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import {
+  Plus,
   Edit,
   Trash2,
   Eye,
@@ -40,6 +41,7 @@ import {
   Search,
   Filter,
   FileText,
+  Download,
   Users,
   Upload,
   CheckCircle, // Added
@@ -56,9 +58,10 @@ import FuncionarioDepartamentoForm from '@/components/funcionarios/forms/Funcion
 import FuncionarioDesligamentoForm from '@/components/funcionarios/forms/FuncionarioDesligamentoForm';
 import RelatorioFuncionariosViewer from '@/components/funcionarios/RelatorioFuncionariosFiltersModal'; // Renamed import to reflect outline's usage
 import ImportarFuncionariosModal from '@/components/funcionarios/ImportarFuncionariosModal'; // New import
+import { createPageUrl } from '@/utils';
 import ProtectedPage from '@/components/ProtectedPage';
 import { usePermissions } from '@/components/ProtectedPage';
-import { useStandardDialog } from '@/components/ui/StandardDialog';
+import StandardDialog, { useStandardDialog } from '@/components/ui/StandardDialog';
 import { formatCurrency } from '@/components/formatters';
 
 const statusColors = {
@@ -785,9 +788,12 @@ export default function FuncionariosPage() {
         <RelatorioFuncionariosViewer
           isOpen={showRelatorio}
           onClose={() => setShowRelatorio(false)}
-          funcionarios={funcionarios}
+          funcionarios={funcionariosFiltrados}
           cargos={cargos}
-          departamentos={departamentos} />
+          departamentos={departamentos}
+          filtroStatus={filterStatus !== 'todos' ? filterStatus : ''}
+          filtroDepartamento={filterDepartamento !== 'todos' ? filterDepartamento : ''}
+          filtroCargo={filterCargo !== 'todos' ? filterCargo : ''} />
 
       }
 
