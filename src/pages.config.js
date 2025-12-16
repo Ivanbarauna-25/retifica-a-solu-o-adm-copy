@@ -54,6 +54,8 @@ import RelatorioFluxoCaixa from './pages/RelatorioFluxoCaixa';
 import Folha13 from './pages/Folha13';
 import Relatorio13Salario from './pages/Relatorio13Salario';
 import RelatorioFuncionarios from './pages/RelatorioFuncionarios';
+import EPIs from './pages/EPIs';
+import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import __Layout from './Layout.jsx';
 
 
@@ -114,6 +116,8 @@ export const PAGES = {
     "Folha13": Folha13,
     "Relatorio13Salario": Relatorio13Salario,
     "RelatorioFuncionarios": RelatorioFuncionarios,
+    "EPIs": EPIs,
+    "TermoRecebimentoEPI": TermoRecebimentoEPI,
 }
 
 export const pagesConfig = {
