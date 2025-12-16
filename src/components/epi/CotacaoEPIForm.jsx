@@ -42,12 +42,12 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
       // Reconstruir estado de funcionários selecionados
       const selecionados = {};
-      (cotacao.funcionarios_vinculados || []).forEach(fv => {
+      (cotacao.funcionarios_vinculados || []).forEach((fv) => {
         selecionados[fv.funcionario_id] = {
           selecionado: true,
           epis: {}
         };
-        (fv.epis || []).forEach(epi => {
+        (fv.epis || []).forEach((epi) => {
           selecionados[fv.funcionario_id].epis[epi.epi_id] = {
             selecionado: true,
             quantidade: epi.quantidade || 1
@@ -70,35 +70,35 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
   }, [cotacao, isOpen]);
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   // Obter EPIs permitidos para um cargo
   const getEPIsDoCargo = (cargoId) => {
-    return epis.filter(epi => epi.cargos_ids?.includes(cargoId));
+    return epis.filter((epi) => epi.cargos_ids?.includes(cargoId));
   };
 
   // Obter nome do cargo
   const getCargoNome = (cargoId) => {
-    const cargo = cargos.find(c => c.id === cargoId);
+    const cargo = cargos.find((c) => c.id === cargoId);
     return cargo?.nome || '-';
   };
 
   // Toggle seleção de funcionário
   const handleToggleFuncionario = (funcId) => {
-    setFuncionariosSelecionados(prev => {
+    setFuncionariosSelecionados((prev) => {
       const novoEstado = { ...prev };
       if (novoEstado[funcId]?.selecionado) {
         delete novoEstado[funcId];
       } else {
-        const func = funcionarios.find(f => f.id === funcId);
+        const func = funcionarios.find((f) => f.id === funcId);
         const episDoCargo = getEPIsDoCargo(func?.cargo_id);
         novoEstado[funcId] = {
           selecionado: true,
           epis: {}
         };
         // Pré-selecionar todos os EPIs do cargo
-        episDoCargo.forEach(epi => {
+        episDoCargo.forEach((epi) => {
           novoEstado[funcId].epis[epi.id] = { selecionado: true, quantidade: 1 };
         });
       }
@@ -108,7 +108,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
   // Toggle seleção de EPI para funcionário
   const handleToggleEPI = (funcId, epiId) => {
-    setFuncionariosSelecionados(prev => {
+    setFuncionariosSelecionados((prev) => {
       const novoEstado = { ...prev };
       if (!novoEstado[funcId]) return prev;
 
@@ -123,7 +123,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
   // Atualizar quantidade de EPI para funcionário
   const handleUpdateQuantidade = (funcId, epiId, quantidade) => {
-    setFuncionariosSelecionados(prev => {
+    setFuncionariosSelecionados((prev) => {
       const novoEstado = { ...prev };
       if (!novoEstado[funcId]?.epis[epiId]) return prev;
       novoEstado[funcId].epis[epiId].quantidade = Math.max(1, Number(quantidade) || 1);
@@ -139,7 +139,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
     Object.entries(funcionariosSelecionados).forEach(([funcId, dados]) => {
       if (!dados.selecionado) return;
 
-      const func = funcionarios.find(f => f.id === funcId);
+      const func = funcionarios.find((f) => f.id === funcId);
       if (!func) return;
 
       const episDoFunc = [];
@@ -147,7 +147,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
       Object.entries(dados.epis).forEach(([epiId, epiDados]) => {
         if (!epiDados.selecionado) return;
 
-        const epi = epis.find(e => e.id === epiId);
+        const epi = epis.find((e) => e.id === epiId);
         if (!epi) return;
 
         const qtd = epiDados.quantidade || 1;
@@ -225,7 +225,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
   // Agrupar funcionários por cargo
   const funcionariosPorCargo = useMemo(() => {
     const grupos = {};
-    funcionarios.forEach(func => {
+    funcionarios.forEach((func) => {
       const cargoNome = getCargoNome(func.cargo_id);
       if (!grupos[cargoNome]) {
         grupos[cargoNome] = { cargo_id: func.cargo_id, funcionarios: [] };
@@ -258,16 +258,16 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
               <Input
                 value={formData.numero}
                 onChange={(e) => handleChange('numero', e.target.value)}
-                placeholder="Ex: COT-001"
-              />
+                placeholder="Ex: COT-001" />
+
             </div>
             <div>
               <Label className="text-slate-900">Data *</Label>
               <Input
                 type="date"
                 value={formData.data_cotacao}
-                onChange={(e) => handleChange('data_cotacao', e.target.value)}
-              />
+                onChange={(e) => handleChange('data_cotacao', e.target.value)} />
+
             </div>
             <div>
               <Label className="text-slate-900">Fornecedor</Label>
@@ -277,9 +277,9 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={null}>Nenhum</SelectItem>
-                  {fornecedores.map(f => (
-                    <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-                  ))}
+                  {fornecedores.map((f) =>
+                  <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -298,7 +298,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
             <div className="space-y-4 max-h-[400px] overflow-y-auto border rounded-lg p-4 bg-slate-50">
               {Object.entries(funcionariosPorCargo).map(([cargoNome, grupo]) => {
                 const episDoCargo = getEPIsDoCargo(grupo.cargo_id);
-                
+
                 if (episDoCargo.length === 0) return null;
 
                 return (
@@ -316,77 +316,77 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
                         <TableRow>
                           <TableHead className="w-8"></TableHead>
                           <TableHead>Funcionário</TableHead>
-                          {episDoCargo.map(epi => (
-                            <TableHead key={epi.id} className="text-center text-xs">
+                          {episDoCargo.map((epi) =>
+                          <TableHead key={epi.id} className="text-center text-xs">
                               {epi.nome}
                               <div className="text-slate-400 font-normal">
                                 {formatCurrency(epi.preco_referencia || 0)}
                               </div>
                             </TableHead>
-                          ))}
+                          )}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {grupo.funcionarios.map(func => {
+                        {grupo.funcionarios.map((func) => {
                           const funcSelecionado = funcionariosSelecionados[func.id]?.selecionado;
-                          
+
                           return (
                             <TableRow key={func.id} className={funcSelecionado ? 'bg-blue-50' : ''}>
                               <TableCell>
                                 <Checkbox
                                   checked={funcSelecionado}
-                                  onCheckedChange={() => handleToggleFuncionario(func.id)}
-                                />
+                                  onCheckedChange={() => handleToggleFuncionario(func.id)} />
+
                               </TableCell>
                               <TableCell className="font-medium">{func.nome}</TableCell>
-                              {episDoCargo.map(epi => {
+                              {episDoCargo.map((epi) => {
                                 const epiSelecionado = funcionariosSelecionados[func.id]?.epis[epi.id]?.selecionado;
                                 const quantidade = funcionariosSelecionados[func.id]?.epis[epi.id]?.quantidade || 1;
 
                                 return (
-                                  <TableCell key={epi.id} className="text-center">
-                                    {funcSelecionado ? (
-                                      <div className="flex flex-col items-center gap-1">
+                                  <TableCell key={epi.id} className="text-slate-950 p-4 text-center align-middle [&:has([role=checkbox])]:pr-0">
+                                    {funcSelecionado ?
+                                    <div className="flex flex-col items-center gap-1">
                                         <Checkbox
-                                          checked={epiSelecionado}
-                                          onCheckedChange={() => handleToggleEPI(func.id, epi.id)}
-                                        />
-                                        {epiSelecionado && (
-                                          <Input
-                                            type="number"
-                                            min="1"
-                                            value={quantidade}
-                                            onChange={(e) => handleUpdateQuantidade(func.id, epi.id, e.target.value)}
-                                            className="w-16 h-7 text-center text-xs"
-                                          />
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <span className="text-slate-300">-</span>
-                                    )}
-                                  </TableCell>
-                                );
+                                        checked={epiSelecionado}
+                                        onCheckedChange={() => handleToggleEPI(func.id, epi.id)} />
+
+                                        {epiSelecionado &&
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        value={quantidade}
+                                        onChange={(e) => handleUpdateQuantidade(func.id, epi.id, e.target.value)}
+                                        className="w-16 h-7 text-center text-xs" />
+
+                                      }
+                                      </div> :
+
+                                    <span className="text-slate-300">-</span>
+                                    }
+                                  </TableCell>);
+
                               })}
-                            </TableRow>
-                          );
+                            </TableRow>);
+
                         })}
                       </TableBody>
                     </Table>
-                  </div>
-                );
+                  </div>);
+
               })}
 
-              {Object.keys(funcionariosPorCargo).length === 0 && (
-                <p className="text-center text-slate-500 py-8">
+              {Object.keys(funcionariosPorCargo).length === 0 &&
+              <p className="text-center text-slate-500 py-8">
                   Nenhum funcionário encontrado. Cadastre funcionários e vincule EPIs aos cargos.
                 </p>
-              )}
+              }
             </div>
           </div>
 
           {/* Resumo da Cotação */}
-          {itensConsolidados.length > 0 && (
-            <div className="border rounded-lg p-4 bg-slate-50">
+          {itensConsolidados.length > 0 &&
+          <div className="border rounded-lg p-4 bg-slate-50">
               <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                 <Package className="w-5 h-5" />
                 Resumo da Cotação
@@ -401,14 +401,14 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {itensConsolidados.map((item, idx) => (
-                    <TableRow key={idx} className="bg-white">
+                  {itensConsolidados.map((item, idx) =>
+                <TableRow key={idx} className="bg-white">
                       <TableCell className="font-medium">{item.epi_nome}</TableCell>
                       <TableCell className="text-center">{item.quantidade}</TableCell>
                       <TableCell className="text-right">{formatCurrency(item.preco_unitario)}</TableCell>
                       <TableCell className="text-right font-semibold">{formatCurrency(item.total_item)}</TableCell>
                     </TableRow>
-                  ))}
+                )}
                   <TableRow className="bg-slate-100 font-bold">
                     <TableCell colSpan={3} className="text-right">Total da Cotação:</TableCell>
                     <TableCell className="text-right text-lg">{formatCurrency(valorTotal)}</TableCell>
@@ -420,7 +420,7 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
                 <strong>Funcionários:</strong> {funcionariosVinculados.length} selecionados
               </div>
             </div>
-          )}
+          }
 
           {/* Observações */}
           <div>
@@ -429,8 +429,8 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
               value={formData.observacoes}
               onChange={(e) => handleChange('observacoes', e.target.value)}
               placeholder="Observações sobre a cotação..."
-              rows={2}
-            />
+              rows={2} />
+
           </div>
         </div>
 
@@ -449,6 +449,6 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>);
+
 }
