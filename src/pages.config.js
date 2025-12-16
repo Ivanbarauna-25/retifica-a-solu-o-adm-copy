@@ -53,6 +53,7 @@ import DRE from './pages/DRE';
 import RelatorioFluxoCaixa from './pages/RelatorioFluxoCaixa';
 import Folha13 from './pages/Folha13';
 import Relatorio13Salario from './pages/Relatorio13Salario';
+import RelatorioFuncionarios from './pages/RelatorioFuncionarios';
 import __Layout from './Layout.jsx';
 
 
@@ -112,6 +113,7 @@ export const PAGES = {
     "RelatorioFluxoCaixa": RelatorioFluxoCaixa,
     "Folha13": Folha13,
     "Relatorio13Salario": Relatorio13Salario,
+    "RelatorioFuncionarios": RelatorioFuncionarios,
 }
 
 export const pagesConfig = {
