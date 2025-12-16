@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { base44 } from '@/api/base44Client';
 import {
   User,
@@ -18,14 +19,21 @@ import {
   Users,
   Banknote,
   AlertCircle,
-  Printer // Added Printer icon
+  Printer,
+  HardHat,
+  Plus,
+  History
 } from 'lucide-react';
+import EntregaEPIModal from '@/components/epi/EntregaEPIModal';
+import HistoricoEPIModal from '@/components/epi/HistoricoEPIModal';
 import { formatCurrency, formatDate } from '@/components/formatters';
 
 export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit, onUpdated }) {
   const [cargo, setCargo] = useState(null);
   const [departamento, setDepartamento] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showEntregaEPI, setShowEntregaEPI] = useState(false);
+  const [showHistoricoEPI, setShowHistoricoEPI] = useState(false);
 
   useEffect(() => {
     const fetchRelatedData = async () => {
@@ -157,7 +165,25 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
               </div>
             </div>
             {/* Action buttons */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                onClick={() => setShowEntregaEPI(true)}
+                variant="outline"
+                size="sm"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2"
+              >
+                <HardHat className="w-4 h-4" />
+                Entregar EPI
+              </Button>
+              <Button
+                onClick={() => setShowHistoricoEPI(true)}
+                variant="outline"
+                size="sm"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2"
+              >
+                <History className="w-4 h-4" />
+                Histórico EPI
+              </Button>
               <Button
                 onClick={handlePrint}
                 variant="outline"
@@ -347,6 +373,23 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
           }
           </div>
         }
+
+        {/* Modal de Entrega de EPI */}
+        <EntregaEPIModal
+          isOpen={showEntregaEPI}
+          onClose={() => setShowEntregaEPI(false)}
+          funcionario={funcionario}
+          onSave={() => {
+            setShowEntregaEPI(false);
+          }}
+        />
+
+        {/* Modal de Histórico de EPI */}
+        <HistoricoEPIModal
+          isOpen={showHistoricoEPI}
+          onClose={() => setShowHistoricoEPI(false)}
+          funcionario={funcionario}
+        />
       </DialogContent>
     </Dialog>);
 
