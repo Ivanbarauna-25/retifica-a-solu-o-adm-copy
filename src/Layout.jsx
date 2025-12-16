@@ -419,7 +419,9 @@ export default function Layout({ children, currentPageName }) {
       currentPageName === 'RelatorioContasPagar' ||
       currentPageName === 'RelatorioContasReceber' ||
       currentPageName === 'Relatorio13Salario' ||
-      currentPageName === 'RelatorioOS') {
+      currentPageName === 'RelatorioOS' ||
+      currentPageName === 'TermoRecebimentoEPI' ||
+      currentPageName === 'RelatorioCotacaoEPI') {
     return <>{children}</>;
   }
 
