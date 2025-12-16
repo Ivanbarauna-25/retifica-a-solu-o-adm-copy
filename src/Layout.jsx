@@ -35,7 +35,8 @@ import {
   Tags,
   AlertTriangle,
   Activity,
-  Shield
+  Shield,
+  HardHat
 } from "lucide-react";
 import {
   Accordion,
