@@ -173,7 +173,7 @@ export default function OrcamentoViewer({
     <>
       <Dialog open={!!orcamento} onOpenChange={onClose}>
         <DialogContent
-          className="w-[95vw] max-w-[95vw] md:max-w-[80vw] lg:max-w-[60vw] lg:w-[60vw] h-[90vh] md:h-[85vh] max-h-[90vh] md:max-h-[85vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl p-0"
+          className="w-[95vw] max-w-[95vw] md:max-w-[60vw] md:w-[60vw] h-[90vh] md:h-[80vh] max-h-[90vh] md:max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl p-0"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <style>{`
@@ -194,131 +194,249 @@ export default function OrcamentoViewer({
           `}</style>
 
           <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-4 md:px-6 py-3 md:py-4 flex-shrink-0 sticky top-0 z-10">
-            <DialogTitle className="flex flex-col gap-3 text-white">
-              {/* Linha 1: Título e botão fechar */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                  <div className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-sm md:text-base font-semibold text-white truncate">{currentOrcamento.numero_orcamento}</h2>
-                      <Badge className={`${statusInfo.bg} ${statusInfo.text} text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 border-0 flex-shrink-0`}>
-                        {statusInfo.label}
-                      </Badge>
-                    </div>
-                    <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden md:block">Visualização do orçamento</p>
-                  </div>
+            <DialogTitle className="flex items-center justify-between text-white">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <div className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
-                <Button
-                  size="icon"
-                  onClick={onClose}
-                  className="h-8 w-8 md:h-9 md:w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm flex-shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-sm md:text-base font-semibold text-white truncate">{currentOrcamento.numero_orcamento}</h2>
+                    <Badge className={`${statusInfo.bg} ${statusInfo.text} text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 border-0 flex-shrink-0`}>
+                      {statusInfo.label}
+                    </Badge>
+                  </div>
+                  <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden md:block">Visualização do orçamento</p>
+                </div>
               </div>
 
-              {/* Linha 2: Botões de ação - scrollável no mobile */}
-              <div className="flex items-center gap-1 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    onClose?.();
-                    setTimeout(() => onEdit?.(currentOrcamento), 100);
-                  }}
-                  className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
-                >
-                  <Edit className="w-4 h-4" />
-                  <span className="text-xs">Editar</span>
-                </Button>
+              {/* Botões Desktop */}
+              <TooltipProvider>
+                <div className="hidden md:flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          onClose?.();
+                          setTimeout(() => onEdit?.(currentOrcamento), 100);
+                        }}
+                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <Edit className="w-5 h-5 text-white" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Editar</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handlePrint}
-                  className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span className="text-xs">Imprimir</span>
-                </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={handlePrint}
+                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <Printer className="w-5 h-5 text-white" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Imprimir</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setShowDespesas(true)}
-                  className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
-                >
-                  <DollarSign className="w-4 h-4" />
-                  <span className="text-xs">Despesas</span>
-                </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setShowDespesas(true)}
+                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <DollarSign className="w-5 h-5 text-white" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Despesas</p>
+                    </TooltipContent>
+                  </Tooltip>
 
-                {currentOrcamento.status === "aprovado" && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
-                    className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
-                  >
-                    <ArrowRight className="w-4 h-4" />
-                    <span className="text-xs">Converter OS</span>
-                  </Button>
-                )}
+                  {currentOrcamento.status === "aprovado" && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
+                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                          <ArrowRight className="w-5 h-5 text-white" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Converter em OS</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
 
-                <div className="w-px h-5 bg-white/20 mx-1 flex-shrink-0" />
+                  <div className="w-px h-6 bg-white/20 mx-1" />
 
-                {currentOrcamento.status === "pendente" && (
-                  <>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => openConfirm(
-                        "aprovar", 
-                        "Aprovar Orçamento", 
-                        `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}? Após a aprovação, o orçamento poderá ser convertido em Ordem de Serviço.`
-                      )}
-                      className="h-8 px-2 md:px-3 text-green-300 hover:bg-green-500/20 flex-shrink-0 gap-1.5"
-                    >
-                      <CheckCircle className="w-4 h-4" />
-                      <span className="text-xs">Aprovar</span>
-                    </Button>
+                  {currentOrcamento.status === "pendente" && (
+                    <>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => openConfirm(
+                              "aprovar", 
+                              "Aprovar Orçamento", 
+                              `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}? Após a aprovação, o orçamento poderá ser convertido em Ordem de Serviço.`
+                            )}
+                            className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <CheckCircle className="w-6 h-6 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Aprovar</p>
+                        </TooltipContent>
+                      </Tooltip>
 
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => openConfirm(
-                        "rejeitar", 
-                        "Rejeitar Orçamento", 
-                        `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
-                      )}
-                      className="h-8 px-2 md:px-3 text-red-300 hover:bg-red-500/20 flex-shrink-0 gap-1.5"
-                    >
-                      <XCircle className="w-4 h-4" />
-                      <span className="text-xs">Rejeitar</span>
-                    </Button>
-                  </>
-                )}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => openConfirm(
+                              "rejeitar", 
+                              "Rejeitar Orçamento", 
+                              `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
+                            )}
+                            className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <XCircle className="w-6 h-6 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Rejeitar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </>
+                  )}
 
-                {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => openConfirm(
-                      "cancelar", 
-                      "Cancelar Orçamento", 
-                      `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
-                    )}
-                    className="h-8 px-2 md:px-3 text-orange-300 hover:bg-orange-500/20 flex-shrink-0 gap-1.5"
-                  >
-                    <Ban className="w-4 h-4" />
-                    <span className="text-xs">Cancelar</span>
-                  </Button>
-                )}
-              </div>
+                  {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => openConfirm(
+                            "cancelar", 
+                            "Cancelar Orçamento", 
+                            `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
+                          )}
+                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                          <Ban className="w-6 h-6 text-white" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Cancelar</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                  <div className="w-px h-6 bg-white/20 mx-2" />
+                </div>
+              </TooltipProvider>
+              
+              <Button
+                size="icon"
+                onClick={onClose}
+                className="h-8 w-8 md:h-9 md:w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </DialogTitle>
           </DialogHeader>
+          
+          {/* Barra de Ações Mobile - Fixa no topo abaixo do header */}
+          <div className="md:hidden bg-slate-100 border-b border-slate-200 px-2 py-2 flex items-center gap-1 overflow-x-auto sticky top-[52px] z-10">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                onClose?.();
+                setTimeout(() => onEdit?.(currentOrcamento), 100);
+              }}
+              className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0"
+            >
+              <Edit className="w-4 h-4" />
+              <span>Editar</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Imprimir</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setShowDespesas(true)}
+              className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-blue-50 text-blue-700"
+            >
+              <DollarSign className="w-4 h-4" />
+              <span>Despesas</span>
+            </Button>
+
+            {currentOrcamento.status === "aprovado" && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
+                className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-green-50 text-green-700"
+              >
+                <ArrowRight className="w-4 h-4" />
+                <span>Converter OS</span>
+              </Button>
+            )}
+
+            {currentOrcamento.status === "pendente" && (
+              <>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => openConfirm(
+                    "aprovar", 
+                    "Aprovar Orçamento", 
+                    `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}?`
+                  )}
+                  className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-green-50 text-green-700"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Aprovar</span>
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => openConfirm(
+                    "rejeitar", 
+                    "Rejeitar Orçamento", 
+                    `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
+                  )}
+                  className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-red-50 text-red-700"
+                >
+                  <XCircle className="w-4 h-4" />
+                  <span>Rejeitar</span>
+                </Button>
+              </>
+            )}
+
+            {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => openConfirm(
+                  "cancelar", 
+                  "Cancelar Orçamento", 
+                  `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
+                )}
+                className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-zinc-100 text-zinc-700"
+              >
+                <Ban className="w-4 h-4" />
+                <span>Cancelar</span>
+              </Button>
+            )}
+          </div>
 
           {/* CARDS INFORMATIVOS */}
           <section className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 px-4 md:px-6 pt-4 md:pt-5 pb-0">
