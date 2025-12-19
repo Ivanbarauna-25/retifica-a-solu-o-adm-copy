@@ -7,7 +7,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   FileText, Package, DollarSign, Printer, Edit,
-  ArrowRight, XCircle, CheckCircle, Ban, X
+  ArrowRight, XCircle, CheckCircle, Ban, Calendar, User, Car,
+  TrendingUp, Loader2, Copy, Paperclip, MessageSquare, Trash2, X
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/components/formatters";
 import { base44 } from "@/api/base44Client";
@@ -172,7 +173,7 @@ export default function OrcamentoViewer({
     <>
       <Dialog open={!!orcamento} onOpenChange={onClose}>
         <DialogContent
-          className="max-w-[60vw] w-[60vw] h-[80vh] max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl"
+          className="w-[95vw] max-w-[95vw] md:max-w-[80vw] lg:max-w-[60vw] lg:w-[60vw] h-[90vh] md:h-[85vh] max-h-[90vh] md:max-h-[85vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl p-0"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <style>{`
@@ -192,178 +193,158 @@ export default function OrcamentoViewer({
             }
           `}</style>
 
-          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 py-4 flex-shrink-0">
-            <DialogTitle className="flex items-center justify-between text-white">
-              <div className="flex items-center gap-3">
-                <div className="h-11 w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-semibold text-white">{currentOrcamento.numero_orcamento}</h2>
-                    <Badge className={`${statusInfo.bg} ${statusInfo.text} text-xs px-2 py-0.5 border-0`}>
-                      {statusInfo.label}
-                    </Badge>
+          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-4 md:px-6 py-3 md:py-4 flex-shrink-0 sticky top-0 z-10">
+            <DialogTitle className="flex flex-col gap-3 text-white">
+              {/* Linha 1: Título e botão fechar */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                  <div className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                   </div>
-                  <p className="text-xs text-slate-300 mt-0.5">Visualização do orçamento</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="text-sm md:text-base font-semibold text-white truncate">{currentOrcamento.numero_orcamento}</h2>
+                      <Badge className={`${statusInfo.bg} ${statusInfo.text} text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 border-0 flex-shrink-0`}>
+                        {statusInfo.label}
+                      </Badge>
+                    </div>
+                    <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden md:block">Visualização do orçamento</p>
+                  </div>
                 </div>
+                <Button
+                  size="icon"
+                  onClick={onClose}
+                  className="h-8 w-8 md:h-9 md:w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm flex-shrink-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
 
-              <TooltipProvider>
-                <div className="flex items-center gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => {
-                          onClose?.();
-                          setTimeout(() => onEdit?.(currentOrcamento), 100);
-                        }}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                        <Edit className="w-5 h-5 text-white" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Editar</p>
-                    </TooltipContent>
-                  </Tooltip>
+              {/* Linha 2: Botões de ação - scrollável no mobile */}
+              <div className="flex items-center gap-1 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    onClose?.();
+                    setTimeout(() => onEdit?.(currentOrcamento), 100);
+                  }}
+                  className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
+                >
+                  <Edit className="w-4 h-4" />
+                  <span className="text-xs">Editar</span>
+                </Button>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={handlePrint}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                        <Printer className="w-5 h-5 text-white" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Imprimir</p>
-                    </TooltipContent>
-                  </Tooltip>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handlePrint}
+                  className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span className="text-xs">Imprimir</span>
+                </Button>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setShowDespesas(true)}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                        <DollarSign className="w-5 h-5 text-white" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Despesas</p>
-                    </TooltipContent>
-                  </Tooltip>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowDespesas(true)}
+                  className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
+                >
+                  <DollarSign className="w-4 h-4" />
+                  <span className="text-xs">Despesas</span>
+                </Button>
 
-                  {currentOrcamento.status === "aprovado" && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
-                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                          <ArrowRight className="w-5 h-5 text-white" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Converter em OS</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
+                {currentOrcamento.status === "aprovado" && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
+                    className="h-8 px-2 md:px-3 text-white hover:bg-white/10 flex-shrink-0 gap-1.5"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                    <span className="text-xs">Converter OS</span>
+                  </Button>
+                )}
 
-                  <div className="w-px h-6 bg-white/20 mx-1" />
+                <div className="w-px h-5 bg-white/20 mx-1 flex-shrink-0" />
 
-                  {currentOrcamento.status === "pendente" && (
-                    <>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={() => openConfirm(
-                              "aprovar", 
-                              "Aprovar Orçamento", 
-                              `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}? Após a aprovação, o orçamento poderá ser convertido em Ordem de Serviço.`
-                            )}
-                            className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <CheckCircle className="w-6 h-6 text-white" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">Aprovar</p>
-                        </TooltipContent>
-                      </Tooltip>
+                {currentOrcamento.status === "pendente" && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => openConfirm(
+                        "aprovar", 
+                        "Aprovar Orçamento", 
+                        `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}? Após a aprovação, o orçamento poderá ser convertido em Ordem de Serviço.`
+                      )}
+                      className="h-8 px-2 md:px-3 text-green-300 hover:bg-green-500/20 flex-shrink-0 gap-1.5"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-xs">Aprovar</span>
+                    </Button>
 
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={() => openConfirm(
-                              "rejeitar", 
-                              "Rejeitar Orçamento", 
-                              `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
-                            )}
-                            className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <XCircle className="w-6 h-6 text-white" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">Rejeitar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </>
-                  )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => openConfirm(
+                        "rejeitar", 
+                        "Rejeitar Orçamento", 
+                        `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
+                      )}
+                      className="h-8 px-2 md:px-3 text-red-300 hover:bg-red-500/20 flex-shrink-0 gap-1.5"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span className="text-xs">Rejeitar</span>
+                    </Button>
+                  </>
+                )}
 
-                  {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => openConfirm(
-                            "cancelar", 
-                            "Cancelar Orçamento", 
-                            `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
-                          )}
-                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                          <Ban className="w-6 h-6 text-white" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Cancelar</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-              </TooltipProvider>
-              <div className="w-px h-6 bg-white/20 mx-2" />
-              <Button
-                size="icon"
-                onClick={onClose}
-                className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+                {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => openConfirm(
+                      "cancelar", 
+                      "Cancelar Orçamento", 
+                      `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
+                    )}
+                    className="h-8 px-2 md:px-3 text-orange-300 hover:bg-orange-500/20 flex-shrink-0 gap-1.5"
+                  >
+                    <Ban className="w-4 h-4" />
+                    <span className="text-xs">Cancelar</span>
+                  </Button>
+                )}
+              </div>
             </DialogTitle>
           </DialogHeader>
 
           {/* CARDS INFORMATIVOS */}
-          <section className="grid grid-cols-4 gap-3 px-6 pt-5 pb-0">
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
-              <span className="block text-sm font-semibold mt-1 text-slate-900 truncate">{cliente?.nome || "—"}</span>
+          <section className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 px-4 md:px-6 pt-4 md:pt-5 pb-0">
+            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+              <span className="text-[9px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
+              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900 truncate">{cliente?.nome || "—"}</span>
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
-              <span className="block text-sm font-semibold mt-1 text-slate-900">{veiculo ? `${veiculo.placa}` : "—"}</span>
+            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+              <span className="text-[9px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
+              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{veiculo ? `${veiculo.placa}` : "—"}</span>
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA ORÇAMENTO</span>
-              <span className="block text-sm font-semibold mt-1 text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
+            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+              <span className="text-[9px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA</span>
+              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
             </div>
 
-            <div className="border border-blue-200 rounded-lg p-3 bg-blue-50/50">
-              <span className="text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
-              <span className="block text-base font-bold mt-1 text-blue-700">{formatCurrency(currentOrcamento.valor_total)}</span>
+            <div className="border border-blue-200 rounded-lg p-2 md:p-3 bg-blue-50/50">
+              <span className="text-[9px] md:text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
+              <span className="block text-sm md:text-base font-bold mt-0.5 md:mt-1 text-blue-700">{formatCurrency(currentOrcamento.valor_total)}</span>
             </div>
           </section>
 
           {/* SEÇÃO FINANCEIRA */}
-          <div className="mx-6 mt-4 border border-slate-200 rounded-xl overflow-hidden bg-white">
+          <div className="mx-4 md:mx-6 mt-3 md:mt-4 border border-slate-200 rounded-xl overflow-hidden bg-white">
             <div className="bg-slate-50 border-b border-slate-200 py-3 px-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-slate-600" />
@@ -412,7 +393,7 @@ export default function OrcamentoViewer({
           </div>
 
           {/* TABS */}
-          <div className="px-6 mt-4 mb-2">
+          <div className="px-4 md:px-6 mt-3 md:mt-4 mb-2">
             <Tabs defaultValue="geral" className="w-full">
               <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg grid grid-cols-3 gap-1 mb-4">
                 <TabsTrigger
@@ -588,7 +569,7 @@ export default function OrcamentoViewer({
           </div>
 
           {/* FOOTER COM AÇÕES */}
-          <div className="flex justify-end items-center px-6 py-4 border-t border-slate-100 bg-white">
+          <div className="flex justify-end items-center px-4 md:px-6 py-3 md:py-4 border-t border-slate-100 bg-white sticky bottom-0">
             <Button
               onClick={onClose}
               variant="ghost"
