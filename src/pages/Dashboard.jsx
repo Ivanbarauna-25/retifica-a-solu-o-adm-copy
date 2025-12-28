@@ -80,32 +80,21 @@ const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
   </Link>
 );
 
-const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => (
-  <Card className="relative overflow-hidden border-slate-100 bg-white hover:shadow-lg transition-shadow duration-300">
-    <CardContent className="p-3 md:p-5">
-      <div className="flex flex-col gap-2 md:gap-3">
-        <div className="flex justify-between items-start gap-2">
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5 md:mb-1 truncate">{title}</p>
-            {loading ? (
-              <div className="h-7 md:h-10 flex items-center">
-                <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-slate-400" />
-              </div>
-            ) : (
-              <h3 className="text-2xl md:text-4xl font-extrabold text-gray-900">{value}</h3>
-            )}
-          </div>
-          <div className={`p-2 md:p-3 ${color} bg-opacity-10 rounded-lg md:rounded-xl flex-shrink-0`}>
-            <Icon className={`w-5 h-5 md:w-7 md:h-7 ${color.replace('bg-', 'text-')}`} />
-          </div>
+const StatsCard = ({ title, value, icon: Icon, color, loading }) => (
+  <Card className="border-slate-100 bg-white hover:shadow-md transition-shadow">
+    <CardContent className="p-3 md:p-4">
+      <div className="flex justify-between items-center gap-2">
+        <div className="min-w-0">
+          <p className="text-[10px] md:text-xs font-semibold text-gray-500 uppercase truncate">{title}</p>
+          {loading ? (
+            <Loader2 className="w-5 h-5 animate-spin text-slate-400 mt-1" />
+          ) : (
+            <h3 className="text-xl md:text-2xl font-bold text-gray-900">{value}</h3>
+          )}
         </div>
-        {subtitle && !loading && (
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] md:text-xs font-medium text-slate-600">
-              {subtitle}
-            </span>
-          </div>
-        )}
+        <div className={`p-2 ${color} bg-opacity-10 rounded-lg flex-shrink-0`}>
+          <Icon className={`w-5 h-5 ${color.replace('bg-', 'text-')}`} />
+        </div>
       </div>
     </CardContent>
   </Card>
@@ -179,70 +168,34 @@ export default function Dashboard() {
 
   const statsData = [
     {
-      title: 'Ordens de Serviço',
-      value: stats.totalOS,
+      title: 'OS em Andamento',
+      value: stats.osEmAndamento,
       icon: ClipboardList,
-      color: 'bg-blue-500',
-      subtitle: `${stats.osEmAndamento} em andamento`
+      color: 'bg-blue-500'
     },
     {
-      title: 'Clientes Cadastrados',
+      title: 'Clientes',
       value: stats.totalClientes,
       icon: Users,
       color: 'bg-green-500'
     },
     {
-      title: 'Funcionários Ativos',
-      value: stats.totalFuncionarios,
-      icon: User,
-      color: 'bg-purple-500'
-    },
-    {
-      title: 'Produtos no Estoque',
-      value: stats.estoqueItens,
-      icon: Package,
-      color: 'bg-orange-500'
-    },
-    {
       title: 'Contas a Receber',
       value: stats.contasReceberPendentes,
       icon: TrendingUp,
-      color: 'bg-emerald-500',
-      subtitle: 'pendentes'
+      color: 'bg-emerald-500'
     },
     {
       title: 'Contas a Pagar',
       value: stats.contasPagarPendentes,
       icon: Banknote,
-      color: 'bg-red-500',
-      subtitle: 'pendentes'
-    },
-    {
-      title: 'Tarefas',
-      value: stats.tarefasPendentes,
-      icon: ListTodo,
-      color: 'bg-amber-500',
-      subtitle: 'pendentes'
+      color: 'bg-red-500'
     }
   ];
 
   return (
     <div className="w-full min-h-full space-y-4 md:space-y-6">
-      {/* Header Compacto */}
-      <div className="flex justify-between items-center bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-100">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            Painel de Controle
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Visão geral da sua oficina mecânica.
-          </p>
-        </div>
-        <div className="hidden md:flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <span className="font-medium text-xs">Online</span>
-        </div>
-      </div>
+
 
       {/* Mensagem de erro */}
       {error && (
