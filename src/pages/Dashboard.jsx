@@ -61,39 +61,33 @@ const cardItems = [
   }
 ];
 
-const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
+const DashboardCard = ({ title, icon: Icon, url, color }) => (
   <Link to={createPageUrl(url)}>
-    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group border-slate-100 bg-white overflow-hidden relative">
-      <div className={`absolute top-0 left-0 w-1 md:w-1.5 h-full ${color}`} />
-      <CardContent className="p-3 md:p-5 flex flex-col items-start gap-2 md:gap-4">
-        <div className={`p-2.5 md:p-4 ${color} rounded-lg md:rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className="w-5 h-5 md:w-7 md:h-7 text-white" />
+    <Card className="hover:shadow-md transition-all h-full group border-slate-100 bg-white overflow-hidden">
+      <CardContent className="p-3 flex items-center gap-3">
+        <div className={`p-2 ${color} rounded-lg`}>
+          <Icon className="w-4 h-4 text-white" />
         </div>
-        <div className="w-full">
-          <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-slate-700 transition-colors leading-tight mb-0.5 md:mb-1">
-            {title}
-          </h3>
-          <p className="text-[11px] md:text-sm text-gray-500 leading-relaxed hidden md:block">{description}</p>
-        </div>
+        <span className="text-sm font-medium text-gray-900 group-hover:text-slate-600">{title}</span>
       </CardContent>
     </Card>
   </Link>
 );
 
 const StatsCard = ({ title, value, icon: Icon, color, loading }) => (
-  <Card className="border-slate-100 bg-white hover:shadow-md transition-shadow">
-    <CardContent className="p-3 md:p-4">
-      <div className="flex justify-between items-center gap-2">
-        <div className="min-w-0">
-          <p className="text-[10px] md:text-xs font-semibold text-gray-500 uppercase truncate">{title}</p>
-          {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin text-slate-400 mt-1" />
-          ) : (
-            <h3 className="text-xl md:text-2xl font-bold text-gray-900">{value}</h3>
-          )}
+  <Card className="border-slate-100 bg-white">
+    <CardContent className="p-3">
+      <div className="flex items-center gap-2">
+        <div className={`p-1.5 ${color} bg-opacity-10 rounded-md`}>
+          <Icon className={`w-4 h-4 ${color.replace('bg-', 'text-')}`} />
         </div>
-        <div className={`p-2 ${color} bg-opacity-10 rounded-lg flex-shrink-0`}>
-          <Icon className={`w-5 h-5 ${color.replace('bg-', 'text-')}`} />
+        <div className="min-w-0">
+          <p className="text-[10px] text-gray-500 uppercase truncate">{title}</p>
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+          ) : (
+            <span className="text-lg font-bold text-gray-900">{value}</span>
+          )}
         </div>
       </div>
     </CardContent>
@@ -194,7 +188,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="w-full min-h-full space-y-4 md:space-y-6">
+    <div className="w-full space-y-4">
 
 
       {/* Mensagem de erro */}
@@ -206,7 +200,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} loading={loading} />
         ))}
@@ -214,8 +208,8 @@ export default function Dashboard() {
 
       {/* Quick Access Section */}
       <div>
-        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 px-1 border-l-4 border-slate-800 pl-3 md:pl-4">Módulos Essenciais</h2>
-        <div className="grid gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-sm font-semibold text-gray-700 mb-3">Acesso Rápido</h2>
+        <div className="grid gap-2 grid-cols-2 lg:grid-cols-4">
           {cardItems.map((item) => (
             <DashboardCard key={item.title} {...item} />
           ))}
