@@ -64,16 +64,16 @@ const cardItems = [
 const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
   <Link to={createPageUrl(url)}>
     <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group border-slate-100 bg-white overflow-hidden relative">
-      <div className={`absolute top-0 left-0 w-1.5 h-full ${color}`} />
-      <CardContent className="p-6 flex flex-col items-start gap-4">
-        <div className={`p-4 ${color} rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className="w-8 h-8 text-white" />
+      <div className={`absolute top-0 left-0 w-1 md:w-1.5 h-full ${color}`} />
+      <CardContent className="p-3 md:p-5 flex flex-col items-start gap-2 md:gap-4">
+        <div className={`p-2.5 md:p-4 ${color} rounded-lg md:rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className="w-5 h-5 md:w-7 md:h-7 text-white" />
         </div>
         <div className="w-full">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-slate-700 transition-colors leading-tight mb-2">
+          <h3 className="text-sm md:text-lg font-bold text-gray-900 group-hover:text-slate-700 transition-colors leading-tight mb-0.5 md:mb-1">
             {title}
           </h3>
-          <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+          <p className="text-[11px] md:text-sm text-gray-500 leading-relaxed hidden md:block">{description}</p>
         </div>
       </CardContent>
     </Card>
@@ -82,26 +82,26 @@ const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
 
 const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => (
   <Card className="relative overflow-hidden border-slate-100 bg-white hover:shadow-lg transition-shadow duration-300">
-    <CardContent className="p-6">
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">{title}</p>
+    <CardContent className="p-3 md:p-5">
+      <div className="flex flex-col gap-2 md:gap-3">
+        <div className="flex justify-between items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5 md:mb-1 truncate">{title}</p>
             {loading ? (
-              <div className="h-10 flex items-center">
-                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <div className="h-7 md:h-10 flex items-center">
+                <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-slate-400" />
               </div>
             ) : (
-              <h3 className="text-4xl font-extrabold text-gray-900">{value}</h3>
+              <h3 className="text-2xl md:text-4xl font-extrabold text-gray-900">{value}</h3>
             )}
           </div>
-          <div className={`p-3 ${color} bg-opacity-10 rounded-xl`}>
-            <Icon className={`w-8 h-8 ${color.replace('bg-', 'text-')}`} />
+          <div className={`p-2 md:p-3 ${color} bg-opacity-10 rounded-lg md:rounded-xl flex-shrink-0`}>
+            <Icon className={`w-5 h-5 md:w-7 md:h-7 ${color.replace('bg-', 'text-')}`} />
           </div>
         </div>
         {subtitle && !loading && (
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs font-medium text-slate-600">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] md:text-xs font-medium text-slate-600">
               {subtitle}
             </span>
           </div>
@@ -227,9 +227,9 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="w-full h-full p-4 md:p-6 space-y-6 bg-slate-50">
+    <div className="w-full min-h-full space-y-4 md:space-y-6">
       {/* Header Compacto */}
-      <div className="flex justify-between items-center bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+      <div className="flex justify-between items-center bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-100">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
             Painel de Controle
@@ -253,7 +253,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} loading={loading} />
         ))}
@@ -261,8 +261,8 @@ export default function Dashboard() {
 
       {/* Quick Access Section */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-6 px-1 border-l-4 border-slate-800 pl-4">Módulos Essenciais</h2>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4 md:mb-6 px-1 border-l-4 border-slate-800 pl-3 md:pl-4">Módulos Essenciais</h2>
+        <div className="grid gap-3 md:gap-4 grid-cols-2 lg:grid-cols-4">
           {cardItems.map((item) => (
             <DashboardCard key={item.title} {...item} />
           ))}

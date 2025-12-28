@@ -539,8 +539,8 @@ export default function Layout({ children, currentPageName }) {
             </header>
 
             <PageTransition error={navigationError}>
-              <ErrorBoundary currentPageName={currentPageName}>
-                <div className="text-slate-800 p-4 flex-1 overflow-auto md:p-6 lg:p-8">
+                <ErrorBoundary currentPageName={currentPageName}>
+                  <div className="text-slate-800 p-3 md:p-5 lg:p-6 flex-1 overflow-auto bg-slate-50">
                   {children}
                 </div>
               </ErrorBoundary>
