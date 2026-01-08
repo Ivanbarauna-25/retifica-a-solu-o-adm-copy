@@ -266,14 +266,15 @@ const CustomSidebarFooter = () => {
 };
 
 export default function Layout({ children, currentPageName }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [navigationError, setNavigationError] = useState(null);
-  const [nomeEmpresa, setNomeEmpresa] = useState("");
-  
-  const { hasModule, isAdmin } = usePermissions();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [navigationError, setNavigationError] = useState(null);
+    const [nomeEmpresa, setNomeEmpresa] = useState("");
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    const { hasModule, isAdmin } = usePermissions();
 
   useEffect(() => {
     let viewport = document.querySelector('meta[name="viewport"]');
