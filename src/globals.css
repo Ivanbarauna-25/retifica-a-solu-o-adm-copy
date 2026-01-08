@@ -443,3 +443,17 @@ button .lucide {
     transform: rotate(360deg);
   }
 }
+
+/* Mobile Bottom Nav Safe Area */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
