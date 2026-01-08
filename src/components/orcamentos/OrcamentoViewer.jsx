@@ -7,8 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   FileText, Package, DollarSign, Printer, Edit,
-  ArrowRight, XCircle, CheckCircle, Ban, Calendar, User, Car,
-  TrendingUp, Loader2, Copy, Paperclip, MessageSquare, Trash2, X
+  ArrowRight, XCircle, CheckCircle, Ban, X
 } from "lucide-react";
 import { formatCurrency, formatDate } from "@/components/formatters";
 import { base44 } from "@/api/base44Client";
@@ -173,7 +172,7 @@ export default function OrcamentoViewer({
     <>
       <Dialog open={!!orcamento} onOpenChange={onClose}>
         <DialogContent
-          className="w-[95vw] max-w-[95vw] md:max-w-[60vw] md:w-[60vw] h-[90vh] md:h-[80vh] max-h-[90vh] md:max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl p-0"
+          className="max-w-[60vw] w-[60vw] h-[80vh] max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <style>{`
@@ -193,26 +192,25 @@ export default function OrcamentoViewer({
             }
           `}</style>
 
-          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-4 md:px-6 py-3 md:py-4 flex-shrink-0 sticky top-0 z-10">
+          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 py-4 flex-shrink-0">
             <DialogTitle className="flex items-center justify-between text-white">
-              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
-                <div className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              <div className="flex items-center gap-3">
+                <div className="h-11 w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white" />
                 </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-sm md:text-base font-semibold text-white truncate">{currentOrcamento.numero_orcamento}</h2>
-                    <Badge className={`${statusInfo.bg} ${statusInfo.text} text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 border-0 flex-shrink-0`}>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-semibold text-white">{currentOrcamento.numero_orcamento}</h2>
+                    <Badge className={`${statusInfo.bg} ${statusInfo.text} text-xs px-2 py-0.5 border-0`}>
                       {statusInfo.label}
                     </Badge>
                   </div>
-                  <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden md:block">Visualização do orçamento</p>
+                  <p className="text-xs text-slate-300 mt-0.5">Visualização do orçamento</p>
                 </div>
               </div>
 
-              {/* Botões Desktop */}
               <TooltipProvider>
-                <div className="hidden md:flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
@@ -328,141 +326,44 @@ export default function OrcamentoViewer({
                       </TooltipContent>
                     </Tooltip>
                   )}
-                  <div className="w-px h-6 bg-white/20 mx-2" />
                 </div>
               </TooltipProvider>
-              
+              <div className="w-px h-6 bg-white/20 mx-2" />
               <Button
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 md:h-9 md:w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm flex-shrink-0"
+                className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm"
               >
                 <X className="w-4 h-4" />
               </Button>
             </DialogTitle>
           </DialogHeader>
-          
-          {/* Barra de Ações Mobile - Fixa no topo abaixo do header */}
-          <div className="md:hidden bg-slate-100 border-b border-slate-200 px-2 py-2 flex items-center gap-1 overflow-x-auto sticky top-[52px] z-10">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                onClose?.();
-                setTimeout(() => onEdit?.(currentOrcamento), 100);
-              }}
-              className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0"
-            >
-              <Edit className="w-4 h-4" />
-              <span>Editar</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0"
-            >
-              <Printer className="w-4 h-4" />
-              <span>Imprimir</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setShowDespesas(true)}
-              className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-blue-50 text-blue-700"
-            >
-              <DollarSign className="w-4 h-4" />
-              <span>Despesas</span>
-            </Button>
-
-            {currentOrcamento.status === "aprovado" && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
-                className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-green-50 text-green-700"
-              >
-                <ArrowRight className="w-4 h-4" />
-                <span>Converter OS</span>
-              </Button>
-            )}
-
-            {currentOrcamento.status === "pendente" && (
-              <>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => openConfirm(
-                    "aprovar", 
-                    "Aprovar Orçamento", 
-                    `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}?`
-                  )}
-                  className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-green-50 text-green-700"
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Aprovar</span>
-                </Button>
-
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => openConfirm(
-                    "rejeitar", 
-                    "Rejeitar Orçamento", 
-                    `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
-                  )}
-                  className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-red-50 text-red-700"
-                >
-                  <XCircle className="w-4 h-4" />
-                  <span>Rejeitar</span>
-                </Button>
-              </>
-            )}
-
-            {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => openConfirm(
-                  "cancelar", 
-                  "Cancelar Orçamento", 
-                  `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
-                )}
-                className="flex items-center gap-1.5 text-xs h-8 px-2 flex-shrink-0 bg-zinc-100 text-zinc-700"
-              >
-                <Ban className="w-4 h-4" />
-                <span>Cancelar</span>
-              </Button>
-            )}
-          </div>
 
           {/* CARDS INFORMATIVOS */}
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 px-4 md:px-6 pt-4 md:pt-5 pb-0">
-            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
-              <span className="text-[9px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
-              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900 truncate">{cliente?.nome || "—"}</span>
+          <section className="grid grid-cols-4 gap-3 px-6 pt-5 pb-0">
+            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
+              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
+              <span className="block text-sm font-semibold mt-1 text-slate-900 truncate">{cliente?.nome || "—"}</span>
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
-              <span className="text-[9px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
-              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{veiculo ? `${veiculo.placa}` : "—"}</span>
+            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
+              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
+              <span className="block text-sm font-semibold mt-1 text-slate-900">{veiculo ? `${veiculo.placa}` : "—"}</span>
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
-              <span className="text-[9px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA</span>
-              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
+            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
+              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA ORÇAMENTO</span>
+              <span className="block text-sm font-semibold mt-1 text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
             </div>
 
-            <div className="border border-blue-200 rounded-lg p-2 md:p-3 bg-blue-50/50">
-              <span className="text-[9px] md:text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
-              <span className="block text-sm md:text-base font-bold mt-0.5 md:mt-1 text-blue-700">{formatCurrency(currentOrcamento.valor_total)}</span>
+            <div className="border border-blue-200 rounded-lg p-3 bg-blue-50/50">
+              <span className="text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
+              <span className="block text-base font-bold mt-1 text-blue-700">{formatCurrency(currentOrcamento.valor_total)}</span>
             </div>
           </section>
 
           {/* SEÇÃO FINANCEIRA */}
-          <div className="mx-4 md:mx-6 mt-3 md:mt-4 border border-slate-200 rounded-xl overflow-hidden bg-white">
+          <div className="mx-6 mt-4 border border-slate-200 rounded-xl overflow-hidden bg-white">
             <div className="bg-slate-50 border-b border-slate-200 py-3 px-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-slate-600" />
@@ -511,7 +412,7 @@ export default function OrcamentoViewer({
           </div>
 
           {/* TABS */}
-          <div className="px-4 md:px-6 mt-3 md:mt-4 mb-2">
+          <div className="px-6 mt-4 mb-2">
             <Tabs defaultValue="geral" className="w-full">
               <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg grid grid-cols-3 gap-1 mb-4">
                 <TabsTrigger
@@ -687,7 +588,7 @@ export default function OrcamentoViewer({
           </div>
 
           {/* FOOTER COM AÇÕES */}
-          <div className="flex justify-end items-center px-4 md:px-6 py-3 md:py-4 border-t border-slate-100 bg-white sticky bottom-0">
+          <div className="flex justify-end items-center px-6 py-4 border-t border-slate-100 bg-white">
             <Button
               onClick={onClose}
               variant="ghost"

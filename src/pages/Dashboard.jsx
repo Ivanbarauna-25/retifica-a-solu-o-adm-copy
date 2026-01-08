@@ -2,78 +2,113 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent } from '@/components/ui/card';
-import { formatCurrency } from '@/components/formatters';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   ClipboardList,
   Package,
+  Landmark,
+  ListTodo,
   Users,
+  Building2,
+  User,
+  Timer,
+  Wallet,
+  CalendarCheck,
+  Truck,
+  ShoppingCart,
+  FileBarChart2,
   Banknote,
+  FileText,
+  BarChart3,
   TrendingUp,
+  Activity,
   Loader2,
-  AlertCircle,
-  AlertTriangle,
-  ChevronRight,
-  Wrench
+  AlertCircle
 } from 'lucide-react';
 
-// Card de estatística estilo app moderno
-const StatsCard = ({ title, value, subtitle, icon: Icon, bgColor, iconBgColor, loading, isLarge }) => (
-  <Card className={`border-0 shadow-sm rounded-2xl overflow-hidden ${isLarge ? 'col-span-2 md:col-span-1' : ''}`}>
-    <CardContent className={`${isLarge ? 'p-4' : 'p-3'}`}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-gray-500 font-medium mb-1">{title}</p>
-          {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-          ) : (
-            <>
-              <p className={`font-bold text-gray-900 ${isLarge ? 'text-2xl md:text-3xl' : 'text-xl'}`}>{value}</p>
-              {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
-            </>
-          )}
-        </div>
-        <div className={`${iconBgColor} p-2.5 rounded-xl flex-shrink-0`}>
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
+const cardItems = [
+  {
+    title: 'Ordens de Serviço',
+    description: 'Gerenciamento de OS',
+    icon: ClipboardList,
+    url: 'OrdensServico',
+    color: 'bg-blue-600',
+    category: 'Operacional'
+  },
+  {
+    title: 'Clientes e Veículos',
+    description: 'Base de clientes e frota',
+    icon: Users,
+    url: 'Clientes',
+    color: 'bg-cyan-600',
+    category: 'Cadastros'
+  },
+  {
+    title: 'Estoque',
+    description: 'Controle de produtos',
+    icon: Package,
+    url: 'Estoque',
+    color: 'bg-green-600',
+    category: 'Operacional'
+  },
+  {
+    title: 'Financeiro',
+    description: 'Fluxo de caixa e contas',
+    icon: BarChart3,
+    url: 'FluxoCaixa',
+    color: 'bg-indigo-600',
+    category: 'Financeiro'
+  }
+];
 
-// Card de ação rápida
-const QuickActionCard = ({ title, icon: Icon, url, bgColor }) => (
+const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
   <Link to={createPageUrl(url)}>
-    <Card className="border-0 shadow-sm rounded-xl overflow-hidden active:scale-95 transition-transform bg-white hover:shadow-md">
-      <CardContent className="p-3 flex items-center gap-3">
-        <div className={`${bgColor} p-2 rounded-lg flex-shrink-0`}>
-          <Icon className="w-4 h-4 text-white" />
+    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group border-slate-100 bg-white overflow-hidden relative">
+      <div className={`absolute top-0 left-0 w-1.5 h-full ${color}`} />
+      <CardContent className="p-6 flex flex-col items-start gap-4">
+        <div className={`p-4 ${color} rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className="w-8 h-8 text-white" />
         </div>
-        <span className="text-sm font-medium text-gray-700 truncate">{title}</span>
+        <div className="w-full">
+          <h3 className="text-xl font-bold text-gray-900 group-hover:text-slate-700 transition-colors leading-tight mb-2">
+            {title}
+          </h3>
+          <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+        </div>
       </CardContent>
     </Card>
   </Link>
 );
 
-// Item de lista recente
-const RecentItem = ({ title, subtitle, value, status, statusColor, onClick }) => (
-  <div 
-    className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 -mx-4 px-4 transition-colors"
-    onClick={onClick}
-  >
-    <div className="min-w-0 flex-1">
-      <p className="font-medium text-gray-900 text-sm truncate">{title}</p>
-      <p className="text-xs text-gray-500">{subtitle}</p>
-    </div>
-    <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-      <span className="font-semibold text-gray-900 text-sm">{value}</span>
-      {status && (
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor}`}>
-          {status}
-        </span>
-      )}
-    </div>
-  </div>
+const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => (
+  <Card className="relative overflow-hidden border-slate-100 bg-white hover:shadow-lg transition-shadow duration-300">
+    <CardContent className="p-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">{title}</p>
+            {loading ? (
+              <div className="h-10 flex items-center">
+                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              </div>
+            ) : (
+              <h3 className="text-4xl font-extrabold text-gray-900">{value}</h3>
+            )}
+          </div>
+          <div className={`p-3 ${color} bg-opacity-10 rounded-xl`}>
+            <Icon className={`w-8 h-8 ${color.replace('bg-', 'text-')}`} />
+          </div>
+        </div>
+        {subtitle && !loading && (
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs font-medium text-slate-600">
+              {subtitle}
+            </span>
+          </div>
+        )}
+      </div>
+    </CardContent>
+  </Card>
 );
 
 export default function Dashboard() {
@@ -83,13 +118,10 @@ export default function Dashboard() {
     totalClientes: 0,
     totalFuncionarios: 0,
     estoqueItens: 0,
-    totalReceber: 0,
     contasReceberPendentes: 0,
-    totalPagar: 0,
     contasPagarPendentes: 0,
     tarefasPendentes: 0
   });
-  const [recentOS, setRecentOS] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -99,6 +131,7 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
       try {
+        // Buscar dados em paralelo para melhor performance
         const [
           ordensServico,
           clientes,
@@ -108,7 +141,7 @@ export default function Dashboard() {
           contasPagar,
           tarefas
         ] = await Promise.all([
-          base44.entities.OrdemServico.list('-created_date', 10),
+          base44.entities.OrdemServico.list(),
           base44.entities.Cliente.list(),
           base44.entities.Funcionario.filter({ status: 'ativo' }),
           base44.entities.Peca.list(),
@@ -120,8 +153,6 @@ export default function Dashboard() {
         if (!mounted) return;
 
         const osEmAndamento = ordensServico.filter(os => os.status === 'em_andamento').length;
-        const totalReceber = contasReceber.reduce((acc, c) => acc + (c.valor || 0), 0);
-        const totalPagar = contasPagar.reduce((acc, c) => acc + (c.valor || 0), 0);
 
         setStats({
           totalOS: ordensServico.length,
@@ -129,15 +160,10 @@ export default function Dashboard() {
           totalClientes: clientes.length,
           totalFuncionarios: funcionarios.length,
           estoqueItens: pecas.length,
-          totalReceber,
           contasReceberPendentes: contasReceber.length,
-          totalPagar,
           contasPagarPendentes: contasPagar.length,
           tarefasPendentes: tarefas.length
         });
-        
-        // Pegar as 5 OS mais recentes
-        setRecentOS(ordensServico.slice(0, 5));
       } catch (err) {
         if (!mounted) return;
         console.error('Erro ao carregar dados do dashboard:', err);
@@ -151,114 +177,94 @@ export default function Dashboard() {
     return () => { mounted = false; };
   }, []);
 
-  const getOSStatusInfo = (status) => {
-    const statusMap = {
-      em_andamento: { label: 'Em Andamento', color: 'bg-blue-100 text-blue-700' },
-      finalizado: { label: 'Finalizado', color: 'bg-green-100 text-green-700' },
-      cancelado: { label: 'Cancelado', color: 'bg-red-100 text-red-700' }
-    };
-    return statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-700' };
-  };
-
-  const quickActions = [
-    { title: 'Ordens de Serviço', icon: ClipboardList, url: 'OrdensServico', bgColor: 'bg-blue-500' },
-    { title: 'Clientes', icon: Users, url: 'Clientes', bgColor: 'bg-cyan-500' },
-    { title: 'Estoque', icon: Package, url: 'Estoque', bgColor: 'bg-green-500' },
-    { title: 'Serviços', icon: Wrench, url: 'Servicos', bgColor: 'bg-purple-500' }
+  const statsData = [
+    {
+      title: 'Ordens de Serviço',
+      value: stats.totalOS,
+      icon: ClipboardList,
+      color: 'bg-blue-500',
+      subtitle: `${stats.osEmAndamento} em andamento`
+    },
+    {
+      title: 'Clientes Cadastrados',
+      value: stats.totalClientes,
+      icon: Users,
+      color: 'bg-green-500'
+    },
+    {
+      title: 'Funcionários Ativos',
+      value: stats.totalFuncionarios,
+      icon: User,
+      color: 'bg-purple-500'
+    },
+    {
+      title: 'Produtos no Estoque',
+      value: stats.estoqueItens,
+      icon: Package,
+      color: 'bg-orange-500'
+    },
+    {
+      title: 'Contas a Receber',
+      value: stats.contasReceberPendentes,
+      icon: TrendingUp,
+      color: 'bg-emerald-500',
+      subtitle: 'pendentes'
+    },
+    {
+      title: 'Contas a Pagar',
+      value: stats.contasPagarPendentes,
+      icon: Banknote,
+      color: 'bg-red-500',
+      subtitle: 'pendentes'
+    },
+    {
+      title: 'Tarefas',
+      value: stats.tarefasPendentes,
+      icon: ListTodo,
+      color: 'bg-amber-500',
+      subtitle: 'pendentes'
+    }
   ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-4">
+    <div className="w-full h-full p-4 md:p-6 space-y-6 bg-slate-50">
+      {/* Header Compacto */}
+      <div className="flex justify-between items-center bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+            Painel de Controle
+          </h1>
+          <p className="text-gray-500 text-sm">
+            Visão geral da sua oficina mecânica.
+          </p>
+        </div>
+        <div className="hidden md:flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          <span className="font-medium text-xs">Online</span>
+        </div>
+      </div>
+
       {/* Mensagem de erro */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500" />
           <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
 
-      {/* Stats Cards - Grid 2x2 no mobile */}
-      <div className="grid grid-cols-2 gap-3">
-        <StatsCard
-          title="A Receber"
-          value={formatCurrency(stats.totalReceber)}
-          subtitle={`${stats.contasReceberPendentes} pendentes`}
-          icon={TrendingUp}
-          iconBgColor="bg-emerald-500"
-          loading={loading}
-          isLarge
-        />
-        <StatsCard
-          title="Clientes Ativos"
-          value={stats.totalClientes}
-          subtitle="total"
-          icon={Users}
-          iconBgColor="bg-blue-500"
-          loading={loading}
-        />
-        <StatsCard
-          title="A Pagar"
-          value={stats.contasPagarPendentes}
-          subtitle={formatCurrency(stats.totalPagar)}
-          icon={AlertTriangle}
-          iconBgColor="bg-rose-500"
-          loading={loading}
-        />
-        <StatsCard
-          title="OS Abertas"
-          value={stats.osEmAndamento}
-          icon={ClipboardList}
-          iconBgColor="bg-violet-500"
-          loading={loading}
-        />
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statsData.map((stat, index) => (
+          <StatsCard key={index} {...stat} loading={loading} />
+        ))}
       </div>
 
-      {/* OS Recentes */}
-      <Card className="border-0 shadow-sm rounded-2xl overflow-hidden">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-900">OS Recentes</h3>
-            <Link 
-              to={createPageUrl('OrdensServico')} 
-              className="text-sm text-blue-600 font-medium flex items-center gap-1 hover:text-blue-700"
-            >
-              Ver todas <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-          
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-            </div>
-          ) : recentOS.length === 0 ? (
-            <p className="text-center text-gray-500 py-8 text-sm">Nenhuma OS encontrada</p>
-          ) : (
-            <div>
-              {recentOS.map((os) => {
-                const statusInfo = getOSStatusInfo(os.status);
-                return (
-                  <RecentItem
-                    key={os.id}
-                    title={os.numero_os || `OS #${os.id?.slice(-6)}`}
-                    subtitle={os.data_abertura ? new Date(os.data_abertura).toLocaleDateString('pt-BR') : '-'}
-                    value={formatCurrency(os.valor_total || 0)}
-                    status={statusInfo.label}
-                    statusColor={statusInfo.color}
-                    onClick={() => window.location.href = createPageUrl('OrdensServico')}
-                  />
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Ações Rápidas */}
-      <div className="bg-slate-800 rounded-2xl p-4">
-        <h3 className="text-white font-semibold text-sm mb-3">Ações Rápidas</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {quickActions.map((action) => (
-            <QuickActionCard key={action.title} {...action} />
+      {/* Quick Access Section */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-6 px-1 border-l-4 border-slate-800 pl-4">Módulos Essenciais</h2>
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+          {cardItems.map((item) => (
+            <DashboardCard key={item.title} {...item} />
           ))}
         </div>
       </div>
