@@ -4,6 +4,8 @@ import { createPageUrl } from "@/utils";
 import ErrorBoundary from "@/components/errors/ErrorBoundary";
 import { base44 } from "@/api/base44Client";
 import { usePermissions } from '@/components/ProtectedPage';
+import MobileBottomNav from "@/components/MobileBottomNav";
+import MobileMenu from "@/components/MobileMenu";
 import {
   LayoutDashboard,
   ClipboardList,
