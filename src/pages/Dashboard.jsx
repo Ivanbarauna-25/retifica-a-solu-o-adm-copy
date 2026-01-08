@@ -2,126 +2,78 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { formatCurrency } from '@/components/formatters';
 import {
   ClipboardList,
   Package,
-  Landmark,
-  ListTodo,
   Users,
-  Building2,
-  User,
-  Timer,
-  Wallet,
-  CalendarCheck,
-  Truck,
-  ShoppingCart,
-  FileBarChart2,
   Banknote,
-  FileText,
-  BarChart3,
   TrendingUp,
-  Activity,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  AlertTriangle,
+  ChevronRight,
+  Wrench
 } from 'lucide-react';
 
-const cardItems = [
-  {
-    title: 'Ordens de Serviço',
-    description: 'Gerenciamento de OS',
-    icon: ClipboardList,
-    url: 'OrdensServico',
-    color: 'bg-blue-600',
-    category: 'Operacional'
-  },
-  {
-    title: 'Clientes e Veículos',
-    description: 'Base de clientes e frota',
-    icon: Users,
-    url: 'Clientes',
-    color: 'bg-cyan-600',
-    category: 'Cadastros'
-  },
-  {
-    title: 'Estoque',
-    description: 'Controle de produtos',
-    icon: Package,
-    url: 'Estoque',
-    color: 'bg-green-600',
-    category: 'Operacional'
-  },
-  {
-    title: 'Financeiro',
-    description: 'Fluxo de caixa e contas',
-    icon: BarChart3,
-    url: 'FluxoCaixa',
-    color: 'bg-indigo-600',
-    category: 'Financeiro'
-  }
-];
-
-// Mobile: estilo app nativo | Desktop: estilo web system
-const DashboardCard = ({ title, icon: Icon, url, color }) => (
-  <Link to={createPageUrl(url)}>
-    {/* Mobile: botão grande com ícone centralizado */}
-    <Card className="md:hidden active:scale-95 transition-transform h-full border-0 bg-white shadow-sm rounded-2xl overflow-hidden">
-      <CardContent className="p-4 flex flex-col items-center justify-center gap-2 text-center">
-        <div className={`p-3 ${color} rounded-xl`}>
-          <Icon className="w-6 h-6 text-white" />
+// Card de estatística estilo app moderno
+const StatsCard = ({ title, value, subtitle, icon: Icon, bgColor, iconBgColor, loading, isLarge }) => (
+  <Card className={`border-0 shadow-sm rounded-2xl overflow-hidden ${isLarge ? 'col-span-2 md:col-span-1' : ''}`}>
+    <CardContent className={`${isLarge ? 'p-4' : 'p-3'}`}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-gray-500 font-medium mb-1">{title}</p>
+          {loading ? (
+            <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+          ) : (
+            <>
+              <p className={`font-bold text-gray-900 ${isLarge ? 'text-2xl md:text-3xl' : 'text-xl'}`}>{value}</p>
+              {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+            </>
+          )}
         </div>
-        <span className="text-xs font-medium text-gray-700">{title}</span>
-      </CardContent>
-    </Card>
-    {/* Desktop: card horizontal compacto */}
-    <Card className="hidden md:block hover:shadow-md transition-all h-full group border-slate-200 bg-white">
-      <CardContent className="p-4 flex items-center gap-3">
-        <div className={`p-2.5 ${color} rounded-lg`}>
+        <div className={`${iconBgColor} p-2.5 rounded-xl flex-shrink-0`}>
           <Icon className="w-5 h-5 text-white" />
         </div>
-        <span className="text-sm font-medium text-gray-900 group-hover:text-slate-600">{title}</span>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+// Card de ação rápida
+const QuickActionCard = ({ title, icon: Icon, url, bgColor }) => (
+  <Link to={createPageUrl(url)}>
+    <Card className="border-0 shadow-sm rounded-xl overflow-hidden active:scale-95 transition-transform bg-white hover:shadow-md">
+      <CardContent className="p-3 flex items-center gap-3">
+        <div className={`${bgColor} p-2 rounded-lg flex-shrink-0`}>
+          <Icon className="w-4 h-4 text-white" />
+        </div>
+        <span className="text-sm font-medium text-gray-700 truncate">{title}</span>
       </CardContent>
     </Card>
   </Link>
 );
 
-const StatsCard = ({ title, value, icon: Icon, color, loading }) => (
-  <>
-    {/* Mobile: card compacto estilo app */}
-    <Card className="md:hidden border-0 bg-white shadow-sm rounded-2xl">
-      <CardContent className="p-3 flex items-center gap-3">
-        <div className={`p-2 ${color} bg-opacity-15 rounded-xl`}>
-          <Icon className={`w-5 h-5 ${color.replace('bg-', 'text-')}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] text-gray-500 uppercase truncate">{title}</p>
-          {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
-          ) : (
-            <span className="text-xl font-bold text-gray-900">{value}</span>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-    {/* Desktop: card com mais detalhes */}
-    <Card className="hidden md:block border-slate-200 bg-white hover:shadow-sm transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-500 uppercase mb-1">{title}</p>
-            {loading ? (
-              <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-            ) : (
-              <span className="text-2xl font-bold text-gray-900">{value}</span>
-            )}
-          </div>
-          <div className={`p-3 ${color} bg-opacity-10 rounded-xl`}>
-            <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  </>
+// Item de lista recente
+const RecentItem = ({ title, subtitle, value, status, statusColor, onClick }) => (
+  <div 
+    className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 -mx-4 px-4 transition-colors"
+    onClick={onClick}
+  >
+    <div className="min-w-0 flex-1">
+      <p className="font-medium text-gray-900 text-sm truncate">{title}</p>
+      <p className="text-xs text-gray-500">{subtitle}</p>
+    </div>
+    <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+      <span className="font-semibold text-gray-900 text-sm">{value}</span>
+      {status && (
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColor}`}>
+          {status}
+        </span>
+      )}
+    </div>
+  </div>
 );
 
 export default function Dashboard() {
