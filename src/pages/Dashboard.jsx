@@ -83,10 +83,13 @@ export default function Dashboard() {
     totalClientes: 0,
     totalFuncionarios: 0,
     estoqueItens: 0,
+    totalReceber: 0,
     contasReceberPendentes: 0,
+    totalPagar: 0,
     contasPagarPendentes: 0,
     tarefasPendentes: 0
   });
+  const [recentOS, setRecentOS] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -96,7 +99,6 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
       try {
-        // Buscar dados em paralelo para melhor performance
         const [
           ordensServico,
           clientes,
@@ -106,7 +108,7 @@ export default function Dashboard() {
           contasPagar,
           tarefas
         ] = await Promise.all([
-          base44.entities.OrdemServico.list(),
+          base44.entities.OrdemServico.list('-created_date', 10),
           base44.entities.Cliente.list(),
           base44.entities.Funcionario.filter({ status: 'ativo' }),
           base44.entities.Peca.list(),
@@ -118,6 +120,8 @@ export default function Dashboard() {
         if (!mounted) return;
 
         const osEmAndamento = ordensServico.filter(os => os.status === 'em_andamento').length;
+        const totalReceber = contasReceber.reduce((acc, c) => acc + (c.valor || 0), 0);
+        const totalPagar = contasPagar.reduce((acc, c) => acc + (c.valor || 0), 0);
 
         setStats({
           totalOS: ordensServico.length,
@@ -125,10 +129,15 @@ export default function Dashboard() {
           totalClientes: clientes.length,
           totalFuncionarios: funcionarios.length,
           estoqueItens: pecas.length,
+          totalReceber,
           contasReceberPendentes: contasReceber.length,
+          totalPagar,
           contasPagarPendentes: contasPagar.length,
           tarefasPendentes: tarefas.length
         });
+        
+        // Pegar as 5 OS mais recentes
+        setRecentOS(ordensServico.slice(0, 5));
       } catch (err) {
         if (!mounted) return;
         console.error('Erro ao carregar dados do dashboard:', err);
@@ -142,35 +151,24 @@ export default function Dashboard() {
     return () => { mounted = false; };
   }, []);
 
-  const statsData = [
-    {
-      title: 'OS em Andamento',
-      value: stats.osEmAndamento,
-      icon: ClipboardList,
-      color: 'bg-blue-500'
-    },
-    {
-      title: 'Clientes',
-      value: stats.totalClientes,
-      icon: Users,
-      color: 'bg-green-500'
-    },
-    {
-      title: 'Contas a Receber',
-      value: stats.contasReceberPendentes,
-      icon: TrendingUp,
-      color: 'bg-emerald-500'
-    },
-    {
-      title: 'Contas a Pagar',
-      value: stats.contasPagarPendentes,
-      icon: Banknote,
-      color: 'bg-red-500'
-    }
+  const getOSStatusInfo = (status) => {
+    const statusMap = {
+      em_andamento: { label: 'Em Andamento', color: 'bg-blue-100 text-blue-700' },
+      finalizado: { label: 'Finalizado', color: 'bg-green-100 text-green-700' },
+      cancelado: { label: 'Cancelado', color: 'bg-red-100 text-red-700' }
+    };
+    return statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-700' };
+  };
+
+  const quickActions = [
+    { title: 'Ordens de Serviço', icon: ClipboardList, url: 'OrdensServico', bgColor: 'bg-blue-500' },
+    { title: 'Clientes', icon: Users, url: 'Clientes', bgColor: 'bg-cyan-500' },
+    { title: 'Estoque', icon: Package, url: 'Estoque', bgColor: 'bg-green-500' },
+    { title: 'Serviços', icon: Wrench, url: 'Servicos', bgColor: 'bg-purple-500' }
   ];
 
   return (
-    <div className="w-full space-y-4 md:space-y-6">
+    <div className="w-full max-w-6xl mx-auto space-y-4">
       {/* Mensagem de erro */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
@@ -179,19 +177,88 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-        {statsData.map((stat, index) => (
-          <StatsCard key={index} {...stat} loading={loading} />
-        ))}
+      {/* Stats Cards - Grid 2x2 no mobile */}
+      <div className="grid grid-cols-2 gap-3">
+        <StatsCard
+          title="A Receber"
+          value={formatCurrency(stats.totalReceber)}
+          subtitle={`${stats.contasReceberPendentes} pendentes`}
+          icon={TrendingUp}
+          iconBgColor="bg-emerald-500"
+          loading={loading}
+          isLarge
+        />
+        <StatsCard
+          title="Clientes Ativos"
+          value={stats.totalClientes}
+          subtitle="total"
+          icon={Users}
+          iconBgColor="bg-blue-500"
+          loading={loading}
+        />
+        <StatsCard
+          title="A Pagar"
+          value={stats.contasPagarPendentes}
+          subtitle={formatCurrency(stats.totalPagar)}
+          icon={AlertTriangle}
+          iconBgColor="bg-rose-500"
+          loading={loading}
+        />
+        <StatsCard
+          title="OS Abertas"
+          value={stats.osEmAndamento}
+          icon={ClipboardList}
+          iconBgColor="bg-violet-500"
+          loading={loading}
+        />
       </div>
 
-      {/* Quick Access Section */}
-      <div>
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 md:text-sm md:mb-4">Acesso Rápido</h2>
-        <div className="grid grid-cols-4 gap-3 md:grid-cols-4 md:gap-4">
-          {cardItems.map((item) => (
-            <DashboardCard key={item.title} {...item} />
+      {/* OS Recentes */}
+      <Card className="border-0 shadow-sm rounded-2xl overflow-hidden">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-gray-900">OS Recentes</h3>
+            <Link 
+              to={createPageUrl('OrdensServico')} 
+              className="text-sm text-blue-600 font-medium flex items-center gap-1 hover:text-blue-700"
+            >
+              Ver todas <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+          
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+            </div>
+          ) : recentOS.length === 0 ? (
+            <p className="text-center text-gray-500 py-8 text-sm">Nenhuma OS encontrada</p>
+          ) : (
+            <div>
+              {recentOS.map((os) => {
+                const statusInfo = getOSStatusInfo(os.status);
+                return (
+                  <RecentItem
+                    key={os.id}
+                    title={os.numero_os || `OS #${os.id?.slice(-6)}`}
+                    subtitle={os.data_abertura ? new Date(os.data_abertura).toLocaleDateString('pt-BR') : '-'}
+                    value={formatCurrency(os.valor_total || 0)}
+                    status={statusInfo.label}
+                    statusColor={statusInfo.color}
+                    onClick={() => window.location.href = createPageUrl('OrdensServico')}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Ações Rápidas */}
+      <div className="bg-slate-800 rounded-2xl p-4">
+        <h3 className="text-white font-semibold text-sm mb-3">Ações Rápidas</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {quickActions.map((action) => (
+            <QuickActionCard key={action.title} {...action} />
           ))}
         </div>
       </div>
