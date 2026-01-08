@@ -61,12 +61,23 @@ const cardItems = [
   }
 ];
 
+// Mobile: estilo app nativo | Desktop: estilo web system
 const DashboardCard = ({ title, icon: Icon, url, color }) => (
   <Link to={createPageUrl(url)}>
-    <Card className="hover:shadow-md transition-all h-full group border-slate-100 bg-white overflow-hidden">
-      <CardContent className="p-3 flex items-center gap-3">
-        <div className={`p-2 ${color} rounded-lg`}>
-          <Icon className="w-4 h-4 text-white" />
+    {/* Mobile: botão grande com ícone centralizado */}
+    <Card className="md:hidden active:scale-95 transition-transform h-full border-0 bg-white shadow-sm rounded-2xl overflow-hidden">
+      <CardContent className="p-4 flex flex-col items-center justify-center gap-2 text-center">
+        <div className={`p-3 ${color} rounded-xl`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+        <span className="text-xs font-medium text-gray-700">{title}</span>
+      </CardContent>
+    </Card>
+    {/* Desktop: card horizontal compacto */}
+    <Card className="hidden md:block hover:shadow-md transition-all h-full group border-slate-200 bg-white">
+      <CardContent className="p-4 flex items-center gap-3">
+        <div className={`p-2.5 ${color} rounded-lg`}>
+          <Icon className="w-5 h-5 text-white" />
         </div>
         <span className="text-sm font-medium text-gray-900 group-hover:text-slate-600">{title}</span>
       </CardContent>
@@ -75,23 +86,42 @@ const DashboardCard = ({ title, icon: Icon, url, color }) => (
 );
 
 const StatsCard = ({ title, value, icon: Icon, color, loading }) => (
-  <Card className="border-slate-100 bg-white">
-    <CardContent className="p-3">
-      <div className="flex items-center gap-2">
-        <div className={`p-1.5 ${color} bg-opacity-10 rounded-md`}>
-          <Icon className={`w-4 h-4 ${color.replace('bg-', 'text-')}`} />
+  <>
+    {/* Mobile: card compacto estilo app */}
+    <Card className="md:hidden border-0 bg-white shadow-sm rounded-2xl">
+      <CardContent className="p-3 flex items-center gap-3">
+        <div className={`p-2 ${color} bg-opacity-15 rounded-xl`}>
+          <Icon className={`w-5 h-5 ${color.replace('bg-', 'text-')}`} />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-[10px] text-gray-500 uppercase truncate">{title}</p>
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
           ) : (
-            <span className="text-lg font-bold text-gray-900">{value}</span>
+            <span className="text-xl font-bold text-gray-900">{value}</span>
           )}
         </div>
-      </div>
-    </CardContent>
-  </Card>
+      </CardContent>
+    </Card>
+    {/* Desktop: card com mais detalhes */}
+    <Card className="hidden md:block border-slate-200 bg-white hover:shadow-sm transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-gray-500 uppercase mb-1">{title}</p>
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+            ) : (
+              <span className="text-2xl font-bold text-gray-900">{value}</span>
+            )}
+          </div>
+          <div className={`p-3 ${color} bg-opacity-10 rounded-xl`}>
+            <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </>
 );
 
 export default function Dashboard() {
@@ -188,19 +218,17 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="w-full space-y-4">
-
-
+    <div className="w-full space-y-4 md:space-y-6">
       {/* Mensagem de erro */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500" />
+        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
           <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} loading={loading} />
         ))}
@@ -208,8 +236,8 @@ export default function Dashboard() {
 
       {/* Quick Access Section */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">Acesso Rápido</h2>
-        <div className="grid gap-2 grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 md:text-sm md:mb-4">Acesso Rápido</h2>
+        <div className="grid grid-cols-4 gap-3 md:grid-cols-4 md:gap-4">
           {cardItems.map((item) => (
             <DashboardCard key={item.title} {...item} />
           ))}
