@@ -164,7 +164,7 @@ export default function CotacoesEPIPage() {
   return (
     <ProtectedPage pageName="CotacoesEPI">
       <Toaster />
-      <div className="min-h-screen bg-slate-50">
+      <div className="min-h-screen bg-slate-50 text-black">
         {/* Header */}
         <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">

@@ -4,8 +4,6 @@ import { createPageUrl } from "@/utils";
 import ErrorBoundary from "@/components/errors/ErrorBoundary";
 import { base44 } from "@/api/base44Client";
 import { usePermissions } from '@/components/ProtectedPage';
-import MobileBottomNav from "@/components/MobileBottomNav";
-import MobileMenu from "@/components/MobileMenu";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -125,7 +123,10 @@ const navigationGroups = [
       { title: "Condições de Pagamento", url: "CondicoesPagamento", icon: FileText, module: "configuracoes" },
       { title: "Departamentos", url: "Departamentos", icon: Building2, module: "rh" },
       { title: "Cargos", url: "Cargos", icon: Users, module: "rh" },
-      { title: "Tipos de Despesas", url: "TiposDespesa", icon: Tags, module: "configuracoes" }
+      { title: "Tipos de Despesas", url: "TiposDespesa", icon: Tags, module: "configuracoes" },
+      { title: "EPIs", url: "EPIs", icon: HardHat, module: "configuracoes" },
+      { title: "Cotações EPI", url: "CotacoesEPI", icon: ShoppingCart, module: "configuracoes" },
+      { title: "Relatório Entregas EPI", url: "RelatorioEntregasEPI", icon: FileText, module: "configuracoes" }
     ]
   },
   {
@@ -138,10 +139,7 @@ const navigationGroups = [
       { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
       { title: "Folha de Pagamento", url: "FolhaPagamento", icon: Wallet, module: "folha" },
       { title: "13º Salário", url: "Folha13", icon: Wallet, module: "folha" },
-      { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" },
-      { title: "EPIs", url: "EPIs", icon: HardHat, module: "funcionarios" },
-      { title: "Cotações EPI", url: "CotacoesEPI", icon: ShoppingCart, module: "funcionarios" },
-      { title: "Relatório Entregas EPI", url: "RelatorioEntregasEPI", icon: FileText, module: "funcionarios" }
+      { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" }
     ]
   },
   {
@@ -266,15 +264,14 @@ const CustomSidebarFooter = () => {
 };
 
 export default function Layout({ children, currentPageName }) {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [navigationError, setNavigationError] = useState(null);
-    const [nomeEmpresa, setNomeEmpresa] = useState("");
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    const { hasModule, isAdmin } = usePermissions();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [navigationError, setNavigationError] = useState(null);
+  const [nomeEmpresa, setNomeEmpresa] = useState("");
+  
+  const { hasModule, isAdmin } = usePermissions();
 
   useEffect(() => {
     let viewport = document.querySelector('meta[name="viewport"]');
@@ -543,25 +540,13 @@ export default function Layout({ children, currentPageName }) {
 
             <PageTransition error={navigationError}>
               <ErrorBoundary currentPageName={currentPageName}>
-                <div className="text-slate-800 p-3 md:p-5 lg:p-6 flex-1 overflow-auto bg-slate-50 pb-20 md:pb-6">
+                <div className="text-slate-800 p-4 flex-1 overflow-auto md:p-6 lg:p-8">
                   {children}
                 </div>
               </ErrorBoundary>
             </PageTransition>
           </main>
         </div>
-        
-        {/* Mobile Bottom Navigation */}
-        <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
-        
-        {/* Mobile Full Menu */}
-        <MobileMenu 
-          isOpen={mobileMenuOpen} 
-          onClose={() => setMobileMenuOpen(false)}
-          user={user}
-          onLogout={handleLogout}
-        />
-        
         <Toaster />
       </SidebarProvider>
     </>

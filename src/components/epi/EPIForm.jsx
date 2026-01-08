@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { HardHat, Save, X, Upload } from 'lucide-react';
+import { HardHat, Save, X, Upload, Users } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 
 const categoriaOptions = [
@@ -23,7 +24,7 @@ const categoriaOptions = [
 
 const unidadeOptions = ['UN', 'PAR', 'KIT', 'CX', 'PCT'];
 
-export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], onSave }) {
+export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], cargos = [], onSave }) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,6 +37,7 @@ export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], onSav
     unidade: 'UN',
     preco_referencia: '',
     fornecedor_padrao_id: '',
+    cargos_ids: [],
     foto_url: '',
     status: 'ativo',
     observacoes: ''
@@ -53,6 +55,7 @@ export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], onSav
         unidade: epi.unidade || 'UN',
         preco_referencia: epi.preco_referencia || '',
         fornecedor_padrao_id: epi.fornecedor_padrao_id || '',
+        cargos_ids: epi.cargos_ids || [],
         foto_url: epi.foto_url || '',
         status: epi.status || 'ativo',
         observacoes: epi.observacoes || ''
@@ -68,6 +71,7 @@ export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], onSav
         unidade: 'UN',
         preco_referencia: '',
         fornecedor_padrao_id: '',
+        cargos_ids: [],
         foto_url: '',
         status: 'ativo',
         observacoes: ''
@@ -107,7 +111,8 @@ export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], onSav
         ...formData,
         vida_util_meses: formData.vida_util_meses ? Number(formData.vida_util_meses) : null,
         preco_referencia: formData.preco_referencia ? Number(formData.preco_referencia) : null,
-        fornecedor_padrao_id: formData.fornecedor_padrao_id || null
+        fornecedor_padrao_id: formData.fornecedor_padrao_id || null,
+        cargos_ids: formData.cargos_ids || []
       };
 
       if (epi?.id) {
@@ -255,6 +260,37 @@ export default function EPIForm({ isOpen, onClose, epi, fornecedores = [], onSav
                 placeholder="Descrição detalhada do EPI..."
                 rows={3}
               />
+            </div>
+
+            {/* Cargos que utilizam este EPI */}
+            <div className="md:col-span-2">
+              <Label className="text-slate-900 flex items-center gap-2 mb-2">
+                <Users className="w-4 h-4" />
+                Cargos que utilizam este EPI
+              </Label>
+              <div className="border rounded-lg p-4 bg-slate-50 max-h-40 overflow-y-auto">
+                {cargos.length === 0 ? (
+                  <p className="text-sm text-slate-500">Nenhum cargo cadastrado</p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {cargos.map(cargo => (
+                      <label key={cargo.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-slate-100 p-1 rounded">
+                        <Checkbox
+                          checked={formData.cargos_ids?.includes(cargo.id)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              handleChange('cargos_ids', [...(formData.cargos_ids || []), cargo.id]);
+                            } else {
+                              handleChange('cargos_ids', (formData.cargos_ids || []).filter(id => id !== cargo.id));
+                            }
+                          }}
+                        />
+                        {cargo.nome}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="md:col-span-2">

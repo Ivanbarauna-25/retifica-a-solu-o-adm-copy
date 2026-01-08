@@ -45,6 +45,7 @@ const statusColors = {
 export default function EPIsPage() {
   const [epis, setEpis] = useState([]);
   const [fornecedores, setFornecedores] = useState([]);
+  const [cargos, setCargos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showViewer, setShowViewer] = useState(false);
@@ -65,12 +66,14 @@ export default function EPIsPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [episData, fornecedoresData] = await Promise.all([
+      const [episData, fornecedoresData, cargosData] = await Promise.all([
         base44.entities.EPI.list('-created_date'),
-        base44.entities.Fornecedor.list()
+        base44.entities.Fornecedor.list(),
+        base44.entities.Cargo.list()
       ]);
       setEpis(episData || []);
       setFornecedores(fornecedoresData || []);
+      setCargos(cargosData || []);
     } catch (error) {
       console.error('Erro ao carregar EPIs:', error);
       toast({
@@ -399,6 +402,7 @@ export default function EPIsPage() {
         }}
         epi={epiSelecionado}
         fornecedores={fornecedores}
+        cargos={cargos}
         onSave={handleSave}
       />
 
