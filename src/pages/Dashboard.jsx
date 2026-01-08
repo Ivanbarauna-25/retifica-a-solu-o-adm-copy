@@ -227,42 +227,66 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="w-full h-full p-4 md:p-6 space-y-6 bg-slate-50">
-      {/* Header Compacto */}
-      <div className="flex justify-between items-center bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+    <div className="w-full h-full space-y-4 md:space-y-6">
+      {/* Header - Mais compacto no mobile */}
+      <div className="flex justify-between items-center bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-100">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            Painel de Controle
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-0.5 md:mb-1">
+            Dashboard
           </h1>
-          <p className="text-gray-500 text-sm">
-            Visão geral da sua oficina mecânica.
+          <p className="text-gray-500 text-xs md:text-sm">
+            Visão geral da sua oficina
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
+        <div className="flex items-center gap-2 text-green-600 bg-green-50 px-2 md:px-3 py-1 md:py-1.5 rounded-full">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <span className="font-medium text-xs">Online</span>
+          <span className="font-medium text-[10px] md:text-xs">Online</span>
         </div>
       </div>
 
       {/* Mensagem de erro */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500" />
-          <p className="text-red-700 text-sm">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 md:p-4 flex items-center gap-2 md:gap-3">
+          <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-500 shrink-0" />
+          <p className="text-red-700 text-xs md:text-sm">{error}</p>
         </div>
       )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statsData.map((stat, index) => (
+      {/* Stats Cards - Grid 2x2 no mobile */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+        {statsData.slice(0, 4).map((stat, index) => (
           <StatsCard key={index} {...stat} loading={loading} />
         ))}
       </div>
 
-      {/* Quick Access Section */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-6 px-1 border-l-4 border-slate-800 pl-4">Módulos Essenciais</h2>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats secundárias */}
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
+        {statsData.slice(4).map((stat, index) => (
+          <StatsCard key={index} {...stat} loading={loading} />
+        ))}
+      </div>
+
+      {/* Quick Access Section - Ações Rápidas */}
+      <div className="bg-slate-800 rounded-xl p-4 md:p-6">
+        <h2 className="text-base md:text-lg font-bold text-white mb-4">Ações Rápidas</h2>
+        <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+          {cardItems.map((item) => (
+            <Link 
+              key={item.title} 
+              to={createPageUrl(item.url)}
+              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg transition-colors shrink-0"
+            >
+              <item.icon className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="text-xs md:text-sm font-medium whitespace-nowrap">{item.title}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Módulos em grid no desktop */}
+      <div className="hidden md:block">
+        <h2 className="text-lg font-bold text-gray-900 mb-4 px-1 border-l-4 border-slate-800 pl-4">Módulos Essenciais</h2>
+        <div className="grid gap-4 lg:gap-6 grid-cols-2 lg:grid-cols-4">
           {cardItems.map((item) => (
             <DashboardCard key={item.title} {...item} />
           ))}
