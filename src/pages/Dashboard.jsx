@@ -80,28 +80,28 @@ const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
   </Link>
 );
 
-const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => (
-  <Card className="relative overflow-hidden border-slate-100 bg-white hover:shadow-lg transition-shadow duration-300">
-    <CardContent className="p-6">
-      <div className="flex flex-col gap-4">
+const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading, large = false }) => (
+  <Card className={`relative overflow-hidden border-slate-100 bg-white hover:shadow-lg transition-shadow duration-300 ${large ? 'col-span-2 md:col-span-1' : ''}`}>
+    <CardContent className={`${large ? 'p-5' : 'p-4 md:p-6'}`}>
+      <div className="flex flex-col gap-2 md:gap-4">
         <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">{title}</p>
+          <div className="flex-1">
+            <p className="text-xs md:text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">{title}</p>
             {loading ? (
-              <div className="h-10 flex items-center">
-                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <div className="h-8 md:h-10 flex items-center">
+                <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-slate-400" />
               </div>
             ) : (
-              <h3 className="text-4xl font-extrabold text-gray-900">{value}</h3>
+              <h3 className={`font-extrabold text-gray-900 ${large ? 'text-2xl md:text-4xl' : 'text-xl md:text-3xl'}`}>{value}</h3>
             )}
           </div>
-          <div className={`p-3 ${color} bg-opacity-10 rounded-xl`}>
-            <Icon className={`w-8 h-8 ${color.replace('bg-', 'text-')}`} />
+          <div className={`p-2 md:p-3 ${color} rounded-xl shrink-0`}>
+            <Icon className={`w-5 h-5 md:w-7 md:h-7 text-white`} />
           </div>
         </div>
         {subtitle && !loading && (
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs font-medium text-slate-600">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] md:text-xs font-medium text-slate-500">
               {subtitle}
             </span>
           </div>
