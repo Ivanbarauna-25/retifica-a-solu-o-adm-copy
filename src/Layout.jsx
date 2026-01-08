@@ -543,13 +543,25 @@ export default function Layout({ children, currentPageName }) {
 
             <PageTransition error={navigationError}>
               <ErrorBoundary currentPageName={currentPageName}>
-                <div className="text-slate-800 p-4 flex-1 overflow-auto md:p-6 lg:p-8">
+                <div className="text-slate-800 p-3 md:p-5 lg:p-6 flex-1 overflow-auto bg-slate-50 pb-20 md:pb-6">
                   {children}
                 </div>
               </ErrorBoundary>
             </PageTransition>
           </main>
         </div>
+        
+        {/* Mobile Bottom Navigation */}
+        <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
+        
+        {/* Mobile Full Menu */}
+        <MobileMenu 
+          isOpen={mobileMenuOpen} 
+          onClose={() => setMobileMenuOpen(false)}
+          user={user}
+          onLogout={handleLogout}
+        />
+        
         <Toaster />
       </SidebarProvider>
     </>
