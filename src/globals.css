@@ -77,6 +77,125 @@ html, body {
   padding: 0;
 }
 
+/* ===== MOBILE RESPONSIVE UTILITIES ===== */
+
+/* Page headers responsivos */
+.page-header {
+  @apply px-4 py-6 md:px-6 md:py-8;
+}
+
+.page-header h1 {
+  @apply text-xl md:text-3xl;
+}
+
+.page-header p {
+  @apply text-xs md:text-base;
+}
+
+/* Stats cards grid responsivo */
+.stats-grid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4;
+}
+
+.stats-grid .stat-card {
+  @apply p-3 md:p-6;
+}
+
+.stats-grid .stat-value {
+  @apply text-lg md:text-2xl;
+}
+
+.stats-grid .stat-label {
+  @apply text-[10px] md:text-sm;
+}
+
+/* Botões responsivos no header */
+.header-actions {
+  @apply flex gap-1.5 md:gap-2 flex-wrap;
+}
+
+.header-actions button {
+  @apply text-xs md:text-sm px-2 md:px-4 py-1.5 md:py-2;
+}
+
+.header-actions button svg {
+  @apply w-3.5 h-3.5 md:w-4 md:h-4;
+}
+
+/* Tabelas - esconder colunas menos importantes em mobile */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+  
+  /* Cells mais compactas */
+  table td, table th {
+    padding: 0.5rem 0.375rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Badge menor em mobile */
+  .badge, [class*="Badge"] {
+    font-size: 0.625rem !important;
+    padding: 0.125rem 0.375rem !important;
+  }
+  
+  /* Botões de ação menores */
+  .action-buttons button {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+  }
+  
+  .action-buttons button svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+/* Modais responsivos */
+@media (max-width: 768px) {
+  [role="dialog"] > div {
+    max-width: calc(100vw - 1rem) !important;
+    max-height: calc(100vh - 2rem) !important;
+    margin: 0.5rem !important;
+    border-radius: 0.75rem !important;
+  }
+  
+  [role="dialog"] .dialog-content {
+    padding: 1rem !important;
+  }
+  
+  /* Form inputs em modais */
+  [role="dialog"] input,
+  [role="dialog"] select,
+  [role="dialog"] textarea {
+    font-size: 16px !important; /* Previne zoom no iOS */
+  }
+}
+
+/* Cards responsivos */
+.responsive-card {
+  @apply p-3 md:p-6;
+}
+
+.responsive-card .card-title {
+  @apply text-sm md:text-lg;
+}
+
+.responsive-card .card-value {
+  @apply text-lg md:text-2xl;
+}
+
+/* Containers responsivos */
+.page-container {
+  @apply px-3 md:px-6;
+}
+
+.max-container {
+  @apply max-w-[1800px] mx-auto;
+}
+
 /* Estilos personalizados para o formulário de orçamento */
 
 /* Animações suaves para transições */

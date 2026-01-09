@@ -460,20 +460,20 @@ export default function AdiantamentosPage() {
   return (
   <>
     <div className="min-h-screen bg-slate-50">
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Wallet className="w-8 h-8" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Wallet className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Adiantamentos</h1>
-                  <p className="text-slate-300">Gestão de adiantamentos salariais</p>
+                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Adiantamentos</h1>
+                  <p className="text-slate-300 text-xs md:text-base">Gestão de adiantamentos salariais</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap">
                 <Button 
                   variant="outline" 
                   onClick={() => setShowFilters(!showFilters)} 
@@ -520,53 +520,53 @@ export default function AdiantamentosPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total Geral</p>
-                  <div className="text-2xl font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Geral</p>
+                  <div className="text-base md:text-2xl font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Pendentes</p>
-                  <div className="text-2xl font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Pendentes</p>
+                  <div className="text-base md:text-2xl font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Aprovados</p>
-                  <div className="text-2xl font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Aprovados</p>
+                  <div className="text-base md:text-2xl font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Pagos</p>
-                  <div className="text-2xl font-bold text-green-600">{formatCurrency(totais.pago)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Pagos</p>
+                  <div className="text-base md:text-2xl font-bold text-green-600">{formatCurrency(totais.pago)}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
               <Input
-                placeholder="Buscar por funcionário ou motivo..."
+                placeholder="Buscar..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="pl-10 text-slate-900"
+                className="pl-9 md:pl-10 text-slate-900 text-sm md:text-base"
               />
             </div>
           </div>
@@ -649,7 +649,8 @@ export default function AdiantamentosPage() {
             </Card>
           )}
 
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {/* Tabela Desktop */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden hidden md:block">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -766,13 +767,113 @@ export default function AdiantamentosPage() {
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between text-sm px-2">
-            <div className="text-slate-600 flex items-center gap-2">
-              <Filter className="w-4 h-4" /> 
-              Exibindo: <strong className="text-slate-900">{filtrados.length}</strong> registro(s)
+          {/* Cards Mobile */}
+          <div className="md:hidden space-y-3">
+            {isLoading ? (
+              <div className="text-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-slate-600 mx-auto" />
+                <p className="mt-2 text-slate-600 text-sm">Carregando...</p>
+              </div>
+            ) : filtrados.length === 0 ? (
+              <div className="text-center py-8 text-slate-500 text-sm">
+                Nenhum registro encontrado.
+              </div>
+            ) : (
+              filtrados.map((a) => {
+                const valorPago = Number(a.valor_pago) || 0;
+                const valorRestante = Number(a.valor) - valorPago;
+                
+                return (
+                  <div key={a.id} className="bg-white rounded-lg border border-slate-200 shadow-sm p-3">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2">
+                        {a.status === 'pendente' && (
+                          <Checkbox
+                            checked={isSelected(a.id)}
+                            onCheckedChange={(checked) => handleSelectItem(a.id, checked)}
+                            className="mt-0.5"
+                          />
+                        )}
+                        <div>
+                          <h3 className="font-semibold text-slate-900 text-sm">{getFuncionarioNome(a.funcionario_id)}</h3>
+                          <p className="text-xs text-slate-500">{formatDate(a.data_adiantamento)}</p>
+                        </div>
+                      </div>
+                      <Badge className={`${statusColors[a.status] || 'bg-gray-100 text-gray-800'} text-[10px] px-1.5 py-0.5`}>
+                        {statusLabels[a.status] || a.status}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-2">
+                      <div>
+                        <span className="text-slate-500">Valor:</span>
+                        <span className="font-semibold text-slate-900 ml-1">{formatCurrency(a.valor)}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Competência:</span>
+                        <span className="text-slate-900 ml-1">{a.competencia || "-"}</span>
+                      </div>
+                      {valorPago > 0 && (
+                        <div>
+                          <span className="text-slate-500">Pago:</span>
+                          <span className="font-semibold text-green-600 ml-1">{formatCurrency(valorPago)}</span>
+                        </div>
+                      )}
+                      {valorRestante > 0 && valorPago > 0 && (
+                        <div>
+                          <span className="text-slate-500">Restante:</span>
+                          <span className="font-semibold text-red-600 ml-1">{formatCurrency(valorRestante)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-end gap-1 pt-2 border-t border-slate-100">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => abrirVisualizacao(a)}
+                        className="h-8 w-8 p-0 hover:bg-blue-50 text-blue-600"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => abrirPagamentoParcial(a)}
+                        className="h-8 w-8 p-0 hover:bg-green-50 text-green-600"
+                      >
+                        <Receipt className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => abrirEdicao(a)}
+                        className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => excluir(a.id)}
+                        className="h-8 w-8 p-0 hover:bg-red-50 text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <div className="mt-3 md:mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs md:text-sm px-2 gap-2">
+            <div className="text-slate-600 flex items-center gap-2 flex-wrap">
+              <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" /> 
+              <span><strong className="text-slate-900">{filtrados.length}</strong> registro(s)</span>
               {selecionados.length > 0 && (
-                <span className="ml-4 text-blue-600">
-                  | Selecionados: <strong>{selecionados.length}</strong> ({formatCurrency(totalSelecionados)})
+                <span className="text-blue-600">
+                  | <strong>{selecionados.length}</strong> selecionado(s)
                 </span>
               )}
             </div>
