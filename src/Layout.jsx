@@ -282,7 +282,8 @@ export default function Layout({ children, currentPageName }) {
       viewport.name = 'viewport';
       document.head.appendChild(viewport);
     }
-    viewport.content = 'width=device-width, initial-scale=1.0';
+    // Prevent zoom, ensure proper scaling on all devices
+    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
   }, []);
 
   // Buscar configurações da empresa
@@ -502,8 +503,8 @@ export default function Layout({ children, currentPageName }) {
             <CustomSidebarFooter />
           </Sidebar>
 
-          <main className="flex-1 flex flex-col pb-16 md:pb-0">
-            <header className="bg-slate-800 text-slate-50 px-4 md:px-6 py-3 no-print border-b border-gray-200 flex items-center justify-between shadow-sm" role="banner">
+          <main className="flex-1 flex flex-col pb-14 md:pb-0 min-h-0 overflow-hidden">
+            <header className="bg-slate-800 text-slate-50 px-3 md:px-6 py-2 md:py-3 no-print border-b border-gray-200 flex items-center justify-between shadow-sm flex-shrink-0" role="banner">
               <SidebarTrigger className="p-2 -ml-2 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
                 <PanelLeft className="w-6 h-6 text-slate-50" aria-hidden="true" />
               </SidebarTrigger>
@@ -513,10 +514,10 @@ export default function Layout({ children, currentPageName }) {
                   <Wrench className="w-4 h-4 text-white" />
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                {PageIcon && <PageIcon className="w-6 h-6 text-slate-400" />}
-                <h1 className="text-lg font-semibold" tabIndex={-1}>{pageTitle}</h1>
-              </div>
+              <div className="flex items-center gap-2">
+                  {PageIcon && <PageIcon className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />}
+                  <h1 className="text-sm md:text-base font-semibold truncate max-w-[150px] md:max-w-none" tabIndex={-1}>{pageTitle}</h1>
+                </div>
 
               {user ?
               <DropdownMenu>
@@ -549,7 +550,7 @@ export default function Layout({ children, currentPageName }) {
 
             <PageTransition error={navigationError}>
               <ErrorBoundary currentPageName={currentPageName}>
-                <div className="text-slate-800 p-4 flex-1 overflow-auto md:p-6 lg:p-8">
+                <div className="text-slate-800 p-2 md:p-4 lg:p-6 flex-1 overflow-auto scroll-smooth">
                   {children}
                 </div>
               </ErrorBoundary>
