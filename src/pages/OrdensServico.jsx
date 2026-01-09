@@ -26,7 +26,7 @@ import {
   Merge
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
-import OrdemServicoViewer from '@/components/os/OrdemServicoViewer';
+import OrdemServicoViewer from '@/components/os/Ordem ServicoViewer';
 import OrdemServicoForm from '@/components/os/OrdemServicoForm';
 import RelatorioOSFiltersModal from '@/components/os/RelatorioOSFiltersModal';
 import RelatorioOS from '@/components/os/RelatorioOS';
