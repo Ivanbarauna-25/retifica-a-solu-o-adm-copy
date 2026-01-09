@@ -155,75 +155,75 @@ export default function ClientesPage() {
     <>
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Users className="w-8 h-8" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Users className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Clientes e Veículos</h1>
-                  <p className="text-slate-300">Gestão de clientes e frota veicular</p>
+                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Clientes e Veículos</h1>
+                  <p className="text-slate-300 text-xs md:text-base">Gestão de clientes e frota</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={() => setIsImportModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 hidden sm:flex"
                 >
-                  <UploadCloud className="w-4 h-4" />
+                  <UploadCloud className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   Importar
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => window.print()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
                 >
-                  <Printer className="w-4 h-4" />
-                  Imprimir
+                  <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Imprimir</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => openClienteForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
                 >
-                  <Plus className="w-4 h-4" />
-                  Novo Cliente
+                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Novo</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total de Clientes</p>
-                  <div className="text-2xl font-bold text-slate-900">{clientes.length}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Clientes</p>
+                  <div className="text-lg md:text-2xl font-bold text-slate-900">{clientes.length}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total de Veículos</p>
-                  <div className="text-2xl font-bold text-blue-600">{totalVeiculos}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Veículos</p>
+                  <div className="text-lg md:text-2xl font-bold text-blue-600">{totalVeiculos}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
             <AdvancedSearchFilters
               entityName="clientes"
               searchFields={clienteSearchFields}

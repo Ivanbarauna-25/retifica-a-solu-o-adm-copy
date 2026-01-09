@@ -252,88 +252,88 @@ export default function EstoquePage() {
         </div>
 
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl no-print">
+        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl no-print">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Package className="w-8 h-8" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Package className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Estoque de Peças</h1>
-                  <p className="text-slate-300">Gerenciamento de inventário</p>
+                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Estoque de Peças</h1>
+                  <p className="text-slate-300 text-xs md:text-base">Gerenciamento de inventário</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={handlePrint} 
                   disabled={isPrinting}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
                 >
-                  {isPrinting ? <Loader2 className="w-4 h-4 animate-spin"/> : <Printer className="w-4 h-4"/>}
-                  Imprimir
+                  {isPrinting ? <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin"/> : <Printer className="w-3.5 h-3.5 md:w-4 md:h-4"/>}
+                  <span className="hidden sm:inline">Imprimir</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => openForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
                 >
-                  <Plus className="w-4 h-4" />
-                  Adicionar Peça
+                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Adicionar</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           {/* Stats Cards - No Print */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 no-print">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6 no-print">
             <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total de Itens</p>
-                  <div className="text-2xl font-bold text-slate-900">{stats.totalItens}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Itens</p>
+                  <div className="text-lg md:text-2xl font-bold text-slate-900">{stats.totalItens}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Valor em Custo</p>
-                  <div className="text-2xl font-bold text-blue-600">{formatCurrency(stats.valorCusto)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Custo</p>
+                  <div className="text-base md:text-2xl font-bold text-blue-600">{formatCurrency(stats.valorCusto)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Valor em Venda</p>
-                  <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.valorVenda)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Venda</p>
+                  <div className="text-base md:text-2xl font-bold text-green-600">{formatCurrency(stats.valorVenda)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Baixo Estoque</p>
-                    <div className="text-2xl font-bold text-red-600">{stats.baixoEstoque}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Baixo Estoque</p>
+                    <div className="text-lg md:text-2xl font-bold text-red-600">{stats.baixoEstoque}</div>
                   </div>
-                  <AlertTriangle className="w-8 h-8 text-red-100" />
+                  <AlertTriangle className="w-5 h-5 md:w-8 md:h-8 text-red-100" />
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4 no-print">
+          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4 no-print">
             <AdvancedSearchFilters
               entityName="estoque"
               searchFields={estoqueSearchFields}
