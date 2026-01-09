@@ -459,17 +459,17 @@ export default function AdiantamentosPage() {
 
   return (
   <>
-    <div className="min-h-screen bg-slate-50">
-        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
+    <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-4 shadow-lg">
           <div className="max-w-[1800px] mx-auto">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
               <div className="flex items-center gap-3">
-                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
-                  <Wallet className="w-6 h-6 md:w-8 md:h-8" />
+                <div className="bg-slate-700 p-2 rounded-lg">
+                  <Wallet className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Adiantamentos</h1>
-                  <p className="text-slate-300 text-xs md:text-base">Gestão de adiantamentos salariais</p>
+                  <h1 className="text-base md:text-xl font-bold">Adiantamentos</h1>
+                  <p className="text-slate-400 text-[10px] md:text-xs">Gestão de adiantamentos</p>
                 </div>
               </div>
 
@@ -520,53 +520,45 @@ export default function AdiantamentosPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Geral</p>
-                  <div className="text-base md:text-2xl font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
-                </div>
+        <div className="max-w-[1800px] mx-auto px-2 md:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-3 md:mb-4">
+            <Card className="border-l-3 border-l-slate-600 shadow-sm">
+              <CardContent className="p-2 md:p-4">
+                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Total</p>
+                <div className="text-sm md:text-lg font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Pendentes</p>
-                  <div className="text-base md:text-2xl font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
-                </div>
+            <Card className="border-l-3 border-l-yellow-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
+                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Pendentes</p>
+                <div className="text-sm md:text-lg font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Aprovados</p>
-                  <div className="text-base md:text-2xl font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
-                </div>
+            <Card className="border-l-3 border-l-blue-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
+                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Aprovados</p>
+                <div className="text-sm md:text-lg font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Pagos</p>
-                  <div className="text-base md:text-2xl font-bold text-green-600">{formatCurrency(totais.pago)}</div>
-                </div>
+            <Card className="border-l-3 border-l-green-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
+                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Pagos</p>
+                <div className="text-sm md:text-lg font-bold text-green-600">{formatCurrency(totais.pago)}</div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-3 mb-2 md:mb-3">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
+              <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
                 placeholder="Buscar..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="pl-9 md:pl-10 text-slate-900 text-sm md:text-base"
+                className="pl-8 text-slate-900 text-xs md:text-sm h-8 md:h-9"
               />
             </div>
           </div>
@@ -768,7 +760,7 @@ export default function AdiantamentosPage() {
           </div>
 
           {/* Cards Mobile */}
-          <div className="md:hidden space-y-3">
+          <div className="md:hidden space-y-2">
             {isLoading ? (
               <div className="text-center py-8">
                 <Loader2 className="w-6 h-6 animate-spin text-slate-600 mx-auto" />
@@ -784,81 +776,81 @@ export default function AdiantamentosPage() {
                 const valorRestante = Number(a.valor) - valorPago;
                 
                 return (
-                  <div key={a.id} className="bg-white rounded-lg border border-slate-200 shadow-sm p-3">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
+                  <div key={a.id} className="bg-white rounded-lg border border-slate-200 shadow-sm p-2.5">
+                    <div className="flex justify-between items-start mb-1.5">
+                      <div className="flex items-center gap-1.5">
                         {a.status === 'pendente' && (
                           <Checkbox
                             checked={isSelected(a.id)}
                             onCheckedChange={(checked) => handleSelectItem(a.id, checked)}
-                            className="mt-0.5"
+                            className="w-4 h-4"
                           />
                         )}
                         <div>
-                          <h3 className="font-semibold text-slate-900 text-sm">{getFuncionarioNome(a.funcionario_id)}</h3>
-                          <p className="text-xs text-slate-500">{formatDate(a.data_adiantamento)}</p>
+                          <h3 className="font-semibold text-slate-900 text-xs leading-tight">{getFuncionarioNome(a.funcionario_id)}</h3>
+                          <p className="text-[10px] text-slate-500">{formatDate(a.data_adiantamento)}</p>
                         </div>
                       </div>
-                      <Badge className={`${statusColors[a.status] || 'bg-gray-100 text-gray-800'} text-[10px] px-1.5 py-0.5`}>
+                      <Badge className={`${statusColors[a.status] || 'bg-gray-100 text-gray-800'} text-[9px] px-1.5 py-0.5`}>
                         {statusLabels[a.status] || a.status}
                       </Badge>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-2 text-xs mb-2">
+                    <div className="grid grid-cols-2 gap-1 text-[10px] mb-1.5">
                       <div>
                         <span className="text-slate-500">Valor:</span>
-                        <span className="font-semibold text-slate-900 ml-1">{formatCurrency(a.valor)}</span>
+                        <span className="font-semibold text-slate-900 ml-0.5">{formatCurrency(a.valor)}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500">Competência:</span>
-                        <span className="text-slate-900 ml-1">{a.competencia || "-"}</span>
+                        <span className="text-slate-500">Comp:</span>
+                        <span className="text-slate-900 ml-0.5">{a.competencia || "-"}</span>
                       </div>
                       {valorPago > 0 && (
                         <div>
                           <span className="text-slate-500">Pago:</span>
-                          <span className="font-semibold text-green-600 ml-1">{formatCurrency(valorPago)}</span>
+                          <span className="font-semibold text-green-600 ml-0.5">{formatCurrency(valorPago)}</span>
                         </div>
                       )}
                       {valorRestante > 0 && valorPago > 0 && (
                         <div>
-                          <span className="text-slate-500">Restante:</span>
-                          <span className="font-semibold text-red-600 ml-1">{formatCurrency(valorRestante)}</span>
+                          <span className="text-slate-500">Rest:</span>
+                          <span className="font-semibold text-red-600 ml-0.5">{formatCurrency(valorRestante)}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex justify-end gap-1 pt-2 border-t border-slate-100">
+                    <div className="flex justify-end gap-0.5 pt-1.5 border-t border-slate-100">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => abrirVisualizacao(a)}
-                        className="h-8 w-8 p-0 hover:bg-blue-50 text-blue-600"
+                        className="h-7 w-7 p-0 hover:bg-blue-50 text-blue-600"
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => abrirPagamentoParcial(a)}
-                        className="h-8 w-8 p-0 hover:bg-green-50 text-green-600"
+                        className="h-7 w-7 p-0 hover:bg-green-50 text-green-600"
                       >
-                        <Receipt className="h-4 w-4" />
+                        <Receipt className="h-3.5 w-3.5" />
                       </Button>
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => abrirEdicao(a)}
-                        className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600"
+                        className="h-7 w-7 p-0 hover:bg-amber-50 text-amber-600"
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => excluir(a.id)}
-                        className="h-8 w-8 p-0 hover:bg-red-50 text-red-600"
+                        className="h-7 w-7 p-0 hover:bg-red-50 text-red-600"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>
@@ -867,17 +859,14 @@ export default function AdiantamentosPage() {
             )}
           </div>
 
-          <div className="mt-3 md:mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs md:text-sm px-2 gap-2">
-            <div className="text-slate-600 flex items-center gap-2 flex-wrap">
-              <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" /> 
-              <span><strong className="text-slate-900">{filtrados.length}</strong> registro(s)</span>
+          <div className="mt-2 md:mt-3 flex items-center justify-between text-[10px] md:text-xs px-1 gap-2">
+            <div className="text-slate-500 flex items-center gap-1">
+              <span><strong className="text-slate-700">{filtrados.length}</strong> itens</span>
               {selecionados.length > 0 && (
-                <span className="text-blue-600">
-                  | <strong>{selecionados.length}</strong> selecionado(s)
-                </span>
+                <span className="text-blue-600">• <strong>{selecionados.length}</strong> sel.</span>
               )}
             </div>
-            <div className="font-bold text-slate-900">Total: {formatCurrency(totalFiltrado)}</div>
+            <div className="font-bold text-slate-900 text-xs">{formatCurrency(totalFiltrado)}</div>
           </div>
         </div>
       </div>
