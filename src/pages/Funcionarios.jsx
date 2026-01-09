@@ -335,41 +335,41 @@ export default function FuncionariosPage() {
       <Toaster />
       <div className="min-h-screen bg-slate-50">
         {/* Header com Botões */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Users className="w-8 h-8" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Users className="w-6 h-6 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Equipe</h1>
-                  <p className="text-slate-300">Gerenciamento de funcionários e colaboradores</p>
+                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Equipe</h1>
+                  <p className="text-slate-300 text-xs md:text-base">Gerenciamento de funcionários</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
                 <Button
                   onClick={() => setShowFilters(!showFilters)}
                   variant="outline"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filtros
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4">
+                  <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Filtros</span>
                 </Button>
                 {canCreateFunc && (
                   <Button
                     onClick={() => setModalImportar(true)}
                     variant="outline"
-                    className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                    <Upload className="w-4 h-4" />
+                    className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 hidden sm:flex">
+                    <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     Importar
                   </Button>
                 )}
                 <Button
                   onClick={() => setShowRelatorio(true)}
                   variant="outline"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                  <FileText className="w-4 h-4" />
-                  Relatório
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4">
+                  <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Relatório</span>
                 </Button>
 
                 <DropdownMenu>
@@ -407,9 +407,9 @@ export default function FuncionariosPage() {
                   <Button
                     onClick={handleNovo}
                     variant="outline"
-                    className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                    <UserPlus className="w-4 h-4" />
-                    Novo Funcionário
+                    className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4">
+                    <UserPlus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <span className="hidden sm:inline">Novo</span>
                   </Button>
                 )}
               </div>
@@ -417,53 +417,53 @@ export default function FuncionariosPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Total Funcionários</p>
-                    <div className="text-2xl font-bold text-slate-900">{funcionarios.length}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total</p>
+                    <div className="text-lg md:text-2xl font-bold text-slate-900">{funcionarios.length}</div>
                   </div>
-                  <Users className="w-8 h-8 text-slate-300" />
+                  <Users className="w-5 h-5 md:w-8 md:h-8 text-slate-300" />
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Ativos</p>
-                    <div className="text-2xl font-bold text-green-600">{funcionarios.filter(f => f.status === 'ativo').length}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Ativos</p>
+                    <div className="text-lg md:text-2xl font-bold text-green-600">{funcionarios.filter(f => f.status === 'ativo').length}</div>
                   </div>
-                  <CheckCircle className="w-8 h-8 text-green-100" />
+                  <CheckCircle className="w-5 h-5 md:w-8 md:h-8 text-green-100" />
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Férias</p>
-                    <div className="text-2xl font-bold text-yellow-600">{funcionarios.filter(f => f.status === 'ferias').length}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Férias</p>
+                    <div className="text-lg md:text-2xl font-bold text-yellow-600">{funcionarios.filter(f => f.status === 'ferias').length}</div>
                   </div>
-                  <Calendar className="w-8 h-8 text-yellow-100" />
+                  <Calendar className="w-5 h-5 md:w-8 md:h-8 text-yellow-100" />
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Demitidos/Afastados</p>
-                    <div className="text-2xl font-bold text-red-600">{funcionarios.filter(f => f.status === 'demitido' || f.status === 'afastado').length}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Afastados</p>
+                    <div className="text-lg md:text-2xl font-bold text-red-600">{funcionarios.filter(f => f.status === 'demitido' || f.status === 'afastado').length}</div>
                   </div>
-                  <UserX className="w-8 h-8 text-red-100" />
+                  <UserX className="w-5 h-5 md:w-8 md:h-8 text-red-100" />
                 </div>
               </CardContent>
             </Card>
@@ -537,15 +537,15 @@ export default function FuncionariosPage() {
 
           {/* Busca Simples */}
           {!showFilters && (
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+            <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
                 <Input
                   type="text"
-                  placeholder="Buscar por nome, CPF ou email..."
+                  placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-slate-200" />
+                  className="pl-9 md:pl-10 border-slate-200 text-sm md:text-base" />
               </div>
             </div>
           )}
