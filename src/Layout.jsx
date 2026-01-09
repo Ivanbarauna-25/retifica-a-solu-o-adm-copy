@@ -65,6 +65,8 @@ import {
   DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { Toaster } from "@/components/ui/toaster";
+import { motion } from "framer-motion";
+import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 // Componente de Transição de Página Simplificado
 const PageTransition = ({ children, error }) => {
@@ -483,7 +485,8 @@ export default function Layout({ children, currentPageName }) {
       
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-slate-100">
-          <Sidebar className="no-print border-r-0 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex flex-col transition-all duration-300 shadow-xl" aria-label="Sidebar de Navegação">
+          {/* Sidebar - apenas desktop */}
+          <Sidebar className="no-print border-r-0 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-col transition-all duration-300 shadow-xl hidden md:flex" aria-label="Sidebar de Navegação">
             <CustomSidebarHeader />
             <SidebarContent className="flex min-h-0 flex-col gap-3 overflow-auto group-data-[collapsible=icon]:overflow-hidden p-3 flex-1">
               <SidebarMenu className="space-y-3">
@@ -499,11 +502,17 @@ export default function Layout({ children, currentPageName }) {
             <CustomSidebarFooter />
           </Sidebar>
 
-          <main className="flex-1 flex flex-col">
-            <header className="bg-slate-800 text-slate-50 px-6 py-3 no-print border-b border-gray-200 flex items-center justify-between shadow-sm" role="banner">
-              <SidebarTrigger className="p-2 -ml-2 rounded-md hover:bg-slate-700 transition-colors duration-200" aria-label="Alternar menu Sidebar">
+          <main className="flex-1 flex flex-col pb-16 md:pb-0">
+            <header className="bg-slate-800 text-slate-50 px-4 md:px-6 py-3 no-print border-b border-gray-200 flex items-center justify-between shadow-sm" role="banner">
+              <SidebarTrigger className="p-2 -ml-2 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
                 <PanelLeft className="w-6 h-6 text-slate-50" aria-hidden="true" />
               </SidebarTrigger>
+              {/* Logo mobile */}
+              <div className="flex items-center gap-2 md:hidden">
+                <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center">
+                  <Wrench className="w-4 h-4 text-white" />
+                </div>
+              </div>
               <div className="flex items-center gap-3">
                 {PageIcon && <PageIcon className="w-6 h-6 text-slate-400" />}
                 <h1 className="text-lg font-semibold" tabIndex={-1}>{pageTitle}</h1>
@@ -546,6 +555,9 @@ export default function Layout({ children, currentPageName }) {
               </ErrorBoundary>
             </PageTransition>
           </main>
+
+          {/* Navegação mobile inferior */}
+          <MobileBottomNav navigationGroups={navigationGroupsFiltered} user={user} />
         </div>
         <Toaster />
       </SidebarProvider>
