@@ -23,34 +23,34 @@ import {
   TrendingUp,
   Activity,
   Loader2,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle } from
+'lucide-react';
 
-const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => (
-  <Card className="relative overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border-0 shadow-sm group">
+const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) =>
+<Card className="relative overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border-0 shadow-sm group">
     <div className={`absolute top-0 left-0 w-full h-1 ${color}`} />
-    <CardContent className="p-5">
+    <CardContent className="mx-auto pt-4 pr-4 pb-4 pl-4">
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{title}</p>
-          {loading ? (
-            <div className="h-9 flex items-center">
+          {loading ?
+        <div className="h-9 flex items-center">
               <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-            </div>
-          ) : (
-            <h3 className="text-3xl font-bold text-slate-800">{value}</h3>
-          )}
-          {subtitle && !loading && (
-            <span className="text-xs text-slate-500 mt-1 block">{subtitle}</span>
-          )}
+            </div> :
+
+        <h3 className="text-3xl font-bold text-slate-800">{value}</h3>
+        }
+          {subtitle && !loading &&
+        <span className="text-xs text-slate-500 mt-1 block">{subtitle}</span>
+        }
         </div>
         <div className={`p-3 rounded-xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-300`}>
           <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
         </div>
       </div>
     </CardContent>
-  </Card>
-);
+  </Card>;
+
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -74,26 +74,26 @@ export default function Dashboard() {
       try {
         // Buscar dados em paralelo para melhor performance
         const [
-          ordensServico,
-          clientes,
-          funcionarios,
-          pecas,
-          contasReceber,
-          contasPagar,
-          tarefas
-        ] = await Promise.all([
-          base44.entities.OrdemServico.list(),
-          base44.entities.Cliente.list(),
-          base44.entities.Funcionario.filter({ status: 'ativo' }),
-          base44.entities.Peca.list(),
-          base44.entities.ContasReceber.filter({ status: 'pendente' }),
-          base44.entities.ContasPagar.filter({ status: 'pendente' }),
-          base44.entities.Tarefa.filter({ status: 'pendente' })
-        ]);
+        ordensServico,
+        clientes,
+        funcionarios,
+        pecas,
+        contasReceber,
+        contasPagar,
+        tarefas] =
+        await Promise.all([
+        base44.entities.OrdemServico.list(),
+        base44.entities.Cliente.list(),
+        base44.entities.Funcionario.filter({ status: 'ativo' }),
+        base44.entities.Peca.list(),
+        base44.entities.ContasReceber.filter({ status: 'pendente' }),
+        base44.entities.ContasPagar.filter({ status: 'pendente' }),
+        base44.entities.Tarefa.filter({ status: 'pendente' })]
+        );
 
         if (!mounted) return;
 
-        const osEmAndamento = ordensServico.filter(os => os.status === 'em_andamento').length;
+        const osEmAndamento = ordensServico.filter((os) => os.status === 'em_andamento').length;
 
         setStats({
           totalOS: ordensServico.length,
@@ -115,57 +115,57 @@ export default function Dashboard() {
     };
 
     fetchDashboardData();
-    return () => { mounted = false; };
+    return () => {mounted = false;};
   }, []);
 
   const statsData = [
-    {
-      title: 'Ordens de Serviço',
-      value: stats.totalOS,
-      icon: ClipboardList,
-      color: 'bg-blue-500',
-      subtitle: `${stats.osEmAndamento} em andamento`
-    },
-    {
-      title: 'Clientes Cadastrados',
-      value: stats.totalClientes,
-      icon: Users,
-      color: 'bg-green-500'
-    },
-    {
-      title: 'Funcionários Ativos',
-      value: stats.totalFuncionarios,
-      icon: User,
-      color: 'bg-purple-500'
-    },
-    {
-      title: 'Produtos no Estoque',
-      value: stats.estoqueItens,
-      icon: Package,
-      color: 'bg-orange-500'
-    },
-    {
-      title: 'Contas a Receber',
-      value: stats.contasReceberPendentes,
-      icon: TrendingUp,
-      color: 'bg-emerald-500',
-      subtitle: 'pendentes'
-    },
-    {
-      title: 'Contas a Pagar',
-      value: stats.contasPagarPendentes,
-      icon: Banknote,
-      color: 'bg-red-500',
-      subtitle: 'pendentes'
-    },
-    {
-      title: 'Tarefas',
-      value: stats.tarefasPendentes,
-      icon: ListTodo,
-      color: 'bg-amber-500',
-      subtitle: 'pendentes'
-    }
-  ];
+  {
+    title: 'Ordens de Serviço',
+    value: stats.totalOS,
+    icon: ClipboardList,
+    color: 'bg-blue-500',
+    subtitle: `${stats.osEmAndamento} em andamento`
+  },
+  {
+    title: 'Clientes Cadastrados',
+    value: stats.totalClientes,
+    icon: Users,
+    color: 'bg-green-500'
+  },
+  {
+    title: 'Funcionários Ativos',
+    value: stats.totalFuncionarios,
+    icon: User,
+    color: 'bg-purple-500'
+  },
+  {
+    title: 'Produtos no Estoque',
+    value: stats.estoqueItens,
+    icon: Package,
+    color: 'bg-orange-500'
+  },
+  {
+    title: 'Contas a Receber',
+    value: stats.contasReceberPendentes,
+    icon: TrendingUp,
+    color: 'bg-emerald-500',
+    subtitle: 'pendentes'
+  },
+  {
+    title: 'Contas a Pagar',
+    value: stats.contasPagarPendentes,
+    icon: Banknote,
+    color: 'bg-red-500',
+    subtitle: 'pendentes'
+  },
+  {
+    title: 'Tarefas',
+    value: stats.tarefasPendentes,
+    icon: ListTodo,
+    color: 'bg-amber-500',
+    subtitle: 'pendentes'
+  }];
+
 
   return (
     <div className="w-full h-full space-y-6">
@@ -186,19 +186,19 @@ export default function Dashboard() {
       </div>
 
       {/* Mensagem de erro */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
+      {error &&
+      <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-500" />
           <p className="text-red-700 text-sm">{error}</p>
         </div>
-      )}
+      }
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
-        {statsData.map((stat, index) => (
-          <StatsCard key={index} {...stat} loading={loading} />
-        ))}
+        {statsData.map((stat, index) =>
+        <StatsCard key={index} {...stat} loading={loading} />
+        )}
       </div>
-    </div>
-  );
+    </div>);
+
 }
