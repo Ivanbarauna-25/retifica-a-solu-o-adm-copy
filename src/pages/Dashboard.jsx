@@ -26,86 +26,27 @@ import {
   AlertCircle
 } from 'lucide-react';
 
-const cardItems = [
-  {
-    title: 'Ordens de Serviço',
-    description: 'Gerenciamento de OS',
-    icon: ClipboardList,
-    url: 'OrdensServico',
-    color: 'bg-blue-600',
-    category: 'Operacional'
-  },
-  {
-    title: 'Clientes e Veículos',
-    description: 'Base de clientes e frota',
-    icon: Users,
-    url: 'Clientes',
-    color: 'bg-cyan-600',
-    category: 'Cadastros'
-  },
-  {
-    title: 'Estoque',
-    description: 'Controle de produtos',
-    icon: Package,
-    url: 'Estoque',
-    color: 'bg-green-600',
-    category: 'Operacional'
-  },
-  {
-    title: 'Financeiro',
-    description: 'Fluxo de caixa e contas',
-    icon: BarChart3,
-    url: 'FluxoCaixa',
-    color: 'bg-indigo-600',
-    category: 'Financeiro'
-  }
-];
-
-const DashboardCard = ({ title, description, icon: Icon, url, color }) => (
-  <Link to={createPageUrl(url)}>
-    <Card className="hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full group border-slate-100 bg-white overflow-hidden relative">
-      <div className={`absolute top-0 left-0 w-1.5 h-full ${color}`} />
-      <CardContent className="p-6 flex flex-col items-start gap-4">
-        <div className={`p-4 ${color} rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className="w-8 h-8 text-white" />
-        </div>
-        <div className="w-full">
-          <h3 className="text-xl font-bold text-gray-900 group-hover:text-slate-700 transition-colors leading-tight mb-2">
-            {title}
-          </h3>
-          <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
-        </div>
-      </CardContent>
-    </Card>
-  </Link>
-);
-
 const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => (
-  <Card className="relative overflow-hidden border-slate-100 bg-white hover:shadow-lg transition-shadow duration-300">
-    <CardContent className="p-6">
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">{title}</p>
-            {loading ? (
-              <div className="h-10 flex items-center">
-                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-              </div>
-            ) : (
-              <h3 className="text-4xl font-extrabold text-gray-900">{value}</h3>
-            )}
-          </div>
-          <div className={`p-3 ${color} bg-opacity-10 rounded-xl`}>
-            <Icon className={`w-8 h-8 ${color.replace('bg-', 'text-')}`} />
-          </div>
+  <Card className="relative overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border-0 shadow-sm group">
+    <div className={`absolute top-0 left-0 w-full h-1 ${color}`} />
+    <CardContent className="p-5">
+      <div className="flex justify-between items-start">
+        <div className="flex-1">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">{title}</p>
+          {loading ? (
+            <div className="h-9 flex items-center">
+              <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+            </div>
+          ) : (
+            <h3 className="text-3xl font-bold text-slate-800">{value}</h3>
+          )}
+          {subtitle && !loading && (
+            <span className="text-xs text-slate-500 mt-1 block">{subtitle}</span>
+          )}
         </div>
-        {subtitle && !loading && (
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs font-medium text-slate-600">
-              {subtitle}
-            </span>
-          </div>
-        )}
+        <div className={`p-3 rounded-xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-300`}>
+          <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
+        </div>
       </div>
     </CardContent>
   </Card>
@@ -227,46 +168,36 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="w-full h-full p-4 md:p-6 space-y-6 bg-slate-50">
-      {/* Header Compacto */}
-      <div className="flex justify-between items-center bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+    <div className="w-full h-full space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center bg-gradient-to-r from-slate-800 to-slate-700 rounded-2xl p-6 shadow-lg">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">
+          <h1 className="text-2xl font-bold text-white mb-1">
             Painel de Controle
           </h1>
-          <p className="text-gray-500 text-sm">
-            Visão geral da sua oficina mecânica.
+          <p className="text-slate-300 text-sm">
+            Visão geral da sua oficina mecânica
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <span className="font-medium text-xs">Online</span>
+        <div className="hidden md:flex items-center gap-2 text-emerald-400 bg-slate-900/30 px-4 py-2 rounded-full backdrop-blur-sm">
+          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+          <span className="font-medium text-sm">Sistema Online</span>
         </div>
       </div>
 
       {/* Mensagem de erro */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-500" />
           <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} loading={loading} />
         ))}
-      </div>
-
-      {/* Quick Access Section */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-6 px-1 border-l-4 border-slate-800 pl-4">Módulos Essenciais</h2>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-          {cardItems.map((item) => (
-            <DashboardCard key={item.title} {...item} />
-          ))}
-        </div>
       </div>
     </div>
   );
