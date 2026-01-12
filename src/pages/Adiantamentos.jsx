@@ -523,45 +523,45 @@ export default function AdiantamentosPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-2 md:px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-3 md:mb-4">
-            <Card className="border-l-3 border-l-slate-600 shadow-sm">
+        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
+            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
               <CardContent className="p-2 md:p-4">
                 <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Total</p>
-                <div className="text-sm md:text-lg font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
+                <div className="text-xs md:text-lg font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-3 border-l-yellow-500 shadow-sm">
+            <Card className="border-l-2 md:border-l-4 border-l-yellow-500 shadow-sm">
               <CardContent className="p-2 md:p-4">
                 <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Pendentes</p>
-                <div className="text-sm md:text-lg font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
+                <div className="text-xs md:text-lg font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-3 border-l-blue-500 shadow-sm">
+            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
               <CardContent className="p-2 md:p-4">
                 <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Aprovados</p>
-                <div className="text-sm md:text-lg font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
+                <div className="text-xs md:text-lg font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-3 border-l-green-500 shadow-sm">
+            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
               <CardContent className="p-2 md:p-4">
                 <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Pagos</p>
-                <div className="text-sm md:text-lg font-bold text-green-600">{formatCurrency(totais.pago)}</div>
+                <div className="text-xs md:text-lg font-bold text-green-600">{formatCurrency(totais.pago)}</div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-2 md:p-3 mb-2 md:mb-3">
+          <div className="bg-white rounded-lg shadow-sm p-1.5 md:p-3 mb-2 md:mb-3">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Search className="absolute left-2 md:left-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-3.5 h-3.5 md:w-4 md:h-4" />
               <Input
                 placeholder="Buscar..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="pl-8 text-slate-900 text-xs md:text-sm h-8 md:h-9"
+                className="pl-7 md:pl-8 text-slate-900 text-xs md:text-sm h-8 md:h-9"
               />
             </div>
           </div>
