@@ -35,9 +35,9 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
     'bg-orange-500': 'from-orange-500 to-amber-600',
     'bg-emerald-500': 'from-emerald-500 to-teal-600',
     'bg-red-500': 'from-red-500 to-rose-600',
-    'bg-amber-500': 'from-amber-500 to-yellow-600',
+    'bg-amber-500': 'from-amber-500 to-yellow-600'
   };
-  
+
   const bgLightMap = {
     'bg-blue-500': 'bg-blue-50',
     'bg-green-500': 'bg-green-50',
@@ -45,7 +45,7 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
     'bg-orange-500': 'bg-orange-50',
     'bg-emerald-500': 'bg-emerald-50',
     'bg-red-500': 'bg-red-50',
-    'bg-amber-500': 'bg-amber-50',
+    'bg-amber-500': 'bg-amber-50'
   };
 
   return (
@@ -56,7 +56,7 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
       {/* Círculo decorativo de fundo */}
       <div className={`absolute -right-4 -bottom-4 w-20 h-20 md:w-24 md:h-24 rounded-full ${color} opacity-10 group-hover:scale-125 transition-transform duration-500`} />
       
-      <CardContent className="relative p-3 md:p-5">
+      <CardContent className="mx-auto pt-0 p-3 relative md:p-5">
         <div className="flex items-start justify-between gap-2">
           {/* Conteúdo principal */}
           <div className="flex-1 min-w-0 space-y-1">
@@ -64,21 +64,21 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
               {title}
             </p>
             
-            {loading ? (
-              <div className="h-8 md:h-10 flex items-center">
+            {loading ?
+            <div className="h-8 md:h-10 flex items-center">
                 <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-slate-400" />
-              </div>
-            ) : (
-              <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 tracking-tight">
+              </div> :
+
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 tracking-tight">
                 {value}
               </h3>
-            )}
+            }
             
-            {subtitle && !loading && (
-              <span className="text-[10px] md:text-xs text-slate-500 font-medium block truncate">
+            {subtitle && !loading &&
+            <span className="text-[10px] md:text-xs text-slate-500 font-medium block truncate">
                 {subtitle}
               </span>
-            )}
+            }
           </div>
           
           {/* Ícone com fundo gradiente */}
@@ -87,8 +87,8 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>);
+
 };
 
 
@@ -228,20 +228,20 @@ export default function Dashboard() {
       </div>
 
       {/* Mensagem de erro */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-center gap-3">
+      {error &&
+      <div className="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
           <p className="text-red-700 text-sm">{error}</p>
         </div>
-      )}
+      }
 
       {/* Stats Cards - Grid responsivo otimizado */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 md:gap-4">
-        {statsData.map((stat, index) => (
-          <StatsCard key={index} {...stat} loading={loading} />
-        ))}
+      <div className="mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 md:gap-4">
+        {statsData.map((stat, index) =>
+        <StatsCard key={index} {...stat} loading={loading} />
+        )}
       </div>
-    </div>
-  );
+    </div>);
+
 
 }
