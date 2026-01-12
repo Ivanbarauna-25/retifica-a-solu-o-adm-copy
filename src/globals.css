@@ -170,14 +170,20 @@ button, a, input, select, textarea, [role="button"] {
 
 /* ===== MOBILE RESPONSIVE UTILITIES ===== */
 
-/* Base font sizes - smaller and cleaner */
+/* Base font sizes - adequado para mobile e desktop */
 html {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 @media (min-width: 768px) {
   html {
     font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
   }
 }
 
@@ -192,28 +198,28 @@ html {
 
 /* Page headers responsivos */
 .page-header {
-  @apply px-3 py-4 md:px-6 md:py-8;
+  @apply px-2 py-3 md:px-6 md:py-6;
 }
 
 .page-header h1 {
-  @apply text-lg md:text-2xl lg:text-3xl font-bold leading-tight;
+  @apply text-base md:text-xl lg:text-2xl font-bold leading-tight;
 }
 
 .page-header p {
-  @apply text-[11px] md:text-sm text-slate-400;
+  @apply text-[10px] md:text-sm text-slate-400;
 }
 
 /* Stats cards grid responsivo - compacto */
 .stats-grid {
-  @apply grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3;
+  @apply grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4;
 }
 
 .stats-grid .stat-card {
-  @apply p-2.5 md:p-4;
+  @apply p-2 md:p-4;
 }
 
 .stats-grid .stat-value {
-  @apply text-base md:text-xl lg:text-2xl font-bold;
+  @apply text-lg md:text-xl lg:text-2xl font-bold;
 }
 
 .stats-grid .stat-label {

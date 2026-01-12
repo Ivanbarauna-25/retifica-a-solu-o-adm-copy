@@ -107,71 +107,69 @@ function CargosPage() {
     <>
       <Toaster />
       <div className="min-h-screen bg-slate-50">
-        {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        {/* Header - Responsivo */}
+        <div className="bg-slate-800 text-white px-3 py-4 md:px-6 md:py-6 mb-4 md:mb-6 shadow-xl rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Shield className="w-8 h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Shield className="w-5 h-5 md:w-7 md:h-7" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Cargos e Permissões</h1>
-                  <p className="text-slate-300">Definição de funções e acessos</p>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Cargos e Permissões</h1>
+                  <p className="text-slate-400 text-xs md:text-sm">Definição de funções e acessos</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
-                <Button
-                  variant="outline"
-                  onClick={() => openForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Novo Cargo
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                onClick={() => openForm()}
+                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 text-xs md:text-sm h-8 md:h-9 self-start sm:self-auto"
+              >
+                <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                Novo Cargo
+              </Button>
             </div>
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
+          {/* Stats Cards - Responsivo */}
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-5">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Total de Cargos</p>
-                    <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total de Cargos</p>
+                    <div className="text-lg md:text-2xl font-bold text-slate-900">{stats.total}</div>
                   </div>
-                  <Shield className="w-8 h-8 text-slate-300" />
+                  <Shield className="w-5 h-5 md:w-7 md:h-7 text-slate-300" />
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-5">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Com Comissão</p>
-                    <div className="text-2xl font-bold text-green-600">{stats.comComissao}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Com Comissão</p>
+                    <div className="text-lg md:text-2xl font-bold text-green-600">{stats.comComissao}</div>
                   </div>
-                  <DollarSign className="w-8 h-8 text-green-100" />
+                  <DollarSign className="w-5 h-5 md:w-7 md:h-7 text-green-300" />
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Search Bar */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          {/* Search Bar - Responsivo */}
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-3 md:mb-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Search className="absolute left-2.5 md:left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
               <Input
                 placeholder="Buscar por nome do cargo..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="pl-10 border-slate-200"
+                className="pl-8 md:pl-10 border-slate-200 text-sm h-9 md:h-10"
               />
             </div>
           </div>
