@@ -503,7 +503,7 @@ export default function Layout({ children, currentPageName }) {
             <CustomSidebarFooter />
           </Sidebar>
 
-          <main className="flex-1 flex flex-col pb-14 md:pb-0 min-h-0 overflow-hidden">
+          <main className="flex-1 flex flex-col pb-14 md:pb-0 min-h-0 overflow-auto">
             <header className="bg-slate-800 text-slate-50 px-3 md:px-6 py-2 md:py-3 no-print border-b border-gray-200 flex items-center justify-between shadow-sm flex-shrink-0" role="banner">
               <SidebarTrigger className="p-2 -ml-2 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
                 <PanelLeft className="w-6 h-6 text-slate-50" aria-hidden="true" />
@@ -550,7 +550,7 @@ export default function Layout({ children, currentPageName }) {
 
             <PageTransition error={navigationError}>
               <ErrorBoundary currentPageName={currentPageName}>
-                <div className="text-slate-800 p-2 md:p-4 lg:p-6 flex-1 overflow-auto scroll-smooth">
+                <div className="text-slate-800 p-2 md:p-4 lg:p-6 flex-1 overflow-x-auto overflow-y-auto">
                   {children}
                 </div>
               </ErrorBoundary>
