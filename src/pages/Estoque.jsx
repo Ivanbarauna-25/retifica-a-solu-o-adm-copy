@@ -252,36 +252,36 @@ export default function EstoquePage() {
         </div>
 
         {/* Header */}
-        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl no-print">
+        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0 no-print">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
-                  <Package className="w-6 h-6 md:w-8 md:h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
+                  <Package className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Estoque de Peças</h1>
-                  <p className="text-slate-300 text-xs md:text-base">Gerenciamento de inventário</p>
+                  <h1 className="text-sm md:text-xl font-bold">Estoque de Peças</h1>
+                  <p className="text-slate-300 text-[9px] md:text-xs">Gerenciamento de inventário</p>
                 </div>
               </div>
 
-              <div className="flex gap-1.5 md:gap-2 flex-wrap">
+              <div className="flex gap-1 md:gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={handlePrint} 
                   disabled={isPrinting}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  {isPrinting ? <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin"/> : <Printer className="w-3.5 h-3.5 md:w-4 md:h-4"/>}
+                  {isPrinting ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin"/> : <Printer className="w-3 h-3 md:w-4 md:h-4"/>}
                   <span className="hidden sm:inline">Imprimir</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => openForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <Plus className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="hidden sm:inline">Adicionar</span>
                 </Button>
               </div>
@@ -289,51 +289,48 @@ export default function EstoquePage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
+        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
           {/* Stats Cards - No Print */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6 no-print">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4 no-print">
+            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Itens</p>
-                  <div className="text-lg md:text-2xl font-bold text-slate-900">{stats.totalItens}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Total Itens</p>
+                  <div className="text-sm md:text-xl font-bold text-slate-900">{stats.totalItens}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Custo</p>
-                  <div className="text-base md:text-2xl font-bold text-blue-600">{formatCurrency(stats.valorCusto)}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Custo</p>
+                  <div className="text-xs md:text-lg font-bold text-blue-600">{formatCurrency(stats.valorCusto)}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Venda</p>
-                  <div className="text-base md:text-2xl font-bold text-green-600">{formatCurrency(stats.valorVenda)}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Venda</p>
+                  <div className="text-xs md:text-lg font-bold text-green-600">{formatCurrency(stats.valorVenda)}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Baixo Estoque</p>
-                    <div className="text-lg md:text-2xl font-bold text-red-600">{stats.baixoEstoque}</div>
-                  </div>
-                  <AlertTriangle className="w-5 h-5 md:w-8 md:h-8 text-red-100" />
+            <Card className="border-l-2 md:border-l-4 border-l-red-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
+                <div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Baixo Estoque</p>
+                  <div className="text-sm md:text-xl font-bold text-red-600">{stats.baixoEstoque}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4 no-print">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-3 no-print">
             <AdvancedSearchFilters
               entityName="estoque"
               searchFields={estoqueSearchFields}

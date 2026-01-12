@@ -262,50 +262,50 @@ export default function OrcamentosPage() {
       <Toaster />
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <FileText className="w-8 h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
+                  <FileText className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Orçamentos</h1>
-                  <p className="text-slate-300">Gerenciamento de orçamentos e propostas comerciais</p>
+                  <h1 className="text-sm md:text-xl font-bold">Orçamentos</h1>
+                  <p className="text-slate-300 text-[9px] md:text-xs">Gerenciamento de orçamentos</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1 md:gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filtros
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3">
+                  <Filter className="w-3 h-3 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Filtros</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => setShowRelatorioModal(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Relatório
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3">
+                  <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Relatório</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => setShowImportModal(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                  <Upload className="w-4 h-4" />
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 hidden sm:flex">
+                  <Upload className="w-3 h-3 md:w-4 md:h-4" />
                   Importar
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={handleNew}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2">
-                  <Plus className="w-4 h-4" />
-                  Novo Orçamento
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3">
+                  <Plus className="w-3 h-3 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Novo</span>
                 </Button>
               </div>
             </div>
@@ -313,46 +313,46 @@ export default function OrcamentosPage() {
         </div>
 
         {/* Conteúdo Principal */}
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
+            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total Geral</p>
-                  <div className="text-2xl font-bold text-slate-900">{filteredOrcamentos.length}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Total Geral</p>
+                  <div className="text-sm md:text-xl font-bold text-slate-900">{filteredOrcamentos.length}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-yellow-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Pendentes</p>
-                  <div className="text-2xl font-bold text-yellow-600">
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Pendentes</p>
+                  <div className="text-sm md:text-xl font-bold text-yellow-600">
                     {filteredOrcamentos.filter((o) => o.status === "pendente").length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Aprovados</p>
-                  <div className="text-2xl font-bold text-blue-600">
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Aprovados</p>
+                  <div className="text-sm md:text-xl font-bold text-blue-600">
                     {filteredOrcamentos.filter((o) => o.status === "aprovado").length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Valor Total</p>
-                  <div className="text-2xl font-bold text-green-600">
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Valor Total</p>
+                  <div className="text-xs md:text-lg font-bold text-green-600">
                     {formatCurrency(filteredOrcamentos.reduce((sum, o) => sum + (o.valor_total || 0), 0))}
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export default function OrcamentosPage() {
           </div>
 
           {/* Search Bar */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />

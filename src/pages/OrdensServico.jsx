@@ -448,36 +448,36 @@ function OrdensServicoContent() {
       <Toaster />
 
       <div className="min-h-screen bg-slate-50">
-        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-white/10 p-2 md:p-4 rounded-lg md:rounded-xl backdrop-blur-sm">
-                  <ClipboardList className="w-6 h-6 md:w-8 md:h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="bg-white/10 p-1.5 md:p-3 rounded-lg backdrop-blur-sm">
+                  <ClipboardList className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h1 className="text-xl md:text-4xl font-bold mb-0.5 md:mb-1.5 tracking-tight">Ordens de Serviço</h1>
-                  <p className="text-slate-200 text-xs md:text-base">Gestão de ordens de serviço</p>
+                  <h1 className="text-sm md:text-xl font-bold tracking-tight">Ordens de Serviço</h1>
+                  <p className="text-slate-300 text-[9px] md:text-xs">Gestão de ordens de serviço</p>
                 </div>
               </div>
-              <div className="flex gap-1.5 md:gap-2.5 flex-wrap">
+              <div className="flex gap-1 md:gap-2 flex-wrap">
                 {isAdmin && selectedOS.length > 0 && (
                   <>
                     <Button
                       variant="outline"
                       onClick={handleAgrupar}
                       disabled={selectedOS.length < 2}
-                      className="bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                      className="bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                     >
-                      <Merge className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <Merge className="w-3 h-3 md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
                     </Button>
                     <Button
                       variant="outline"
                       onClick={handleBulkDelete}
-                      className="bg-red-600 border-red-600 text-white hover:bg-red-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                      className="bg-red-600 border-red-600 text-white hover:bg-red-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                     >
-                      <Trash className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <Trash className="w-3 h-3 md:w-4 md:h-4" />
                       ({selectedOS.length})
                     </Button>
                   </>
@@ -486,9 +486,9 @@ function OrdensServicoContent() {
                 <Button
                   variant="outline"
                   onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <FileText className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="hidden sm:inline">Relatório</span>
                 </Button>
 
@@ -497,18 +497,18 @@ function OrdensServicoContent() {
                     <Button
                       variant="outline"
                       onClick={() => setIsImportModalOpen(true)}
-                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 hidden sm:flex"
+                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 hidden sm:flex"
                     >
-                      <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <Upload className="w-3 h-3 md:w-4 md:h-4" />
                       Importar
                     </Button>
 
                     <Button
                       variant="outline"
                       onClick={handleNewOS}
-                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                     >
-                      <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <Plus className="w-3 h-3 md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Nova OS</span>
                     </Button>
                   </>
@@ -518,47 +518,47 @@ function OrdensServicoContent() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
+            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total</p>
-                  <div className="text-lg md:text-2xl font-bold text-slate-900">{resumo.total}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Total</p>
+                  <div className="text-sm md:text-xl font-bold text-slate-900">{resumo.total}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-amber-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-amber-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Em Andamento</p>
-                  <div className="text-lg md:text-2xl font-bold text-amber-600">{resumo.emAndamento}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Em Andamento</p>
+                  <div className="text-sm md:text-xl font-bold text-amber-600">{resumo.emAndamento}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-emerald-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-emerald-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Finalizadas</p>
-                  <div className="text-lg md:text-2xl font-bold text-emerald-600">{resumo.finalizadas}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Finalizadas</p>
+                  <div className="text-sm md:text-xl font-bold text-emerald-600">{resumo.finalizadas}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
+              <CardContent className="p-2 md:p-4">
                 <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Valor Total</p>
-                  <div className="text-base md:text-2xl font-bold text-blue-600">{formatCurrency(resumo.valorTotal)}</div>
+                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Valor Total</p>
+                  <div className="text-xs md:text-lg font-bold text-blue-600">{formatCurrency(resumo.valorTotal)}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg md:rounded-xl shadow-sm p-3 md:p-4 mb-4 md:mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-4">
             <AdvancedSearchFilters
               entityName="ordens_servico"
               searchFields={osSearchFields}

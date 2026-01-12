@@ -225,20 +225,20 @@ export default function TarefasPage() {
       <Toaster />
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <ListTodo className="w-8 h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
+                  <ListTodo className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Gestão de Tarefas</h1>
-                  <p className="text-slate-300">Organize e acompanhe todas as suas tarefas</p>
+                  <h1 className="text-sm md:text-xl font-bold">Gestão de Tarefas</h1>
+                  <p className="text-slate-300 text-[9px] md:text-xs">Organize e acompanhe suas tarefas</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1 md:gap-2 flex-wrap">
                 <NotificacoesTarefas 
                   tarefas={tarefas} 
                   onTarefaClick={handleView}
@@ -247,20 +247,20 @@ export default function TarefasPage() {
                 <Button
                   variant="outline"
                   onClick={() => setShowPreferencias(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                   title="Preferências de Notificação"
                 >
-                  <Mail className="w-4 h-4" />
-                  Notificações
+                  <Mail className="w-3 h-3 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Notificações</span>
                 </Button>
                 
                 <Button
                   variant="outline"
                   onClick={() => { setSelectedTarefa(null); setIsFormOpen(true); }}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <Plus className="w-4 h-4" />
-                  Nova Tarefa
+                  <Plus className="w-3 h-3 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Nova</span>
                 </Button>
               </div>
             </div>
@@ -268,48 +268,43 @@ export default function TarefasPage() {
         </div>
 
         {/* Conteúdo */}
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
           {/* Cards de Estatísticas */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
-                <p className="text-sm font-medium text-slate-600 mb-1">Total</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
+          <div className="grid grid-cols-5 gap-1 md:gap-3 mb-2 md:mb-4">
+            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
+              <CardContent className="p-1.5 md:p-4">
+                <p className="text-[8px] md:text-xs font-medium text-slate-600 mb-0.5">Total</p>
+                <p className="text-xs md:text-xl font-bold text-slate-900">{stats.total}</p>
               </CardContent>
             </Card>
-            <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-6">
-                <p className="text-sm font-medium text-slate-600 mb-1">Pendentes</p>
-                <p className="text-2xl font-bold text-yellow-600">{stats.pendentes}</p>
+            <Card className="border-l-2 md:border-l-4 border-l-yellow-500 shadow-sm">
+              <CardContent className="p-1.5 md:p-4">
+                <p className="text-[8px] md:text-xs font-medium text-slate-600 mb-0.5">Pendentes</p>
+                <p className="text-xs md:text-xl font-bold text-yellow-600">{stats.pendentes}</p>
               </CardContent>
             </Card>
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
-                <p className="text-sm font-medium text-slate-600 mb-1">Em Andamento</p>
-                <p className="text-2xl font-bold text-blue-600">{stats.emAndamento}</p>
+            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
+              <CardContent className="p-1.5 md:p-4">
+                <p className="text-[8px] md:text-xs font-medium text-slate-600 mb-0.5">Andamento</p>
+                <p className="text-xs md:text-xl font-bold text-blue-600">{stats.emAndamento}</p>
               </CardContent>
             </Card>
-            <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Vencidas</p>
-                    <p className="text-2xl font-bold text-red-600">{stats.vencidas}</p>
-                  </div>
-                  {stats.vencidas > 0 && <AlertTriangle className="w-8 h-8 text-red-100" />}
-                </div>
+            <Card className="border-l-2 md:border-l-4 border-l-red-500 shadow-sm">
+              <CardContent className="p-1.5 md:p-4">
+                <p className="text-[8px] md:text-xs font-medium text-slate-600 mb-0.5">Vencidas</p>
+                <p className="text-xs md:text-xl font-bold text-red-600">{stats.vencidas}</p>
               </CardContent>
             </Card>
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
-                <p className="text-sm font-medium text-slate-600 mb-1">Concluídas</p>
-                <p className="text-2xl font-bold text-green-600">{stats.concluidas}</p>
+            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
+              <CardContent className="p-1.5 md:p-4">
+                <p className="text-[8px] md:text-xs font-medium text-slate-600 mb-0.5">Concluídas</p>
+                <p className="text-xs md:text-xl font-bold text-green-600">{stats.concluidas}</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros e Toggle de Visualização */}
-          <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <AdvancedSearchFilters
                 entityName="tarefas"
