@@ -29,7 +29,7 @@ import {
 const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) =>
 <Card className="relative overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border-0 shadow-sm group">
     <div className={`absolute top-0 left-0 w-full h-1 ${color}`} />
-    <CardContent className="p-3 md:p-4">
+    <CardContent className="mx-auto pt-0 p-3 md:p-4">
       <div className="flex justify-between items-start gap-2">
         <div className="flex-1 min-w-0">
           <p className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 md:mb-2 truncate">{title}</p>
@@ -170,7 +170,7 @@ export default function Dashboard() {
   return (
     <div className="w-full h-full space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg">
+      <div className="bg-gradient-to-r mx-auto p-4 rounded-xl flex justify-between items-center from-slate-800 to-slate-700 md:rounded-2xl md:p-6 shadow-lg">
         <div>
           <h1 className="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-1">
             Painel de Controle
