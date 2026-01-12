@@ -300,15 +300,15 @@ html {
 
 /* Cards responsivos - compactos */
 .responsive-card {
-  @apply p-2.5 md:p-4;
+  @apply p-2 md:p-4;
 }
 
 .responsive-card .card-title {
-  @apply text-xs md:text-sm font-semibold;
+  @apply text-[10px] md:text-sm font-semibold;
 }
 
 .responsive-card .card-value {
-  @apply text-base md:text-xl font-bold;
+  @apply text-lg md:text-xl font-bold;
 }
 
 /* Containers responsivos */
