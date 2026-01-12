@@ -26,30 +26,70 @@ import {
   AlertCircle } from
 'lucide-react';
 
-const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) =>
-<Card className="relative overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border-0 shadow-sm group">
-    <div className={`absolute top-0 left-0 w-full h-1 ${color}`} />
-    <CardContent className="mx-auto pt-0 p-3 md:p-4">
-      <div className="flex justify-between items-start gap-2">
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1 md:mb-2 truncate">{title}</p>
-          {loading ?
-        <div className="h-7 md:h-9 flex items-center">
-              <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin text-slate-400" />
-            </div> :
+const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
+  // Mapeamento de cores para gradientes
+  const gradientMap = {
+    'bg-blue-500': 'from-blue-500 to-blue-600',
+    'bg-green-500': 'from-green-500 to-emerald-600',
+    'bg-purple-500': 'from-purple-500 to-violet-600',
+    'bg-orange-500': 'from-orange-500 to-amber-600',
+    'bg-emerald-500': 'from-emerald-500 to-teal-600',
+    'bg-red-500': 'from-red-500 to-rose-600',
+    'bg-amber-500': 'from-amber-500 to-yellow-600',
+  };
+  
+  const bgLightMap = {
+    'bg-blue-500': 'bg-blue-50',
+    'bg-green-500': 'bg-green-50',
+    'bg-purple-500': 'bg-purple-50',
+    'bg-orange-500': 'bg-orange-50',
+    'bg-emerald-500': 'bg-emerald-50',
+    'bg-red-500': 'bg-red-50',
+    'bg-amber-500': 'bg-amber-50',
+  };
 
-        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-slate-800">{value}</h3>
-        }
-          {subtitle && !loading &&
-        <span className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1 block truncate">{subtitle}</span>
-        }
+  return (
+    <Card className={`relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 group ${bgLightMap[color] || 'bg-white'}`}>
+      {/* Gradiente decorativo superior */}
+      <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${gradientMap[color] || color}`} />
+      
+      {/* Círculo decorativo de fundo */}
+      <div className={`absolute -right-4 -bottom-4 w-20 h-20 md:w-24 md:h-24 rounded-full ${color} opacity-10 group-hover:scale-125 transition-transform duration-500`} />
+      
+      <CardContent className="relative p-3 md:p-5">
+        <div className="flex items-start justify-between gap-2">
+          {/* Conteúdo principal */}
+          <div className="flex-1 min-w-0 space-y-1">
+            <p className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
+              {title}
+            </p>
+            
+            {loading ? (
+              <div className="h-8 md:h-10 flex items-center">
+                <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-slate-400" />
+              </div>
+            ) : (
+              <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 tracking-tight">
+                {value}
+              </h3>
+            )}
+            
+            {subtitle && !loading && (
+              <span className="text-[10px] md:text-xs text-slate-500 font-medium block truncate">
+                {subtitle}
+              </span>
+            )}
+          </div>
+          
+          {/* Ícone com fundo gradiente */}
+          <div className={`p-2.5 md:p-3.5 rounded-xl bg-gradient-to-br ${gradientMap[color] || color} shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0`}>
+            <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+          </div>
         </div>
-        <div className={`p-2 md:p-3 rounded-lg md:rounded-xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
-          <Icon className={`w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 ${color.replace('bg-', 'text-')}`} />
-        </div>
-      </div>
-    </CardContent>
-  </Card>;
+      </CardContent>
+    </Card>
+  );
+};
 
 
 export default function Dashboard() {
@@ -170,35 +210,38 @@ export default function Dashboard() {
   return (
     <div className="w-full h-full space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r mx-auto p-4 rounded-xl flex justify-between items-center from-slate-800 to-slate-700 md:rounded-2xl md:p-6 shadow-lg">
-        <div>
-          <h1 className="text-lg md:text-2xl font-bold text-white mb-0.5 md:mb-1">
-            Painel de Controle
-          </h1>
-          <p className="text-slate-300 text-xs md:text-sm">
-            Visão geral da sua oficina
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5 md:gap-2 text-emerald-400 bg-slate-900/30 px-2.5 md:px-4 py-1.5 md:py-2 rounded-full backdrop-blur-sm">
-          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-emerald-400 rounded-full animate-pulse" />
-          <span className="font-medium text-[10px] md:text-sm">Online</span>
+      <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 p-4 md:p-6 rounded-xl md:rounded-2xl shadow-xl">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-1">
+              Painel de Controle
+            </h1>
+            <p className="text-slate-400 text-xs md:text-sm">
+              Visão geral da sua oficina
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 md:px-4 py-1.5 md:py-2 rounded-full">
+            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            <span className="font-semibold text-[10px] md:text-sm">Sistema Online</span>
+          </div>
         </div>
       </div>
 
       {/* Mensagem de erro */}
-      {error &&
-      <div className="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-center gap-2 md:gap-3">
-          <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-500 flex-shrink-0" />
-          <p className="text-red-700 text-xs md:text-sm">{error}</p>
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <p className="text-red-700 text-sm">{error}</p>
         </div>
-      }
+      )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2 md:gap-4">
-        {statsData.map((stat, index) =>
-        <StatsCard key={index} {...stat} loading={loading} />
-        )}
+      {/* Stats Cards - Grid responsivo otimizado */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 md:gap-4">
+        {statsData.map((stat, index) => (
+          <StatsCard key={index} {...stat} loading={loading} />
+        ))}
       </div>
-    </div>);
+    </div>
+  );
 
 }
