@@ -460,60 +460,63 @@ export default function AdiantamentosPage() {
   return (
   <>
     <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
-        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-4 shadow-lg">
+        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-slate-700 p-2 rounded-lg">
-                  <Wallet className="w-5 h-5 md:w-6 md:h-6" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
+                  <Wallet className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div>
-                  <h1 className="text-base md:text-xl font-bold">Adiantamentos</h1>
-                  <p className="text-slate-400 text-[10px] md:text-xs">Gestão de adiantamentos</p>
+                  <h1 className="text-sm md:text-xl font-bold">Adiantamentos</h1>
+                  <p className="text-slate-400 text-[9px] md:text-xs">Gestão de adiantamentos</p>
                 </div>
               </div>
 
-              <div className="flex gap-1.5 md:gap-2 flex-wrap">
+              <div className="flex gap-1 md:gap-2 flex-wrap">
                 <Button 
                   variant="outline" 
                   onClick={() => setShowFilters(!showFilters)} 
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <Filter className="w-4 h-4" /> Filtros
+                  <Filter className="w-3 h-3 md:w-4 md:h-4" /> 
+                  <span className="hidden sm:inline">Filtros</span>
                 </Button>
 
                 {selecionados.length > 0 && (
                   <Button 
                     variant="outline" 
-                    className="bg-green-600 border-green-600 text-white hover:bg-green-700 gap-2" 
+                    className="bg-green-600 border-green-600 text-white hover:bg-green-700 gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3" 
                     onClick={abrirAprovacaoLote}
                   >
-                    <CheckCircle2 className="h-4 w-4" /> Aprovar ({selecionados.length})
+                    <CheckCircle2 className="w-3 h-3 md:h-4 md:w-4" /> Aprovar ({selecionados.length})
                   </Button>
                 )}
 
                 <Button 
                   variant="outline" 
                   onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <Printer className="h-4 w-4" /> Relatório
+                  <Printer className="w-3 h-3 md:h-4 md:w-4" /> 
+                  <span className="hidden sm:inline">Relatório</span>
                 </Button>
 
                 <Button 
                   variant="outline" 
                   onClick={abrirLote} 
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <Users className="h-4 w-4" /> Gerar Lote
+                  <Users className="w-3 h-3 md:h-4 md:w-4" /> 
+                  <span className="hidden sm:inline">Lote</span>
                 </Button>
 
                 <Button 
                   variant="outline" 
                   onClick={abrirNovo} 
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
                 >
-                  <Plus className="h-4 w-4" /> Novo
+                  <Plus className="w-3 h-3 md:h-4 md:w-4" /> Novo
                 </Button>
               </div>
             </div>
