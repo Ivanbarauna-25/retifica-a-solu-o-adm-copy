@@ -54,10 +54,10 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
       <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${gradientMap[color] || color}`} />
       
       {/* Círculo decorativo de fundo */}
-      <div className={`absolute -right-4 -bottom-4 w-20 h-20 md:w-24 md:h-24 rounded-full ${color} opacity-10 group-hover:scale-125 transition-transform duration-500`} />
+      <div className="bg-green-500 mx-auto opacity-10 rounded-full absolute -right-4 -bottom-4 w-20 h-20 md:w-24 md:h-24 group-hover:scale-125 transition-transform duration-500" />
       
-      <CardContent className="mx-auto pt-0 p-3 relative md:p-5">
-        <div className="flex items-start justify-between gap-2">
+      <CardContent className="mx-auto pt-3 pr-3 pb-3 pl-3 relative md:p-5">
+        <div className="mx-auto flex items-start justify-between gap-2">
           {/* Conteúdo principal */}
           <div className="flex-1 min-w-0 space-y-1">
             <p className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
