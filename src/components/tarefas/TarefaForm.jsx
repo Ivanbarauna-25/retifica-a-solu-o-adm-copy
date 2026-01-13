@@ -193,55 +193,57 @@ export default function TarefaForm({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
-        <DialogHeader className="bg-slate-800 -mx-6 -mt-6 px-6 py-4 rounded-t-lg">
-          <DialogTitle className="text-white text-lg font-semibold">{tarefa ? 'Editar Tarefa' : 'Nova Tarefa'}</DialogTitle>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[90vh] overflow-y-auto p-0 bg-white">
+        <DialogHeader className="bg-slate-800 px-4 md:px-6 py-3 md:py-4 sticky top-0 z-10">
+          <DialogTitle className="text-white text-sm md:text-lg font-semibold">{tarefa ? 'Editar Tarefa' : 'Nova Tarefa'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 p-4 md:p-6">
           {/* Título */}
           <div>
-            <Label>Título *</Label>
+            <Label className="text-xs md:text-sm font-medium">Título *</Label>
             <Input
               value={formData.titulo}
               onChange={(e) => handleChange('titulo', e.target.value)}
               placeholder="Digite o título da tarefa"
               required
+              className="mt-1 h-9 md:h-10 text-sm"
             />
           </div>
 
           {/* Descrição */}
           <div>
-            <Label>Descrição</Label>
+            <Label className="text-xs md:text-sm font-medium">Descrição</Label>
             <Textarea
               value={formData.descricao}
               onChange={(e) => handleChange('descricao', e.target.value)}
               placeholder="Descreva a tarefa..."
-              rows={3}
+              rows={2}
+              className="mt-1 text-sm"
             />
           </div>
 
           {/* Vínculo */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div>
-              <Label>Vincular a</Label>
+              <Label className="text-xs md:text-sm font-medium">Vincular a</Label>
               <Select value={formData.tipo_vinculo} onValueChange={handleVinculoChange}>
-                <SelectTrigger>
+                <SelectTrigger className="mt-1 h-9 md:h-10 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="geral">Geral (sem vínculo)</SelectItem>
-                  <SelectItem value="os">Ordem de Serviço</SelectItem>
+                  <SelectItem value="geral">Geral</SelectItem>
+                  <SelectItem value="os">OS</SelectItem>
                   <SelectItem value="cliente">Cliente</SelectItem>
-                  <SelectItem value="estoque">Item de Estoque</SelectItem>
+                  <SelectItem value="estoque">Estoque</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {formData.tipo_vinculo !== 'geral' && (
               <div>
-                <Label>Selecione</Label>
+                <Label className="text-xs md:text-sm font-medium">Selecione</Label>
                 <Select value={formData.vinculo_id} onValueChange={handleVinculoIdChange}>
-                  <SelectTrigger>
+                  <SelectTrigger className="mt-1 h-9 md:h-10 text-sm">
                     <SelectValue placeholder="Selecione..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -255,11 +257,11 @@ export default function TarefaForm({
           </div>
 
           {/* Responsável e Prioridade */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div>
-              <Label>Responsável</Label>
+              <Label className="text-xs md:text-sm font-medium">Responsável</Label>
               <Select value={formData.responsavel_id} onValueChange={handleResponsavelChange}>
-                <SelectTrigger>
+                <SelectTrigger className="mt-1 h-9 md:h-10 text-sm">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -270,9 +272,9 @@ export default function TarefaForm({
               </Select>
             </div>
             <div>
-              <Label>Prioridade *</Label>
+              <Label className="text-xs md:text-sm font-medium">Prioridade *</Label>
               <Select value={formData.prioridade} onValueChange={(v) => handleChange('prioridade', v)}>
-                <SelectTrigger>
+                <SelectTrigger className="mt-1 h-9 md:h-10 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -286,33 +288,35 @@ export default function TarefaForm({
           </div>
 
           {/* Prazo e Status */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 md:gap-4">
             <div>
-              <Label>Prazo *</Label>
+              <Label className="text-xs md:text-sm font-medium">Prazo *</Label>
               <Input
                 type="date"
                 value={formData.prazo}
                 onChange={(e) => handleChange('prazo', e.target.value)}
                 required
+                className="mt-1 h-9 md:h-10 text-sm"
               />
             </div>
             <div>
-              <Label>Hora (opcional)</Label>
+              <Label className="text-xs md:text-sm font-medium">Hora</Label>
               <Input
                 type="time"
                 value={formData.hora_prazo}
                 onChange={(e) => handleChange('hora_prazo', e.target.value)}
+                className="mt-1 h-9 md:h-10 text-sm"
               />
             </div>
             <div>
-              <Label>Status</Label>
+              <Label className="text-xs md:text-sm font-medium">Status</Label>
               <Select value={formData.status} onValueChange={(v) => handleChange('status', v)}>
-                <SelectTrigger>
+                <SelectTrigger className="mt-1 h-9 md:h-10 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pendente">Pendente</SelectItem>
-                  <SelectItem value="em_andamento">Em Andamento</SelectItem>
+                  <SelectItem value="em_andamento">Andamento</SelectItem>
                   <SelectItem value="aguardando">Aguardando</SelectItem>
                   <SelectItem value="concluida">Concluída</SelectItem>
                   <SelectItem value="cancelada">Cancelada</SelectItem>
@@ -327,15 +331,15 @@ export default function TarefaForm({
               checked={formData.notificar_prazo}
               onCheckedChange={(v) => handleChange('notificar_prazo', v)}
             />
-            <Label className="cursor-pointer">Notificar quando o prazo estiver próximo</Label>
+            <Label className="cursor-pointer text-xs md:text-sm">Notificar prazo</Label>
           </div>
 
           {/* Tags */}
           <div>
-            <Label>Tags</Label>
-            <div className="flex gap-2 mb-2 flex-wrap">
+            <Label className="text-xs md:text-sm font-medium">Tags</Label>
+            <div className="flex gap-1.5 mb-2 flex-wrap mt-1">
               {formData.tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="gap-1">
+                <Badge key={tag} variant="secondary" className="gap-1 text-xs">
                   {tag}
                   <X className="w-3 h-3 cursor-pointer" onClick={() => removeTag(tag)} />
                 </Badge>
@@ -346,9 +350,10 @@ export default function TarefaForm({
                 value={novaTag}
                 onChange={(e) => setNovaTag(e.target.value)}
                 placeholder="Nova tag..."
+                className="h-9 md:h-10 text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
               />
-              <Button type="button" variant="outline" onClick={addTag}>
+              <Button type="button" variant="outline" onClick={addTag} className="h-9 md:h-10 w-9 md:w-10 p-0">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
@@ -356,22 +361,22 @@ export default function TarefaForm({
 
           {/* Checklist */}
           <div>
-            <Label className="text-slate-700 font-medium">Checklist</Label>
-            <div className="space-y-2 mb-2">
+            <Label className="text-xs md:text-sm font-medium">Checklist</Label>
+            <div className="space-y-1.5 mb-2 mt-1 max-h-32 overflow-y-auto">
               {formData.checklist.map(item => (
-                <div key={item.id} className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                <div key={item.id} className="flex items-center gap-2 p-2 md:p-3 bg-slate-50 rounded-lg border border-slate-100">
                   <Checkbox
                     checked={item.concluido}
                     onCheckedChange={() => toggleCheckItem(item.id)}
                   />
-                  <span className={`text-slate-700 ${item.concluido ? 'line-through text-slate-400' : ''}`}>
+                  <span className={`text-xs md:text-sm text-slate-700 flex-1 ${item.concluido ? 'line-through text-slate-400' : ''}`}>
                     {item.texto}
                   </span>
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="ml-auto h-6 w-6 text-red-500 hover:bg-red-50"
+                    className="h-6 w-6 text-red-500 hover:bg-red-50"
                     onClick={() => removeCheckItem(item.id)}
                   >
                     <Trash2 className="w-3 h-3" />
@@ -384,10 +389,10 @@ export default function TarefaForm({
                 value={novoCheckItem}
                 onChange={(e) => setNovoCheckItem(e.target.value)}
                 placeholder="Novo item..."
-                className="bg-white"
+                className="bg-white h-9 md:h-10 text-sm"
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCheckItem())}
               />
-              <Button type="button" variant="outline" onClick={addCheckItem}>
+              <Button type="button" variant="outline" onClick={addCheckItem} className="h-9 md:h-10 w-9 md:w-10 p-0">
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
@@ -395,21 +400,22 @@ export default function TarefaForm({
 
           {/* Observações */}
           <div>
-            <Label>Observações</Label>
+            <Label className="text-xs md:text-sm font-medium">Observações</Label>
             <Textarea
               value={formData.observacoes}
               onChange={(e) => handleChange('observacoes', e.target.value)}
               placeholder="Observações adicionais..."
               rows={2}
+              className="mt-1 text-sm"
             />
           </div>
 
-          <DialogFooter className="gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={onClose} className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50">
+          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-0 sm:justify-end sm:space-x-2 pt-4 border-t">
+            <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto h-9 md:h-10 text-xs md:text-sm">
               Cancelar
             </Button>
-            <Button type="submit" className="bg-slate-800 hover:bg-slate-900 text-white">
-              {tarefa ? 'Salvar Alterações' : 'Criar Tarefa'}
+            <Button type="submit" className="w-full sm:w-auto h-9 md:h-10 text-xs md:text-sm bg-slate-800 hover:bg-slate-700">
+              {tarefa ? 'Salvar' : 'Criar Tarefa'}
             </Button>
           </DialogFooter>
         </form>
