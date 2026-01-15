@@ -212,124 +212,136 @@ function ConfiguracoesPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-slate-900">Configurações do Sistema</h1>
-        <p className="text-slate-600 mt-1">
+    <div className="container mx-auto p-3 md:p-6 max-w-6xl">
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-xl md:text-3xl font-bold text-slate-900">Configurações</h1>
+        <p className="text-xs md:text-base text-slate-600 mt-1">
           Configure as informações da empresa e regras de negócio
         </p>
       </div>
 
-      <Tabs defaultValue="empresa" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 lg:w-auto">
-          <TabsTrigger value="empresa" className="gap-2">
-            <Building2 className="w-4 h-4" />
-            Empresa
+      <Tabs defaultValue="empresa" value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 h-auto p-1">
+          <TabsTrigger value="empresa" className="gap-1 md:gap-2 text-[10px] md:text-sm py-2 px-1 md:px-3">
+            <Building2 className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Empresa</span>
+            <span className="sm:hidden">Emp.</span>
           </TabsTrigger>
-          <TabsTrigger value="documentos" className="gap-2">
-            <FileText className="w-4 h-4" />
-            Documentos
+          <TabsTrigger value="documentos" className="gap-1 md:gap-2 text-[10px] md:text-sm py-2 px-1 md:px-3">
+            <FileText className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Documentos</span>
+            <span className="sm:hidden">Docs</span>
           </TabsTrigger>
-          <TabsTrigger value="comercial" className="gap-2">
-            <ShoppingCart className="w-4 h-4" />
-            Comercial
+          <TabsTrigger value="comercial" className="gap-1 md:gap-2 text-[10px] md:text-sm py-2 px-1 md:px-3">
+            <ShoppingCart className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Comercial</span>
+            <span className="sm:hidden">Com.</span>
           </TabsTrigger>
-          <TabsTrigger value="financeiro" className="gap-2">
-            <DollarSign className="w-4 h-4" />
-            Financeiro
+          <TabsTrigger value="financeiro" className="gap-1 md:gap-2 text-[10px] md:text-sm py-2 px-1 md:px-3">
+            <DollarSign className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Financeiro</span>
+            <span className="sm:hidden">Fin.</span>
           </TabsTrigger>
-          <TabsTrigger value="13salario" className="gap-2">
-            <Gift className="w-4 h-4" />
-            13º Salário
+          <TabsTrigger value="13salario" className="gap-1 md:gap-2 text-[10px] md:text-sm py-2 px-1 md:px-3">
+            <Gift className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">13º Salário</span>
+            <span className="sm:hidden">13º</span>
           </TabsTrigger>
-          <TabsTrigger value="notificacoes" className="gap-2">
-            <Bell className="w-4 h-4" />
-            Notificações
+          <TabsTrigger value="notificacoes" className="gap-1 md:gap-2 text-[10px] md:text-sm py-2 px-1 md:px-3">
+            <Bell className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Notificações</span>
+            <span className="sm:hidden">Not.</span>
           </TabsTrigger>
         </TabsList>
 
         {/* ABA EMPRESA */}
         <TabsContent value="empresa">
           <Card>
-            <CardHeader>
-              <CardTitle>Informações da Empresa</CardTitle>
-              <CardDescription>
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-base md:text-xl">Informações da Empresa</CardTitle>
+              <CardDescription className="text-xs md:text-sm">
                 Dados básicos da sua empresa
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="nome_empresa">Nome da Empresa *</Label>
+            <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6 pt-0 md:pt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="nome_empresa" className="text-xs md:text-sm">Nome da Empresa *</Label>
                   <Input
                     id="nome_empresa"
                     value={config?.nome_empresa || ''}
                     onChange={(e) => setConfig({ ...config, nome_empresa: e.target.value })}
                     placeholder="Digite o nome da empresa"
+                    className="h-9 md:h-10 text-xs md:text-sm"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="cnpj">CNPJ</Label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="cnpj" className="text-xs md:text-sm">CNPJ</Label>
                   <Input
                     id="cnpj"
                     value={config?.cnpj || ''}
                     onChange={(e) => setConfig({ ...config, cnpj: e.target.value })}
                     placeholder="00.000.000/0000-00"
+                    className="h-9 md:h-10 text-xs md:text-sm"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="telefone">Telefone</Label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="telefone" className="text-xs md:text-sm">Telefone</Label>
                   <Input
                     id="telefone"
                     value={config?.telefone || ''}
                     onChange={(e) => setConfig({ ...config, telefone: e.target.value })}
                     placeholder="(00) 00000-0000"
+                    className="h-9 md:h-10 text-xs md:text-sm"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">E-mail</Label>
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="email" className="text-xs md:text-sm">E-mail</Label>
                   <Input
                     id="email"
                     type="email"
                     value={config?.email || ''}
                     onChange={(e) => setConfig({ ...config, email: e.target.value })}
                     placeholder="contato@empresa.com"
+                    className="h-9 md:h-10 text-xs md:text-sm"
                   />
                 </div>
 
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="endereco">Endereço</Label>
+                <div className="space-y-1.5 md:space-y-2 md:col-span-2">
+                  <Label htmlFor="endereco" className="text-xs md:text-sm">Endereço</Label>
                   <Input
                     id="endereco"
                     value={config?.endereco || ''}
                     onChange={(e) => setConfig({ ...config, endereco: e.target.value })}
                     placeholder="Rua, número, bairro, cidade - UF"
+                    className="h-9 md:h-10 text-xs md:text-sm"
                   />
                 </div>
               </div>
 
               <Separator />
 
-              <div className="space-y-2">
-                <Label htmlFor="logo">Logo da Empresa</Label>
-                <div className="flex items-center gap-4">
+              <div className="space-y-1.5 md:space-y-2">
+                <Label htmlFor="logo" className="text-xs md:text-sm">Logo da Empresa</Label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">
                   {config?.logo_url && (
                     <img
                       src={config.logo_url}
                       alt="Logo"
-                      className="w-20 h-20 object-contain border rounded"
+                      className="w-16 h-16 md:w-20 md:h-20 object-contain border rounded"
                     />
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 w-full">
                     <Input
                       id="logo"
                       type="file"
                       accept="image/*"
                       onChange={handleLogoUpload}
                       disabled={uploadingLogo}
+                      className="h-9 md:h-10 text-xs md:text-sm"
                     />
                   </div>
                 </div>
@@ -341,29 +353,30 @@ function ConfiguracoesPage() {
         {/* ABA DOCUMENTOS */}
         <TabsContent value="documentos">
           <Card>
-            <CardHeader>
-              <CardTitle>Documentos da Empresa</CardTitle>
-              <CardDescription>
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="text-base md:text-xl">Documentos da Empresa</CardTitle>
+              <CardDescription className="text-xs md:text-sm">
                 Faça upload dos documentos importantes
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contrato_social">Contrato Social</Label>
-                  <div className="flex items-center gap-2">
+            <CardContent className="space-y-3 md:space-y-4 p-4 md:p-6 pt-0 md:pt-0">
+              <div className="space-y-3 md:space-y-4">
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="contrato_social" className="text-xs md:text-sm">Contrato Social</Label>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <Input
                       id="contrato_social"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                       onChange={(e) => handleDocUpload(e, 'contrato_social_url')}
+                      className="h-9 md:h-10 text-xs md:text-sm flex-1"
                     />
                     {config?.contrato_social_url && (
                       <a
                         href={config.contrato_social_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 hover:underline text-xs md:text-sm whitespace-nowrap"
                       >
                         Ver arquivo
                       </a>
@@ -371,21 +384,22 @@ function ConfiguracoesPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="alvara">Alvará de Funcionamento</Label>
-                  <div className="flex items-center gap-2">
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="alvara" className="text-xs md:text-sm">Alvará de Funcionamento</Label>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <Input
                       id="alvara"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                       onChange={(e) => handleDocUpload(e, 'alvara_url')}
+                      className="h-9 md:h-10 text-xs md:text-sm flex-1"
                     />
                     {config?.alvara_url && (
                       <a
                         href={config.alvara_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 hover:underline text-xs md:text-sm whitespace-nowrap"
                       >
                         Ver arquivo
                       </a>
@@ -393,21 +407,22 @@ function ConfiguracoesPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="outros_docs">Outros Documentos</Label>
-                  <div className="flex items-center gap-2">
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label htmlFor="outros_docs" className="text-xs md:text-sm">Outros Documentos</Label>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <Input
                       id="outros_docs"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
                       onChange={(e) => handleDocUpload(e, 'outros_docs_url')}
+                      className="h-9 md:h-10 text-xs md:text-sm flex-1"
                     />
                     {config?.outros_docs_url && (
                       <a
                         href={config.outros_docs_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                        className="text-blue-600 hover:underline text-xs md:text-sm whitespace-nowrap"
                       >
                         Ver arquivo
                       </a>
@@ -422,42 +437,40 @@ function ConfiguracoesPage() {
         {/* ABA COMERCIAL - NOVA */}
         <TabsContent value="comercial">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5" />
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-xl">
+                <Settings className="w-4 h-4 md:w-5 md:h-5" />
                 Configurações Comerciais
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs md:text-sm">
                 Defina regras de negócio para ordens de serviço e orçamentos
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert>
-                <Info className="w-4 h-4" />
-                <AlertDescription>
+            <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6 pt-0 md:pt-0">
+              <Alert className="text-xs md:text-sm">
+                <Info className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <AlertDescription className="text-xs md:text-sm">
                   Estas configurações afetam como o sistema controla as operações comerciais.
-                  Mudanças aqui podem impactar o fluxo de trabalho da equipe.
                 </AlertDescription>
               </Alert>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Configuração 1: Bloqueio de Edição de OS */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-base font-semibold">
+                <div className="border rounded-lg p-3 md:p-4 bg-slate-50">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 space-y-1.5 md:space-y-2">
+                      <Label className="text-sm md:text-base font-semibold">
                         Bloquear Edição de OS com Movimentação Financeira
                       </Label>
-                      <p className="text-sm text-slate-600">
-                        Quando ativado, impede a edição de Ordens de Serviço que já possuem 
-                        movimentação financeira gerada (contas a receber criadas).
+                      <p className="text-[11px] md:text-sm text-slate-600">
+                        Impede a edição de OS que já possuem movimentação financeira gerada.
                       </p>
-                      <div className="text-xs space-y-1">
+                      <div className="text-[10px] md:text-xs space-y-0.5 md:space-y-1 hidden sm:block">
                         <p className="text-slate-500">
                           <strong>✅ Benefício:</strong> Garante integridade entre OS e financeiro
                         </p>
                         <p className="text-slate-500">
-                          <strong>⚠️ Impacto:</strong> Usuários não poderão alterar valores após gerar cobrança
+                          <strong>⚠️ Impacto:</strong> Não poderá alterar valores após cobrança
                         </p>
                       </div>
                     </div>
@@ -467,15 +480,15 @@ function ConfiguracoesPage() {
                       onValueChange={(value) => 
                         setConfig({ ...config, bloquear_edicao_os_com_financeiro: value === "sim" })
                       }
-                      className="flex gap-4"
+                      className="flex gap-3 md:gap-4"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="sim" id="os-sim" />
-                        <Label htmlFor="os-sim" className="font-normal cursor-pointer">Sim</Label>
+                        <Label htmlFor="os-sim" className="font-normal cursor-pointer text-xs md:text-sm">Sim</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="nao" id="os-nao" />
-                        <Label htmlFor="os-nao" className="font-normal cursor-pointer">Não</Label>
+                        <Label htmlFor="os-nao" className="font-normal cursor-pointer text-xs md:text-sm">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -484,23 +497,15 @@ function ConfiguracoesPage() {
                 <Separator />
 
                 {/* Configuração 2: Conversão Múltipla de Orçamento */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-base font-semibold">
+                <div className="border rounded-lg p-3 md:p-4 bg-slate-50">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 space-y-1.5 md:space-y-2">
+                      <Label className="text-sm md:text-base font-semibold">
                         Permitir Converter Orçamento Mais de Uma Vez
                       </Label>
-                      <p className="text-sm text-slate-600">
-                        Permite que um mesmo orçamento seja convertido em múltiplas Ordens de Serviço.
+                      <p className="text-[11px] md:text-sm text-slate-600">
+                        Permite converter um mesmo orçamento em múltiplas OS.
                       </p>
-                      <div className="text-xs space-y-1">
-                        <p className="text-slate-500">
-                          <strong>✅ Quando usar:</strong> Serviços recorrentes ou compras em etapas
-                        </p>
-                        <p className="text-slate-500">
-                          <strong>⚠️ Atenção:</strong> Pode gerar duplicidade se não controlado
-                        </p>
-                      </div>
                     </div>
                     
                     <RadioGroup
@@ -508,15 +513,15 @@ function ConfiguracoesPage() {
                       onValueChange={(value) => 
                         setConfig({ ...config, permitir_conversao_multipla_orcamento: value === "sim" })
                       }
-                      className="flex gap-4"
+                      className="flex gap-3 md:gap-4"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="sim" id="conv-sim" />
-                        <Label htmlFor="conv-sim" className="font-normal cursor-pointer">Sim</Label>
+                        <Label htmlFor="conv-sim" className="font-normal cursor-pointer text-xs md:text-sm">Sim</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="nao" id="conv-nao" />
-                        <Label htmlFor="conv-nao" className="font-normal cursor-pointer">Não</Label>
+                        <Label htmlFor="conv-nao" className="font-normal cursor-pointer text-xs md:text-sm">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -525,24 +530,15 @@ function ConfiguracoesPage() {
                 <Separator />
 
                 {/* Configuração 3: Finalizar OS Automaticamente */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-base font-semibold">
-                        Finalizar OS Automaticamente ao Gerar Movimentação Financeira
+                <div className="border rounded-lg p-3 md:p-4 bg-slate-50">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 space-y-1.5 md:space-y-2">
+                      <Label className="text-sm md:text-base font-semibold">
+                        Finalizar OS ao Gerar Financeiro
                       </Label>
-                      <p className="text-sm text-slate-600">
-                        Quando ativado, muda automaticamente o status da OS para "Finalizado" 
-                        ao gerar a movimentação financeira.
+                      <p className="text-[11px] md:text-sm text-slate-600">
+                        Muda automaticamente o status da OS para "Finalizado" ao gerar financeiro.
                       </p>
-                      <div className="text-xs space-y-1">
-                        <p className="text-slate-500">
-                          <strong>✅ Benefício:</strong> Simplifica workflow - menos passos manuais
-                        </p>
-                        <p className="text-slate-500">
-                          <strong>⚠️ Impacto:</strong> OS finalizadas não podem ser editadas (se bloqueio ativo)
-                        </p>
-                      </div>
                     </div>
                     
                     <RadioGroup
@@ -550,15 +546,15 @@ function ConfiguracoesPage() {
                       onValueChange={(value) => 
                         setConfig({ ...config, finalizar_os_ao_gerar_financeiro: value === "sim" })
                       }
-                      className="flex gap-4"
+                      className="flex gap-3 md:gap-4"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="sim" id="fin-sim" />
-                        <Label htmlFor="fin-sim" className="font-normal cursor-pointer">Sim</Label>
+                        <Label htmlFor="fin-sim" className="font-normal cursor-pointer text-xs md:text-sm">Sim</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="nao" id="fin-nao" />
-                        <Label htmlFor="fin-nao" className="font-normal cursor-pointer">Não</Label>
+                        <Label htmlFor="fin-nao" className="font-normal cursor-pointer text-xs md:text-sm">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -567,24 +563,15 @@ function ConfiguracoesPage() {
                 <Separator />
 
                 {/* NOVA Configuração 4: Comissões apenas para OS Finalizadas */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-base font-semibold">
-                        Calcular Comissões Apenas para OS Finalizadas
+                <div className="border rounded-lg p-3 md:p-4 bg-slate-50">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 space-y-1.5 md:space-y-2">
+                      <Label className="text-sm md:text-base font-semibold">
+                        Comissões Apenas para OS Finalizadas
                       </Label>
-                      <p className="text-sm text-slate-600">
-                        Define se as comissões devem ser calculadas apenas para Ordens de Serviço 
-                        com status "Finalizado" ou para todas as OS da competência.
+                      <p className="text-[11px] md:text-sm text-slate-600">
+                        Calcula comissões apenas para OS com status "Finalizado".
                       </p>
-                      <div className="text-xs space-y-1">
-                        <p className="text-slate-500">
-                          <strong>✅ Recomendado (Sim):</strong> Garante pagamento apenas por serviços concluídos
-                        </p>
-                        <p className="text-slate-500">
-                          <strong>⚠️ Impacto (Não):</strong> Comissão pode ser paga antes da conclusão do serviço
-                        </p>
-                      </div>
                     </div>
                     
                     <RadioGroup
@@ -592,15 +579,15 @@ function ConfiguracoesPage() {
                       onValueChange={(value) => 
                         setConfig({ ...config, calcular_comissao_apenas_os_finalizadas: value === "sim" })
                       }
-                      className="flex gap-4"
+                      className="flex gap-3 md:gap-4"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="sim" id="comissao-sim" />
-                        <Label htmlFor="comissao-sim" className="font-normal cursor-pointer">Sim</Label>
+                        <Label htmlFor="comissao-sim" className="font-normal cursor-pointer text-xs md:text-sm">Sim</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="nao" id="comissao-nao" />
-                        <Label htmlFor="comissao-nao" className="font-normal cursor-pointer">Não</Label>
+                        <Label htmlFor="comissao-nao" className="font-normal cursor-pointer text-xs md:text-sm">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -613,44 +600,34 @@ function ConfiguracoesPage() {
         {/* ABA FINANCEIRO - NOVA */}
         <TabsContent value="financeiro">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="w-5 h-5" />
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-xl">
+                <DollarSign className="w-4 h-4 md:w-5 md:h-5" />
                 Configurações Financeiras
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs md:text-sm">
                 Defina regras de controle financeiro e baixas
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert>
-                <AlertTriangle className="w-4 h-4" />
-                <AlertDescription>
-                  Configurações financeiras são críticas. Certifique-se de entender 
-                  o impacto antes de ativar.
+            <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6 pt-0 md:pt-0">
+              <Alert className="text-xs md:text-sm">
+                <AlertTriangle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <AlertDescription className="text-xs md:text-sm">
+                  Configurações financeiras são críticas. Certifique-se de entender o impacto.
                 </AlertDescription>
               </Alert>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Configuração 1: Bloqueio de Edição de Parcelas */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-base font-semibold">
+                <div className="border rounded-lg p-3 md:p-4 bg-slate-50">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 space-y-1.5 md:space-y-2">
+                      <Label className="text-sm md:text-base font-semibold">
                         Bloquear Edição de Parcelas com Baixa
                       </Label>
-                      <p className="text-sm text-slate-600">
-                        Quando ativado, impede a alteração de parcelas que já foram baixadas 
-                        (pagas ou recebidas), mesmo que parcialmente.
+                      <p className="text-[11px] md:text-sm text-slate-600">
+                        Impede a alteração de parcelas já baixadas.
                       </p>
-                      <div className="text-xs space-y-1">
-                        <p className="text-slate-500">
-                          <strong>✅ Benefício:</strong> Mantém auditoria financeira íntegra
-                        </p>
-                        <p className="text-slate-500">
-                          <strong>⚠️ Impacto:</strong> Necessário cancelar baixa antes de ajustar
-                        </p>
-                      </div>
                     </div>
                     
                     <RadioGroup
@@ -658,15 +635,15 @@ function ConfiguracoesPage() {
                       onValueChange={(value) => 
                         setConfig({ ...config, bloquear_edicao_parcela_com_baixa: value === "sim" })
                       }
-                      className="flex gap-4"
+                      className="flex gap-3 md:gap-4"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="sim" id="parc-sim" />
-                        <Label htmlFor="parc-sim" className="font-normal cursor-pointer">Sim</Label>
+                        <Label htmlFor="parc-sim" className="font-normal cursor-pointer text-xs md:text-sm">Sim</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="nao" id="parc-nao" />
-                        <Label htmlFor="parc-nao" className="font-normal cursor-pointer">Não</Label>
+                        <Label htmlFor="parc-nao" className="font-normal cursor-pointer text-xs md:text-sm">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -675,24 +652,15 @@ function ConfiguracoesPage() {
                 <Separator />
 
                 {/* Configuração 2: Permitir Cancelamento de Movimentações */}
-                <div className="border rounded-lg p-4 bg-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-base font-semibold">
+                <div className="border rounded-lg p-3 md:p-4 bg-slate-50">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-3 md:gap-4">
+                    <div className="flex-1 space-y-1.5 md:space-y-2">
+                      <Label className="text-sm md:text-base font-semibold">
                         Permitir Cancelamento de Movimentações Pagas
                       </Label>
-                      <p className="text-sm text-slate-600">
-                        Define se é possível cancelar movimentações financeiras que já foram baixadas 
-                        (pagas/recebidas).
+                      <p className="text-[11px] md:text-sm text-slate-600">
+                        Permite cancelar movimentações já baixadas.
                       </p>
-                      <div className="text-xs space-y-1">
-                        <p className="text-slate-500">
-                          <strong>✅ Quando usar:</strong> Correção de erros ou estornos necessários
-                        </p>
-                        <p className="text-slate-500">
-                          <strong>⚠️ Atenção:</strong> Pode impactar conciliação bancária e relatórios
-                        </p>
-                      </div>
                     </div>
                     
                     <RadioGroup
@@ -700,15 +668,15 @@ function ConfiguracoesPage() {
                       onValueChange={(value) => 
                         setConfig({ ...config, permitir_cancelamento_movimentacoes_pagas: value === "sim" })
                       }
-                      className="flex gap-4"
+                      className="flex gap-3 md:gap-4"
                     >
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="sim" id="canc-sim" />
-                        <Label htmlFor="canc-sim" className="font-normal cursor-pointer">Sim</Label>
+                        <Label htmlFor="canc-sim" className="font-normal cursor-pointer text-xs md:text-sm">Sim</Label>
                       </div>
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1.5 md:space-x-2">
                         <RadioGroupItem value="nao" id="canc-nao" />
-                        <Label htmlFor="canc-nao" className="font-normal cursor-pointer">Não</Label>
+                        <Label htmlFor="canc-nao" className="font-normal cursor-pointer text-xs md:text-sm">Não</Label>
                       </div>
                     </RadioGroup>
                   </div>
@@ -717,26 +685,26 @@ function ConfiguracoesPage() {
                 <Separator />
 
                 {/* Seção: Planos de Contas Padrão */}
-                <div className="border rounded-lg p-4 bg-gradient-to-br from-indigo-50 to-white">
-                  <Label className="text-base font-bold text-slate-900 mb-3 block">
+                <div className="border rounded-lg p-3 md:p-4 bg-gradient-to-br from-indigo-50 to-white">
+                  <Label className="text-sm md:text-base font-bold text-slate-900 mb-2 md:mb-3 block">
                     📋 Planos de Contas Padrão
                   </Label>
-                  <p className="text-sm text-slate-600 mb-4">
+                  <p className="text-[11px] md:text-sm text-slate-600 mb-3 md:mb-4">
                     Defina os planos de contas padrão para lançamentos automáticos
                   </p>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {/* Plano de Contas Padrão para Receitas de OS */}
-                    <div className="p-3 border border-slate-200 rounded-lg bg-white">
-                      <Label className="text-sm font-semibold text-black mb-2 block">
+                    <div className="p-2.5 md:p-3 border border-slate-200 rounded-lg bg-white">
+                      <Label className="text-xs md:text-sm font-semibold text-black mb-1.5 md:mb-2 block">
                         Receitas de Ordem de Serviço
                       </Label>
                       <Select
                         value={config?.plano_contas_padrao_receita_os || ""}
                         onValueChange={(value) => setConfig({ ...config, plano_contas_padrao_receita_os: value })}
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder={loadingPlanos ? "Carregando..." : "Selecione um plano de contas"} />
+                        <SelectTrigger className="w-full h-9 md:h-10 text-xs md:text-sm">
+                          <SelectValue placeholder={loadingPlanos ? "Carregando..." : "Selecione"} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={null}>Nenhum</SelectItem>
@@ -749,22 +717,19 @@ function ConfiguracoesPage() {
                             ))}
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-slate-600 mt-1">
-                        Utilizado ao gerar movimentações financeiras de OS
-                      </p>
                     </div>
 
                     {/* Plano de Contas Padrão para Despesas de Compras */}
-                    <div className="p-3 border border-slate-200 rounded-lg bg-white">
-                      <Label className="text-sm font-semibold text-black mb-2 block">
-                        Despesas de Compras / NF-e Entrada
+                    <div className="p-2.5 md:p-3 border border-slate-200 rounded-lg bg-white">
+                      <Label className="text-xs md:text-sm font-semibold text-black mb-1.5 md:mb-2 block">
+                        Despesas de Compras / NF-e
                       </Label>
                       <Select
                         value={config?.plano_contas_padrao_despesa_compras || ""}
                         onValueChange={(value) => setConfig({ ...config, plano_contas_padrao_despesa_compras: value })}
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder={loadingPlanos ? "Carregando..." : "Selecione um plano de contas"} />
+                        <SelectTrigger className="w-full h-9 md:h-10 text-xs md:text-sm">
+                          <SelectValue placeholder={loadingPlanos ? "Carregando..." : "Selecione"} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={null}>Nenhum</SelectItem>
@@ -777,9 +742,6 @@ function ConfiguracoesPage() {
                             ))}
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-slate-600 mt-1">
-                        Utilizado ao gerar movimentações financeiras de compras e notas fiscais de entrada
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -791,32 +753,31 @@ function ConfiguracoesPage() {
         {/* ABA 13º SALÁRIO - NOVA */}
         <TabsContent value="13salario">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Gift className="w-5 h-5" />
+            <CardHeader className="p-4 md:p-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-xl">
+                <Gift className="w-4 h-4 md:w-5 md:h-5" />
                 Configurações do 13º Salário
               </CardTitle>
-              <CardDescription>
-                Defina regras específicas para cálculo do décimo terceiro conforme CLT
+              <CardDescription className="text-xs md:text-sm">
+                Regras para cálculo do décimo terceiro conforme CLT
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert>
-                <Calculator className="w-4 h-4" />
-                <AlertDescription>
-                  Estas configurações afetam diretamente o cálculo automático do 13º salário.
-                  Configure conforme as práticas da sua empresa e legislação vigente.
+            <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6 pt-0 md:pt-0">
+              <Alert className="text-xs md:text-sm">
+                <Calculator className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <AlertDescription className="text-xs md:text-sm">
+                  Estas configurações afetam o cálculo automático do 13º salário.
                 </AlertDescription>
               </Alert>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Seção 1: Período de Cálculo das Médias */}
-                <div className="border rounded-lg p-4 bg-gradient-to-br from-blue-50 to-white">
-                  <Label className="text-base font-bold text-slate-900 mb-3 block">
-                    📊 Período para Cálculo de Médias (Horas Extras, Comissões)
+                <div className="border rounded-lg p-3 md:p-4 bg-gradient-to-br from-blue-50 to-white">
+                  <Label className="text-sm md:text-base font-bold text-slate-900 mb-2 md:mb-3 block">
+                    📊 Período para Cálculo de Médias
                   </Label>
-                  <p className="text-sm text-slate-600 mb-4">
-                    Define qual período será usado para calcular as médias de verbas variáveis no 13º
+                  <p className="text-[11px] md:text-sm text-slate-600 mb-3 md:mb-4">
+                    Período para calcular médias de verbas variáveis no 13º
                   </p>
                   
                   <RadioGroup
@@ -828,41 +789,35 @@ function ConfiguracoesPage() {
                         periodo_calculo_medias: value
                       }
                     })}
-                    className="space-y-3"
+                    className="space-y-2 md:space-y-3"
                   >
-                    <div className="flex items-start space-x-3 p-3 border border-slate-200 rounded-lg hover:bg-white transition-colors">
-                      <RadioGroupItem value="meses_trabalhados" id="media-trabalhados" className="mt-1" />
+                    <div className="flex items-start space-x-2 md:space-x-3 p-2.5 md:p-3 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+                      <RadioGroupItem value="meses_trabalhados" id="media-trabalhados" className="mt-0.5" />
                       <div className="flex-1">
-                        <Label htmlFor="media-trabalhados" className="font-semibold cursor-pointer text-black">
-                          Meses Trabalhados (Proporcional aos Avos)
+                        <Label htmlFor="media-trabalhados" className="font-semibold cursor-pointer text-black text-xs md:text-sm">
+                          Meses Trabalhados (Proporcional)
                         </Label>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Divide pelo número de meses efetivamente trabalhados no ano. <strong className="text-green-700">Recomendado pela CLT.</strong>
+                        <p className="text-[10px] md:text-xs text-slate-600 mt-0.5 md:mt-1">
+                          <span className="text-green-700 font-medium">Recomendado CLT</span>
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start space-x-3 p-3 border border-slate-200 rounded-lg hover:bg-white transition-colors">
-                      <RadioGroupItem value="12_meses" id="media-12" className="mt-1" />
+                    <div className="flex items-start space-x-2 md:space-x-3 p-2.5 md:p-3 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+                      <RadioGroupItem value="12_meses" id="media-12" className="mt-0.5" />
                       <div className="flex-1">
-                        <Label htmlFor="media-12" className="font-semibold cursor-pointer text-black">
+                        <Label htmlFor="media-12" className="font-semibold cursor-pointer text-black text-xs md:text-sm">
                           12 Meses (Fixo)
                         </Label>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Sempre divide por 12, mesmo que funcionário tenha trabalhado menos meses.
-                        </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start space-x-3 p-3 border border-slate-200 rounded-lg hover:bg-white transition-colors">
-                      <RadioGroupItem value="ano_civil" id="media-civil" className="mt-1" />
+                    <div className="flex items-start space-x-2 md:space-x-3 p-2.5 md:p-3 border border-slate-200 rounded-lg hover:bg-white transition-colors">
+                      <RadioGroupItem value="ano_civil" id="media-civil" className="mt-0.5" />
                       <div className="flex-1">
-                        <Label htmlFor="media-civil" className="font-semibold cursor-pointer text-black">
-                          Ano Civil (Janeiro a Dezembro)
+                        <Label htmlFor="media-civil" className="font-semibold cursor-pointer text-black text-xs md:text-sm">
+                          Ano Civil (Jan-Dez)
                         </Label>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Considera apenas folhas de janeiro a dezembro do ano de referência.
-                        </p>
                       </div>
                     </div>
                   </RadioGroup>
@@ -871,19 +826,15 @@ function ConfiguracoesPage() {
                 <Separator />
 
                 {/* Seção 2: Verbas a Incluir nas Médias */}
-                <div className="border rounded-lg p-4 bg-gradient-to-br from-green-50 to-white">
-                  <Label className="text-base font-bold text-slate-900 mb-3 block">
+                <div className="border rounded-lg p-3 md:p-4 bg-gradient-to-br from-green-50 to-white">
+                  <Label className="text-sm md:text-base font-bold text-slate-900 mb-2 md:mb-3 block">
                     💰 Verbas a Incluir nas Médias
                   </Label>
-                  <p className="text-sm text-slate-600 mb-4">
-                    Selecione quais verbas devem integrar a base de cálculo do 13º salário
-                  </p>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
+                    <div className="flex items-center justify-between p-2.5 md:p-3 border border-slate-200 rounded-lg bg-white">
                       <div>
-                        <Label className="font-semibold text-black cursor-pointer">Horas Extras</Label>
-                        <p className="text-xs text-slate-600">CLT: Integram o 13º</p>
+                        <Label className="font-semibold text-black cursor-pointer text-xs md:text-sm">Horas Extras</Label>
                       </div>
                       <RadioGroup
                         value={config?.config_13_salario?.incluir_horas_extras_media !== false ? "sim" : "nao"}
@@ -898,19 +849,18 @@ function ConfiguracoesPage() {
                       >
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="sim" id="he-sim" />
-                          <Label htmlFor="he-sim" className="text-xs cursor-pointer">Sim</Label>
+                          <Label htmlFor="he-sim" className="text-[10px] md:text-xs cursor-pointer">Sim</Label>
                         </div>
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="nao" id="he-nao" />
-                          <Label htmlFor="he-nao" className="text-xs cursor-pointer">Não</Label>
+                          <Label htmlFor="he-nao" className="text-[10px] md:text-xs cursor-pointer">Não</Label>
                         </div>
                       </RadioGroup>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white">
+                    <div className="flex items-center justify-between p-2.5 md:p-3 border border-slate-200 rounded-lg bg-white">
                       <div>
-                        <Label className="font-semibold text-black cursor-pointer">Comissões</Label>
-                        <p className="text-xs text-slate-600">CLT: Integram o 13º</p>
+                        <Label className="font-semibold text-black cursor-pointer text-xs md:text-sm">Comissões</Label>
                       </div>
                       <RadioGroup
                         value={config?.config_13_salario?.incluir_comissoes_media !== false ? "sim" : "nao"}
@@ -925,19 +875,18 @@ function ConfiguracoesPage() {
                       >
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="sim" id="com-sim" />
-                          <Label htmlFor="com-sim" className="text-xs cursor-pointer">Sim</Label>
+                          <Label htmlFor="com-sim" className="text-[10px] md:text-xs cursor-pointer">Sim</Label>
                         </div>
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="nao" id="com-nao" />
-                          <Label htmlFor="com-nao" className="text-xs cursor-pointer">Não</Label>
+                          <Label htmlFor="com-nao" className="text-[10px] md:text-xs cursor-pointer">Não</Label>
                         </div>
                       </RadioGroup>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white">
+                    <div className="flex items-center justify-between p-2.5 md:p-3 border border-slate-200 rounded-lg bg-white">
                       <div>
-                        <Label className="font-semibold text-black cursor-pointer">Adicionais Habituais</Label>
-                        <p className="text-xs text-slate-600">CLT: Integram o 13º</p>
+                        <Label className="font-semibold text-black cursor-pointer text-xs md:text-sm">Adicionais</Label>
                       </div>
                       <RadioGroup
                         value={config?.config_13_salario?.incluir_adicionais_media !== false ? "sim" : "nao"}
@@ -952,19 +901,18 @@ function ConfiguracoesPage() {
                       >
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="sim" id="ad-sim" />
-                          <Label htmlFor="ad-sim" className="text-xs cursor-pointer">Sim</Label>
+                          <Label htmlFor="ad-sim" className="text-[10px] md:text-xs cursor-pointer">Sim</Label>
                         </div>
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="nao" id="ad-nao" />
-                          <Label htmlFor="ad-nao" className="text-xs cursor-pointer">Não</Label>
+                          <Label htmlFor="ad-nao" className="text-[10px] md:text-xs cursor-pointer">Não</Label>
                         </div>
                       </RadioGroup>
                     </div>
 
-                    <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-white">
+                    <div className="flex items-center justify-between p-2.5 md:p-3 border border-slate-200 rounded-lg bg-white">
                       <div>
-                        <Label className="font-semibold text-black cursor-pointer">Bônus/Gratificações</Label>
-                        <p className="text-xs text-slate-600">CLT: Não integram (exceto se habituais)</p>
+                        <Label className="font-semibold text-black cursor-pointer text-xs md:text-sm">Bônus</Label>
                       </div>
                       <RadioGroup
                         value={config?.config_13_salario?.incluir_bonus_media === true ? "sim" : "nao"}
@@ -979,22 +927,22 @@ function ConfiguracoesPage() {
                       >
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="sim" id="bon-sim" />
-                          <Label htmlFor="bon-sim" className="text-xs cursor-pointer">Sim</Label>
+                          <Label htmlFor="bon-sim" className="text-[10px] md:text-xs cursor-pointer">Sim</Label>
                         </div>
                         <div className="flex items-center space-x-1">
                           <RadioGroupItem value="nao" id="bon-nao" />
-                          <Label htmlFor="bon-nao" className="text-xs cursor-pointer">Não</Label>
+                          <Label htmlFor="bon-nao" className="text-[10px] md:text-xs cursor-pointer">Não</Label>
                         </div>
                       </RadioGroup>
                     </div>
                   </div>
 
                   {/* Percentual das Médias */}
-                  <div className="mt-4 p-3 bg-white border border-slate-200 rounded-lg">
-                    <Label className="text-sm font-semibold text-black mb-2 block">
-                      Percentual das Médias a Considerar
+                  <div className="mt-3 md:mt-4 p-2.5 md:p-3 bg-white border border-slate-200 rounded-lg">
+                    <Label className="text-xs md:text-sm font-semibold text-black mb-1.5 md:mb-2 block">
+                      Percentual das Médias
                     </Label>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3">
                       <Input
                         type="number"
                         min="0"
@@ -1007,12 +955,9 @@ function ConfiguracoesPage() {
                             percentual_medias_variaveis: Number(e.target.value)
                           }
                         })}
-                        className="w-24 text-black border-slate-300"
+                        className="w-16 md:w-24 text-black border-slate-300 h-8 md:h-10 text-xs md:text-sm"
                       />
-                      <span className="text-sm text-slate-700 font-medium">%</span>
-                      <p className="text-xs text-slate-600 flex-1">
-                        Use 100% para considerar integralmente as médias. Valores menores reduzem proporcionalmente.
-                      </p>
+                      <span className="text-xs md:text-sm text-slate-700 font-medium">%</span>
                     </div>
                   </div>
                 </div>
@@ -1492,41 +1437,41 @@ function ConfiguracoesPage() {
       </Tabs>
 
       {/* Botão de Salvar Fixo */}
-      <div className={`sticky bottom-0 mt-6 p-4 border-t shadow-lg rounded-lg transition-colors ${
+      <div className={`sticky bottom-0 mt-4 md:mt-6 p-3 md:p-4 border-t shadow-lg rounded-lg transition-colors ${
         hasUnsavedChanges ? 'bg-amber-50 border-amber-200' : 'bg-white'
       }`}>
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 md:gap-3 max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 md:gap-3">
             {hasUnsavedChanges ? (
               <>
                 <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                <p className="text-sm text-amber-700 font-medium">
-                  Você tem alterações não salvas
+                <p className="text-xs md:text-sm text-amber-700 font-medium">
+                  Alterações não salvas
                 </p>
               </>
             ) : (
-              <p className="text-sm text-slate-600">
-                Todas as alterações foram salvas
+              <p className="text-xs md:text-sm text-slate-600">
+                Alterações salvas
               </p>
             )}
           </div>
           <Button
             onClick={handleSave}
             disabled={saving || !hasUnsavedChanges}
-            className={hasUnsavedChanges 
+            className={`h-8 md:h-10 text-xs md:text-sm ${hasUnsavedChanges 
               ? "bg-amber-600 hover:bg-amber-700" 
               : "bg-slate-800 hover:bg-slate-700"
-            }
+            }`}
           >
             {saving ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2 animate-spin" />
                 Salvando...
               </>
             ) : (
               <>
-                <Check className="w-4 h-4 mr-2" />
-                Salvar Configurações
+                <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                Salvar
               </>
             )}
           </Button>
