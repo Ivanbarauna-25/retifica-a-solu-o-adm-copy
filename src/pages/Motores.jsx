@@ -235,7 +235,7 @@ export default function MotoresPage() {
                         onClick={() => handleEdit(motor)}
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8"
                       >
-                        <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                        <Pencil className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -243,7 +243,7 @@ export default function MotoresPage() {
                         onClick={() => handleDelete(motor)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 hidden sm:flex"
                       >
-                        <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </TableCell>

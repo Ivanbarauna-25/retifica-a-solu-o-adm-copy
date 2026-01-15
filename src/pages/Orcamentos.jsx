@@ -557,10 +557,9 @@ export default function OrcamentosPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleView(orcamento)}
-                              title="Visualizar" className="text-blue-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
-
-
-                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                              title="Visualizar"
+                              className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0">
+                                <Eye className="w-4 h-4" />
                               </Button>
                               <Button
                               variant="ghost"
@@ -568,13 +567,12 @@ export default function OrcamentosPage() {
                               onClick={() => handleEdit(orcamento)}
                               title="Editar"
                               className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
-
-                                <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <Pencil className="w-4 h-4" />
                               </Button>
                               <DropdownMenu>
-                                <DropdownMenuTrigger asChild className="text-slate-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-slate-100 h-7 w-7 md:h-8 md:w-8">
+                                <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="sm" className="hover:bg-slate-100 text-slate-600 h-7 w-7 md:h-8 md:w-8 p-0">
-                                    <MoreVertical className="mx-auto lucide lucide-ellipsis-vertical w-3.5 h-3.5 md:w-4 md:h-4" />
+                                    <MoreVertical className="w-4 h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">

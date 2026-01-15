@@ -359,21 +359,21 @@ export default function CotacoesEPIPage() {
                         <TableCell className="text-right text-black bg-white">
                           <div className="flex justify-end gap-0.5 md:gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleView(cotacao)} title="Visualizar" className="h-7 w-7 md:h-8 md:w-8">
-                              <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                              <Eye className="w-4 h-4" />
                             </Button>
                             <Button variant="ghost" size="icon" onClick={() => handlePrint(cotacao)} title="Imprimir" className="h-7 w-7 md:h-8 md:w-8 hidden md:flex">
-                              <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                              <Printer className="w-4 h-4" />
                             </Button>
                             {canEditCotacao && cotacao.status === 'pendente' && (
                               <>
                                 <Button variant="ghost" size="icon" onClick={() => handleAprovar(cotacao)} title="Aprovar" className="text-green-600 hover:text-green-700 h-7 w-7 md:h-8 md:w-8 hidden lg:flex">
-                                  <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                  <CheckCircle className="w-4 h-4" />
                                 </Button>
                                 <Button variant="ghost" size="icon" onClick={() => {
                                   const motivo = prompt('Motivo da rejeição:');
                                   if (motivo) handleRejeitar(cotacao, motivo);
                                 }} title="Rejeitar" className="text-red-600 hover:text-red-700 h-7 w-7 md:h-8 md:w-8 hidden xl:flex">
-                                  <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                  <XCircle className="w-4 h-4" />
                                 </Button>
                               </>
                             )}

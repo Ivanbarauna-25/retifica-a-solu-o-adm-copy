@@ -209,13 +209,13 @@ export default function PontoPage() {
                             <TableCell>
                               <div className="flex gap-0.5 md:gap-1">
                                 <Button variant="ghost" size="sm" onClick={() => openEspelho(ponto)} title="Espelho" className="h-7 w-7 md:h-8 md:w-8 p-0">
-                                  <Printer className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                  <Printer className="h-4 w-4" />
                                 </Button>
                                 <Button variant="ghost" size="sm" onClick={() => openForm(ponto)} title="Editar" className="h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
-                                  <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                  <Edit className="h-4 w-4" />
                                 </Button>
                                 <Button variant="ghost" size="sm" onClick={() => handleDelete(ponto?.id)} className="text-red-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden md:flex" title="Excluir">
-                                  <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
                             </TableCell>

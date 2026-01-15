@@ -37,7 +37,6 @@ import Motores from './pages/Motores';
 import MovimentacaoFinanceira from './pages/MovimentacaoFinanceira';
 import NotasFiscais from './pages/NotasFiscais';
 import OrcamentoCriadoSucesso from './pages/OrcamentoCriadoSucesso';
-import Orcamentos from './pages/Orcamentos';
 import OrdensServico from './pages/OrdensServico';
 import Patrimonio from './pages/Patrimonio';
 import PlanoContas from './pages/PlanoContas';
@@ -60,6 +59,7 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
+import Orcamentos from './pages/Orcamentos';
 import __Layout from './Layout.jsx';
 
 
@@ -103,7 +103,6 @@ export const PAGES = {
     "MovimentacaoFinanceira": MovimentacaoFinanceira,
     "NotasFiscais": NotasFiscais,
     "OrcamentoCriadoSucesso": OrcamentoCriadoSucesso,
-    "Orcamentos": Orcamentos,
     "OrdensServico": OrdensServico,
     "Patrimonio": Patrimonio,
     "PlanoContas": PlanoContas,
@@ -126,6 +125,7 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
+    "Orcamentos": Orcamentos,
 }
 
 export const pagesConfig = {

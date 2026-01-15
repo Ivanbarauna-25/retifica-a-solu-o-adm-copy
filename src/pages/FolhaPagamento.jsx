@@ -798,7 +798,7 @@ function FolhaPagamentoContent() {
                                   className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
                                   title="Visualizar"
                                 >
-                                  <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                                  <Eye className="h-4 w-4" />
                                 </Button>
 
                                 <DropdownMenu>

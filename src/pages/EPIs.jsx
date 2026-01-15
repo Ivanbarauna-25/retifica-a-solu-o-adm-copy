@@ -369,16 +369,16 @@ export default function EPIsPage() {
                         <TableCell className="text-right text-black bg-white">
                           <div className="flex justify-end gap-0.5 md:gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleView(epi)} title="Visualizar" className="h-7 w-7 md:h-8 md:w-8">
-                              <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                              <Eye className="w-4 h-4" />
                             </Button>
                             {canEditEPI && (
                               <Button variant="ghost" size="icon" onClick={() => handleEdit(epi)} title="Editar" className="h-7 w-7 md:h-8 md:w-8 hidden sm:flex">
-                                <Edit className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <Edit className="w-4 h-4" />
                               </Button>
                             )}
                             {canDeleteEPI && (
                               <Button variant="ghost" size="icon" onClick={() => handleDelete(epi)} title="Excluir" className="text-red-600 hover:text-red-700 h-7 w-7 md:h-8 md:w-8 hidden md:flex">
-                                <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             )}
                           </div>
