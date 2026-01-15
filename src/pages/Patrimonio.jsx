@@ -212,13 +212,13 @@ export default function PatrimonioPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Código</TableHead>
-                    <TableHead className="text-white font-semibold">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold">Categoria</TableHead>
-                    <TableHead className="text-white font-semibold">Valor Aquisição</TableHead>
-                    <TableHead className="text-white font-semibold">Data Aquisição</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold text-center w-[120px]">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Código</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Descrição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Categoria</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Data Aquisição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-center w-[80px] md:w-[120px] text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -229,27 +229,27 @@ export default function PatrimonioPage() {
                   ) : (
                     patrimoniosFiltrados.map((patrimonio) => (
                       <TableRow key={patrimonio.id} className="hover:bg-slate-50">
-                        <TableCell className="font-medium text-slate-900">{patrimonio.codigo}</TableCell>
-                        <TableCell className="text-slate-700">{patrimonio.descricao}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`${categoriaColors[patrimonio.categoria]} font-normal border`}>
+                        <TableCell className="font-medium text-slate-900 text-xs md:text-sm">{patrimonio.codigo}</TableCell>
+                        <TableCell className="text-slate-700 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{patrimonio.descricao}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          <Badge variant="outline" className={`${categoriaColors[patrimonio.categoria]} font-normal border text-[10px] md:text-xs`}>
                             {patrimonio.categoria}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-slate-700">{formatCurrency(patrimonio.valor_aquisicao)}</TableCell>
-                        <TableCell className="text-slate-700">{formatDate(patrimonio.data_aquisicao)}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`${statusColors[patrimonio.status]} font-normal border`}>
+                        <TableCell className="text-slate-700 text-xs md:text-sm hidden sm:table-cell">{formatCurrency(patrimonio.valor_aquisicao)}</TableCell>
+                        <TableCell className="text-slate-700 text-xs md:text-sm hidden lg:table-cell">{formatDate(patrimonio.data_aquisicao)}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline" className={`${statusColors[patrimonio.status]} font-normal border text-[10px] md:text-xs`}>
                             {patrimonio.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <div className="flex justify-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(patrimonio)} className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-4 w-4" />
+                          <div className="flex justify-center gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openForm(patrimonio)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(patrimonio.id)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(patrimonio.id)} className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex">
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>

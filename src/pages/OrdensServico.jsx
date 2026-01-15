@@ -576,25 +576,25 @@ function OrdensServicoContent() {
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
                     {isAdmin && (
-                      <TableHead className="text-white font-semibold w-12">
+                      <TableHead className="text-white font-semibold w-8 md:w-12 text-xs md:text-sm">
                         <Checkbox
                           checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
                           onCheckedChange={handleSelectAll}
-                          className="border-white"
+                          className="border-white w-3.5 h-3.5 md:w-4 md:h-4"
                         />
                       </TableHead>
                     )}
-                    <TableHead className="text-white font-semibold">Nº OS</TableHead>
-                    <TableHead className="text-white font-semibold">Data</TableHead>
-                    <TableHead className="text-white font-semibold">Cliente</TableHead>
-                    <TableHead className="text-white font-semibold">Veículo</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Produtos</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Serviços</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Despesas</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Desconto</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Valor Total</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold text-center">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nº OS</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Data</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Cliente</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Veículo</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden xl:table-cell">Produtos</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden xl:table-cell">Serviços</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden 2xl:table-cell">Despesas</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden 2xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden md:table-cell">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-center text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -623,33 +623,34 @@ function OrdensServicoContent() {
                       return (
                         <TableRow key={os.id} className="hover:bg-slate-50">
                           {isAdmin && (
-                            <TableCell className="py-3">
+                            <TableCell className="py-2 md:py-3">
                               <Checkbox
                                 checked={selectedOS.includes(os.id)}
                                 onCheckedChange={() => handleSelectOS(os.id)}
+                                className="w-3.5 h-3.5 md:w-4 md:h-4"
                               />
                             </TableCell>
                           )}
-                          <TableCell className="font-medium text-blue-600 py-3">{os.numero_os}</TableCell>
-                          <TableCell className="text-slate-900 py-3">{formatDate(os.data_abertura)}</TableCell>
-                          <TableCell className="text-slate-900 py-3">{getContatoNome(os)}</TableCell>
-                          <TableCell className="text-slate-900 py-3">{getVeiculoInfo(os.veiculo_id)}</TableCell>
-                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorProdutos)}</TableCell>
-                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorServicos)}</TableCell>
-                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(valorDespesas)}</TableCell>
-                          <TableCell className="text-slate-900 py-3 text-right">{formatCurrency(os.desconto_valor || 0)}</TableCell>
-                          <TableCell className="font-semibold text-slate-900 py-3 text-right">{formatCurrency(os.valor_total)}</TableCell>
-                          <TableCell className="py-3">{getStatusBadge(os.status)}</TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center justify-center gap-2">
+                          <TableCell className="font-medium text-blue-600 py-2 md:py-3 text-xs md:text-sm">{os.numero_os}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap">{formatDate(os.data_abertura)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm max-w-[80px] md:max-w-none truncate">{getContatoNome(os)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden lg:table-cell">{getVeiculoInfo(os.veiculo_id)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden xl:table-cell">{formatCurrency(valorProdutos)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden xl:table-cell">{formatCurrency(valorServicos)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden 2xl:table-cell">{formatCurrency(valorDespesas)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden 2xl:table-cell">{formatCurrency(os.desconto_valor || 0)}</TableCell>
+                          <TableCell className="font-semibold text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden md:table-cell">{formatCurrency(os.valor_total)}</TableCell>
+                          <TableCell className="py-2 md:py-3 hidden sm:table-cell">{getStatusBadge(os.status)}</TableCell>
+                          <TableCell className="py-2 md:py-3">
+                            <div className="flex items-center justify-center gap-0.5 md:gap-2">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleView(os)}
                                 title="Visualizar"
-                                className="hover:bg-blue-50 text-blue-600"
+                                className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
                               >
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               {canEdit('os') && (
                                 <Button
@@ -657,9 +658,9 @@ function OrdensServicoContent() {
                                   size="sm"
                                   onClick={() => handleEdit(os)}
                                   title="Editar"
-                                  className="hover:bg-amber-50 text-amber-600"
+                                  className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex"
                                 >
-                                  <Pencil className="w-4 h-4" />
+                                  <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                 </Button>
                               )}
                               {canDelete('os') && (
@@ -668,9 +669,9 @@ function OrdensServicoContent() {
                                   size="sm"
                                   onClick={() => handleDelete(os)}
                                   title="Excluir"
-                                  className="text-red-600 hover:bg-red-50"
+                                  className="text-red-600 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 p-0 hidden md:flex"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                 </Button>
                               )}
                             </div>

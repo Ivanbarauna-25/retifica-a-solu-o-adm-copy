@@ -347,14 +347,14 @@ export default function EstoquePage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Código</TableHead>
-                    <TableHead className="text-white font-semibold">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold">Fabricante</TableHead>
-                    <TableHead className="text-white font-semibold">Estoque</TableHead>
-                    <TableHead className="text-white font-semibold">Preço Custo</TableHead>
-                    <TableHead className="text-white font-semibold">Preço Venda</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold w-[120px] no-print text-center">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Código</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Descrição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Fabricante</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Estoque</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">P. Custo</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">P. Venda</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold w-[80px] md:w-[120px] no-print text-center text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -365,34 +365,34 @@ export default function EstoquePage() {
                   ) : (
                     pecasFiltradas.map((peca) => (
                       <TableRow key={peca.id} className="hover:bg-slate-50">
-                        <TableCell className="font-medium text-slate-900">{peca.codigo}</TableCell>
-                        <TableCell className="text-slate-900">{peca.descricao}</TableCell>
-                        <TableCell className="text-slate-600">{peca.fabricante}</TableCell>
+                        <TableCell className="font-medium text-slate-900 text-xs md:text-sm">{peca.codigo}</TableCell>
+                        <TableCell className="text-slate-900 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{peca.descricao}</TableCell>
+                        <TableCell className="text-slate-600 text-xs md:text-sm hidden lg:table-cell">{peca.fabricante}</TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2 font-medium">
+                          <div className="flex items-center gap-1 md:gap-2 font-medium text-xs md:text-sm">
                             <span>{peca.quantidade_estoque || 0}</span>
                             {(peca.quantidade_estoque || 0) <= (peca.quantidade_minima || 5) && (
-                              <AlertTriangle className="w-4 h-4 text-red-500 no-print" />
+                              <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 text-red-500 no-print" />
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="text-slate-600">{formatCurrency(peca.preco_custo)}</TableCell>
-                        <TableCell className="text-slate-900 font-semibold">{formatCurrency(peca.preco_venda)}</TableCell>
-                        <TableCell>
+                        <TableCell className="text-slate-600 text-xs md:text-sm hidden md:table-cell">{formatCurrency(peca.preco_custo)}</TableCell>
+                        <TableCell className="text-slate-900 font-semibold text-xs md:text-sm hidden sm:table-cell">{formatCurrency(peca.preco_venda)}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           <Badge
                             variant={(peca.quantidade_estoque || 0) <= (peca.quantidade_minima || 5) ? 'destructive' : 'default'}
-                            className={`badge-print ${(peca.quantidade_estoque || 0) > (peca.quantidade_minima || 5) ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}
+                            className={`badge-print text-[10px] md:text-xs ${(peca.quantidade_estoque || 0) > (peca.quantidade_minima || 5) ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}
                           >
                             {(peca.quantidade_estoque || 0) <= (peca.quantidade_minima || 5) ? 'Baixo' : 'OK'}
                           </Badge>
                         </TableCell>
                         <TableCell className="no-print text-center">
-                          <div className="flex justify-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(peca)} className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-4 w-4" />
+                          <div className="flex justify-center gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openForm(peca)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(peca)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(peca)} className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex">
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>
