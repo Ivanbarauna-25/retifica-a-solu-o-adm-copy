@@ -557,7 +557,7 @@ export default function OrcamentosPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleView(orcamento)}
-                              title="Visualizar" className="text-blue-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
+                              title="Visualizar" className="text-blue-600 p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
 
 
                                 <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
@@ -574,7 +574,7 @@ export default function OrcamentosPage() {
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild className="text-slate-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-slate-100 h-7 w-7 md:h-8 md:w-8">
                                   <Button variant="ghost" size="sm" className="hover:bg-slate-100 text-slate-600 h-7 w-7 md:h-8 md:w-8 p-0">
-                                    <MoreVertical className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                    <MoreVertical className="mx-auto lucide lucide-ellipsis-vertical w-3.5 h-3.5 md:w-4 md:h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
