@@ -537,7 +537,7 @@ export default function OrcamentosPage() {
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap">
                             {formatDate(orcamento.data_orcamento)}
                           </TableCell>
-                          <TableCell className="text-slate-900 mx-auto px-6 py-2 text-xs align-middle [&:has([role=checkbox])]:pr-0 md:py-3 md:text-sm max-w-[100px] md:max-w-none truncate">{cliente?.nome || "-"}</TableCell>
+                          <TableCell className="text-slate-900 mx-auto px-6 py-1 text-xs align-middle [&:has([role=checkbox])]:pr-0 md:py-3 md:text-sm max-w-[100px] md:max-w-none truncate">{cliente?.nome || "-"}</TableCell>
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden md:table-cell">{veiculoTexto}</TableCell>
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden lg:table-cell">{vendedor?.nome || "-"}</TableCell>
                           <TableCell className="font-semibold text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden md:table-cell">
@@ -557,10 +557,10 @@ export default function OrcamentosPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleView(orcamento)}
-                              title="Visualizar" className="text-blue-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
+                              title="Visualizar" className="text-blue-600 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
 
 
-                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <Eye className="mx-auto lucide lucide-eye w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <Button
                               variant="ghost"
