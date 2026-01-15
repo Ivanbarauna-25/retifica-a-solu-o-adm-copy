@@ -172,7 +172,7 @@ export default function OrcamentoViewer({
     <>
       <Dialog open={!!orcamento} onOpenChange={onClose}>
         <DialogContent
-          className="max-w-[60vw] w-[60vw] h-[80vh] max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl"
+          className="w-[95vw] md:w-[85vw] lg:w-[70vw] xl:w-[60vw] max-w-4xl h-[90vh] md:h-[85vh] max-h-[90vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl p-0"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <style>{`
@@ -192,214 +192,264 @@ export default function OrcamentoViewer({
             }
           `}</style>
 
-          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 py-4 flex-shrink-0">
+          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-3 md:py-4 flex-shrink-0 sticky top-0 z-10">
             <DialogTitle className="flex items-center justify-between text-white">
-              <div className="flex items-center gap-3">
-                <div className="h-11 w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base font-semibold text-white">{currentOrcamento.numero_orcamento}</h2>
-                    <Badge className={`${statusInfo.bg} ${statusInfo.text} text-xs px-2 py-0.5 border-0`}>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
+                    <h2 className="text-sm md:text-base font-semibold text-white truncate">{currentOrcamento.numero_orcamento}</h2>
+                    <Badge className={`${statusInfo.bg} ${statusInfo.text} text-[10px] md:text-xs px-1.5 md:px-2 py-0.5 border-0`}>
                       {statusInfo.label}
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-300 mt-0.5">Visualização do orçamento</p>
+                  <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">Visualização do orçamento</p>
                 </div>
               </div>
 
-              <TooltipProvider>
-                <div className="flex items-center gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => {
-                          onClose?.();
-                          setTimeout(() => onEdit?.(currentOrcamento), 100);
-                        }}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                        <Edit className="w-5 h-5 text-white" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Editar</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={handlePrint}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                        <Printer className="w-5 h-5 text-white" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Imprimir</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setShowDespesas(true)}
-                        className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                        <DollarSign className="w-5 h-5 text-white" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Despesas</p>
-                    </TooltipContent>
-                  </Tooltip>
-
-                  {currentOrcamento.status === "aprovado" && (
+              <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                <TooltipProvider>
+                  {/* Ações principais - visíveis em telas maiores */}
+                  <div className="hidden md:flex items-center gap-1">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
+                          onClick={() => {
+                            onClose?.();
+                            setTimeout(() => onEdit?.(currentOrcamento), 100);
+                          }}
                           className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                          <ArrowRight className="w-5 h-5 text-white" />
+                          <Edit className="w-4 h-4 md:w-5 md:h-5 text-white" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-xs">Converter em OS</p>
+                        <p className="text-xs">Editar</p>
                       </TooltipContent>
                     </Tooltip>
-                  )}
 
-                  <div className="w-px h-6 bg-white/20 mx-1" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={handlePrint}
+                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                          <Printer className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Imprimir</p>
+                      </TooltipContent>
+                    </Tooltip>
 
-                  {currentOrcamento.status === "pendente" && (
-                    <>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setShowDespesas(true)}
+                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                          <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Despesas</p>
+                      </TooltipContent>
+                    </Tooltip>
+
+                    {currentOrcamento.status === "aprovado" && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => openConfirm("converter", "Converter em OS", `Gerar Ordem de Serviço a partir do orçamento ${currentOrcamento.numero_orcamento}?`)}
+                            className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <ArrowRight className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Converter em OS</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+
+                    <div className="w-px h-5 bg-white/20 mx-1" />
+
+                    {currentOrcamento.status === "pendente" && (
+                      <>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => openConfirm(
+                                "aprovar", 
+                                "Aprovar Orçamento", 
+                                `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}?`
+                              )}
+                              className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                              <CheckCircle className="w-5 h-5 text-white" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Aprovar</p>
+                          </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => openConfirm(
+                                "rejeitar", 
+                                "Rejeitar Orçamento", 
+                                `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
+                              )}
+                              className="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                              <XCircle className="w-5 h-5 text-white" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Rejeitar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </>
+                    )}
+
+                    {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
                             onClick={() => openConfirm(
-                              "aprovar", 
-                              "Aprovar Orçamento", 
-                              `Confirma a aprovação do orçamento ${currentOrcamento.numero_orcamento}? Após a aprovação, o orçamento poderá ser convertido em Ordem de Serviço.`
+                              "cancelar", 
+                              "Cancelar Orçamento", 
+                              `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
                             )}
                             className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <CheckCircle className="w-6 h-6 text-white" />
+                            <Ban className="w-5 h-5 text-white" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="text-xs">Aprovar</p>
+                          <p className="text-xs">Cancelar</p>
                         </TooltipContent>
                       </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={() => openConfirm(
-                              "rejeitar", 
-                              "Rejeitar Orçamento", 
-                              `Confirma a rejeição do orçamento ${currentOrcamento.numero_orcamento}?`
-                            )}
-                            className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                            <XCircle className="w-6 h-6 text-white" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">Rejeitar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </>
-                  )}
-
-                  {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => openConfirm(
-                            "cancelar", 
-                            "Cancelar Orçamento", 
-                            `Confirma o cancelamento do orçamento ${currentOrcamento.numero_orcamento}?`
-                          )}
-                          className="p-2 rounded-lg hover:bg-white/10 transition-colors">
-                          <Ban className="w-6 h-6 text-white" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">Cancelar</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-              </TooltipProvider>
-              <div className="w-px h-6 bg-white/20 mx-2" />
-              <Button
-                size="icon"
-                onClick={onClose}
-                className="h-9 w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+                    )}
+                  </div>
+                </TooltipProvider>
+                
+                <Button
+                  size="icon"
+                  onClick={onClose}
+                  className="h-8 w-8 md:h-9 md:w-9 bg-white/10 hover:bg-white/20 text-white rounded-lg backdrop-blur-sm ml-1"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
             </DialogTitle>
           </DialogHeader>
 
           {/* CARDS INFORMATIVOS */}
-          <section className="grid grid-cols-4 gap-3 px-6 pt-5 pb-0">
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
-              <span className="block text-sm font-semibold mt-1 text-slate-900 truncate">{cliente?.nome || "—"}</span>
+          <section className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 px-3 md:px-6 pt-3 md:pt-5 pb-0">
+            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+              <span className="text-[8px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
+              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900 truncate">{cliente?.nome || "—"}</span>
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
-              <span className="block text-sm font-semibold mt-1 text-slate-900">{veiculo ? `${veiculo.placa}` : "—"}</span>
+            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+              <span className="text-[8px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
+              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{veiculo ? `${veiculo.placa}` : "—"}</span>
             </div>
 
-            <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-              <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA ORÇAMENTO</span>
-              <span className="block text-sm font-semibold mt-1 text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
+            <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+              <span className="text-[8px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA</span>
+              <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
             </div>
 
-            <div className="border border-blue-200 rounded-lg p-3 bg-blue-50/50">
-              <span className="text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
-              <span className="block text-base font-bold mt-1 text-blue-700">{formatCurrency(currentOrcamento.valor_total)}</span>
+            <div className="border border-blue-200 rounded-lg p-2 md:p-3 bg-blue-50/50">
+              <span className="text-[8px] md:text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
+              <span className="block text-sm md:text-base font-bold mt-0.5 md:mt-1 text-blue-700">{formatCurrency(currentOrcamento.valor_total)}</span>
             </div>
           </section>
+          
+          {/* Ações Mobile */}
+          <div className="flex md:hidden gap-2 px-3 pt-3 overflow-x-auto">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                onClose?.();
+                setTimeout(() => onEdit?.(currentOrcamento), 100);
+              }}
+              className="h-8 text-xs gap-1 flex-shrink-0"
+            >
+              <Edit className="w-3.5 h-3.5" />
+              Editar
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handlePrint}
+              className="h-8 text-xs gap-1 flex-shrink-0"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              Imprimir
+            </Button>
+            {currentOrcamento.status === "pendente" && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => openConfirm("aprovar", "Aprovar", `Aprovar orçamento ${currentOrcamento.numero_orcamento}?`)}
+                className="h-8 text-xs gap-1 flex-shrink-0 text-green-600 border-green-300"
+              >
+                <CheckCircle className="w-3.5 h-3.5" />
+                Aprovar
+              </Button>
+            )}
+            {currentOrcamento.status === "aprovado" && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => openConfirm("converter", "Converter", `Converter em OS?`)}
+                className="h-8 text-xs gap-1 flex-shrink-0 text-blue-600 border-blue-300"
+              >
+                <ArrowRight className="w-3.5 h-3.5" />
+                Gerar OS
+              </Button>
+            )}
+          </div>
 
           {/* SEÇÃO FINANCEIRA */}
-          <div className="mx-6 mt-4 border border-slate-200 rounded-xl overflow-hidden bg-white">
-            <div className="bg-slate-50 border-b border-slate-200 py-3 px-4 flex items-center justify-between">
+          <div className="mx-3 md:mx-6 mt-3 md:mt-4 border border-slate-200 rounded-xl overflow-hidden bg-white">
+            <div className="bg-slate-50 border-b border-slate-200 py-2 md:py-3 px-3 md:px-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-slate-600" />
-                <span className="text-sm font-semibold text-slate-800">Informações Financeiras</span>
+                <DollarSign className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-600" />
+                <span className="text-xs md:text-sm font-semibold text-slate-800">Informações Financeiras</span>
               </div>
-              <Badge variant="outline" className="text-xs text-slate-600 border-slate-300 bg-white">
+              <Badge variant="outline" className="text-[10px] md:text-xs text-slate-600 border-slate-300 bg-white">
                 {despesas.length} despesa(s)
               </Badge>
             </div>
-            <div className="p-4">
-              <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold text-slate-800">{currentOrcamento.numero_orcamento}</span>
-                <Badge className="bg-slate-700 text-white text-xs">
+            <div className="p-3 md:p-4">
+              <div className="bg-slate-100 border border-slate-200 rounded-lg p-2 md:p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <span className="text-xs md:text-sm font-semibold text-slate-800">{currentOrcamento.numero_orcamento}</span>
+                <Badge className="bg-slate-700 text-white text-[10px] md:text-xs w-fit">
                   {currentOrcamento.status === "convertido" ? "Convertido" : "Orçamento"}
                 </Badge>
-                <span className="text-lg font-bold text-slate-900">{formatCurrency(currentOrcamento.valor_total)}</span>
+                <span className="text-base md:text-lg font-bold text-slate-900">{formatCurrency(currentOrcamento.valor_total)}</span>
               </div>
 
               {despesas.length > 0 &&
-                <div className="rounded-lg overflow-hidden border border-slate-200">
+                <div className="rounded-lg overflow-hidden border border-slate-200 overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-slate-50">
-                        <TableHead className="text-xs font-semibold text-slate-600">Data</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-600">Tipo</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-600">Descrição</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-600 text-right">Valor</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600">Data</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600 hidden sm:table-cell">Tipo</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600">Descrição</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600 text-right">Valor</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {despesas.map((d) =>
-                        <TableRow key={d.id} className="text-xs">
-                          <TableCell className="text-slate-700">{formatDate(d.data)}</TableCell>
-                          <TableCell className="text-slate-700">{d.tipo || "—"}</TableCell>
-                          <TableCell className="text-slate-700">{d.descricao || "—"}</TableCell>
-                          <TableCell className="text-right font-semibold text-red-600">
+                        <TableRow key={d.id} className="text-[10px] md:text-xs">
+                          <TableCell className="text-slate-700 whitespace-nowrap">{formatDate(d.data)}</TableCell>
+                          <TableCell className="text-slate-700 hidden sm:table-cell">{d.tipo || "—"}</TableCell>
+                          <TableCell className="text-slate-700 truncate max-w-[100px] md:max-w-none">{d.descricao || "—"}</TableCell>
+                          <TableCell className="text-right font-semibold text-red-600 whitespace-nowrap">
                             {formatCurrency(d.valor)}
                           </TableCell>
                         </TableRow>
@@ -412,98 +462,98 @@ export default function OrcamentoViewer({
           </div>
 
           {/* TABS */}
-          <div className="px-6 mt-4 mb-2">
+          <div className="px-3 md:px-6 mt-3 md:mt-4 mb-2">
             <Tabs defaultValue="geral" className="w-full">
-              <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg grid grid-cols-3 gap-1 mb-4">
+              <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg grid grid-cols-3 gap-1 mb-3 md:mb-4">
                 <TabsTrigger
                   value="geral"
-                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2 transition-all text-xs font-semibold py-2">
+                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-1 md:gap-2 transition-all text-[10px] md:text-xs font-semibold py-1.5 md:py-2">
                   GERAL
                 </TabsTrigger>
                 <TabsTrigger
                   value="itens"
-                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2 transition-all text-xs font-semibold py-2">
+                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-1 md:gap-2 transition-all text-[10px] md:text-xs font-semibold py-1.5 md:py-2">
                   ITENS ({currentOrcamento.itens?.length || 0})
                 </TabsTrigger>
                 <TabsTrigger
                   value="observacoes"
-                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2 transition-all text-xs font-semibold py-2">
-                  OBSERVAÇÕES
+                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-1 md:gap-2 transition-all text-[10px] md:text-xs font-semibold py-1.5 md:py-2">
+                  OBS
                 </TabsTrigger>
               </TabsList>
 
               {/* TAB: Geral */}
               <TabsContent value="geral" className="p-0">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Responsável Técnico</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Responsável</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{responsavel?.nome || "—"}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900 truncate block">{responsavel?.nome || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Vendedor</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Vendedor</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{vendedor?.nome || "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Cliente</span>
-                    </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{cliente?.nome || "—"}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900 truncate block">{vendedor?.nome || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Telefone</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Cliente</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{cliente?.telefone || "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Data de Abertura</span>
-                    </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900 truncate block">{cliente?.nome || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Validade</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Telefone</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{currentOrcamento.data_validade ? formatDate(currentOrcamento.data_validade) : "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Entrada</span>
-                    </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{formatCurrency(currentOrcamento.entrada || 0)}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{cliente?.telefone || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Status</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Abertura</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{statusInfo.label}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{formatDate(currentOrcamento.data_orcamento)}</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Validade</span>
+                    </div>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{currentOrcamento.data_validade ? formatDate(currentOrcamento.data_validade) : "—"}</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Entrada</span>
+                    </div>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{formatCurrency(currentOrcamento.entrada || 0)}</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Status</span>
+                    </div>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{statusInfo.label}</span>
                     </div>
                   </div>
                 </div>
@@ -588,11 +638,11 @@ export default function OrcamentoViewer({
           </div>
 
           {/* FOOTER COM AÇÕES */}
-          <div className="flex justify-end items-center px-6 py-4 border-t border-slate-100 bg-white">
+          <div className="flex justify-end items-center px-3 md:px-6 py-3 md:py-4 border-t border-slate-100 bg-white sticky bottom-0">
             <Button
               onClick={onClose}
               variant="ghost"
-              className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+              className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-9">
               Fechar
             </Button>
           </div>

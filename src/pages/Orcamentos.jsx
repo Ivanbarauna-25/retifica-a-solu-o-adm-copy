@@ -315,46 +315,64 @@ export default function OrcamentosPage() {
         {/* Conteúdo Principal */}
         <div className="max-w-[1800px] mx-auto px-1 md:px-4">
           
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
-            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-2 md:p-4">
+          {/* Stats Cards - Ocultos em mobile para economizar espaço */}
+          <div className="hidden md:grid grid-cols-4 gap-3 mb-4">
+            <Card className="border-l-4 border-l-slate-600 shadow-sm">
+              <CardContent className="p-4">
                 <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Total Geral</p>
-                  <div className="text-sm md:text-xl font-bold text-slate-900">{filteredOrcamentos.length}</div>
+                  <p className="text-xs font-medium text-slate-600 mb-0.5">Total Geral</p>
+                  <div className="text-xl font-bold text-slate-900">{filteredOrcamentos.length}</div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-2 md:border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
+            <Card className="border-l-4 border-l-yellow-500 shadow-sm">
+              <CardContent className="p-4">
                 <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Pendentes</p>
-                  <div className="text-sm md:text-xl font-bold text-yellow-600">
+                  <p className="text-xs font-medium text-slate-600 mb-0.5">Pendentes</p>
+                  <div className="text-xl font-bold text-yellow-600">
                     {filteredOrcamentos.filter((o) => o.status === "pendente").length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
+            <Card className="border-l-4 border-l-blue-500 shadow-sm">
+              <CardContent className="p-4">
                 <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Aprovados</p>
-                  <div className="text-sm md:text-xl font-bold text-blue-600">
+                  <p className="text-xs font-medium text-slate-600 mb-0.5">Aprovados</p>
+                  <div className="text-xl font-bold text-blue-600">
                     {filteredOrcamentos.filter((o) => o.status === "aprovado").length}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
+            <Card className="border-l-4 border-l-green-500 shadow-sm">
+              <CardContent className="p-4">
                 <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Valor Total</p>
-                  <div className="text-xs md:text-lg font-bold text-green-600">
+                  <p className="text-xs font-medium text-slate-600 mb-0.5">Valor Total</p>
+                  <div className="text-lg font-bold text-green-600">
                     {formatCurrency(filteredOrcamentos.reduce((sum, o) => sum + (o.valor_total || 0), 0))}
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Stats Mobile - Compacto */}
+          <div className="grid grid-cols-2 gap-1.5 mb-2 md:hidden">
+            <Card className="border-l-2 border-l-slate-600 shadow-sm">
+              <CardContent className="p-2">
+                <p className="text-[9px] font-medium text-slate-600">Total</p>
+                <div className="text-sm font-bold text-slate-900">{filteredOrcamentos.length}</div>
+              </CardContent>
+            </Card>
+            <Card className="border-l-2 border-l-yellow-500 shadow-sm">
+              <CardContent className="p-2">
+                <p className="text-[9px] font-medium text-slate-600">Aprovados</p>
+                <div className="text-sm font-bold text-blue-600">
+                  {filteredOrcamentos.filter((o) => o.status === "aprovado").length}
                 </div>
               </CardContent>
             </Card>
@@ -362,26 +380,26 @@ export default function OrcamentosPage() {
 
           {/* Search Bar */}
           <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <Search className="absolute left-2 md:left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
                 <Input
                   type="text"
-                  placeholder="🔍 Busca rápida por número..."
+                  placeholder="Busca por número..."
                   value={quickSearchNumber}
                   onChange={(e) => setQuickSearchNumber(e.target.value)}
-                  className="bg-white text-slate-900 placeholder:text-slate-400 pl-10 border-2 border-blue-100 focus:border-blue-500"
+                  className="bg-white text-slate-900 placeholder:text-slate-400 pl-8 md:pl-10 h-9 md:h-10 text-sm border-2 border-blue-100 focus:border-blue-500"
                 />
                 {quickSearchNumber && (
                   <button
                     onClick={() => setQuickSearchNumber("")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
                     ✕
                   </button>
                 )}
               </div>
 
-              <div className="relative">
+              <div className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <Input
                   type="text"
@@ -480,15 +498,15 @@ export default function OrcamentosPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
-                    <TableHead className="text-white font-semibold">Nº Orçamento</TableHead>
-                    <TableHead className="text-white font-semibold">Data</TableHead>
-                    <TableHead className="text-white font-semibold">Cliente</TableHead>
-                    <TableHead className="text-white font-semibold">Veículo</TableHead>
-                    <TableHead className="text-white font-semibold">Vendedor</TableHead>
-                    <TableHead className="text-white font-semibold">Valor Total</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold">Observações</TableHead>
-                    <TableHead className="text-white font-semibold text-center">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nº</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Data</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Cliente</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Veículo</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Vendedor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Observações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -515,51 +533,55 @@ export default function OrcamentosPage() {
 
                       return (
                         <TableRow key={orcamento.id} className="hover:bg-slate-50">
-                          <TableCell className="font-medium text-blue-600 py-3">{orcamento.numero_orcamento}</TableCell>
-                          <TableCell className="text-slate-900 py-3">
+                          <TableCell className="font-medium text-blue-600 py-2 md:py-3 text-xs md:text-sm">{orcamento.numero_orcamento}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap">
                             {formatDate(orcamento.data_orcamento)}
                           </TableCell>
-                          <TableCell className="text-slate-900 py-3">{cliente?.nome || "-"}</TableCell>
-                          <TableCell className="text-slate-900 py-3">{veiculoTexto}</TableCell>
-                          <TableCell className="text-slate-900 py-3">{vendedor?.nome || "-"}</TableCell>
-                          <TableCell className="font-semibold text-slate-900 py-3">
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{cliente?.nome || "-"}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden md:table-cell">{veiculoTexto}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden lg:table-cell">{vendedor?.nome || "-"}</TableCell>
+                          <TableCell className="font-semibold text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden md:table-cell">
                             {formatCurrency(orcamento.valor_total || 0)}
                           </TableCell>
-                          <TableCell className="py-3">
-                            <Badge className={statusConfig[orcamento.status]}>
+                          <TableCell className="py-2 md:py-3 hidden sm:table-cell">
+                            <Badge className={`${statusConfig[orcamento.status]} text-[10px] md:text-xs px-1.5 md:px-2`}>
                               {statusLabels[orcamento.status]}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-slate-600 py-3 max-w-[200px] truncate" title={orcamento.observacoes}>
+                          <TableCell className="text-slate-600 py-2 md:py-3 max-w-[200px] truncate text-xs md:text-sm hidden xl:table-cell" title={orcamento.observacoes}>
                             {orcamento.observacoes || "-"}
                           </TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center justify-center gap-2">
+                          <TableCell className="py-2 md:py-3">
+                            <div className="flex items-center justify-center gap-0.5 md:gap-2">
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleView(orcamento)}
                                 title="Visualizar"
-                                className="hover:bg-blue-50 text-blue-600"
+                                className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
                               >
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleEdit(orcamento)}
                                 title="Editar"
-                                className="hover:bg-amber-50 text-amber-600"
+                                className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex"
                               >
-                                <Pencil className="w-4 h-4" />
+                                <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="hover:bg-slate-100 text-slate-600">
-                                    <MoreVertical className="w-4 h-4" />
+                                  <Button variant="ghost" size="sm" className="hover:bg-slate-100 text-slate-600 h-7 w-7 md:h-8 md:w-8 p-0">
+                                    <MoreVertical className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleEdit(orcamento)} className="sm:hidden">
+                                    <Pencil className="w-4 h-4 mr-2" />
+                                    Editar
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => handlePrint(orcamento)}>
                                     <Printer className="w-4 h-4 mr-2" />
                                     Imprimir
