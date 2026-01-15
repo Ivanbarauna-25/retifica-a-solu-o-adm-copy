@@ -164,23 +164,24 @@ export default function AdiantamentoViewer({
       `}</style>
 
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-full max-w-[95vw] md:max-w-2xl h-auto max-h-[90vh] overflow-hidden modern-modal bg-white border-2 border-slate-800 shadow-2xl flex flex-col p-0" onPointerDownOutside={(e) => e.preventDefault()}>
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 border-b border-slate-600">
-            <div className="w-full flex items-center justify-between">
-              <DialogTitle className="flex items-center gap-3 text-white text-lg font-bold">
-                <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                  <Wallet className="w-5 h-5 text-white" />
+        <DialogContent className="w-[95vw] md:w-[85vw] lg:max-w-2xl h-auto max-h-[90vh] overflow-hidden modern-modal bg-white border-2 border-slate-800 shadow-2xl flex flex-col p-0" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader className="modern-modal-header flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 px-3 md:px-6 py-3 md:py-4 border-b border-slate-600">
+            <div className="w-full flex items-center justify-between gap-2">
+              <DialogTitle className="flex items-center gap-2 md:gap-3 text-white text-sm md:text-lg font-bold min-w-0">
+                <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                  <Wallet className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
-                Visualização de Adiantamento
+                <span className="truncate">Adiantamento</span>
               </DialogTitle>
 
-              <div className="flex items-center gap-1">
+              {/* Ações desktop */}
+              <div className="hidden md:flex items-center gap-1">
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   title="Aprovar" 
                   onClick={() => setStatus("aprovado")}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                 </Button>
@@ -189,7 +190,7 @@ export default function AdiantamentoViewer({
                   size="icon" 
                   title="Reprovar" 
                   onClick={() => setStatus("reprovado")}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
                 >
                   <XCircle className="w-4 h-4" />
                 </Button>
@@ -198,7 +199,7 @@ export default function AdiantamentoViewer({
                   size="icon" 
                   title="Cancelar" 
                   onClick={() => setStatus("cancelado")}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
                 >
                   <Ban className="w-4 h-4" />
                 </Button>
@@ -208,7 +209,7 @@ export default function AdiantamentoViewer({
                   title={adiantamento?.movimentacao_financeira_id ? "Movimentação já gerada" : "Gerar Financeiro"} 
                   onClick={() => onOpenFinanceiro && onOpenFinanceiro(adiantamento)}
                   disabled={!!adiantamento?.movimentacao_financeira_id}
-                  className={`h-10 w-10 ${adiantamento?.movimentacao_financeira_id ? 'bg-slate-500 opacity-50 cursor-not-allowed' : 'bg-slate-600 hover:bg-slate-700'} text-white`}
+                  className={`h-9 w-9 ${adiantamento?.movimentacao_financeira_id ? 'bg-slate-500 opacity-50 cursor-not-allowed' : 'bg-slate-600 hover:bg-slate-700'} text-white`}
                 >
                   <Wallet className="w-4 h-4" />
                 </Button>
@@ -217,7 +218,7 @@ export default function AdiantamentoViewer({
                   size="icon" 
                   title="Pagamento parcial" 
                   onClick={() => onOpenPagamentoParcial && onOpenPagamentoParcial(adiantamento)}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
                 >
                   <Receipt className="w-4 h-4" />
                 </Button>
@@ -226,7 +227,7 @@ export default function AdiantamentoViewer({
                   size="icon" 
                   title="Gerar recibo" 
                   onClick={handleGenerateReceipt}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
                 >
                   <FileText className="w-4 h-4" />
                 </Button>
@@ -235,42 +236,92 @@ export default function AdiantamentoViewer({
                   size="icon" 
                   title="Fechar" 
                   onClick={onClose}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
+              
+              {/* Fechar mobile */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={onClose}
+                className="md:hidden bg-slate-600 hover:bg-slate-700 text-white h-8 w-8 flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
           </DialogHeader>
 
-          <div className="adiantamento-viewer-scroll flex-1 px-6 pb-6 pt-4">
-            <Card className="border-2 border-slate-200 shadow-sm">
-              <CardContent className="p-5 space-y-4">
-                <div className="flex flex-wrap gap-2 items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="text-sm text-black">Funcionário</div>
-                    <div className="font-medium text-black">{funcionarioNome}</div>
+          <div className="adiantamento-viewer-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6 pt-3 md:pt-4">
+            {/* Ações mobile */}
+            <div className="flex md:hidden gap-1.5 mb-3 overflow-x-auto pb-1">
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={() => setStatus("aprovado")}
+                className="h-8 text-xs gap-1 flex-shrink-0 text-green-600 border-green-300"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                Aprovar
+              </Button>
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={() => setStatus("reprovado")}
+                className="h-8 text-xs gap-1 flex-shrink-0 text-red-600 border-red-300"
+              >
+                <XCircle className="w-3.5 h-3.5" />
+                Reprovar
+              </Button>
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={() => onOpenPagamentoParcial && onOpenPagamentoParcial(adiantamento)}
+                className="h-8 text-xs gap-1 flex-shrink-0"
+              >
+                <Receipt className="w-3.5 h-3.5" />
+                Pagar
+              </Button>
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={handleGenerateReceipt}
+                className="h-8 text-xs gap-1 flex-shrink-0"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                Recibo
+              </Button>
+            </div>
+            
+            <Card className="border border-slate-200 md:border-2 shadow-sm">
+              <CardContent className="p-3 md:p-5 space-y-3 md:space-y-4">
+                <div className="grid grid-cols-2 md:flex md:flex-wrap gap-2 md:gap-4 items-start md:items-center md:justify-between">
+                  <div className="space-y-0.5 md:space-y-1">
+                    <div className="text-[10px] md:text-sm text-slate-500">Funcionário</div>
+                    <div className="font-medium text-xs md:text-base text-black truncate">{funcionarioNome}</div>
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-sm text-black">Plano de Contas</div>
-                    <div className="font-medium text-black">{planoNome}</div>
+                  <div className="space-y-0.5 md:space-y-1">
+                    <div className="text-[10px] md:text-sm text-slate-500">Plano de Contas</div>
+                    <div className="font-medium text-xs md:text-base text-black truncate">{planoNome}</div>
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-sm text-black">Valor</div>
-                    <div className="font-semibold text-black">{formatCurrency(adiantamento?.valor)}</div>
+                  <div className="space-y-0.5 md:space-y-1">
+                    <div className="text-[10px] md:text-sm text-slate-500">Valor</div>
+                    <div className="font-semibold text-sm md:text-base text-black">{formatCurrency(adiantamento?.valor)}</div>
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-sm text-black">Status</div>
-                    <Badge className={statusColors[adiantamento?.status] || "bg-slate-100 text-slate-800"}>
+                  <div className="space-y-0.5 md:space-y-1">
+                    <div className="text-[10px] md:text-sm text-slate-500">Status</div>
+                    <Badge className={`${statusColors[adiantamento?.status] || "bg-slate-100 text-slate-800"} text-[10px] md:text-xs`}>
                       {adiantamento?.status}
                     </Badge>
                   </div>
                 </div>
 
                 {adiantamento?.motivo &&
-                <div className="pt-2">
-                    <div className="text-sm text-black mb-1">Motivo</div>
-                    <div className="text-black">{adiantamento.motivo}</div>
+                <div className="pt-2 border-t border-slate-100">
+                    <div className="text-[10px] md:text-sm text-slate-500 mb-1">Motivo</div>
+                    <div className="text-xs md:text-sm text-black">{adiantamento.motivo}</div>
                   </div>
                 }
               </CardContent>
