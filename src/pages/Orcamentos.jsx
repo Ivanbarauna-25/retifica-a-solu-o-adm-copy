@@ -25,7 +25,7 @@ import {
   Plus, Printer, Eye, Filter, Upload, FileText, BarChart3, Search,
   Pencil, MoreVertical, Trash2, Loader2
 } from "lucide-react";
-import { formatCurrency } from "@/components/formatters";
+import { formatCurrency, formatDate } from "@/components/formatters";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 
