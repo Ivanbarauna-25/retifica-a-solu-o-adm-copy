@@ -517,7 +517,7 @@ export default function OrcamentosPage() {
                         <TableRow key={orcamento.id} className="hover:bg-slate-50">
                           <TableCell className="font-medium text-blue-600 py-3">{orcamento.numero_orcamento}</TableCell>
                           <TableCell className="text-slate-900 py-3">
-                            {orcamento.data_orcamento ? new Date(orcamento.data_orcamento).toLocaleDateString("pt-BR") : "-"}
+                            {formatDate(orcamento.data_orcamento)}
                           </TableCell>
                           <TableCell className="text-slate-900 py-3">{cliente?.nome || "-"}</TableCell>
                           <TableCell className="text-slate-900 py-3">{veiculoTexto}</TableCell>
