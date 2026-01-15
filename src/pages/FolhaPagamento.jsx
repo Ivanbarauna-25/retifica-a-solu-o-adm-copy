@@ -722,27 +722,28 @@ function FolhaPagamentoContent() {
               <Table className="min-w-[1800px]">
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
-                    <TableHead className="w-12 text-white">
+                    <TableHead className="w-8 md:w-12 text-white text-xs md:text-sm">
                       <Checkbox
                         checked={selectedForBaixa.length === folhasFiltradas.length && folhasFiltradas.length > 0}
                         onCheckedChange={handleSelectAll}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4"
                       />
                     </TableHead>
-                    <TableHead className="font-semibold text-white min-w-[160px]">Funcionário</TableHead>
-                    <TableHead className="font-semibold text-white min-w-[100px]">Competência</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[100px]">Salário Base</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[90px]">Comissões</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[90px]">Horas Extras</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[80px]">Bônus</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[100px]">Outras Entradas</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[100px]">Adiantamentos</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[80px]">Faltas</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[80px]">Encargos</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[100px]">Outras Saídas</TableHead>
-                    <TableHead className="text-right font-semibold text-white min-w-[120px]">Líquido a Receber</TableHead>
-                    <TableHead className="font-semibold text-white min-w-[90px]">Data Pag.</TableHead>
-                    <TableHead className="font-semibold text-white min-w-[90px]">Status</TableHead>
-                    <TableHead className="text-center font-semibold text-white min-w-[80px]">Ações</TableHead>
+                    <TableHead className="font-semibold text-white min-w-[120px] md:min-w-[160px] text-xs md:text-sm">Funcionário</TableHead>
+                    <TableHead className="font-semibold text-white min-w-[70px] md:min-w-[100px] text-xs md:text-sm">Comp.</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[80px] md:min-w-[100px] text-xs md:text-sm hidden lg:table-cell">Salário</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[70px] md:min-w-[90px] text-xs md:text-sm hidden xl:table-cell">Comissões</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[70px] md:min-w-[90px] text-xs md:text-sm hidden xl:table-cell">H. Extras</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[60px] md:min-w-[80px] text-xs md:text-sm hidden 2xl:table-cell">Bônus</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[80px] md:min-w-[100px] text-xs md:text-sm hidden 2xl:table-cell">Entradas</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[80px] md:min-w-[100px] text-xs md:text-sm hidden 2xl:table-cell">Adiant.</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[60px] md:min-w-[80px] text-xs md:text-sm hidden 2xl:table-cell">Faltas</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[70px] md:min-w-[80px] text-xs md:text-sm hidden 2xl:table-cell">Encargos</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[80px] md:min-w-[100px] text-xs md:text-sm hidden 2xl:table-cell">Saídas</TableHead>
+                    <TableHead className="text-right font-semibold text-white min-w-[90px] md:min-w-[120px] text-xs md:text-sm">Líquido</TableHead>
+                    <TableHead className="font-semibold text-white min-w-[70px] md:min-w-[90px] text-xs md:text-sm hidden md:table-cell">Data</TableHead>
+                    <TableHead className="font-semibold text-white min-w-[70px] md:min-w-[90px] text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-center font-semibold text-white min-w-[60px] md:min-w-[80px] text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -765,43 +766,44 @@ function FolhaPagamentoContent() {
                         const salarioBruto = funcionario?.salario || 0;
                         return (
                           <TableRow key={folha?.id} className="hover:bg-slate-50 transition-colors">
-                            <TableCell className="text-slate-900">
+                            <TableCell className="text-slate-900 py-2 md:py-3">
                               <Checkbox
                                 checked={selectedForBaixa.includes(folha.id)}
                                 onCheckedChange={(checked) => handleSelectForBaixa(folha.id, checked)}
+                                className="w-3.5 h-3.5 md:w-4 md:h-4"
                               />
                             </TableCell>
-                            <TableCell className="font-medium text-slate-900">{getFuncionarioNome(folha?.funcionario_id)}</TableCell>
-                            <TableCell className="text-slate-900">{formatCompetencia(folha?.competencia)}</TableCell>
-                            <TableCell className="text-right text-slate-900 whitespace-nowrap">{formatCurrency(salarioBruto)}</TableCell>
-                            <TableCell className="text-right text-slate-900 whitespace-nowrap">{formatCurrency(folha?.comissoes || 0)}</TableCell>
-                            <TableCell className="text-right text-slate-900 whitespace-nowrap">{formatCurrency(folha?.horas_extras || 0)}</TableCell>
-                            <TableCell className="text-right text-slate-900 whitespace-nowrap">{formatCurrency(folha?.bonus || 0)}</TableCell>
-                            <TableCell className="text-right text-slate-900 whitespace-nowrap">{formatCurrency(folha?.outras_entradas || 0)}</TableCell>
-                            <TableCell className="text-right text-red-700 whitespace-nowrap">{formatCurrency(folha?.adiantamentos || 0)}</TableCell>
-                            <TableCell className="text-right text-red-700 whitespace-nowrap">{formatCurrency(folha?.faltas || 0)}</TableCell>
-                            <TableCell className="text-right text-red-700 whitespace-nowrap">{formatCurrency(folha?.encargos || 0)}</TableCell>
-                            <TableCell className="text-right text-red-700 whitespace-nowrap">{formatCurrency(folha?.outras_saidas || 0)}</TableCell>
-                            <TableCell className="text-right text-slate-900 font-semibold whitespace-nowrap">{formatCurrency(folha?.salario_liquido)}</TableCell>
-                            <TableCell className="text-slate-900">{formatDate(folha?.data_pagamento)}</TableCell>
-                            <TableCell>
+                            <TableCell className="font-medium text-slate-900 text-xs md:text-sm py-2 md:py-3 max-w-[100px] md:max-w-none truncate">{getFuncionarioNome(folha?.funcionario_id)}</TableCell>
+                            <TableCell className="text-slate-900 text-xs md:text-sm py-2 md:py-3">{formatCompetencia(folha?.competencia)}</TableCell>
+                            <TableCell className="text-right text-slate-900 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden lg:table-cell">{formatCurrency(salarioBruto)}</TableCell>
+                            <TableCell className="text-right text-slate-900 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden xl:table-cell">{formatCurrency(folha?.comissoes || 0)}</TableCell>
+                            <TableCell className="text-right text-slate-900 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden xl:table-cell">{formatCurrency(folha?.horas_extras || 0)}</TableCell>
+                            <TableCell className="text-right text-slate-900 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden 2xl:table-cell">{formatCurrency(folha?.bonus || 0)}</TableCell>
+                            <TableCell className="text-right text-slate-900 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden 2xl:table-cell">{formatCurrency(folha?.outras_entradas || 0)}</TableCell>
+                            <TableCell className="text-right text-red-700 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden 2xl:table-cell">{formatCurrency(folha?.adiantamentos || 0)}</TableCell>
+                            <TableCell className="text-right text-red-700 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden 2xl:table-cell">{formatCurrency(folha?.faltas || 0)}</TableCell>
+                            <TableCell className="text-right text-red-700 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden 2xl:table-cell">{formatCurrency(folha?.encargos || 0)}</TableCell>
+                            <TableCell className="text-right text-red-700 whitespace-nowrap text-xs md:text-sm py-2 md:py-3 hidden 2xl:table-cell">{formatCurrency(folha?.outras_saidas || 0)}</TableCell>
+                            <TableCell className="text-right text-slate-900 font-semibold whitespace-nowrap text-xs md:text-sm py-2 md:py-3">{formatCurrency(folha?.salario_liquido)}</TableCell>
+                            <TableCell className="text-slate-900 text-xs md:text-sm py-2 md:py-3 hidden md:table-cell">{formatDate(folha?.data_pagamento)}</TableCell>
+                            <TableCell className="py-2 md:py-3 hidden sm:table-cell">
                               {statusLabels[folha?.status_pagamento] || 'Desconhecido'}
                             </TableCell>
-                            <TableCell className="text-slate-900">
-                              <div className="flex items-center justify-center gap-2">
+                            <TableCell className="text-slate-900 py-2 md:py-3">
+                              <div className="flex items-center justify-center gap-0.5 md:gap-2">
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => handleViewFolha(folha)}
-                                  className="hover:bg-blue-50 text-blue-600"
+                                  className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
                                   title="Visualizar"
                                 >
-                                  <Eye className="h-4 w-4" />
+                                  <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Button>
 
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="hover:bg-slate-100">
+                                    <Button variant="ghost" size="sm" className="hover:bg-slate-100 h-7 w-7 md:h-8 md:w-8 p-0 text-xs">
                                       •••
                                     </Button>
                                   </DropdownMenuTrigger>

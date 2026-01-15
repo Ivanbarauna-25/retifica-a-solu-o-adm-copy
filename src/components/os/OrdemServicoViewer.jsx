@@ -224,7 +224,7 @@ export default function OrdemServicoViewer({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent 
-          className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col modern-modal p-0 bg-white border border-slate-200 rounded-xl"
+          className="w-[95vw] md:w-[85vw] lg:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col modern-modal p-0 bg-white border border-slate-200 rounded-xl"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
           <style>{`
@@ -244,14 +244,14 @@ export default function OrdemServicoViewer({
             }
           `}</style>
 
-          <DialogHeader className="bg-slate-900 text-white px-6 py-5 border-b border-slate-800 flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10">
-                  <FileText className="w-5 h-5 text-blue-400" />
+          <DialogHeader className="bg-slate-900 text-white px-3 md:px-6 py-3 md:py-5 border-b border-slate-800 flex-shrink-0">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10 flex-shrink-0">
+                  <FileText className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
                 </div>
-                <div>
-                  <DialogTitle className="text-lg font-semibold text-white tracking-tight">
+                <div className="min-w-0">
+                  <DialogTitle className="text-sm md:text-lg font-semibold text-white tracking-tight truncate">
                     {ordem?.numero_os || 'OS'}
                   </DialogTitle>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -260,7 +260,8 @@ export default function OrdemServicoViewer({
                 </div>
               </div>
               
-              <div className="flex items-center gap-2">
+              {/* Ações desktop */}
+              <div className="hidden md:flex items-center gap-1">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -273,7 +274,7 @@ export default function OrdemServicoViewer({
                         <Printer className="w-4 h-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Imprimir OS</TooltipContent>
+                    <TooltipContent>Imprimir</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
 
@@ -289,7 +290,7 @@ export default function OrdemServicoViewer({
                         <Receipt className="w-4 h-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Gerenciar Despesas</TooltipContent>
+                    <TooltipContent>Despesas</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
 
@@ -306,7 +307,7 @@ export default function OrdemServicoViewer({
                           <DollarSign className="w-4 h-4" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Gerar Financeiro</TooltipContent>
+                      <TooltipContent>Financeiro</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 )}
@@ -327,32 +328,60 @@ export default function OrdemServicoViewer({
                   </Tooltip>
                 </TooltipProvider>
               </div>
+              
+              {/* Fechar mobile */}
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={onClose}
+                className="md:hidden h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 text-white flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-3 md:p-6">
+            {/* Ações mobile */}
+            <div className="flex md:hidden gap-1.5 mb-3 overflow-x-auto pb-1">
+              <Button size="sm" variant="outline" onClick={handlePrintClick()} className="h-8 text-xs gap-1 flex-shrink-0">
+                <Printer className="w-3.5 h-3.5" />
+                Imprimir
+              </Button>
+              <Button size="sm" variant="outline" onClick={handleOpenDespesas} className="h-8 text-xs gap-1 flex-shrink-0">
+                <Receipt className="w-3.5 h-3.5" />
+                Despesas
+              </Button>
+              {!ordem?.movimentacao_financeira_gerada && (
+                <Button size="sm" variant="outline" onClick={handleOpenGerarFinanceiro} className="h-8 text-xs gap-1 flex-shrink-0">
+                  <DollarSign className="w-3.5 h-3.5" />
+                  Financeiro
+                </Button>
+              )}
+            </div>
+            
             {/* CARDS INFORMATIVOS */}
-            <section className="grid grid-cols-4 gap-3 mb-5">
-              <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-                <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
-                <span className="block text-sm font-semibold mt-1 text-slate-900 truncate">{contato?.nome || "—"}</span>
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4 md:mb-5">
+              <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+                <span className="text-[8px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">CLIENTE</span>
+                <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900 truncate">{contato?.nome || "—"}</span>
               </div>
 
-              <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-                <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
-                <span className="block text-sm font-semibold mt-1 text-slate-900">
+              <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+                <span className="text-[8px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">VEÍCULO</span>
+                <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900 truncate">
                   {veiculo ? `${veiculo.placa}` : "—"}
                 </span>
               </div>
 
-              <div className="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-                <span className="text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA ABERTURA</span>
-                <span className="block text-sm font-semibold mt-1 text-slate-900">{formatDate(ordem.data_abertura)}</span>
+              <div className="border border-slate-200 rounded-lg p-2 md:p-3 bg-slate-50/50">
+                <span className="text-[8px] md:text-[10px] uppercase text-slate-500 font-semibold block tracking-wide">DATA</span>
+                <span className="block text-xs md:text-sm font-semibold mt-0.5 md:mt-1 text-slate-900">{formatDate(ordem.data_abertura)}</span>
               </div>
 
-              <div className="border border-blue-200 rounded-lg p-3 bg-blue-50/50">
-                <span className="text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR TOTAL</span>
-                <span className="block text-base font-bold mt-1 text-blue-700">{formatCurrency(ordem.valor_total)}</span>
+              <div className="border border-blue-200 rounded-lg p-2 md:p-3 bg-blue-50/50">
+                <span className="text-[8px] md:text-[10px] uppercase text-blue-600 font-semibold block tracking-wide">VALOR</span>
+                <span className="block text-sm md:text-base font-bold mt-0.5 md:mt-1 text-blue-700">{formatCurrency(ordem.valor_total)}</span>
               </div>
             </section>
 
@@ -409,102 +438,102 @@ export default function OrdemServicoViewer({
 
             {/* TABS */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg grid grid-cols-3 gap-1 mb-4">
+              <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg grid grid-cols-3 gap-1 mb-3 md:mb-4">
                 <TabsTrigger 
                   value="geral" 
-                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2 transition-all text-xs font-semibold py-2"
+                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-1 md:gap-2 transition-all text-[10px] md:text-xs font-semibold py-1.5 md:py-2"
                 >
-                  <Info className="w-3.5 h-3.5" />
-                  GERAL
+                  <Info className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  <span className="hidden sm:inline">GERAL</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="itens" 
-                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2 transition-all text-xs font-semibold py-2"
+                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-1 md:gap-2 transition-all text-[10px] md:text-xs font-semibold py-1.5 md:py-2"
                 >
-                  <Package className="w-3.5 h-3.5" />
+                  <Package className="w-3 h-3 md:w-3.5 md:h-3.5" />
                   ITENS ({itensSeguro.length})
                 </TabsTrigger>
                 <TabsTrigger 
                   value="observacoes" 
-                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-2 transition-all text-xs font-semibold py-2"
+                  className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 flex items-center justify-center gap-1 md:gap-2 transition-all text-[10px] md:text-xs font-semibold py-1.5 md:py-2"
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  OBSERVAÇÕES
+                  <FileText className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  <span className="hidden sm:inline">OBS</span>
                 </TabsTrigger>
               </TabsList>
 
               {/* TAB: Geral */}
               <TabsContent value="geral" className="p-0">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Responsável Técnico</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Responsável</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{funcionario?.nome || "—"}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900 truncate block">{funcionario?.nome || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Vendedor</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Vendedor</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{vendedor?.nome || "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Cliente</span>
-                    </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{contato?.nome || "—"}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900 truncate block">{vendedor?.nome || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Telefone</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Cliente</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{contato?.telefone || "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Data de Abertura</span>
-                    </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{formatDate(ordem.data_abertura)}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900 truncate block">{contato?.nome || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Previsão Conclusão</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Telefone</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{ordem.data_conclusao ? formatDate(ordem.data_conclusao) : "—"}</span>
-                    </div>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Entrada</span>
-                    </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{formatCurrency(ordem.entrada || 0)}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{contato?.telefone || "—"}</span>
                     </div>
                   </div>
 
                   <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
-                    <div className="bg-slate-100 px-3 py-1.5 border-b border-slate-200">
-                      <span className="text-[10px] uppercase text-slate-600 font-bold tracking-wide">Status</span>
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Abertura</span>
                     </div>
-                    <div className="px-3 py-2">
-                      <span className="text-sm font-semibold text-slate-900">{st.label}</span>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{formatDate(ordem.data_abertura)}</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Conclusão</span>
+                    </div>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{ordem.data_conclusao ? formatDate(ordem.data_conclusao) : "—"}</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Entrada</span>
+                    </div>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{formatCurrency(ordem.entrada || 0)}</span>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    <div className="bg-slate-100 px-2 md:px-3 py-1 md:py-1.5 border-b border-slate-200">
+                      <span className="text-[8px] md:text-[10px] uppercase text-slate-600 font-bold tracking-wide">Status</span>
+                    </div>
+                    <div className="px-2 md:px-3 py-1.5 md:py-2">
+                      <span className="text-xs md:text-sm font-semibold text-slate-900">{st.label}</span>
                     </div>
                   </div>
                 </div>
@@ -588,43 +617,45 @@ export default function OrdemServicoViewer({
             </Tabs>
           </div>
 
-          <DialogFooter className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex-shrink-0">
-            <div className="flex gap-2">
-              {ordem.status === "em_andamento" && (
-                <>
+          <DialogFooter className="px-3 md:px-6 py-3 md:py-4 border-t border-slate-200 bg-slate-50 flex-shrink-0 sticky bottom-0">
+            <div className="flex flex-wrap gap-2 w-full justify-between">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap">
+                {ordem.status === "em_andamento" && (
+                  <>
+                    <Button
+                      size="sm"
+                      onClick={handleStatusClick('finalize')}
+                      className="bg-slate-800 hover:bg-slate-900 text-white font-semibold h-8 md:h-9 text-xs md:text-sm px-2 md:px-3 gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Finalizar</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleStatusClick('cancel')}
+                      className="bg-white border border-slate-300 text-red-600 hover:bg-red-50 font-semibold h-8 md:h-9 text-xs md:text-sm px-2 md:px-3 gap-1">
+                      <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <span className="hidden sm:inline">Cancelar</span>
+                    </Button>
+                  </>
+                )}
+                {(ordem.status === "finalizado" || ordem.status === "cancelado") && (
                   <Button
                     size="sm"
-                    onClick={handleStatusClick('finalize')}
-                    className="bg-slate-800 hover:bg-slate-900 text-white font-semibold">
-                    <CheckCircle2 className="w-4 h-4 mr-2" />
-                    Finalizar
+                    onClick={handleStatusClick('reopen')}
+                    className="bg-slate-800 hover:bg-slate-900 text-white font-semibold h-8 md:h-9 text-xs md:text-sm px-2 md:px-3 gap-1">
+                    <RotateCcw className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    Reabrir
                   </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleStatusClick('cancel')}
-                    className="bg-white border border-slate-300 text-red-600 hover:bg-red-50 font-semibold">
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Cancelar
-                  </Button>
-                </>
-              )}
-              {(ordem.status === "finalizado" || ordem.status === "cancelado") && (
-                <Button
-                  size="sm"
-                  onClick={handleStatusClick('reopen')}
-                  className="bg-slate-800 hover:bg-slate-900 text-white font-semibold">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Reabrir
-                </Button>
-              )}
-            </div>
+                )}
+              </div>
 
-            <Button
-              onClick={onClose}
-              size="sm"
-              className="bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold">
-              Fechar
-            </Button>
+              <Button
+                onClick={onClose}
+                size="sm"
+                className="bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold h-8 md:h-9 text-xs md:text-sm">
+                Fechar
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

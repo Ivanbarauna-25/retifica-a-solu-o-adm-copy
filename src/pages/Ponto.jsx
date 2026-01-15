@@ -136,23 +136,23 @@ export default function PontoPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-        <div className="container mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-2 md:p-6">
+        <div className="container mx-auto max-w-[1800px]">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-2xl">Controle de Ponto</CardTitle>
-              <Button onClick={() => openForm()}>
-                <Plus className="mr-2 h-4 w-4" /> Novo Registro
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-6">
+              <CardTitle className="text-base md:text-2xl">Controle de Ponto</CardTitle>
+              <Button onClick={() => openForm()} className="w-full sm:w-auto text-xs md:text-sm h-8 md:h-10 gap-1 md:gap-2">
+                <Plus className="h-3.5 w-3.5 md:h-4 md:w-4" /> Novo
               </Button>
             </CardHeader>
-            <CardContent>
-              <div className="flex gap-4 mb-6">
+            <CardContent className="p-3 md:p-6">
+              <div className="flex flex-col md:flex-row gap-2 md:gap-4 mb-4 md:mb-6">
                 <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-full md:w-48 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos os Funcionários</SelectItem>
+                    <SelectItem value="todos">Todos</SelectItem>
                     {funcionarios.map(funcionario => (
                       <SelectItem key={funcionario.id} value={String(funcionario.id)}>
                         {funcionario.nome}
@@ -165,57 +165,57 @@ export default function PontoPage() {
                   placeholder="Filtrar por mês..."
                   value={filtroMes}
                   onChange={(e) => setFiltroMes(e.target.value)}
-                  className="w-48"
+                  className="w-full md:w-48 h-9 text-sm"
                 />
               </div>
 
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto">
                 <Table>
                   <TableHeader className="bg-slate-700">
                     <TableRow>
-                      <TableHead className="text-white">Funcionário</TableHead>
-                      <TableHead className="text-white">Mês</TableHead>
-                      <TableHead className="text-white">Dias Trab.</TableHead>
-                      <TableHead className="text-white">Faltas (Dias/Horas)</TableHead>
-                      <TableHead className="text-white">HE (Semana/FDS)</TableHead>
-                      <TableHead className="text-white">Observações</TableHead>
-                      <TableHead className="text-white w-[140px]">Ações</TableHead>
+                      <TableHead className="text-white text-xs md:text-sm">Funcionário</TableHead>
+                      <TableHead className="text-white text-xs md:text-sm">Mês</TableHead>
+                      <TableHead className="text-white text-xs md:text-sm hidden sm:table-cell">Dias</TableHead>
+                      <TableHead className="text-white text-xs md:text-sm hidden md:table-cell">Faltas</TableHead>
+                      <TableHead className="text-white text-xs md:text-sm hidden lg:table-cell">H. Extras</TableHead>
+                      <TableHead className="text-white text-xs md:text-sm hidden xl:table-cell">Obs</TableHead>
+                      <TableHead className="text-white w-[80px] md:w-[140px] text-xs md:text-sm">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow><TableCell colSpan={7} className="text-center">Carregando...</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-6 text-xs md:text-sm">Carregando...</TableCell></TableRow>
                     ) : pontosFiltrados.length === 0 ? (
-                      <TableRow><TableCell colSpan={7} className="text-center">Nenhum registro encontrado.</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-6 text-xs md:text-sm">Nenhum registro encontrado.</TableCell></TableRow>
                     ) : (
                       pontosFiltrados.map((ponto) => {
                         const funcionario = getFuncionario(ponto?.funcionario_id);
                         return (
                           <TableRow key={ponto?.id}>
-                            <TableCell className="font-medium">
-                              {funcionario?.nome || 'Funcionário não encontrado'}
+                            <TableCell className="font-medium text-xs md:text-sm max-w-[100px] md:max-w-none truncate">
+                              {funcionario?.nome || 'N/A'}
                             </TableCell>
-                            <TableCell>{formatMes(ponto?.mes_referencia)}</TableCell>
-                            <TableCell>{ponto?.dias_trabalhados || 0}</TableCell>
-                            <TableCell>
+                            <TableCell className="text-xs md:text-sm">{formatMes(ponto?.mes_referencia)}</TableCell>
+                            <TableCell className="text-xs md:text-sm hidden sm:table-cell">{ponto?.dias_trabalhados || 0}</TableCell>
+                            <TableCell className="text-xs md:text-sm hidden md:table-cell">
                               {(ponto?.faltas_dias || 0)}d / {(ponto?.faltas_horas || 0)}h
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-xs md:text-sm hidden lg:table-cell">
                               {(ponto?.horas_extras_semana || 0)}h / {(ponto?.horas_extras_fds || 0)}h
                             </TableCell>
-                            <TableCell className="max-w-[200px] truncate">
+                            <TableCell className="max-w-[200px] truncate text-xs md:text-sm hidden xl:table-cell">
                               {ponto?.observacoes || '-'}
                             </TableCell>
                             <TableCell>
-                              <div className="flex gap-1">
-                                <Button variant="ghost" size="sm" onClick={() => openEspelho(ponto)} title="Imprimir Espelho">
-                                  <Printer className="h-4 w-4" />
+                              <div className="flex gap-0.5 md:gap-1">
+                                <Button variant="ghost" size="sm" onClick={() => openEspelho(ponto)} title="Espelho" className="h-7 w-7 md:h-8 md:w-8 p-0">
+                                  <Printer className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={() => openForm(ponto)} title="Editar">
-                                  <Edit className="h-4 w-4" />
+                                <Button variant="ghost" size="sm" onClick={() => openForm(ponto)} title="Editar" className="h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
+                                  <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={() => handleDelete(ponto?.id)} className="text-red-600" title="Excluir">
-                                  <Trash2 className="h-4 w-4" />
+                                <Button variant="ghost" size="sm" onClick={() => handleDelete(ponto?.id)} className="text-red-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden md:flex" title="Excluir">
+                                  <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Button>
                               </div>
                             </TableCell>

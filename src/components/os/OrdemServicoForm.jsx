@@ -331,25 +331,25 @@ export default function OrdemServicoForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[88vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-2xl shadow-2xl">
-        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 py-4 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-white" />
+      <DialogContent className="w-[95vw] md:w-[90vw] lg:max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-2xl shadow-2xl">
+        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-3 md:py-4 flex-shrink-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                <Wrench className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <div>
-                <DialogTitle className="text-base font-semibold text-white">
-                  {isEditing ? `Editar OS ${formData.numero_os}` : 'Nova Ordem de Serviço'}
+              <div className="min-w-0">
+                <DialogTitle className="text-sm md:text-base font-semibold text-white truncate">
+                  {isEditing ? `Editar ${formData.numero_os}` : 'Nova OS'}
                 </DialogTitle>
-                <p className="text-xs text-slate-300 mt-0.5">
-                  {isEditing ? 'Atualize os dados da ordem de serviço' : 'Preencha os dados para criar uma nova OS'}
+                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block truncate">
+                  {isEditing ? 'Atualize os dados' : 'Preencha os dados'}
                 </p>
               </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
-               <p className="text-[10px] text-slate-300 font-medium uppercase tracking-wider">Status</p>
-               <p className="text-xs font-semibold text-white">RASCUNHO</p>
+            <div className="bg-white/10 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg flex-shrink-0">
+               <p className="text-[8px] md:text-[10px] text-slate-300 font-medium uppercase tracking-wider">Status</p>
+               <p className="text-[10px] md:text-xs font-semibold text-white">RASCUNHO</p>
             </div>
           </div>
         </DialogHeader>
@@ -363,29 +363,29 @@ export default function OrdemServicoForm({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden bg-slate-100/50">
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="flex-1 overflow-y-auto p-3 md:p-5">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-xl grid grid-cols-3 gap-1 mb-5 sticky top-0 z-30 shadow-sm">
+                <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg md:rounded-xl grid grid-cols-3 gap-1 mb-3 md:mb-5 sticky top-0 z-30 shadow-sm">
                   <TabsTrigger 
                     value="geral" 
-                    className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5"
+                    className="rounded-md md:rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1 md:gap-1.5"
                   >
-                    <Info className="w-3.5 h-3.5" />
-                    Dados Gerais
+                    <Info className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                    <span className="hidden sm:inline">Dados</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="itens" 
-                    className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5"
+                    className="rounded-md md:rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1 md:gap-1.5"
                   >
-                    <Package className="w-3.5 h-3.5" />
+                    <Package className="w-3 h-3 md:w-3.5 md:h-3.5" />
                     Itens ({formData.itens.length})
                   </TabsTrigger>
                   <TabsTrigger 
                     value="observacoes" 
-                    className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5"
+                    className="rounded-md md:rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1 md:gap-1.5"
                   >
-                    <FileText className="w-3.5 h-3.5" />
-                    Observações
+                    <FileText className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                    <span className="hidden sm:inline">Obs</span>
                   </TabsTrigger>
                 </TabsList>
 
