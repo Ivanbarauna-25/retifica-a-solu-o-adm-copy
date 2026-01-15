@@ -648,9 +648,9 @@ function OrdensServicoContent() {
                                 size="sm"
                                 onClick={() => handleView(os)}
                                 title="Visualizar"
-                                className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
+                                className="hover:bg-blue-50 text-blue-600 h-8 w-8 md:h-9 md:w-9 p-0"
                               >
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-4 h-4 md:w-[18px] md:h-[18px]" />
                               </Button>
                               {canEdit('os') && (
                                 <Button
@@ -658,9 +658,9 @@ function OrdensServicoContent() {
                                   size="sm"
                                   onClick={() => handleEdit(os)}
                                   title="Editar"
-                                  className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex"
+                                  className="hover:bg-amber-50 text-amber-600 h-8 w-8 md:h-9 md:w-9 p-0 hidden sm:flex"
                                 >
-                                  <Pencil className="w-4 h-4" />
+                                  <Pencil className="w-4 h-4 md:w-[18px] md:h-[18px]" />
                                 </Button>
                               )}
                               {canDelete('os') && (
@@ -669,9 +669,9 @@ function OrdensServicoContent() {
                                   size="sm"
                                   onClick={() => handleDelete(os)}
                                   title="Excluir"
-                                  className="text-red-600 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 p-0 hidden md:flex"
+                                  className="text-red-600 hover:bg-red-50 h-8 w-8 md:h-9 md:w-9 p-0 hidden md:flex"
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash2 className="w-4 h-4 md:w-[18px] md:h-[18px]" />
                                 </Button>
                               )}
                             </div>
