@@ -284,6 +284,19 @@ export default function Layout({ children, currentPageName }) {
     }
     // Prevent zoom, ensure proper scaling on all devices
     viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+
+    // Prevent browser auto-translation
+    document.documentElement.setAttribute('translate', 'no');
+    document.documentElement.classList.add('notranslate');
+
+    // Add Google Translate meta tag
+    let googleTranslateMeta = document.querySelector('meta[name="google"]');
+    if (!googleTranslateMeta) {
+      googleTranslateMeta = document.createElement('meta');
+      googleTranslateMeta.name = 'google';
+      googleTranslateMeta.content = 'notranslate';
+      document.head.appendChild(googleTranslateMeta);
+    }
   }, []);
 
   // Buscar configurações da empresa
