@@ -99,6 +99,30 @@ export default function MonitoramentoAgentePage() {
     setShowReportModal(true);
   };
 
+  const handleGerarNovoRelatorio = async () => {
+    setIsLoading(true);
+    try {
+      const response = await base44.functions.invoke('generateAgentStatusReport', {});
+      
+      if (response.data?.success) {
+        toast({
+          title: '✅ Relatório Gerado',
+          description: 'Novo relatório técnico criado'
+        });
+        await fetchDashboardData();
+      }
+    } catch (error) {
+      console.error('Erro ao gerar relatório:', error);
+      toast({
+        title: 'Erro ao gerar relatório',
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -127,10 +151,16 @@ export default function MonitoramentoAgentePage() {
               Acompanhamento em tempo real das atividades e performance do agente autônomo
             </p>
           </div>
-          <Button onClick={fetchDashboardData} variant="outline">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Atualizar
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={fetchDashboardData} variant="outline" disabled={isLoading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+            <Button onClick={handleGerarNovoRelatorio} disabled={isLoading}>
+              <FileText className="h-4 w-4 mr-2" />
+              Gerar Relatório
+            </Button>
+          </div>
         </div>
 
         {/* Métricas */}
