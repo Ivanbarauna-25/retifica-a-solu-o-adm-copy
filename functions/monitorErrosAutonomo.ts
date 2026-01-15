@@ -121,11 +121,12 @@ Deno.serve(async (req) => {
             status: 'em_analise'
           });
 
-          // Enviar e-mail para erros críticos
+          // Enviar e-mail e registrar alerta WhatsApp para erros críticos
           if (erro.severity === 'critical') {
             const configs = await base44.asServiceRole.entities.Configuracoes.list();
             const emailAdmin = configs?.[0]?.email || 'admin@sistema.com';
             
+            // Enviar email
             await base44.asServiceRole.integrations.Core.SendEmail({
               to: emailAdmin,
               subject: `🚨 ALERTA CRÍTICO: ${erro.message.slice(0, 50)}...`,
@@ -135,11 +136,34 @@ Deno.serve(async (req) => {
                   <p><strong>Mensagem:</strong> ${erro.message}</p>
                   <p><strong>Arquivo:</strong> ${erro.file}:${erro.line}</p>
                   <p><strong>Análise IA:</strong> ${aiResponse.data.analysis.root_cause}</p>
-                  <p><strong>Solução Sugerida:</strong> ${aiResponse.data.analysis.suggested_fix.description}</p>
+                  <p><strong>Solução Sugerida:</strong> ${aiResponse.data.analysis.suggested_fix?.description || 'Análise em andamento'}</p>
                   <p><a href="${new URL(req.url).origin}/CodeFixReview">Ver Detalhes no Sistema →</a></p>
                 </div>
               `
             });
+
+            // Registrar ação de notificação WhatsApp
+            await base44.asServiceRole.entities.AcaoAgente.create({
+              tipo_acao: 'notificacao_whatsapp',
+              status: 'concluido',
+              prioridade: 'critica',
+              erro_relacionado_id: erro.id,
+              descricao: `🚨 CRÍTICO: ${erro.message.slice(0, 100)}`,
+              resultado: JSON.stringify({
+                whatsapp_message: `🚨 *ERRO CRÍTICO DETECTADO*\n\n📍 *Arquivo:* ${erro.file || 'N/A'}\n📍 *Linha:* ${erro.line || 'N/A'}\n\n❌ *Mensagem:*\n${erro.message.slice(0, 200)}\n\n🔍 *Causa:* ${aiResponse.data.analysis.root_cause?.slice(0, 150) || 'Em análise'}\n\n⏰ ${new Date().toLocaleString('pt-BR')}`,
+                email_sent: true,
+                severity: 'critical'
+              }),
+              contexto: {
+                channel: 'whatsapp',
+                error_id: erro.id,
+                requires_immediate_attention: true
+              },
+              iniciado_por: 'monitor_automatico',
+              data_conclusao: new Date().toISOString()
+            });
+
+            console.log(`📱 [WHATSAPP] Alerta crítico registrado para erro ${erro.id}`);
           }
         }
       } catch (err) {
