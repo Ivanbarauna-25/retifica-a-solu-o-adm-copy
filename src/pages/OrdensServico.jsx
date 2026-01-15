@@ -576,7 +576,7 @@ function OrdensServicoContent() {
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
                     {isAdmin && (
-                      <TableHead className="text-white font-semibold w-8 md:w-12 text-xs md:text-sm">
+                      <TableHead className="text-white font-semibold w-8 md:w-12 text-xs md:text-sm px-2 md:px-4">
                         <Checkbox
                           checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
                           onCheckedChange={handleSelectAll}
@@ -584,17 +584,17 @@ function OrdensServicoContent() {
                         />
                       </TableHead>
                     )}
-                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nº OS</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm">Data</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm">Cliente</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Veículo</TableHead>
-                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden xl:table-cell">Produtos</TableHead>
-                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden xl:table-cell">Serviços</TableHead>
-                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden 2xl:table-cell">Despesas</TableHead>
-                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden 2xl:table-cell">Desconto</TableHead>
-                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden md:table-cell">Valor</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
-                    <TableHead className="text-white font-semibold text-center text-xs md:text-sm">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4">Nº OS</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4">Cliente</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden lg:table-cell">Veículo</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm px-2 md:px-4 hidden xl:table-cell">Produtos</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm px-2 md:px-4 hidden xl:table-cell">Serviços</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm px-2 md:px-4 hidden 2xl:table-cell">Despesas</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm px-2 md:px-4 hidden 2xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm px-2 md:px-4 hidden md:table-cell">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden lg:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-center text-xs md:text-sm px-2 md:px-4">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -623,7 +623,7 @@ function OrdensServicoContent() {
                       return (
                         <TableRow key={os.id} className="hover:bg-slate-50">
                           {isAdmin && (
-                            <TableCell className="py-2 md:py-3">
+                            <TableCell className="py-2 md:py-3 px-2 md:px-4">
                               <Checkbox
                                 checked={selectedOS.includes(os.id)}
                                 onCheckedChange={() => handleSelectOS(os.id)}
@@ -631,18 +631,18 @@ function OrdensServicoContent() {
                               />
                             </TableCell>
                           )}
-                          <TableCell className="font-medium text-blue-600 py-2 md:py-3 text-xs md:text-sm">{os.numero_os}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap">{formatDate(os.data_abertura)}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm max-w-[80px] md:max-w-none truncate">{getContatoNome(os)}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden lg:table-cell">{getVeiculoInfo(os.veiculo_id)}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden xl:table-cell">{formatCurrency(valorProdutos)}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden xl:table-cell">{formatCurrency(valorServicos)}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden 2xl:table-cell">{formatCurrency(valorDespesas)}</TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden 2xl:table-cell">{formatCurrency(os.desconto_valor || 0)}</TableCell>
-                          <TableCell className="font-semibold text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden md:table-cell">{formatCurrency(os.valor_total)}</TableCell>
-                          <TableCell className="py-2 md:py-3 hidden sm:table-cell">{getStatusBadge(os.status)}</TableCell>
-                          <TableCell className="py-2 md:py-3">
-                            <div className="flex items-center justify-center gap-0.5 md:gap-2">
+                          <TableCell className="font-medium text-blue-600 py-2 md:py-3 text-xs md:text-sm px-2 md:px-4">{os.numero_os}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap px-2 md:px-4 hidden sm:table-cell">{formatDate(os.data_abertura)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm max-w-[100px] md:max-w-none truncate px-2 md:px-4">{getContatoNome(os)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden lg:table-cell px-2 md:px-4 max-w-[150px] truncate">{getVeiculoInfo(os.veiculo_id)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden xl:table-cell px-2 md:px-4">{formatCurrency(valorProdutos)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden xl:table-cell px-2 md:px-4">{formatCurrency(valorServicos)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden 2xl:table-cell px-2 md:px-4">{formatCurrency(valorDespesas)}</TableCell>
+                          <TableCell className="text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden 2xl:table-cell px-2 md:px-4">{formatCurrency(os.desconto_valor || 0)}</TableCell>
+                          <TableCell className="font-semibold text-slate-900 py-2 md:py-3 text-right text-xs md:text-sm hidden md:table-cell px-2 md:px-4">{formatCurrency(os.valor_total)}</TableCell>
+                          <TableCell className="py-2 md:py-3 hidden lg:table-cell px-2 md:px-4">{getStatusBadge(os.status)}</TableCell>
+                          <TableCell className="py-2 md:py-3 px-2 md:px-4">
+                            <div className="flex items-center justify-center gap-0.5 md:gap-1">
                               <Button
                                 variant="ghost"
                                 size="sm"
