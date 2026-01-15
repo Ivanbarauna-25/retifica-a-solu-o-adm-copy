@@ -829,7 +829,7 @@ export default function AdiantamentosPage() {
                         onClick={() => abrirVisualizacao(a)}
                         className="h-6 w-6 p-0 hover:bg-blue-50 text-blue-600"
                       >
-                        <Eye className="h-3 w-3" />
+                        <Eye className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -837,7 +837,7 @@ export default function AdiantamentosPage() {
                         onClick={() => abrirPagamentoParcial(a)}
                         className="h-6 w-6 p-0 hover:bg-green-50 text-green-600"
                       >
-                        <Receipt className="h-3 w-3" />
+                        <Receipt className="h-3.5 w-3.5" />
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -845,7 +845,7 @@ export default function AdiantamentosPage() {
                         onClick={() => abrirEdicao(a)}
                         className="h-6 w-6 p-0 hover:bg-amber-50 text-amber-600"
                       >
-                        <Edit className="h-3 w-3" />
+                        <Edit className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
@@ -853,7 +853,7 @@ export default function AdiantamentosPage() {
                         onClick={() => excluir(a.id)}
                         className="h-6 w-6 p-0 hover:bg-red-50 text-red-600"
                       >
-                        <Trash2 className="h-3 w-3" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </div>

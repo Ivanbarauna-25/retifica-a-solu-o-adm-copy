@@ -650,7 +650,7 @@ function OrdensServicoContent() {
                                 title="Visualizar"
                                 className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
                               >
-                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <Eye className="w-4 h-4" />
                               </Button>
                               {canEdit('os') && (
                                 <Button
@@ -660,7 +660,7 @@ function OrdensServicoContent() {
                                   title="Editar"
                                   className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex"
                                 >
-                                  <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                  <Pencil className="w-4 h-4" />
                                 </Button>
                               )}
                               {canDelete('os') && (
@@ -671,7 +671,7 @@ function OrdensServicoContent() {
                                   title="Excluir"
                                   className="text-red-600 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 p-0 hidden md:flex"
                                 >
-                                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                  <Trash2 className="w-4 h-4" />
                                 </Button>
                               )}
                             </div>

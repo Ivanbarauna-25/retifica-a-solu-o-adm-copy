@@ -246,10 +246,10 @@ export default function PatrimonioPage() {
                         <TableCell className="text-center">
                           <div className="flex justify-center gap-0.5 md:gap-2">
                             <Button variant="ghost" size="sm" onClick={() => openForm(patrimonio)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="sm" onClick={() => handleDelete(patrimonio.id)} className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex">
-                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
