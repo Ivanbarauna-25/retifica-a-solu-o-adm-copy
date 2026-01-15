@@ -19,12 +19,12 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  DialogTitle } from
+"@/components/ui/dialog";
 import {
   Plus, Printer, Eye, Filter, Upload, FileText, BarChart3, Search,
-  Pencil, MoreVertical, Trash2, Loader2
-} from "lucide-react";
+  Pencil, MoreVertical, Trash2, Loader2 } from
+"lucide-react";
 import { formatCurrency, formatDate } from "@/components/formatters";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -72,32 +72,32 @@ export default function OrcamentosPage() {
   // Queries usando React Query
   const { data: orcamentos = [], isLoading } = useQuery({
     queryKey: ["orcamentos"],
-    queryFn: () => base44.entities.Orcamento.list("-created_date"),
+    queryFn: () => base44.entities.Orcamento.list("-created_date")
   });
 
   const { data: clientes = [] } = useQuery({
     queryKey: ["clientes"],
-    queryFn: () => base44.entities.Cliente.list(),
+    queryFn: () => base44.entities.Cliente.list()
   });
 
   const { data: funcionarios = [] } = useQuery({
     queryKey: ["funcionarios"],
-    queryFn: () => base44.entities.Funcionario.list(),
+    queryFn: () => base44.entities.Funcionario.list()
   });
 
   const { data: veiculos = [] } = useQuery({
     queryKey: ["veiculos"],
-    queryFn: () => base44.entities.Veiculo.list(),
+    queryFn: () => base44.entities.Veiculo.list()
   });
 
   const { data: formasPagamento = [] } = useQuery({
     queryKey: ["formasPagamento"],
-    queryFn: () => base44.entities.FormaPagamento.list(),
+    queryFn: () => base44.entities.FormaPagamento.list()
   });
 
   const { data: condicoesPagamento = [] } = useQuery({
     queryKey: ["condicoesPagamento"],
-    queryFn: () => base44.entities.CondicaoPagamento.list(),
+    queryFn: () => base44.entities.CondicaoPagamento.list()
   });
 
   const { data: configuracoes } = useQuery({
@@ -105,7 +105,7 @@ export default function OrcamentosPage() {
     queryFn: async () => {
       const configs = await base44.entities.Configuracoes.list();
       return configs?.[0] || null;
-    },
+    }
   });
 
   // Mutations
@@ -138,7 +138,7 @@ export default function OrcamentosPage() {
     if (quickSearchNumber) {
       const lowerQuickSearch = quickSearchNumber.toLowerCase();
       filtered = filtered.filter((o) =>
-        String(o.numero_orcamento || "").toLowerCase().includes(lowerQuickSearch)
+      String(o.numero_orcamento || "").toLowerCase().includes(lowerQuickSearch)
       );
       return filtered;
     }
@@ -146,8 +146,8 @@ export default function OrcamentosPage() {
     if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase();
       filtered = filtered.filter((o) =>
-        (mapCliente[o.contato_id] || "").toLowerCase().includes(lowerSearchTerm) ||
-        (mapFuncionario[o.vendedor_id] || "").toLowerCase().includes(lowerSearchTerm)
+      (mapCliente[o.contato_id] || "").toLowerCase().includes(lowerSearchTerm) ||
+      (mapFuncionario[o.vendedor_id] || "").toLowerCase().includes(lowerSearchTerm)
       );
     }
 
@@ -162,7 +162,7 @@ export default function OrcamentosPage() {
     if (filterDataInicio) {
       filtered = filtered.filter((o) => o.data_orcamento >= filterDataInicio);
     }
-    
+
     if (filterDataFim) {
       filtered = filtered.filter((o) => o.data_orcamento <= filterDataFim);
     }
@@ -388,15 +388,15 @@ export default function OrcamentosPage() {
                   placeholder="Busca por número..."
                   value={quickSearchNumber}
                   onChange={(e) => setQuickSearchNumber(e.target.value)}
-                  className="bg-white text-slate-900 placeholder:text-slate-400 pl-8 md:pl-10 h-9 md:h-10 text-sm border-2 border-blue-100 focus:border-blue-500"
-                />
-                {quickSearchNumber && (
-                  <button
-                    onClick={() => setQuickSearchNumber("")}
-                    className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
+                  className="bg-white text-slate-900 placeholder:text-slate-400 pl-8 md:pl-10 h-9 md:h-10 text-sm border-2 border-blue-100 focus:border-blue-500" />
+
+                {quickSearchNumber &&
+                <button
+                  onClick={() => setQuickSearchNumber("")}
+                  className="absolute right-2 md:right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs">
                     ✕
                   </button>
-                )}
+                }
               </div>
 
               <div className="relative hidden md:block">
@@ -406,15 +406,15 @@ export default function OrcamentosPage() {
                   placeholder="Buscar por cliente ou vendedor..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-white text-slate-900 placeholder:text-slate-400 pl-10 border-slate-200"
-                />
+                  className="bg-white text-slate-900 placeholder:text-slate-400 pl-10 border-slate-200" />
+
               </div>
             </div>
           </div>
 
           {/* Filters Panel */}
-          {showFilters && (
-            <Card className="mb-6">
+          {showFilters &&
+          <Card className="mb-6">
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
@@ -443,11 +443,11 @@ export default function OrcamentosPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="todos">Todos</SelectItem>
-                        {funcionarios.map((func) => (
-                          <SelectItem key={func.id} value={func.id}>
+                        {funcionarios.map((func) =>
+                      <SelectItem key={func.id} value={func.id}>
                             {func.nome}
                           </SelectItem>
-                        ))}
+                      )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -455,40 +455,40 @@ export default function OrcamentosPage() {
                   <div>
                     <Label className="text-neutral-800 font-medium">Data Início</Label>
                     <Input
-                      type="date"
-                      value={filterDataInicio}
-                      onChange={(e) => setFilterDataInicio(e.target.value)}
-                      className="mt-1 bg-white text-neutral-800"
-                    />
+                    type="date"
+                    value={filterDataInicio}
+                    onChange={(e) => setFilterDataInicio(e.target.value)}
+                    className="mt-1 bg-white text-neutral-800" />
+
                   </div>
 
                   <div>
                     <Label className="text-neutral-800 font-medium">Data Fim</Label>
                     <Input
-                      type="date"
-                      value={filterDataFim}
-                      onChange={(e) => setFilterDataFim(e.target.value)}
-                      className="mt-1 bg-white text-neutral-800"
-                    />
+                    type="date"
+                    value={filterDataFim}
+                    onChange={(e) => setFilterDataFim(e.target.value)}
+                    className="mt-1 bg-white text-neutral-800" />
+
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-2 mt-4">
                   <Button
-                    variant="outline"
-                    onClick={() => {
-                      setFilterStatus("todos");
-                      setFilterVendedor("todos");
-                      setFilterDataInicio("");
-                      setFilterDataFim("");
-                    }}
-                    className="text-neutral-800 border-neutral-300 hover:bg-neutral-100">
+                  variant="outline"
+                  onClick={() => {
+                    setFilterStatus("todos");
+                    setFilterVendedor("todos");
+                    setFilterDataInicio("");
+                    setFilterDataFim("");
+                  }}
+                  className="text-neutral-800 border-neutral-300 hover:bg-neutral-100">
                     Limpar Filtros
                   </Button>
                 </div>
               </CardContent>
             </Card>
-          )}
+          }
 
           {/* Removido Cards Compactos antigos */}
 
@@ -510,29 +510,29 @@ export default function OrcamentosPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
-                    <TableRow>
+                  {isLoading ?
+                  <TableRow>
                       <TableCell colSpan={9} className="text-center py-8">
                         <Loader2 className="w-6 h-6 animate-spin mx-auto text-slate-500" />
                         <p className="text-slate-600 mt-2">Carregando orçamentos...</p>
                       </TableCell>
-                    </TableRow>
-                  ) : filteredOrcamentos.length === 0 ? (
-                    <TableRow>
+                    </TableRow> :
+                  filteredOrcamentos.length === 0 ?
+                  <TableRow>
                       <TableCell colSpan={9} className="text-center py-8">
                         <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
                         <p className="text-slate-600">Nenhum orçamento encontrado</p>
                       </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredOrcamentos.map((orcamento) => {
-                      const cliente = clientes.find((c) => c.id === (orcamento.contato_id || orcamento.cliente_id));
-                      const vendedor = funcionarios.find((f) => f.id === orcamento.vendedor_id);
-                      const veiculo = veiculos.find((v) => v.id === orcamento.veiculo_id);
-                      const veiculoTexto = veiculo ? `${veiculo.modelo} ${veiculo.placa ? `(${veiculo.placa})` : ''}` : '-';
+                    </TableRow> :
 
-                      return (
-                        <TableRow key={orcamento.id} className="hover:bg-slate-50">
+                  filteredOrcamentos.map((orcamento) => {
+                    const cliente = clientes.find((c) => c.id === (orcamento.contato_id || orcamento.cliente_id));
+                    const vendedor = funcionarios.find((f) => f.id === orcamento.vendedor_id);
+                    const veiculo = veiculos.find((v) => v.id === orcamento.veiculo_id);
+                    const veiculoTexto = veiculo ? `${veiculo.modelo} ${veiculo.placa ? `(${veiculo.placa})` : ''}` : '-';
+
+                    return (
+                      <TableRow key={orcamento.id} className="hover:bg-slate-50">
                           <TableCell className="font-medium text-blue-600 py-2 md:py-3 text-xs md:text-sm">{orcamento.numero_orcamento}</TableCell>
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap">
                             {formatDate(orcamento.data_orcamento)}
@@ -554,27 +554,27 @@ export default function OrcamentosPage() {
                           <TableCell className="py-2 md:py-3">
                             <div className="flex items-center justify-center gap-0.5 md:gap-2">
                               <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleView(orcamento)}
-                                title="Visualizar"
-                                className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0"
-                              >
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleView(orcamento)}
+                              title="Visualizar" className="text-blue-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
+
+
                                 <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEdit(orcamento)}
-                                title="Editar"
-                                className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex"
-                              >
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(orcamento)}
+                              title="Editar"
+                              className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
+
                                 <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                <DropdownMenuTrigger asChild className="text-slate-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-slate-100 h-7 w-7 md:h-8 md:w-8">
                                   <Button variant="ghost" size="sm" className="hover:bg-slate-100 text-slate-600 h-7 w-7 md:h-8 md:w-8 p-0">
-                                    <MoreVertical className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                    <MoreVertical className="mx-auto lucide lucide-ellipsis-vertical w-3.5 h-3.5 md:w-4 md:h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
@@ -588,8 +588,8 @@ export default function OrcamentosPage() {
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem
-                                    onClick={() => handleDelete(orcamento)}
-                                    className="text-red-600">
+                                  onClick={() => handleDelete(orcamento)}
+                                  className="text-red-600">
                                     <Trash2 className="w-4 h-4 mr-2" />
                                     Excluir
                                   </DropdownMenuItem>
@@ -597,10 +597,10 @@ export default function OrcamentosPage() {
                               </DropdownMenu>
                             </div>
                           </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
+                        </TableRow>);
+
+                  })
+                  }
                 </TableBody>
               </Table>
             </div>
@@ -618,39 +618,39 @@ export default function OrcamentosPage() {
         </div>
 
         {/* Modals */}
-        {showForm && (
-          <OrcamentoFormModal
-            isOpen={showForm}
-            onClose={() => {
-              setShowForm(false);
-              setSelectedOrcamento(null);
-            }}
-            onSaved={handleFormSaved}
-            orcamento={selectedOrcamento}
-            clientes={clientes}
-            funcionarios={funcionarios}
-            veiculos={veiculos}
-            formasPagamento={formasPagamento}
-            condicoesPagamento={condicoesPagamento}
-          />
-        )}
+        {showForm &&
+        <OrcamentoFormModal
+          isOpen={showForm}
+          onClose={() => {
+            setShowForm(false);
+            setSelectedOrcamento(null);
+          }}
+          onSaved={handleFormSaved}
+          orcamento={selectedOrcamento}
+          clientes={clientes}
+          funcionarios={funcionarios}
+          veiculos={veiculos}
+          formasPagamento={formasPagamento}
+          condicoesPagamento={condicoesPagamento} />
 
-        {showViewer && selectedOrcamento && (
-          <OrcamentoViewer
-            isOpen={showViewer}
-            onClose={() => {
-              setShowViewer(false);
-              setSelectedOrcamento(null);
-            }}
-            orcamento={selectedOrcamento}
-            onEdit={handleEdit}
-            onRefresh={() => queryClient.invalidateQueries({ queryKey: ["orcamentos"] })}
-            clientes={clientes}
-            veiculos={veiculos}
-            funcionarios={funcionarios}
-            configuracoes={configuracoes}
-          />
-        )}
+        }
+
+        {showViewer && selectedOrcamento &&
+        <OrcamentoViewer
+          isOpen={showViewer}
+          onClose={() => {
+            setShowViewer(false);
+            setSelectedOrcamento(null);
+          }}
+          orcamento={selectedOrcamento}
+          onEdit={handleEdit}
+          onRefresh={() => queryClient.invalidateQueries({ queryKey: ["orcamentos"] })}
+          clientes={clientes}
+          veiculos={veiculos}
+          funcionarios={funcionarios}
+          configuracoes={configuracoes} />
+
+        }
 
         {/* Dialog de Exclusão */}
         <Dialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
@@ -688,20 +688,20 @@ export default function OrcamentosPage() {
           funcionarios={funcionarios}
           veiculos={veiculos}
           condicoes={condicoesPagamento}
-          formas={formasPagamento}
-        />
+          formas={formasPagamento} />
 
-        {showImportModal && (
-          <ImportarOrcamentosModal
-            isOpen={showImportModal}
-            onClose={() => setShowImportModal(false)}
-            onSuccess={() => {
-              setShowImportModal(false);
-              queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
-            }}
-          />
-        )}
+
+        {showImportModal &&
+        <ImportarOrcamentosModal
+          isOpen={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          onSuccess={() => {
+            setShowImportModal(false);
+            queryClient.invalidateQueries({ queryKey: ["orcamentos"] });
+          }} />
+
+        }
       </div>
-    </>
-  );
+    </>);
+
 }
