@@ -127,7 +127,7 @@ export default function ClienteForm({ isOpen, cliente, onSave, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] md:max-w-3xl p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[85vh] flex flex-col">
+      <DialogContent className="w-[95vw] md:max-w-3xl p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[80vh] flex flex-col">
         <DialogHeader className="sticky top-0 z-10 px-2.5 md:px-6 py-2 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-white">
             <Search className="w-4 h-4 md:w-5 md:h-5 text-white" />
@@ -248,9 +248,9 @@ export default function ClienteForm({ isOpen, cliente, onSave, onClose }) {
           </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-2 md:pt-4 border-t border-slate-200 flex-shrink-0">
-            <Button type="button" variant="outline" onClick={onClose} className="border-slate-300 text-slate-700 hover:bg-slate-50 h-7 md:h-10 text-[11px] md:text-sm px-2.5 md:px-4">Cancelar</Button>
-            <Button type="submit" disabled={saving} className="bg-slate-800 hover:bg-slate-900 text-white h-7 md:h-10 text-[11px] md:text-sm px-2.5 md:px-4">{saving ? "Salvando..." : "Salvar"}</Button>
+          <div className="flex items-center justify-end gap-2 pt-2 pb-1 md:pt-4 border-t border-slate-200 flex-shrink-0 bg-white sticky bottom-0">
+            <Button type="button" variant="outline" onClick={onClose} className="border-slate-300 text-slate-700 hover:bg-slate-50 h-8 md:h-10 text-[11px] md:text-sm px-3 md:px-4">Cancelar</Button>
+            <Button type="submit" disabled={saving} className="bg-slate-800 hover:bg-slate-900 text-white h-8 md:h-10 text-[11px] md:text-sm px-3 md:px-4">{saving ? "Salvando..." : "Salvar"}</Button>
           </div>
         </form>
       </DialogContent>
