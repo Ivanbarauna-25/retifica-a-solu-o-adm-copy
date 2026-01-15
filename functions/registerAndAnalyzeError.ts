@@ -234,114 +234,83 @@ ${stack?.slice(0, 2000) || 'Não disponível'}
     }
 
     // ============================================================
-    // 7. NOTIFICAÇÃO WHATSAPP PARA ERROS CRÍTICOS
+    // 7. NOTIFICAÇÃO PARA ERROS CRÍTICOS (email + registro para WhatsApp)
     // ============================================================
     const finalSeverity = aiAnalysis.impacto === 'critical' || severity === 'critical';
     
     if (finalSeverity) {
-      console.log('📱 [WHATSAPP] Enviando notificação de erro crítico...');
+      console.log('📱 [NOTIFICAÇÃO] Processando alertas para erro crítico...');
       
-      // Buscar configurações para email (fallback)
-      const configs = await base44.asServiceRole.entities.Configuracoes.list();
-      const emailAdmin = configs?.[0]?.email || 'admin@sistema.com';
-      
-      // Criar mensagem formatada para WhatsApp
-      const whatsappMessage = `
-🚨 *ERRO CRÍTICO DETECTADO*
-
-📍 *Arquivo:* ${file || errorMapping.parsed_location.file || 'Desconhecido'}
-📍 *Linha:* ${line || errorMapping.parsed_location.line || 'N/A'}
-📍 *Componente:* ${component || 'Desconhecido'}
-
-❌ *Mensagem:*
-${message.slice(0, 300)}
-
-🔍 *Causa Raiz:*
-${aiAnalysis.causa_raiz}
-
-💊 *Solução Sugerida:*
-${aiAnalysis.solucao.slice(0, 500)}
-
-🎯 *Confiança:* ${Math.round(aiAnalysis.confianca * 100)}%
-
-⏰ *Detectado em:* ${new Date().toLocaleString('pt-BR')}
-
-🔗 Acesse o sistema para mais detalhes.
-      `.trim();
-
-      // Enviar via agente WhatsApp do CodeFixer
       try {
-        // O agente code_fixer tem WhatsApp configurado
-        // Registrar mensagem para ser enviada
-        await base44.asServiceRole.entities.AcaoAgente.create({
-          tipo_acao: 'notificacao_whatsapp',
-          status: 'concluido',
-          prioridade: 'critica',
-          erro_relacionado_id: errorRecord.id,
-          descricao: 'Notificação WhatsApp enviada para erro crítico',
-          resultado: JSON.stringify({
-            message_sent: true,
-            message_preview: whatsappMessage.slice(0, 200)
-          }),
-          contexto: {
-            channel: 'whatsapp',
-            error_id: errorRecord.id,
-            severity: 'critical'
-          },
-          iniciado_por: 'sistema',
-          data_conclusao: new Date().toISOString()
-        });
+        // Buscar configurações para email
+        const configs = await base44.asServiceRole.entities.Configuracoes.list();
+        const emailAdmin = configs?.[0]?.email || 'admin@sistema.com';
+        
+        // Registrar notificação WhatsApp pendente
+        try {
+          await base44.asServiceRole.entities.AcaoAgente.create({
+            tipo_acao: 'notificacao_whatsapp',
+            status: 'pendente',
+            prioridade: 'critica',
+            erro_relacionado_id: errorRecord.id,
+            descricao: `🚨 CRÍTICO: ${message.slice(0, 100)}`,
+            resultado: JSON.stringify({
+              message_preview: `Erro crítico em ${file || component || 'sistema'}`,
+              error_id: errorRecord.id
+            }),
+            contexto: {
+              channel: 'whatsapp',
+              error_id: errorRecord.id,
+              severity: 'critical'
+            },
+            iniciado_por: 'sistema'
+          });
+        } catch (e) {
+          console.warn('⚠️ Erro ao registrar notificação WhatsApp');
+        }
 
-        // Também enviar por email como backup
-        await base44.asServiceRole.integrations.Core.SendEmail({
-          to: emailAdmin,
-          subject: `🚨 CRÍTICO: ${message.slice(0, 50)}...`,
-          body: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px;">
-              <div style="background: #dc2626; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
-                <h2 style="margin: 0;">🚨 Erro Crítico Detectado</h2>
+        // Enviar email
+        try {
+          await base44.asServiceRole.integrations.Core.SendEmail({
+            to: emailAdmin,
+            subject: `🚨 CRÍTICO: ${message.slice(0, 50)}...`,
+            body: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px;">
+                <div style="background: #dc2626; color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+                  <h2 style="margin: 0;">🚨 Erro Crítico Detectado</h2>
+                </div>
+                <div style="border: 1px solid #e5e7eb; border-top: none; padding: 20px; border-radius: 0 0 8px 8px;">
+                  <p><strong>📍 Arquivo:</strong> ${file || 'Desconhecido'}</p>
+                  <p><strong>📍 Componente:</strong> ${component || 'Desconhecido'}</p>
+                  <div style="background: #fef2f2; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <strong>❌ Mensagem:</strong>
+                    <pre style="white-space: pre-wrap; font-size: 12px;">${message.slice(0, 500)}</pre>
+                  </div>
+                  <p><strong>🔍 Causa:</strong> ${aiAnalysis.causa_raiz}</p>
+                  <p><strong>⏰ Detectado:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+                </div>
               </div>
-              <div style="border: 1px solid #e5e7eb; border-top: none; padding: 20px; border-radius: 0 0 8px 8px;">
-                <p><strong>📍 Arquivo:</strong> ${file || 'Desconhecido'}</p>
-                <p><strong>📍 Linha:</strong> ${line || 'N/A'}</p>
-                <p><strong>📍 Componente:</strong> ${component || 'Desconhecido'}</p>
-                
-                <div style="background: #fef2f2; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                  <strong>❌ Mensagem:</strong>
-                  <pre style="white-space: pre-wrap; font-size: 12px;">${message}</pre>
-                </div>
-                
-                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                  <strong>🔍 Causa Raiz:</strong>
-                  <p>${aiAnalysis.causa_raiz}</p>
-                </div>
-                
-                <div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                  <strong>💊 Solução Sugerida:</strong>
-                  <pre style="white-space: pre-wrap; font-size: 12px;">${aiAnalysis.solucao}</pre>
-                </div>
-                
-                <p><strong>🎯 Confiança:</strong> ${Math.round(aiAnalysis.confianca * 100)}%</p>
-                <p><strong>⏰ Detectado:</strong> ${new Date().toLocaleString('pt-BR')}</p>
-              </div>
-            </div>
-          `
-        });
-
-        console.log('📧 [EMAIL] Notificação de backup enviada por email');
+            `
+          });
+          console.log('📧 [EMAIL] Notificação enviada');
+        } catch (emailError) {
+          console.error('❌ Erro ao enviar email:', emailError.message);
+        }
       } catch (notifError) {
-        console.error('❌ Erro ao enviar notificação:', notifError);
+        console.error('❌ Erro geral em notificações:', notifError.message);
       }
     }
 
     // ============================================================
     // 8. CRIAR TAREFA AUTOMÁTICA SE NECESSÁRIO
     // ============================================================
+    let taskCreated = false;
     if (aiAnalysis.impacto === 'critical' || aiAnalysis.impacto === 'high') {
-      await base44.asServiceRole.entities.CodeFixTask.create({
-        error_log_id: errorRecord.id,
-        titulo: `[AUTO] Corrigir: ${message.slice(0, 80)}`,
-        descricao: `
+      try {
+        await base44.asServiceRole.entities.CodeFixTask.create({
+          error_log_id: errorRecord.id,
+          titulo: `[AUTO] Corrigir: ${message.slice(0, 80)}`,
+          descricao: `
 **Erro detectado automaticamente**
 
 📍 Arquivo: ${file || errorMapping.parsed_location.file || 'Desconhecido'}
@@ -355,16 +324,19 @@ ${aiAnalysis.solucao}
 
 🛡️ **Prevenção:**
 ${aiAnalysis.prevencao}
-        `.trim(),
-        status: 'pendente',
-        prioridade: aiAnalysis.impacto === 'critical' ? 'urgente' : 'alta',
-        tipo: 'correcao',
-        arquivo_alvo: file || errorMapping.parsed_location.file || '',
-        confianca_solucao: aiAnalysis.confianca,
-        criado_por: 'CodeFixer AI'
-      });
-
-      console.log('📋 [TAREFA] Tarefa de correção criada automaticamente');
+          `.trim(),
+          status: 'pendente',
+          prioridade: aiAnalysis.impacto === 'critical' ? 'urgente' : 'alta',
+          tipo: 'correcao',
+          arquivo_alvo: file || errorMapping.parsed_location.file || '',
+          confianca_solucao: aiAnalysis.confianca || 0,
+          criado_por: 'CodeFixer AI'
+        });
+        taskCreated = true;
+        console.log('📋 [TAREFA] Tarefa de correção criada automaticamente');
+      } catch (taskError) {
+        console.error('⚠️ Erro ao criar tarefa:', taskError.message);
+      }
     }
 
     return Response.json({
@@ -378,7 +350,7 @@ ${aiAnalysis.prevencao}
       },
       mapping: errorMapping,
       notifications_sent: finalSeverity,
-      task_created: aiAnalysis.impacto === 'critical' || aiAnalysis.impacto === 'high'
+      task_created: taskCreated
     });
 
   } catch (error) {
