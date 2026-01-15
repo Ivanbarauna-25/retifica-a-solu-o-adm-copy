@@ -572,6 +572,28 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
 
       console.error('❌ Erro ao extrair:', error);
 
+      // Registrar erro automaticamente no sistema do agente
+      try {
+        await base44.functions.invoke('registerAndAnalyzeError', {
+          message: `Falha na importação de orçamentos: ${error.message}`,
+          stack: error.stack || '',
+          source: 'ImportarOrcamentosModal',
+          url: window.location.href,
+          user_agent: navigator.userAgent,
+          component: 'ImportarOrcamentosModal',
+          severity: 'error',
+          extra: {
+            fileName: file?.name,
+            fileType: file?.type,
+            fileSize: file?.size,
+            action: 'extract',
+            errorType: 'import_failure'
+          }
+        });
+      } catch (regError) {
+        console.error('Erro ao registrar falha:', regError);
+      }
+
       if (mountedRef.current) {
         toast({
           title: 'Erro na extração',
@@ -772,6 +794,27 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
 
     } catch (error) {
       console.error('Erro ao importar:', error);
+      
+      // Registrar erro automaticamente no sistema do agente
+      try {
+        await base44.functions.invoke('registerAndAnalyzeError', {
+          message: `Falha na importação de orçamentos (confirmação): ${error.message}`,
+          stack: error.stack || '',
+          source: 'ImportarOrcamentosModal',
+          url: window.location.href,
+          user_agent: navigator.userAgent,
+          component: 'ImportarOrcamentosModal',
+          severity: 'error',
+          extra: {
+            action: 'confirm_import',
+            totalRecords: previewData?.length || 0,
+            errorType: 'import_failure'
+          }
+        });
+      } catch (regError) {
+        console.error('Erro ao registrar falha:', regError);
+      }
+      
       if (mountedRef.current) {
         toast({
           title: 'Erro na importação',
