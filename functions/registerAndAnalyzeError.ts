@@ -8,10 +8,17 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
  */
 
 Deno.serve(async (req) => {
+  // Permitir requisições sem autenticação para capturar erros de qualquer contexto
   const base44 = createClientFromRequest(req);
   
   try {
-    const payload = await req.json();
+    let payload;
+    try {
+      payload = await req.json();
+    } catch (parseError) {
+      console.error('❌ Erro ao parsear payload:', parseError);
+      return Response.json({ error: 'Invalid JSON payload' }, { status: 400 });
+    }
     
     // Dados do erro
     const {
@@ -57,35 +64,58 @@ Deno.serve(async (req) => {
     // ============================================================
     // 2. CRIAR REGISTRO NO ErrorLog
     // ============================================================
-    const errorRecord = await base44.asServiceRole.entities.ErrorLog.create({
-      message: message.slice(0, 2000),
-      stack: stack?.slice(0, 5000) || '',
-      source: source || 'unknown',
-      url: url || '',
-      user_agent: user_agent?.slice(0, 500) || '',
-      component: component || errorMapping.parsed_location.component || 'unknown',
-      file: file || errorMapping.parsed_location.file || '',
-      line: line || errorMapping.parsed_location.line || null,
-      column: column || errorMapping.parsed_location.column || null,
-      severity: determineSeverity(message, severity),
-      status: 'novo',
-      first_seen: new Date().toISOString(),
-      last_seen: new Date().toISOString(),
-      occurrence_count: 1,
-      fingerprint: errorMapping.fingerprint,
-      extra: JSON.stringify({
-        ...extra,
-        mapping: errorMapping,
-        category: errorMapping.category
-      })
-    });
-
-    console.log(`📝 [REGISTRO] Erro salvo com ID: ${errorRecord.id}`);
+    let errorRecord;
+    try {
+      errorRecord = await base44.asServiceRole.entities.ErrorLog.create({
+        message: message.slice(0, 2000),
+        stack: stack?.slice(0, 5000) || '',
+        source: source || 'unknown',
+        url: url || '',
+        user_agent: user_agent?.slice(0, 500) || '',
+        component: component || errorMapping.parsed_location.component || 'unknown',
+        file: file || errorMapping.parsed_location.file || '',
+        line: line || errorMapping.parsed_location.line || 0,
+        column: column || errorMapping.parsed_location.column || 0,
+        severity: determineSeverity(message, severity),
+        status: 'novo',
+        first_seen: new Date().toISOString(),
+        last_seen: new Date().toISOString(),
+        occurrence_count: 1,
+        fingerprint: errorMapping.fingerprint,
+        extra: JSON.stringify({
+          ...(extra || {}),
+          mapping: errorMapping,
+          category: errorMapping.category
+        })
+      });
+      console.log(`📝 [REGISTRO] Erro salvo com ID: ${errorRecord.id}`);
+    } catch (createError) {
+      console.error('❌ Erro ao criar ErrorLog:', createError);
+      // Tentar criar versão simplificada
+      errorRecord = await base44.asServiceRole.entities.ErrorLog.create({
+        message: message.slice(0, 500),
+        source: source || 'unknown',
+        severity: severity || 'error',
+        status: 'novo'
+      });
+      console.log(`📝 [REGISTRO] Erro salvo (simplificado) com ID: ${errorRecord.id}`);
+    }
 
     // ============================================================
-    // 3. ANÁLISE AUTOMÁTICA COM IA
+    // 3. ANÁLISE AUTOMÁTICA COM IA (assíncrona, não bloqueia registro)
     // ============================================================
-    const analysisPrompt = `
+    let aiAnalysis = {
+      causa_raiz: 'Análise pendente',
+      explicacao_tecnica: 'Em processamento',
+      solucao: 'Aguardando análise',
+      prevencao: 'Aguardando análise',
+      impacto: severity === 'critical' ? 'critical' : 'medium',
+      confianca: 0.5,
+      prompt_ajuste_fino: ''
+    };
+
+    try {
+      const analysisPrompt = `
 Você é um especialista em debugging de aplicações React/JavaScript. Analise este erro:
 
 **ERRO:**
@@ -96,7 +126,7 @@ Você é um especialista em debugging de aplicações React/JavaScript. Analise 
 - Severidade: ${severity}
 
 **STACK TRACE:**
-${stack || 'Não disponível'}
+${stack?.slice(0, 2000) || 'Não disponível'}
 
 **CONTEXTO:**
 - URL: ${url || 'Não disponível'}
@@ -112,82 +142,96 @@ ${stack || 'Não disponível'}
 7. prompt_ajuste_fino: Um prompt otimizado para treinar IA a resolver erros similares
 `;
 
-    const aiAnalysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: analysisPrompt,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          causa_raiz: { type: "string" },
-          explicacao_tecnica: { type: "string" },
-          solucao: { type: "string" },
-          prevencao: { type: "string" },
-          impacto: { type: "string", enum: ["low", "medium", "high", "critical"] },
-          confianca: { type: "number" },
-          prompt_ajuste_fino: { type: "string" }
+      aiAnalysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt: analysisPrompt,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            causa_raiz: { type: "string" },
+            explicacao_tecnica: { type: "string" },
+            solucao: { type: "string" },
+            prevencao: { type: "string" },
+            impacto: { type: "string", enum: ["low", "medium", "high", "critical"] },
+            confianca: { type: "number" },
+            prompt_ajuste_fino: { type: "string" }
+          }
         }
-      }
-    });
+      });
 
-    console.log(`🧠 [ANÁLISE] Análise concluída com confiança: ${aiAnalysis.confianca}`);
+      console.log(`🧠 [ANÁLISE] Análise concluída com confiança: ${aiAnalysis.confianca}`);
+    } catch (llmError) {
+      console.error('⚠️ Erro na análise LLM (continuando sem):', llmError.message);
+    }
 
     // ============================================================
     // 4. ATUALIZAR ERRO COM ANÁLISE
     // ============================================================
-    await base44.asServiceRole.entities.ErrorLog.update(errorRecord.id, {
-      extra: JSON.stringify({
-        ...extra,
-        mapping: errorMapping,
-        category: errorMapping.category,
-        ai_analysis: {
-          analyzed_at: new Date().toISOString(),
-          ...aiAnalysis
-        }
-      })
-    });
+    try {
+      await base44.asServiceRole.entities.ErrorLog.update(errorRecord.id, {
+        extra: JSON.stringify({
+          ...(extra || {}),
+          mapping: errorMapping,
+          category: errorMapping.category,
+          ai_analysis: {
+            analyzed_at: new Date().toISOString(),
+            ...aiAnalysis
+          }
+        })
+      });
+    } catch (updateError) {
+      console.error('⚠️ Erro ao atualizar ErrorLog:', updateError.message);
+    }
 
     // ============================================================
     // 5. SALVAR PROMPT DE AJUSTE FINO NA BASE DE CONHECIMENTO
     // ============================================================
-    await base44.asServiceRole.entities.CodeFixKnowledgeBase.create({
-      tipo: 'prompt_ajuste_fino',
-      categoria: errorMapping.category,
-      fingerprint: errorMapping.fingerprint,
-      titulo: `Erro: ${message.slice(0, 100)}`,
-      conteudo: JSON.stringify({
-        error_pattern: message,
-        file_pattern: file || errorMapping.parsed_location.file,
-        solution: aiAnalysis.solucao,
-        fine_tune_prompt: aiAnalysis.prompt_ajuste_fino,
-        confidence: aiAnalysis.confianca
-      }),
-      confianca: aiAnalysis.confianca,
-      vezes_usado: 0,
-      ultima_utilizacao: new Date().toISOString()
-    });
+    try {
+      await base44.asServiceRole.entities.CodeFixKnowledgeBase.create({
+        tipo: 'prompt_ajuste_fino',
+        categoria: errorMapping.category,
+        fingerprint: errorMapping.fingerprint?.slice(0, 200) || '',
+        titulo: `Erro: ${message.slice(0, 100)}`,
+        conteudo: JSON.stringify({
+          error_pattern: message.slice(0, 500),
+          file_pattern: file || errorMapping.parsed_location.file,
+          solution: aiAnalysis.solucao,
+          fine_tune_prompt: aiAnalysis.prompt_ajuste_fino,
+          confidence: aiAnalysis.confianca
+        }),
+        confianca: aiAnalysis.confianca || 0,
+        vezes_usado: 0,
+        ultima_utilizacao: new Date().toISOString()
+      });
+    } catch (kbError) {
+      console.error('⚠️ Erro ao salvar na base de conhecimento:', kbError.message);
+    }
 
     // ============================================================
     // 6. REGISTRAR AÇÃO DO AGENTE
     // ============================================================
-    await base44.asServiceRole.entities.AcaoAgente.create({
-      tipo_acao: 'analise_automatica',
-      status: 'concluido',
-      prioridade: aiAnalysis.impacto === 'critical' ? 'critica' : 
-                  aiAnalysis.impacto === 'high' ? 'alta' : 'media',
-      erro_relacionado_id: errorRecord.id,
-      descricao: `Registro e análise automática: ${message.slice(0, 100)}`,
-      resultado: JSON.stringify({
-        error_id: errorRecord.id,
-        analysis: aiAnalysis,
-        mapping: errorMapping
-      }),
-      contexto: {
-        fingerprint: errorMapping.fingerprint,
-        category: errorMapping.category,
-        confidence: aiAnalysis.confianca
-      },
-      iniciado_por: 'sistema',
-      data_conclusao: new Date().toISOString()
-    });
+    try {
+      await base44.asServiceRole.entities.AcaoAgente.create({
+        tipo_acao: 'analise_automatica',
+        status: 'concluido',
+        prioridade: aiAnalysis.impacto === 'critical' ? 'critica' : 
+                    aiAnalysis.impacto === 'high' ? 'alta' : 'media',
+        erro_relacionado_id: errorRecord.id,
+        descricao: `Registro e análise automática: ${message.slice(0, 100)}`,
+        resultado: JSON.stringify({
+          error_id: errorRecord.id,
+          confidence: aiAnalysis.confianca
+        }),
+        contexto: {
+          fingerprint: errorMapping.fingerprint?.slice(0, 100),
+          category: errorMapping.category,
+          confidence: aiAnalysis.confianca
+        },
+        iniciado_por: 'sistema',
+        data_conclusao: new Date().toISOString()
+      });
+    } catch (acaoError) {
+      console.error('⚠️ Erro ao registrar ação:', acaoError.message);
+    }
 
     // ============================================================
     // 7. NOTIFICAÇÃO WHATSAPP PARA ERROS CRÍTICOS
