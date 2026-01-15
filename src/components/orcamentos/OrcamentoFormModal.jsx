@@ -260,99 +260,99 @@ export default function OrcamentoFormModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-4xl max-h-[88vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-2xl shadow-2xl"
+        className="w-[95vw] md:max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-xl md:rounded-2xl shadow-2xl"
         onPointerDownOutside={(e) => e.preventDefault()}>
 
-        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 py-4 flex-shrink-0">
+        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-2.5 md:py-4 flex-shrink-0">
           <DialogTitle className="flex items-center justify-between text-white">
-            <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-base font-semibold text-white">{orcamento ? `Editar Orçamento` : "Novo Orçamento"}</h2>
-                <p className="text-xs text-slate-300 mt-0.5">{formData.numero_orcamento || "Gerando número..."}</p>
+                <h2 className="text-sm md:text-base font-semibold text-white">{orcamento ? `Editar Orçamento` : "Novo Orçamento"}</h2>
+                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">{formData.numero_orcamento || "Gerando número..."}</p>
               </div>
             </div>
           </DialogTitle>
         </DialogHeader>
 
         {/* CONTEÚDO COM SCROLL */}
-        <div className="flex-1 overflow-y-auto p-5 bg-slate-100/50">
+        <div className="flex-1 overflow-y-auto p-2.5 md:p-5 bg-slate-100/50">
           <Tabs defaultValue="geral" className="w-full">
-            <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-xl grid grid-cols-4 gap-1 mb-5 sticky top-0 z-10 shadow-sm">
+            <TabsList className="bg-slate-200 border border-slate-300 p-0.5 md:p-1 rounded-lg md:rounded-xl grid grid-cols-4 gap-0.5 md:gap-1 mb-3 md:mb-5 sticky top-0 z-10 shadow-sm">
               <TabsTrigger
                 value="geral"
-                className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5">
-                Dados Gerais
+                className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1">
+                <span className="hidden sm:inline">Dados</span><span className="sm:hidden">Geral</span>
               </TabsTrigger>
               <TabsTrigger
                 value="itens"
-                className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5">
+                className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1">
                 Itens ({formData.itens.length})
               </TabsTrigger>
               <TabsTrigger
                 value="financeiro"
-                className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5">
-                Financeiro
+                className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1">
+                <span className="hidden sm:inline">Financeiro</span><span className="sm:hidden">$</span>
               </TabsTrigger>
               <TabsTrigger
                 value="observacoes"
-                className="rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-xs py-2 transition-all flex items-center justify-center gap-1.5">
+                className="rounded-md bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1">
                 Obs
               </TabsTrigger>
             </TabsList>
 
             {/* TAB: Dados Gerais */}
             <TabsContent value="geral" className="p-0 m-0">
-              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
-                  <h3 className="text-sm font-bold text-slate-700">Dados Principais</h3>
+              <div className="bg-white rounded-lg md:rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div className="bg-slate-100 border-b border-slate-200 px-2.5 md:px-5 py-2 md:py-3">
+                  <h3 className="text-xs md:text-sm font-bold text-slate-700">Dados Principais</h3>
                 </div>
-                <div className="p-5 space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="p-2.5 md:p-5 space-y-2.5 md:space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4">
                     <div>
-                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Número do Orçamento *</Label>
+                      <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Número *</Label>
                       <Input
                         value={formData.numero_orcamento}
                         onChange={(e) => setFormData((prev) => ({ ...prev, numero_orcamento: e.target.value }))}
-                        className="bg-white text-black text-sm h-10"
+                        className="bg-white text-black text-xs md:text-sm h-8 md:h-10"
                         placeholder="2025-000001" />
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Data do Orçamento *</Label>
+                      <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Data *</Label>
                       <Input
                         type="date"
                         value={formData.data_orcamento}
                         onChange={(e) => setFormData((prev) => ({ ...prev, data_orcamento: e.target.value }))}
-                        className="bg-white text-black text-sm h-10" />
+                        className="bg-white text-black text-xs md:text-sm h-8 md:h-10" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4">
                     <div>
-                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Data de Validade</Label>
+                      <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Validade</Label>
                       <Input
                         type="date"
                         value={formData.data_validade}
                         onChange={(e) => setFormData((prev) => ({ ...prev, data_validade: e.target.value }))}
-                        className="bg-white text-black text-sm h-10" />
+                        className="bg-white text-black text-xs md:text-sm h-8 md:h-10" />
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Cliente *</Label>
+                      <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Cliente *</Label>
                       <SmartInput
                         options={clientes.map((c) => ({ value: c.id, label: c.nome }))}
                         value={formData.contato_id}
                         onChange={(v) => setFormData((prev) => ({ ...prev, contato_id: v, veiculo_id: "" }))}
-                        placeholder="Selecione o cliente" />
+                        placeholder="Selecione" />
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4">
                     <div>
-                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Veículo</Label>
+                      <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Veículo</Label>
                       <SmartInput
                         options={veiculosFiltrados.map((v) => ({
                           value: v.id,
@@ -360,26 +360,26 @@ export default function OrcamentoFormModal({
                         }))}
                         value={formData.veiculo_id}
                         onChange={(v) => setFormData((prev) => ({ ...prev, veiculo_id: v }))}
-                        placeholder="Selecione um veículo" />
+                        placeholder="Selecione" />
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Vendedor</Label>
+                      <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Vendedor</Label>
                       <SmartInput
                         options={funcionarios.map((f) => ({ value: f.id, label: f.nome }))}
                         value={formData.vendedor_id}
                         onChange={(v) => setFormData((prev) => ({ ...prev, vendedor_id: v }))}
-                        placeholder="Selecione o vendedor" />
+                        placeholder="Selecione" />
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Responsável Técnico</Label>
+                    <Label className="text-[11px] md:text-xs font-semibold text-slate-600 mb-1 block">Responsável Técnico</Label>
                     <SmartInput
                       options={funcionarios.map((f) => ({ value: f.id, label: f.nome }))}
                       value={formData.responsavel_tecnico_id}
                       onChange={(v) => setFormData((prev) => ({ ...prev, responsavel_tecnico_id: v }))}
-                      placeholder="Selecione o responsável" />
+                      placeholder="Selecione" />
                   </div>
                 </div>
               </div>
@@ -389,11 +389,11 @@ export default function OrcamentoFormModal({
             <TabsContent value="itens" className="p-0 m-0">
               <div className="bg-white">
                 {/* Formulário de novo item */}
-                <div className="bg-slate-100 rounded-lg p-4 mb-4 border border-slate-200">
-                  <h3 className="text-sm font-bold mb-3 text-slate-900">Adicionar Item</h3>
-                  <div className="space-y-3">
+                <div className="bg-slate-100 rounded-lg p-2.5 md:p-4 mb-3 md:mb-4 border border-slate-200">
+                  <h3 className="text-xs md:text-sm font-bold mb-2 md:mb-3 text-slate-900">Adicionar Item</h3>
+                  <div className="space-y-2 md:space-y-3">
                     <div>
-                      <Label className="text-xs text-slate-600 font-semibold">Produto/Serviço *</Label>
+                      <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Produto/Serviço *</Label>
                       <SmartInput
                         options={[
                         ...pecas.map((p) => ({
@@ -414,41 +414,41 @@ export default function OrcamentoFormModal({
                           handleItemChange("tipo", tipo);
                         }}
                         placeholder="Buscar..."
-                        className="mt-1" />
+                        className="mt-0.5 md:mt-1" />
 
                     </div>
 
-                    <div className="grid grid-cols-[2fr_2fr_2fr_auto] gap-4 items-end">
+                    <div className="grid grid-cols-3 md:grid-cols-[2fr_2fr_2fr_auto] gap-1.5 md:gap-4 items-end">
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Quantidade *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Qtd *</Label>
                         <Input
                           type="number"
                           min="1"
                           value={novoItem.quantidade}
                           onChange={(e) => handleItemChange("quantidade", e.target.value)}
-                          className="mt-1 h-9 text-sm bg-white text-black" />
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black" />
 
                       </div>
 
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Valor Unitário *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">V. Unit. *</Label>
                         <Input
                           type="number"
                           step="0.01"
                           value={novoItem.valor_unitario}
                           onChange={(e) => handleItemChange("valor_unitario", e.target.value)}
-                          className="mt-1 h-9 text-sm bg-white text-black" />
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black" />
 
                       </div>
 
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Desconto</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Desc.</Label>
                         <Input
                           type="number"
                           step="0.01"
                           value={novoItem.desconto_valor}
                           onChange={(e) => handleItemChange("desconto_valor", e.target.value)}
-                          className="mt-1 h-9 text-sm bg-white text-black" />
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black" />
 
                       </div>
 
@@ -456,84 +456,84 @@ export default function OrcamentoFormModal({
                         type="button"
                         onClick={addItem}
                         size="sm"
-                        className="bg-slate-800 hover:bg-slate-700 text-white h-9 text-xs px-6 whitespace-nowrap">
+                        className="bg-slate-800 hover:bg-slate-700 text-white h-8 md:h-9 text-[10px] md:text-xs px-3 md:px-6 whitespace-nowrap col-span-3 md:col-span-1">
                         <Plus className="w-3 h-3 mr-1" /> Adicionar
                       </Button>
                     </div>
                     
-                    <div className="text-sm font-semibold text-slate-900 bg-blue-50 rounded-lg p-3 border border-blue-200">
-                      Total do Item: {formatCurrency(novoItem.valor_total)}
+                    <div className="text-xs md:text-sm font-semibold text-slate-900 bg-blue-50 rounded-lg p-2 md:p-3 border border-blue-200">
+                      Total: {formatCurrency(novoItem.valor_total)}
                     </div>
                   </div>
                 </div>
 
                 {/* Lista de itens */}
-                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <div className="border border-slate-200 rounded-lg overflow-hidden overflow-x-auto">
                   <Table>
                     <TableHeader className="bg-slate-100">
                       <TableRow>
-                        <TableHead className="text-xs font-semibold text-slate-900">Descrição</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-center w-24">Qtd</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-right w-32">V. Unit.</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-right w-32">Desconto</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-right w-36">Total</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-center w-28">Ações</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 px-2 md:px-4">Descrição</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-center w-16 md:w-24 px-1 md:px-4">Qtd</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-right w-20 md:w-32 px-1 md:px-4 hidden sm:table-cell">V.Un.</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-right w-20 md:w-32 px-1 md:px-4 hidden md:table-cell">Desc.</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-right w-24 md:w-36 px-1 md:px-4">Total</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-center w-16 md:w-28 px-1 md:px-4">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {formData.itens.length === 0 ?
                       <TableRow>
-                          <TableCell colSpan={6} className="text-center py-8 text-slate-500 text-sm">
+                          <TableCell colSpan={6} className="text-center py-6 md:py-8 text-slate-500 text-xs md:text-sm">
                             Nenhum item adicionado
                           </TableCell>
                         </TableRow> :
 
                       formData.itens.map((item, index) =>
-                      <TableRow key={item.id} className="text-xs">
-                            <TableCell className="font-medium text-slate-900">{item.descricao}</TableCell>
-                            <TableCell className="text-center text-slate-900">
+                      <TableRow key={item.id} className="text-[10px] md:text-xs">
+                            <TableCell className="font-medium text-slate-900 max-w-[100px] md:max-w-none truncate px-2 md:px-4">{item.descricao}</TableCell>
+                            <TableCell className="text-center text-slate-900 px-1 md:px-4">
                               {editingItemIndex === index ?
                           <Input
                             type="number"
                             value={item.quantidade}
                             onChange={(e) => updateItemField(index, "quantidade", e.target.value)}
-                            className="w-20 h-8 text-xs text-center bg-white text-black" /> :
+                            className="w-14 md:w-20 h-7 md:h-8 text-[10px] md:text-xs text-center bg-white text-black" /> :
 
 
                           item.quantidade
                           }
                             </TableCell>
-                            <TableCell className="text-right text-slate-900">
+                            <TableCell className="text-right text-slate-900 px-1 md:px-4 hidden sm:table-cell">
                               {editingItemIndex === index ?
                           <Input
                             type="number"
                             step="0.01"
                             value={item.valor_unitario}
                             onChange={(e) => updateItemField(index, "valor_unitario", e.target.value)}
-                            className="w-28 h-8 text-xs text-right bg-white text-black" /> :
+                            className="w-20 md:w-28 h-7 md:h-8 text-[10px] md:text-xs text-right bg-white text-black" /> :
 
 
                           formatCurrency(item.valor_unitario)
                           }
                             </TableCell>
-                            <TableCell className="text-right text-slate-900">
+                            <TableCell className="text-right text-slate-900 px-1 md:px-4 hidden md:table-cell">
                               {editingItemIndex === index ?
                           <Input
                             type="number"
                             step="0.01"
                             value={item.desconto_valor}
                             onChange={(e) => updateItemField(index, "desconto_valor", e.target.value)}
-                            className="w-28 h-8 text-xs text-right bg-white text-black" /> :
+                            className="w-20 md:w-28 h-7 md:h-8 text-[10px] md:text-xs text-right bg-white text-black" /> :
 
 
                           formatCurrency(item.desconto_valor)
                           }
                             </TableCell>
-                            <TableCell className="text-right font-semibold text-slate-900">
+                            <TableCell className="text-right font-semibold text-slate-900 px-1 md:px-4">
                               {formatCurrency(item.valor_total)}
                             </TableCell>
-                            <TableCell className="text-center">
-                              <div className="flex items-center justify-center gap-1">
+                            <TableCell className="text-center px-1 md:px-4">
+                              <div className="flex items-center justify-center gap-0.5 md:gap-1">
                                 <Button
                               variant="ghost"
                               size="icon"
@@ -561,60 +561,60 @@ export default function OrcamentoFormModal({
 
             {/* TAB: Financeiro */}
             <TabsContent value="financeiro" className="p-0 m-0">
-              <div className="bg-white">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg md:rounded-xl border border-slate-200 overflow-hidden p-2.5 md:p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 md:gap-4">
                   <div>
-                    <Label className="text-xs uppercase text-slate-600 font-semibold">Forma de Pagamento</Label>
+                    <Label className="text-[11px] md:text-xs uppercase text-slate-600 font-semibold">Forma Pagamento</Label>
                     <SmartInput
                       options={formasPagamento.map((f) => ({ value: f.id, label: f.nome }))}
                       value={formData.forma_pagamento_id}
                       onChange={(v) => setFormData((prev) => ({ ...prev, forma_pagamento_id: v }))}
                       placeholder="Selecione"
-                      className="mt-1.5" />
+                      className="mt-1" />
 
                   </div>
 
                   <div>
-                    <Label className="text-xs uppercase text-slate-600 font-semibold">Condição de Pagamento</Label>
+                    <Label className="text-[11px] md:text-xs uppercase text-slate-600 font-semibold">Condição</Label>
                     <SmartInput
                       options={condicoesPagamento.map((c) => ({ value: c.id, label: c.nome }))}
                       value={formData.condicao_pagamento_id}
                       onChange={(v) => setFormData((prev) => ({ ...prev, condicao_pagamento_id: v }))}
                       placeholder="Selecione"
-                      className="mt-1.5" />
+                      className="mt-1" />
 
                   </div>
 
                   <div>
-                    <Label className="text-xs uppercase text-slate-600 font-semibold">Valor de Entrada</Label>
+                    <Label className="text-[11px] md:text-xs uppercase text-slate-600 font-semibold">Entrada</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={formData.entrada}
                       onChange={(e) => setFormData((prev) => ({ ...prev, entrada: Number(e.target.value) }))}
-                      className="mt-1.5 h-9 text-sm bg-white text-black" />
+                      className="mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black" />
 
                   </div>
 
                   <div>
-                    <Label className="text-xs uppercase text-slate-600 font-semibold">Outras Despesas</Label>
+                    <Label className="text-[11px] md:text-xs uppercase text-slate-600 font-semibold">Outras Despesas</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={formData.outras_despesas}
                       onChange={(e) => setFormData((prev) => ({ ...prev, outras_despesas: Number(e.target.value) }))}
-                      className="mt-1.5 h-9 text-sm bg-white text-black" />
+                      className="mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black" />
 
                   </div>
 
-                  <div>
-                    <Label className="text-xs uppercase text-slate-600 font-semibold">Desconto (R$)</Label>
+                  <div className="col-span-1 md:col-span-2">
+                    <Label className="text-[11px] md:text-xs uppercase text-slate-600 font-semibold">Desconto (R$)</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={formData.desconto_valor}
                       onChange={(e) => setFormData((prev) => ({ ...prev, desconto_valor: Number(e.target.value) }))}
-                      className="mt-1.5 h-9 text-sm bg-white text-black" />
+                      className="mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black" />
 
                   </div>
                 </div>
@@ -623,14 +623,14 @@ export default function OrcamentoFormModal({
 
             {/* TAB: Observações */}
             <TabsContent value="observacoes" className="p-0 m-0">
-              <div className="bg-white">
-                <Label className="text-xs uppercase text-slate-600 font-semibold">Observações</Label>
+              <div className="bg-white rounded-lg md:rounded-xl border border-slate-200 overflow-hidden p-2.5 md:p-4">
+                <Label className="text-[11px] md:text-xs uppercase text-slate-600 font-semibold">Observações</Label>
                 <Textarea
                   value={formData.observacoes}
                   onChange={(e) => setFormData((prev) => ({ ...prev, observacoes: e.target.value }))}
-                  rows={10}
-                  className="mt-1.5 text-sm resize-none bg-white text-black"
-                  placeholder="Digite observações sobre este orçamento..." />
+                  rows={8}
+                  className="mt-1 text-xs md:text-sm resize-none bg-white text-black"
+                  placeholder="Digite observações..." />
 
               </div>
             </TabsContent>
@@ -638,31 +638,31 @@ export default function OrcamentoFormModal({
         </div>
 
         {/* FOOTER */}
-        <div className="flex justify-between items-center px-5 py-3.5 border-t border-slate-100 bg-white flex-shrink-0">
-          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-lg">
-            <p className="text-xs font-medium text-slate-500">Total Previsto</p>
-            <p className="text-base font-bold text-slate-900">{formatCurrency(valorTotalOrcamento)}</p>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-100 bg-white flex-shrink-0 sticky bottom-0">
+          <div className="flex items-center gap-2 bg-slate-50 px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg w-full sm:w-auto justify-between sm:justify-start">
+            <p className="text-[10px] md:text-xs font-medium text-slate-500">Total</p>
+            <p className="text-sm md:text-base font-bold text-slate-900">{formatCurrency(valorTotalOrcamento)}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="ghost"
               onClick={onClose}
               disabled={isSaving}
-              className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+              className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 h-8 md:h-9 text-xs md:text-sm flex-1 sm:flex-none">
               Cancelar
             </Button>
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-5">
+              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 md:px-5 h-8 md:h-9 text-xs md:text-sm flex-1 sm:flex-none">
               {isSaving ?
               <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 animate-spin" />
                   Salvando...
                 </> :
 
               <>
-                  <Save className="w-4 h-4 mr-2" />
+                  <Save className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2" />
                   {orcamento ? "Salvar" : "Criar"}
                 </>
               }

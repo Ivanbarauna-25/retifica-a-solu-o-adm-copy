@@ -193,7 +193,7 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-[65vw] w-[65vw] h-[80vh] max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl"
+        className="w-[95vw] md:max-w-[65vw] md:w-[65vw] h-[85vh] md:h-[80vh] max-h-[85vh] md:max-h-[80vh] overflow-y-auto modern-modal bg-white border border-slate-200 rounded-xl flex flex-col p-0"
         onPointerDownOutside={(e) => e.preventDefault()}
       >
         <style>{`
@@ -213,22 +213,22 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
           }
         `}</style>
 
-        <DialogHeader className="sticky top-0 z-10 px-6 py-5 bg-slate-900 text-white no-print border-b border-slate-800">
+        <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-5 bg-slate-900 text-white no-print border-b border-slate-800 flex-shrink-0">
           <DialogTitle className="flex items-center justify-between text-white">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10">
-                <DollarSign className="w-5 h-5 text-blue-400" />
+            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+              <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10">
+                <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
               </div>
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight">Despesas do Orçamento</h2>
-                <p className="text-sm text-slate-400 font-medium">{orcamento?.numero_orcamento || ""}</p>
+              <div className="min-w-0">
+                <h2 className="text-sm md:text-lg font-semibold tracking-tight truncate">Despesas do Orçamento</h2>
+                <p className="text-xs md:text-sm text-slate-400 font-medium truncate">{orcamento?.numero_orcamento || ""}</p>
               </div>
             </div>
           </DialogTitle>
         </DialogHeader>
 
         {/* CONTEÚDO COM SCROLL */}
-        <div className="p-6">
+        <div className="p-3 md:p-6 flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
               <Loader2 className="w-8 h-8 animate-spin text-slate-800" />
@@ -237,36 +237,36 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
           ) : (
             <>
               {/* Cards de Resumo Financeiro */}
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-3">
-                  <div className="text-xs text-green-800 font-semibold mb-1">RECEITA (ORÇAMENTO)</div>
-                  <div className="text-xl font-bold text-green-700">{formatCurrency(receitaOrcamento)}</div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-5">
+                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-2 md:p-3">
+                  <div className="text-[10px] md:text-xs text-green-800 font-semibold mb-0.5 md:mb-1">RECEITA</div>
+                  <div className="text-sm md:text-xl font-bold text-green-700">{formatCurrency(receitaOrcamento)}</div>
                 </div>
                 
-                <div className="bg-red-50 border-2 border-red-200 rounded-lg p-3">
-                  <div className="text-xs text-red-800 font-semibold mb-1">DESPESAS</div>
-                  <div className="text-xl font-bold text-red-700">{formatCurrency(totalDespesas)}</div>
+                <div className="bg-red-50 border-2 border-red-200 rounded-lg p-2 md:p-3">
+                  <div className="text-[10px] md:text-xs text-red-800 font-semibold mb-0.5 md:mb-1">DESPESAS</div>
+                  <div className="text-sm md:text-xl font-bold text-red-700">{formatCurrency(totalDespesas)}</div>
                 </div>
                 
-                <div className={`${margemLiquida >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'} border-2 rounded-lg p-3`}>
-                  <div className={`text-xs font-semibold mb-1 ${margemLiquida >= 0 ? 'text-blue-800' : 'text-amber-800'}`}>
-                    MARGEM LÍQUIDA
+                <div className={`${margemLiquida >= 0 ? 'bg-blue-50 border-blue-200' : 'bg-amber-50 border-amber-200'} border-2 rounded-lg p-2 md:p-3 col-span-2 md:col-span-1`}>
+                  <div className={`text-[10px] md:text-xs font-semibold mb-0.5 md:mb-1 ${margemLiquida >= 0 ? 'text-blue-800' : 'text-amber-800'}`}>
+                    MARGEM
                   </div>
-                  <div className={`text-xl font-bold ${margemLiquida >= 0 ? 'text-blue-700' : 'text-amber-700'}`}>
+                  <div className={`text-sm md:text-xl font-bold ${margemLiquida >= 0 ? 'text-blue-700' : 'text-amber-700'}`}>
                     {formatCurrency(margemLiquida)}
                   </div>
-                  <div className="text-xs mt-1 opacity-80 text-slate-900">{percentualMargem}% da receita</div>
+                  <div className="text-[10px] md:text-xs mt-0.5 md:mt-1 opacity-80 text-slate-900">{percentualMargem}%</div>
                 </div>
               </div>
 
               {/* Formulário de Nova Despesa */}
-              <div className="bg-slate-100 rounded-lg p-4 mb-5 border border-slate-200">
-                <h3 className="text-sm font-bold mb-3 text-slate-900">Adicionar Nova Despesa</h3>
+              <div className="bg-slate-100 rounded-lg p-2.5 md:p-4 mb-3 md:mb-5 border border-slate-200">
+                <h3 className="text-xs md:text-sm font-bold mb-2 md:mb-3 text-slate-900">Adicionar Nova Despesa</h3>
                 
                 {/* Seletor de Tipo */}
-                <div className="mb-4">
-                  <Label className="text-xs text-slate-600 font-semibold mb-2 block">Tipo de Despesa *</Label>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="mb-3 md:mb-4">
+                  <Label className="text-[11px] md:text-xs text-slate-600 font-semibold mb-1.5 md:mb-2 block">Tipo de Despesa *</Label>
+                  <div className="grid grid-cols-2 gap-1.5 md:gap-2">
                     <button
                       type="button"
                       onClick={() => setNova(prev => ({ 
@@ -277,13 +277,13 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
                         valor_unitario: 0,
                         valor: 0
                       }))}
-                      className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
+                      className={`p-2 md:p-3 rounded-lg border-2 transition-all flex items-center gap-1.5 md:gap-2 ${
                         nova.tipo === "peca" 
                           ? "bg-blue-50 border-blue-500 text-blue-700" 
                           : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                       }`}>
-                      <Package className="w-4 h-4" />
-                      <span className="font-semibold text-sm">Peça do Estoque</span>
+                      <Package className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <span className="font-semibold text-[11px] md:text-sm">Peça Estoque</span>
                     </button>
                     
                     <button
@@ -296,78 +296,78 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
                         valor_unitario: 0,
                         valor: 0
                       }))}
-                      className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
+                      className={`p-2 md:p-3 rounded-lg border-2 transition-all flex items-center gap-1.5 md:gap-2 ${
                         nova.tipo === "outros" 
                           ? "bg-purple-50 border-purple-500 text-purple-700" 
                           : "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
                       }`}>
-                      <Tag className="w-4 h-4" />
-                      <span className="font-semibold text-sm">Outros</span>
+                      <Tag className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      <span className="font-semibold text-[11px] md:text-sm">Outros</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Campos para Peça */}
                 {nova.tipo === "peca" && (
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     <div>
-                      <Label className="text-xs text-slate-600 font-semibold">Peça do Estoque *</Label>
+                      <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Peça *</Label>
                       <SmartInput
                         value={nova.peca_id}
                         onChange={(v) => setNova(prev => ({ ...prev, peca_id: v }))}
                         options={pecasOptions}
-                        placeholder="Digite para buscar uma peça..."
-                        className="mt-1 bg-white text-black h-9 text-sm"
+                        placeholder="Buscar peça..."
+                        className="mt-0.5 md:mt-1 bg-white text-black h-8 md:h-9 text-xs md:text-sm"
                       />
                     </div>
 
-                    <div className="grid grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_auto] gap-3 items-end">
+                    <div className="grid grid-cols-2 md:grid-cols-[1.5fr_1.5fr_1.5fr_1.5fr_auto] gap-1.5 md:gap-3 items-end">
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Quantidade *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Qtd *</Label>
                         <Input 
                           type="number" 
                           min="1"
                           value={nova.quantidade} 
                           onChange={(e) => setNova(prev => ({ ...prev, quantidade: e.target.value }))}
-                          className="mt-1 h-9 text-sm bg-white text-black"
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black"
                         />
                       </div>
 
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Valor Unitário *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">V.Un. *</Label>
                         <Input 
                           type="number" 
                           step="0.01"
                           value={nova.valor_unitario} 
                           onChange={(e) => setNova(prev => ({ ...prev, valor_unitario: e.target.value }))}
-                          className="mt-1 h-9 text-sm bg-white text-black"
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black"
                         />
                       </div>
 
-                      <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Valor Total</Label>
+                      <div className="hidden md:block">
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Total</Label>
                         <Input 
                           type="number"
                           value={nova.valor} 
                           disabled
-                          className="mt-1 h-9 text-sm bg-slate-100 text-black font-semibold"
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-slate-100 text-black font-semibold"
                         />
                       </div>
 
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Data *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Data *</Label>
                         <Input 
                           type="date" 
                           value={nova.data} 
                           onChange={(e) => setNova(prev => ({ ...prev, data: e.target.value }))}
-                          className="mt-1 h-9 text-sm bg-white text-black"
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black"
                         />
                       </div>
 
                       <Button 
                         onClick={addDespesa} 
                         size="sm"
-                        className="bg-slate-800 hover:bg-slate-700 text-white h-9 text-xs px-6">
+                        className="bg-slate-800 hover:bg-slate-700 text-white h-8 md:h-9 text-[10px] md:text-xs px-3 md:px-6 col-span-2 md:col-span-1">
                         <Plus className="w-3 h-3 mr-1" /> Adicionar
                       </Button>
                     </div>
@@ -376,18 +376,18 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
 
                 {/* Campos para Outros */}
                 {nova.tipo === "outros" && (
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     <div>
-                      <Label className="text-xs text-slate-600 font-semibold">Tipo da Despesa *</Label>
+                      <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Tipo *</Label>
                       <Select 
                         value={nova.tipo_despesa_id} 
                         onValueChange={(v) => setNova(prev => ({ ...prev, tipo_despesa_id: v }))}>
-                        <SelectTrigger className="mt-1 bg-white text-black h-9 text-sm">
+                        <SelectTrigger className="mt-0.5 md:mt-1 bg-white text-black h-8 md:h-9 text-xs md:text-sm">
                           <SelectValue placeholder="Selecione" />
                         </SelectTrigger>
                         <SelectContent>
                           {tiposDespesa.length === 0 ? (
-                            <div className="p-4 text-center text-slate-600 text-sm">
+                            <div className="p-4 text-center text-slate-600 text-xs md:text-sm">
                               Nenhum tipo cadastrado
                             </div>
                           ) : (
@@ -399,70 +399,70 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
                       </Select>
                     </div>
                     
-                    <div className="grid grid-cols-[1.5fr_1.5fr_auto] gap-3 items-end">
+                    <div className="grid grid-cols-2 md:grid-cols-[1.5fr_1.5fr_auto] gap-1.5 md:gap-3 items-end">
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Valor *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Valor *</Label>
                         <Input 
                           type="number" 
                           step="0.01" 
                           value={nova.valor} 
                           onChange={(e) => setNova(prev => ({ ...prev, valor: e.target.value }))}
-                          className="mt-1 h-9 text-sm bg-white text-black"
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black"
                         />
                       </div>
                       
                       <div>
-                        <Label className="text-xs text-slate-600 font-semibold">Data *</Label>
+                        <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Data *</Label>
                         <Input 
                           type="date" 
                           value={nova.data} 
                           onChange={(e) => setNova(prev => ({ ...prev, data: e.target.value }))}
-                          className="mt-1 h-9 text-sm bg-white text-black"
+                          className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black"
                         />
                       </div>
 
                       <Button 
                         onClick={addDespesa} 
                         size="sm"
-                        className="bg-slate-800 hover:bg-slate-700 text-white h-9 text-xs px-6">
+                        className="bg-slate-800 hover:bg-slate-700 text-white h-8 md:h-9 text-[10px] md:text-xs px-3 md:px-6 col-span-2 md:col-span-1">
                         <Plus className="w-3 h-3 mr-1" /> Adicionar
                       </Button>
                     </div>
                   </div>
                 )}
                 
-                <div className="mt-3">
-                  <Label className="text-xs text-slate-600 font-semibold">Descrição (opcional)</Label>
+                <div className="mt-2 md:mt-3">
+                  <Label className="text-[11px] md:text-xs text-slate-600 font-semibold">Descrição</Label>
                   <Input 
                     value={nova.descricao} 
                     onChange={(e) => setNova(prev => ({ ...prev, descricao: e.target.value }))} 
-                    placeholder="Ex.: Observações adicionais"
-                    className="mt-1 h-9 text-sm bg-white text-black"
+                    placeholder="Ex.: Observações"
+                    className="mt-0.5 md:mt-1 h-8 md:h-9 text-xs md:text-sm bg-white text-black"
                   />
                 </div>
               </div>
 
               {/* Lista de Despesas */}
               <div>
-                <h3 className="text-sm font-bold mb-3 text-slate-900">Despesas Lançadas</h3>
-                <div className="border border-slate-200 rounded-lg overflow-hidden">
+                <h3 className="text-xs md:text-sm font-bold mb-2 md:mb-3 text-slate-900">Despesas Lançadas</h3>
+                <div className="border border-slate-200 rounded-lg overflow-hidden overflow-x-auto">
                   <Table>
                     <TableHeader className="bg-slate-100">
                       <TableRow>
-                        <TableHead className="text-xs font-semibold text-slate-900">Data</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900">Tipo</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900">Descrição</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-center">Qtd</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-right">Valor</TableHead>
-                        <TableHead className="text-xs font-semibold text-slate-900 text-center w-20">Ações</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 px-2 md:px-4 hidden sm:table-cell">Data</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 px-2 md:px-4">Tipo</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 px-2 md:px-4">Descrição</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-center px-1 md:px-4 hidden md:table-cell">Qtd</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-right px-2 md:px-4">Valor</TableHead>
+                        <TableHead className="text-[10px] md:text-xs font-semibold text-slate-900 text-center w-14 md:w-20 px-1 md:px-4">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {despesas.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center text-slate-500 py-12 text-sm">
-                            <DollarSign className="w-12 h-12 mx-auto mb-2 opacity-20" />
-                            <p className="font-medium">Nenhuma despesa lançada</p>
+                          <TableCell colSpan={6} className="text-center text-slate-500 py-8 md:py-12 text-xs md:text-sm">
+                            <DollarSign className="w-8 h-8 md:w-12 md:h-12 mx-auto mb-2 opacity-20" />
+                            <p className="font-medium">Nenhuma despesa</p>
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -480,17 +480,17 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
                           }
                           
                           return (
-                            <TableRow key={d.id} className="text-xs">
-                              <TableCell className="text-slate-900">{formatDate(d.data)}</TableCell>
-                              <TableCell className="font-medium text-slate-900">{tipoLabel}</TableCell>
-                              <TableCell className="text-slate-900">{descricao}</TableCell>
-                              <TableCell className="text-center text-slate-900">
+                            <TableRow key={d.id} className="text-[10px] md:text-xs">
+                              <TableCell className="text-slate-900 px-2 md:px-4 hidden sm:table-cell whitespace-nowrap">{formatDate(d.data)}</TableCell>
+                              <TableCell className="font-medium text-slate-900 px-2 md:px-4 max-w-[60px] md:max-w-none truncate">{tipoLabel}</TableCell>
+                              <TableCell className="text-slate-900 px-2 md:px-4 max-w-[80px] md:max-w-none truncate">{descricao}</TableCell>
+                              <TableCell className="text-center text-slate-900 px-1 md:px-4 hidden md:table-cell">
                                 {d.tipo === "peca" ? d.quantidade : "—"}
                               </TableCell>
-                              <TableCell className="text-right font-semibold text-red-700">
+                              <TableCell className="text-right font-semibold text-red-700 px-2 md:px-4 whitespace-nowrap">
                                 {formatCurrency(d.valor)}
                               </TableCell>
-                              <TableCell className="text-center">
+                              <TableCell className="text-center px-1 md:px-4">
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
@@ -512,13 +512,13 @@ export default function DespesasModal({ isOpen, onClose, orcamento }) {
         </div>
 
         {/* FOOTER */}
-        <div className="flex justify-end px-6 py-4 border-t border-slate-200 bg-slate-50">
+        <div className="flex justify-end px-3 md:px-6 py-2.5 md:py-4 border-t border-slate-200 bg-slate-50 sticky bottom-0 flex-shrink-0">
           <Button 
             variant="outline" 
             onClick={onClose} 
             size="sm"
-            className="bg-slate-800 hover:bg-slate-700 text-white text-xs">
-            <X className="w-4 h-4 mr-1" />
+            className="bg-slate-800 hover:bg-slate-700 text-white text-[11px] md:text-xs h-8 md:h-9 px-3 md:px-4">
+            <X className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1" />
             Fechar
           </Button>
         </div>
