@@ -676,42 +676,42 @@ export default function DREPage() {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="resumo" className="space-y-3 mt-0">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <p className="text-xs font-medium text-slate-600 mb-1">Total Receitas</p>
-            <p className="text-xl font-bold text-green-600">{formatMoeda(dados.totalReceitas)}</p>
+      <TabsContent value="resumo" className="space-y-2 md:space-y-3 mt-0">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+          <div className="bg-white p-3 md:p-4 rounded-lg border border-slate-200 shadow-sm">
+            <p className="text-[10px] md:text-xs font-medium text-slate-600 mb-0.5 md:mb-1">Receitas</p>
+            <p className="text-sm md:text-xl font-bold text-green-600">{formatMoeda(dados.totalReceitas)}</p>
           </div>
           
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <p className="text-xs font-medium text-slate-600 mb-1">Total Despesas</p>
-            <p className="text-xl font-bold text-red-600">{formatMoeda(dados.totalDespesas)}</p>
+          <div className="bg-white p-3 md:p-4 rounded-lg border border-slate-200 shadow-sm">
+            <p className="text-[10px] md:text-xs font-medium text-slate-600 mb-0.5 md:mb-1">Despesas</p>
+            <p className="text-sm md:text-xl font-bold text-red-600">{formatMoeda(dados.totalDespesas)}</p>
           </div>
           
-          <div className={`p-4 rounded-lg shadow-sm ${dados.resultado >= 0 ? 'bg-gradient-to-r from-blue-600 to-blue-500' : 'bg-gradient-to-r from-red-600 to-red-500'}`}>
-            <p className="text-xs font-medium text-white/80 mb-1">Resultado</p>
-            <p className="text-xl font-bold text-white">{formatMoeda(dados.resultado)}</p>
+          <div className={`p-3 md:p-4 rounded-lg shadow-sm col-span-2 md:col-span-1 ${dados.resultado >= 0 ? 'bg-gradient-to-r from-blue-600 to-blue-500' : 'bg-gradient-to-r from-red-600 to-red-500'}`}>
+            <p className="text-[10px] md:text-xs font-medium text-white/80 mb-0.5 md:mb-1">Resultado</p>
+            <p className="text-sm md:text-xl font-bold text-white">{formatMoeda(dados.resultado)}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="bg-slate-50 p-4 rounded-lg border">
-            <p className="text-xs font-medium text-slate-600 mb-1">Margem Líquida</p>
-            <p className={`text-2xl font-bold ${dados.margemLiquida >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+          <div className="bg-slate-50 p-3 md:p-4 rounded-lg border">
+            <p className="text-[10px] md:text-xs font-medium text-slate-600 mb-0.5 md:mb-1">Margem</p>
+            <p className={`text-base md:text-2xl font-bold ${dados.margemLiquida >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {dados.margemLiquida.toFixed(2)}%
             </p>
           </div>
           
-          <div className="bg-slate-50 p-4 rounded-lg border">
-            <p className="text-xs font-medium text-slate-600 mb-1">Status</p>
-            <p className={`text-lg font-bold ${dados.resultado >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {dados.resultado >= 0 ? '✓ LUCRO' : '✗ PREJUÍZO'}
+          <div className="bg-slate-50 p-3 md:p-4 rounded-lg border">
+            <p className="text-[10px] md:text-xs font-medium text-slate-600 mb-0.5 md:mb-1">Status</p>
+            <p className={`text-sm md:text-lg font-bold ${dados.resultado >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {dados.resultado >= 0 ? '✓ LUCRO' : '✗ PREJ.'}
             </p>
           </div>
           
-          <div className="bg-slate-50 p-4 rounded-lg border">
-            <p className="text-xs font-medium text-slate-600 mb-1">Cobertura</p>
-            <p className="text-2xl font-bold text-slate-900">
+          <div className="bg-slate-50 p-3 md:p-4 rounded-lg border col-span-2 md:col-span-1">
+            <p className="text-[10px] md:text-xs font-medium text-slate-600 mb-0.5 md:mb-1">Cobertura</p>
+            <p className="text-base md:text-2xl font-bold text-slate-900">
               {dados.totalDespesas > 0 ? (dados.totalReceitas / dados.totalDespesas).toFixed(2) : '∞'}x
             </p>
           </div>
@@ -1176,52 +1176,52 @@ export default function DREPage() {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
-            <FileBarChart2 className="w-5 h-5 text-white" />
+    <div className="space-y-3 md:space-y-4 p-3 md:p-0">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-3 md:p-4">
+        <div className="flex items-center gap-2 md:gap-3">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+            <FileBarChart2 className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900">DRE Gerencial</h1>
-            <p className="text-sm text-slate-600">Demonstrativo de Resultado do Exercício</p>
+            <h1 className="text-base md:text-xl font-bold text-slate-900">DRE Gerencial</h1>
+            <p className="text-xs md:text-sm text-slate-600">Demonstrativo de Resultado</p>
           </div>
         </div>
       </div>
 
-      <Tabs value={tabAtiva} onValueChange={setTabAtiva} className="space-y-4">
-        <TabsList className="bg-slate-100 p-1">
-          <TabsTrigger value="novo" className="TabsTrigger text-sm">
-            <FileBarChart2 className="w-4 h-4 mr-2" />
-            Novo DRE
+      <Tabs value={tabAtiva} onValueChange={setTabAtiva} className="space-y-3 md:space-y-4">
+        <TabsList className="bg-slate-100 p-1 grid grid-cols-3 w-full md:w-auto md:inline-flex">
+          <TabsTrigger value="novo" className="TabsTrigger text-[10px] md:text-sm gap-1 md:gap-2 px-2 md:px-4">
+            <FileBarChart2 className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Novo</span>
           </TabsTrigger>
-          <TabsTrigger value="salvos" className="TabsTrigger text-sm">
-            <Download className="w-4 h-4 mr-2" />
-            DREs Salvos
+          <TabsTrigger value="salvos" className="TabsTrigger text-[10px] md:text-sm gap-1 md:gap-2 px-2 md:px-4">
+            <Download className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Salvos</span>
           </TabsTrigger>
-          <TabsTrigger value="configuracoes" className="TabsTrigger text-sm">
-            <Settings className="w-4 h-4 mr-2" />
-            Configurações
+          <TabsTrigger value="configuracoes" className="TabsTrigger text-[10px] md:text-sm gap-1 md:gap-2 px-2 md:px-4">
+            <Settings className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Config</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="novo" className="space-y-4">
+        <TabsContent value="novo" className="space-y-3 md:space-y-4">
           <Card className="shadow-sm border border-slate-200">
-            <CardHeader className="bg-slate-50 border-b border-slate-200 py-3">
-              <CardTitle className="flex items-center gap-2 text-slate-900 text-base">
-                <Calendar className="w-4 h-4 text-slate-700" />
+            <CardHeader className="bg-slate-50 border-b border-slate-200 py-2 md:py-3 px-3 md:px-6">
+              <CardTitle className="flex items-center gap-2 text-slate-900 text-sm md:text-base">
+                <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-700" />
                 Configurar DRE
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-4">
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-4">
+            <CardContent className="pt-3 md:pt-4 px-3 md:px-6 pb-3 md:pb-6">
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-2 md:gap-3 mb-3 md:mb-4">
                 <div>
-                  <Label className="text-xs font-medium text-slate-700 mb-1 block">Mês</Label>
+                  <Label className="text-[10px] md:text-xs font-medium text-slate-700 mb-1 block">Mês</Label>
                   <Select
                     value={String(periodo.mes)}
                     onValueChange={(v) => setPeriodo({ ...periodo, mes: parseInt(v) })}
                   >
-                    <SelectTrigger className="bg-white h-9 text-sm">
+                    <SelectTrigger className="bg-white h-8 md:h-9 text-xs md:text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1235,22 +1235,22 @@ export default function DREPage() {
                 </div>
 
                 <div>
-                  <Label className="text-xs font-medium text-slate-700 mb-1 block">Ano</Label>
+                  <Label className="text-[10px] md:text-xs font-medium text-slate-700 mb-1 block">Ano</Label>
                   <Input
                     type="number"
                     value={periodo.ano}
                     onChange={(e) => setPeriodo({ ...periodo, ano: parseInt(e.target.value) })}
-                    className="bg-white h-9 text-sm"
+                    className="bg-white h-8 md:h-9 text-xs md:text-sm"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-xs font-medium text-slate-700 mb-1 block">Regime</Label>
+                  <Label className="text-[10px] md:text-xs font-medium text-slate-700 mb-1 block">Regime</Label>
                   <Select
                     value={config.regime}
                     onValueChange={(v) => setConfig({ ...config, regime: v })}
                   >
-                    <SelectTrigger className="bg-white h-9 text-sm">
+                    <SelectTrigger className="bg-white h-8 md:h-9 text-xs md:text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1261,12 +1261,12 @@ export default function DREPage() {
                 </div>
 
                 <div>
-                  <Label className="text-xs font-medium text-slate-700 mb-1 block">Tipo de Relatório</Label>
+                  <Label className="text-[10px] md:text-xs font-medium text-slate-700 mb-1 block">Tipo</Label>
                   <Select
                     value={config.tipo_relatorio}
                     onValueChange={(v) => setConfig({ ...config, tipo_relatorio: v })}
                   >
-                    <SelectTrigger className="bg-white h-9 text-sm">
+                    <SelectTrigger className="bg-white h-8 md:h-9 text-xs md:text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1277,12 +1277,12 @@ export default function DREPage() {
                 </div>
 
                 <div>
-                  <Label className="text-xs font-medium text-slate-700 mb-1 block">Data de Referência</Label>
+                  <Label className="text-[10px] md:text-xs font-medium text-slate-700 mb-1 block">Referência</Label>
                   <Select
                     value={config.data_referencia}
                     onValueChange={(v) => setConfig({ ...config, data_referencia: v })}
                   >
-                    <SelectTrigger className="bg-white h-9 text-sm">
+                    <SelectTrigger className="bg-white h-8 md:h-9 text-xs md:text-sm">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -1293,19 +1293,19 @@ export default function DREPage() {
                   </Select>
                 </div>
 
-                <div className="flex items-end">
+                <div className="flex items-end col-span-2 md:col-span-1">
                   <Button 
                     onClick={calcularDRE} 
                     disabled={loading}
-                    className="w-full bg-slate-800 hover:bg-slate-700 text-white h-9 text-sm"
+                    className="w-full bg-slate-800 hover:bg-slate-700 text-white h-8 md:h-9 text-xs md:text-sm"
                   >
                     {loading ? (
                       <>
-                        <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                        <Loader2 className="w-3 h-3 md:w-3.5 md:h-3.5 mr-1 md:mr-2 animate-spin" />
                         Calculando...
                       </>
                     ) : (
-                      <>Gerar DRE</>
+                      <>Gerar</>
                     )}
                   </Button>
                 </div>

@@ -254,88 +254,88 @@ export default function FluxoCaixaPage() {
     <>
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-8 mb-4 md:mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <ArrowRightLeft className="w-8 h-8" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <ArrowRightLeft className="w-5 h-5 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Fluxo de Caixa</h1>
-                  <p className="text-slate-300">Movimentações Financeiras (Entradas e Saídas)</p>
+                  <h1 className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1">Fluxo de Caixa</h1>
+                  <p className="text-slate-300 text-xs md:text-base">Entradas e Saídas</p>
                 </div>
               </div>
 
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                 >
-                  <Filter className="w-4 h-4" />
-                  Filtros
+                  <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Filtros</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => setShowRelatorioModal(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                 >
-                  <FileText className="w-4 h-4" />
-                  Relatório
+                  <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Relatório</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={handleNovoLancamento}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                 >
-                  <Plus className="w-4 h-4" />
-                  Novo Lançamento
+                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Novo</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Total Entradas</p>
-                    <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.entradas)}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Entradas</p>
+                    <div className="text-sm md:text-2xl font-bold text-green-600">{formatCurrency(stats.entradas)}</div>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-green-100" />
+                  <TrendingUp className="w-5 h-5 md:w-8 md:h-8 text-green-100" />
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Total Saídas</p>
-                    <div className="text-2xl font-bold text-red-600">{formatCurrency(stats.saidas)}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Saídas</p>
+                    <div className="text-sm md:text-2xl font-bold text-red-600">{formatCurrency(stats.saidas)}</div>
                   </div>
-                  <TrendingDown className="w-8 h-8 text-red-100" />
+                  <TrendingDown className="w-5 h-5 md:w-8 md:h-8 text-red-100" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
+            <Card className="border-l-4 border-l-blue-500 shadow-sm col-span-2 md:col-span-1">
+              <CardContent className="p-3 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Saldo do Período</p>
-                    <div className={`text-2xl font-bold ${stats.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Saldo</p>
+                    <div className={`text-sm md:text-2xl font-bold ${stats.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
                       {formatCurrency(stats.saldo)}
                     </div>
                   </div>
-                  <DollarSign className="w-8 h-8 text-blue-100" />
+                  <DollarSign className="w-5 h-5 md:w-8 md:h-8 text-blue-100" />
                 </div>
               </CardContent>
             </Card>
@@ -343,13 +343,13 @@ export default function FluxoCaixaPage() {
 
           {/* Filtros Expandidos */}
           {showFilters && (
-            <Card className="mb-6 border-slate-200 shadow-md">
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="mb-4 md:mb-6 border-slate-200 shadow-md">
+              <CardContent className="pt-3 md:pt-6 p-3 md:p-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                   <div>
-                    <Label className="text-xs font-medium text-gray-600 mb-1">Tipo</Label>
+                    <Label className="text-[10px] md:text-xs font-medium text-gray-600 mb-1">Tipo</Label>
                     <Select value={filtroTipo} onValueChange={setFiltroTipo}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 md:h-10 text-xs md:text-sm">
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
@@ -360,13 +360,13 @@ export default function FluxoCaixaPage() {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs font-medium text-gray-600 mb-1">Conta</Label>
+                    <Label className="text-[10px] md:text-xs font-medium text-gray-600 mb-1">Conta</Label>
                     <Select value={filtroConta} onValueChange={setFiltroConta}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-8 md:h-10 text-xs md:text-sm">
                         <SelectValue placeholder="Todas" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="todas">Todas as Contas</SelectItem>
+                        <SelectItem value="todas">Todas</SelectItem>
                         {contasBancarias.map(conta => (
                           <SelectItem key={conta.id} value={conta.id}>
                             {conta.nome}
@@ -376,19 +376,21 @@ export default function FluxoCaixaPage() {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs font-medium text-gray-600 mb-1">Data Início</Label>
+                    <Label className="text-[10px] md:text-xs font-medium text-gray-600 mb-1">Início</Label>
                     <Input
                       type="date"
                       value={dataInicio}
                       onChange={(e) => setDataInicio(e.target.value)}
+                      className="h-8 md:h-10 text-xs md:text-sm"
                     />
                   </div>
                   <div>
-                    <Label className="text-xs font-medium text-gray-600 mb-1">Data Fim</Label>
+                    <Label className="text-[10px] md:text-xs font-medium text-gray-600 mb-1">Fim</Label>
                     <Input
                       type="date"
                       value={dataFim}
                       onChange={(e) => setDataFim(e.target.value)}
+                      className="h-8 md:h-10 text-xs md:text-sm"
                     />
                   </div>
                 </div>
@@ -401,14 +403,14 @@ export default function FluxoCaixaPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Data</TableHead>
-                    <TableHead className="text-white font-semibold">Tipo</TableHead>
-                    <TableHead className="text-white font-semibold">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold">Categoria</TableHead>
-                    <TableHead className="text-white font-semibold">Conta</TableHead>
-                    <TableHead className="text-white font-semibold">Forma Pagamento</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Valor</TableHead>
-                    <TableHead className="text-white font-semibold text-center w-[120px]">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden md:table-cell">Tipo</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4">Descrição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden lg:table-cell">Categoria</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden xl:table-cell">Conta</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden 2xl:table-cell">Forma</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 text-right">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 text-center">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -419,26 +421,26 @@ export default function FluxoCaixaPage() {
                   ) : (
                     movimentosFiltrados.map((movimento) => (
                       <TableRow key={movimento.id} className="hover:bg-slate-50">
-                        <TableCell className="text-slate-900">{formatDate(movimento.data_movimento)}</TableCell>
-                        <TableCell>
-                          <Badge className={movimento.tipo_movimento === 'entrada' ? 'bg-green-100 text-green-800 hover:bg-green-200 border-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200 border-red-200'}>
+                        <TableCell className="text-slate-900 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden sm:table-cell whitespace-nowrap">{formatDate(movimento.data_movimento)}</TableCell>
+                        <TableCell className="px-2 md:px-4 py-1.5 md:py-3 hidden md:table-cell">
+                          <Badge className={`${movimento.tipo_movimento === 'entrada' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} text-[10px] md:text-xs`}>
                             {movimento.tipo_movimento === 'entrada' ? 'Entrada' : 'Saída'}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-medium text-slate-900">{movimento.descricao}</TableCell>
-                        <TableCell className="text-slate-600">{getPlanoContaNome(movimento.plano_contas_id)}</TableCell>
-                        <TableCell className="text-slate-600">{getContaNome(movimento.conta_bancaria_id)}</TableCell>
-                        <TableCell className="text-slate-600">{getFormaPagamentoNome(movimento.forma_pagamento_id)}</TableCell>
-                        <TableCell className={`text-right font-semibold ${movimento.tipo_movimento === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
+                        <TableCell className="font-medium text-slate-900 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{movimento.descricao}</TableCell>
+                        <TableCell className="text-slate-600 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden lg:table-cell max-w-[100px] truncate">{getPlanoContaNome(movimento.plano_contas_id)}</TableCell>
+                        <TableCell className="text-slate-600 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden xl:table-cell max-w-[100px] truncate">{getContaNome(movimento.conta_bancaria_id)}</TableCell>
+                        <TableCell className="text-slate-600 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden 2xl:table-cell max-w-[100px] truncate">{getFormaPagamentoNome(movimento.forma_pagamento_id)}</TableCell>
+                        <TableCell className={`text-right font-semibold px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm ${movimento.tipo_movimento === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
                           {movimento.tipo_movimento === 'entrada' ? '+' : '-'}{formatCurrency(movimento.valor)}
                         </TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex justify-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(movimento)} className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-4 w-4" />
+                        <TableCell className="text-center px-2 md:px-4 py-1.5 md:py-3">
+                          <div className="flex justify-center gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openForm(movimento)} className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-amber-50 text-amber-600">
+                              <Edit className="h-4 w-4 md:h-[18px] md:w-[18px]" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(movimento.id)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(movimento.id)} className="h-8 w-8 md:h-9 md:w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
+                              <Trash2 className="h-4 w-4 md:h-[18px] md:w-[18px]" />
                             </Button>
                           </div>
                         </TableCell>

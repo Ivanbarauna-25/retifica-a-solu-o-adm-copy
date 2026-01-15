@@ -553,52 +553,52 @@ export default function MovimentacaoFinanceiraPage() {
       <Toaster />
       <div className="min-h-screen bg-slate-50">
         {/* Header com fundo escuro */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-8 mb-4 md:mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                  <ArrowRightLeft className="w-8 h-8 text-white" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
+                <div className="bg-white/10 p-2 md:p-4 rounded-lg md:rounded-xl backdrop-blur-sm">
+                  <ArrowRightLeft className="w-5 h-5 md:w-8 md:h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1 tracking-tight">Movimentação Financeira</h1>
-                  <p className="text-slate-200 text-base">
-                    Gestão completa de entradas e saídas
+                  <h1 className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1 tracking-tight">Movimentação Financeira</h1>
+                  <p className="text-slate-200 text-xs md:text-base">
+                    Gestão de entradas e saídas
                     {filtroOrigemId && (
-                      <Badge className="ml-2 bg-blue-600 text-white border-none">
-                        Filtro Ativo: {filtroOrigemTipo === 'compras' ? 'Nota Fiscal' : filtroOrigemTipo === 'os' ? 'OS' : 'Orçamento'}
+                      <Badge className="ml-2 bg-blue-600 text-white border-none text-[10px] md:text-xs">
+                        {filtroOrigemTipo === 'compras' ? 'NF' : filtroOrigemTipo === 'os' ? 'OS' : 'Orç.'}
                       </Badge>
                     )}
                   </p>
                 </div>
               </div>
               
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={() => setIsBaixaModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                 >
-                  <ArrowDownCircle className="w-4 h-4" />
-                  Registrar Baixa
+                  <ArrowDownCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Baixa</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => setIsRenegociarModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                 >
-                  <FileSignature className="w-4 h-4" />
-                  Renegociar
+                  <FileSignature className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Renegociar</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => openModal()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
                 >
-                  <Plus className="w-4 h-4" />
-                  Novo Lançamento
+                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Novo</span>
                 </Button>
               </div>
             </div>
@@ -606,33 +606,33 @@ export default function MovimentacaoFinanceiraPage() {
         </div>
 
         {/* Conteúdo Principal */}
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total Entradas</p>
-                  <div className="text-2xl font-bold text-green-600">{formatCurrency(totais.totalEntradas)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Entradas</p>
+                  <div className="text-sm md:text-2xl font-bold text-green-600">{formatCurrency(totais.totalEntradas)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total Saídas</p>
-                  <div className="text-2xl font-bold text-red-600">{formatCurrency(totais.totalSaidas)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Saídas</p>
+                  <div className="text-sm md:text-2xl font-bold text-red-600">{formatCurrency(totais.totalSaidas)}</div>
                 </div>
               </CardContent>
             </Card>
 
             <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Saldo do Período</p>
-                  <div className={`text-2xl font-bold ${totais.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Saldo</p>
+                  <div className={`text-sm md:text-2xl font-bold ${totais.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
                     {formatCurrency(totais.saldo)}
                   </div>
                 </div>
@@ -640,17 +640,17 @@ export default function MovimentacaoFinanceiraPage() {
             </Card>
 
             <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-6">
+              <CardContent className="p-3 md:p-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Total Pendente</p>
-                  <div className="text-2xl font-bold text-yellow-600">{formatCurrency(totais.totalPendente)}</div>
+                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Pendente</p>
+                  <div className="text-sm md:text-2xl font-bold text-yellow-600">{formatCurrency(totais.totalPendente)}</div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-4 md:mb-6">
             <AdvancedSearchFilters
               entityName="movimentacao_financeira"
               searchFields={financeiroSearchFields}
@@ -668,16 +668,16 @@ export default function MovimentacaoFinanceiraPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Tipo</TableHead>
-                    <TableHead className="text-white font-semibold">Contato</TableHead>
-                    <TableHead className="text-white font-semibold">Num. Doc.</TableHead>
-                    <TableHead className="text-white font-semibold">Histórico</TableHead>
-                    <TableHead className="text-white font-semibold">Vencimento</TableHead>
-                    <TableHead className="text-white font-semibold">Desconto</TableHead>
-                    <TableHead className="text-white font-semibold">Valor Total</TableHead>
-                    <TableHead className="text-white font-semibold">Origem</TableHead>
-                    <TableHead className="text-white font-semibold">Baixa</TableHead>
-                    <TableHead className="text-white font-semibold text-right w-[80px]">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden sm:table-cell">Tipo</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4">Contato</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden lg:table-cell">Nº Doc.</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden md:table-cell">Histórico</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden xl:table-cell">Vencimento</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden 2xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden xl:table-cell">Origem</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm px-2 md:px-4 hidden lg:table-cell">Baixa</TableHead>
+                    <TableHead className="text-white font-semibold text-center text-xs md:text-sm px-2 md:px-4">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -688,63 +688,63 @@ export default function MovimentacaoFinanceiraPage() {
                   ) : (
                     movimentacoesFiltradas.map((mov) => (
                       <TableRow key={mov.id} className="hover:bg-slate-50 transition-colors">
-                        <TableCell className={`font-semibold ${tipoColors[mov.tipo_movimentacao]}`}>
+                        <TableCell className={`font-semibold ${tipoColors[mov.tipo_movimentacao]} px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden sm:table-cell`}>
                           {tipoLabels[mov.tipo_movimentacao]}
                         </TableCell>
-                        <TableCell className="text-slate-900">{getContatoNome(mov)}</TableCell>
-                        <TableCell className="font-mono text-sm text-slate-600">{mov.numero_documento || '-'}</TableCell>
-                        <TableCell className="max-w-xs truncate text-slate-900">{mov.historico}</TableCell>
-                        <TableCell className="text-slate-900">{formatDate(mov.data_vencimento)}</TableCell>
-                        <TableCell className="text-red-600 font-medium">
+                        <TableCell className="text-slate-900 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm max-w-[100px] md:max-w-xs truncate">{getContatoNome(mov)}</TableCell>
+                        <TableCell className="font-mono text-xs md:text-sm text-slate-600 px-2 md:px-4 py-1.5 md:py-3 hidden lg:table-cell">{mov.numero_documento || '-'}</TableCell>
+                        <TableCell className="max-w-[120px] md:max-w-xs truncate text-slate-900 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden md:table-cell">{mov.historico}</TableCell>
+                        <TableCell className="text-slate-900 px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden xl:table-cell whitespace-nowrap">{formatDate(mov.data_vencimento)}</TableCell>
+                        <TableCell className="text-red-600 font-medium px-2 md:px-4 py-1.5 md:py-3 text-xs md:text-sm hidden 2xl:table-cell">
                           {mov.desconto ? `- ${formatCurrency(mov.desconto)}` : '-'}
                         </TableCell>
-                        <TableCell className="font-semibold text-lg text-slate-900">{formatCurrency(mov.valor_total)}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs">
+                        <TableCell className="font-semibold text-sm md:text-lg text-slate-900 px-2 md:px-4 py-1.5 md:py-3">{formatCurrency(mov.valor_total)}</TableCell>
+                        <TableCell className="px-2 md:px-4 py-1.5 md:py-3 hidden xl:table-cell">
+                          <Badge variant="outline" className="text-[10px] md:text-xs">
                             {origemLabels[mov.origem] || 'Manual'}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4 py-1.5 md:py-3 hidden lg:table-cell">
                           {mov.status === 'pago' && mov.data_baixa ? (
-                            <span className="text-xs text-gray-600">
+                            <span className="text-[10px] md:text-xs text-gray-600">
                               {formatDate(mov.data_baixa)}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400">-</span>
+                            <span className="text-[10px] md:text-xs text-gray-400">-</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center px-2 md:px-4 py-1.5 md:py-3">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8">
-                                <MoreVertical className="h-4 w-4" />
+                              <Button variant="ghost" size="icon" className="h-8 w-8 md:h-9 md:w-9">
+                                <MoreVertical className="h-4 w-4 md:h-[18px] md:w-[18px]" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48">
-                              <DropdownMenuItem onClick={() => openDetailView(mov)}>
-                                <Eye className="w-4 h-4 mr-2" />
+                            <DropdownMenuContent align="end" className="w-40 md:w-48">
+                              <DropdownMenuItem onClick={() => openDetailView(mov)} className="text-xs md:text-sm">
+                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
                                 Visualizar
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => openModal(mov)}>
-                                <Edit className="w-4 h-4 mr-2" />
+                              <DropdownMenuItem onClick={() => openModal(mov)} className="text-xs md:text-sm">
+                                <Edit className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
                                 onClick={() => openBaixaFromRow(mov)}
-                                className="text-emerald-700"
+                                className="text-emerald-700 text-xs md:text-sm"
                               >
-                                <ArrowDownCircle className="w-4 h-4 mr-2" />
-                                Registrar Baixa
+                                <ArrowDownCircle className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
+                                Baixa
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => {
                                   setViewingMovimentacao(mov);
                                   setIsRenegociarModalOpen(true);
                                 }}
-                                className="text-amber-700"
+                                className="text-amber-700 text-xs md:text-sm"
                               >
-                                <FileSignature className="w-4 h-4 mr-2" />
+                                <FileSignature className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
                                 Renegociar
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
@@ -753,9 +753,9 @@ export default function MovimentacaoFinanceiraPage() {
                                   setViewingMovimentacao(mov);
                                   setIsExcluirModalOpen(true);
                                 }}
-                                className="text-red-600"
+                                className="text-red-600 text-xs md:text-sm"
                               >
-                                <XCircle className="w-4 h-4 mr-2" />
+                                <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4 mr-2" />
                                 Excluir
                               </DropdownMenuItem>
                             </DropdownMenuContent>
