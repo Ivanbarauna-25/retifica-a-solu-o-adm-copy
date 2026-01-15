@@ -537,29 +537,30 @@ export default function OrcamentosPage() {
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm whitespace-nowrap">
                             {formatDate(orcamento.data_orcamento)}
                           </TableCell>
-                          <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{cliente?.nome || "-"}</TableCell>
+                          <TableCell className="text-slate-900 mx-auto px-6 py-2 text-xs align-middle [&:has([role=checkbox])]:pr-0 md:py-3 md:text-sm max-w-[100px] md:max-w-none truncate">{cliente?.nome || "-"}</TableCell>
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden md:table-cell">{veiculoTexto}</TableCell>
                           <TableCell className="text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden lg:table-cell">{vendedor?.nome || "-"}</TableCell>
                           <TableCell className="font-semibold text-slate-900 py-2 md:py-3 text-xs md:text-sm hidden md:table-cell">
                             {formatCurrency(orcamento.valor_total || 0)}
                           </TableCell>
-                          <TableCell className="py-2 md:py-3 hidden sm:table-cell">
-                            <Badge className={`${statusConfig[orcamento.status]} text-[10px] md:text-xs px-1.5 md:px-2`}>
+                          <TableCell className="mx-auto pr-1 pl-2 align-middle [&:has([role=checkbox])]:pr-0 md:py-3 hidden sm:table-cell">
+                            <Badge className="bg-slate-50 text-slate-950 mx-auto px-1.5 py-0.5 text-xs font-semibold rounded-full inline-flex items-center border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-primary/80 md:text-xs md:px-2">
                               {statusLabels[orcamento.status]}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-slate-600 py-2 md:py-3 max-w-[200px] truncate text-xs md:text-sm hidden xl:table-cell" title={orcamento.observacoes}>
                             {orcamento.observacoes || "-"}
                           </TableCell>
-                          <TableCell className="py-2 md:py-3">
-                            <div className="flex items-center justify-center gap-0.5 md:gap-2">
+                          <TableCell className="mx-auto pt-1 pr-3 pb-1 pl-3 align-middle [&:has([role=checkbox])]:pr-0 md:py-3">
+                            <div className="mx-auto flex items-center justify-center gap-0.5 md:gap-2">
                               <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleView(orcamento)}
-                              title="Visualizar"
-                              className="hover:bg-blue-50 text-blue-600 h-7 w-7 md:h-8 md:w-8 p-0">
-                                <Eye className="w-4 h-4" />
+                              title="Visualizar" className="text-blue-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8">
+
+
+                                <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <Button
                               variant="ghost"
@@ -567,12 +568,13 @@ export default function OrcamentosPage() {
                               onClick={() => handleEdit(orcamento)}
                               title="Editar"
                               className="hover:bg-amber-50 text-amber-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
-                                <Pencil className="w-4 h-4" />
+
+                                <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                               <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
+                                <DropdownMenuTrigger asChild className="text-slate-600 mx-auto p-0 text-sm font-medium rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 hover:bg-slate-100 h-7 w-7 md:h-8 md:w-8">
                                   <Button variant="ghost" size="sm" className="hover:bg-slate-100 text-slate-600 h-7 w-7 md:h-8 md:w-8 p-0">
-                                    <MoreVertical className="w-4 h-4" />
+                                    <MoreVertical className="mx-auto lucide lucide-ellipsis-vertical w-3.5 h-3.5 md:w-4 md:h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
