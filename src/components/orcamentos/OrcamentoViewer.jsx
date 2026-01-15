@@ -366,7 +366,7 @@ export default function OrcamentoViewer({
           </section>
           
           {/* Ações Mobile */}
-          <div className="flex md:hidden gap-2 px-3 pt-3 overflow-x-auto">
+          <div className="flex md:hidden gap-2 px-3 pt-3 overflow-x-auto pb-1">
             <Button
               size="sm"
               variant="outline"
@@ -388,16 +388,36 @@ export default function OrcamentoViewer({
               <Printer className="w-3.5 h-3.5" />
               Imprimir
             </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setShowDespesas(true)}
+              className="h-8 text-xs gap-1 flex-shrink-0 text-amber-600 border-amber-300"
+            >
+              <DollarSign className="w-3.5 h-3.5" />
+              Despesas
+            </Button>
             {currentOrcamento.status === "pendente" && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => openConfirm("aprovar", "Aprovar", `Aprovar orçamento ${currentOrcamento.numero_orcamento}?`)}
-                className="h-8 text-xs gap-1 flex-shrink-0 text-green-600 border-green-300"
-              >
-                <CheckCircle className="w-3.5 h-3.5" />
-                Aprovar
-              </Button>
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => openConfirm("aprovar", "Aprovar", `Aprovar orçamento ${currentOrcamento.numero_orcamento}?`)}
+                  className="h-8 text-xs gap-1 flex-shrink-0 text-green-600 border-green-300"
+                >
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  Aprovar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => openConfirm("rejeitar", "Rejeitar", `Rejeitar orçamento ${currentOrcamento.numero_orcamento}?`)}
+                  className="h-8 text-xs gap-1 flex-shrink-0 text-red-600 border-red-300"
+                >
+                  <XCircle className="w-3.5 h-3.5" />
+                  Rejeitar
+                </Button>
+              </>
             )}
             {currentOrcamento.status === "aprovado" && (
               <Button
@@ -408,6 +428,17 @@ export default function OrcamentoViewer({
               >
                 <ArrowRight className="w-3.5 h-3.5" />
                 Gerar OS
+              </Button>
+            )}
+            {currentOrcamento.status !== "cancelado" && currentOrcamento.status !== "convertido" && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => openConfirm("cancelar", "Cancelar", `Cancelar orçamento ${currentOrcamento.numero_orcamento}?`)}
+                className="h-8 text-xs gap-1 flex-shrink-0 text-zinc-600 border-zinc-300"
+              >
+                <Ban className="w-3.5 h-3.5" />
+                Cancelar
               </Button>
             )}
           </div>
