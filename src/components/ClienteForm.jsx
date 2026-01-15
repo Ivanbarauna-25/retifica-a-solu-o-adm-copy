@@ -127,117 +127,120 @@ export default function ClienteForm({ isOpen, cliente, onSave, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-              <Search className="w-5 h-5 text-white" />
+      <DialogContent className="w-[95vw] md:max-w-3xl p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
+          <DialogTitle className="flex items-center gap-2 md:gap-3 text-white">
+            <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+              <Search className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold">{cliente ? "Editar Cliente" : "Novo Cliente"}</h2>
-              <p className="text-xs text-slate-300 mt-0.5">Preencha os dados do cliente</p>
+              <h2 className="text-sm md:text-lg font-semibold">{cliente ? "Editar Cliente" : "Novo Cliente"}</h2>
+              <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">Preencha os dados do cliente</p>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="p-6 bg-slate-100/50 space-y-4">
+        <form onSubmit={handleSubmit} className="p-3 md:p-6 bg-slate-100/50 space-y-3 md:space-y-4 overflow-y-auto flex-1">
           {/* Dados básicos */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="bg-slate-100 border-b border-slate-200 px-4 py-3">
-              <h3 className="font-bold text-slate-800 text-sm">Dados Básicos</h3>
+            <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-4 py-2 md:py-3">
+              <h3 className="font-bold text-slate-800 text-xs md:text-sm">Dados Básicos</h3>
             </div>
-            <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-3 md:p-4 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <div>
-              <Label htmlFor="nome" className="text-sm font-semibold text-slate-700">Nome</Label>
+              <Label htmlFor="nome" className="text-xs md:text-sm font-semibold text-slate-700">Nome</Label>
               <Input
                 id="nome"
                 placeholder="Nome completo"
                 value={data.nome}
                 onChange={(e) => handleChange("nome", e.target.value)}
                 required
+                className="h-9 md:h-10 text-xs md:text-sm mt-1"
               />
             </div>
             <div>
-              <Label htmlFor="cpf_cnpj">CPF/CNPJ</Label>
-              <Input id="cpf_cnpj" value={data.cpf_cnpj} onChange={(e) => handleChange("cpf_cnpj", e.target.value)} />
+              <Label htmlFor="cpf_cnpj" className="text-xs md:text-sm">CPF/CNPJ</Label>
+              <Input id="cpf_cnpj" value={data.cpf_cnpj} onChange={(e) => handleChange("cpf_cnpj", e.target.value)} className="h-9 md:h-10 text-xs md:text-sm mt-1" />
             </div>
             <div>
-              <Label htmlFor="telefone">Telefone</Label>
-              <Input id="telefone" value={data.telefone} onChange={(e) => handleChange("telefone", e.target.value)} required />
+              <Label htmlFor="telefone" className="text-xs md:text-sm">Telefone</Label>
+              <Input id="telefone" value={data.telefone} onChange={(e) => handleChange("telefone", e.target.value)} required className="h-9 md:h-10 text-xs md:text-sm mt-1" />
             </div>
             <div>
-              <Label htmlFor="email" className="text-sm font-semibold text-slate-700">Email</Label>
-              <Input id="email" type="email" value={data.email} onChange={(e) => handleChange("email", e.target.value)} className="mt-1.5" />
+              <Label htmlFor="email" className="text-xs md:text-sm font-semibold text-slate-700">Email</Label>
+              <Input id="email" type="email" value={data.email} onChange={(e) => handleChange("email", e.target.value)} className="h-9 md:h-10 text-xs md:text-sm mt-1" />
             </div>
           </div>
           </div>
 
           {/* Endereço */}
           <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="bg-slate-100 border-b border-slate-200 px-4 py-3">
-              <h3 className="font-bold text-slate-800 text-sm">Endereço</h3>
+            <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-4 py-2 md:py-3">
+              <h3 className="font-bold text-slate-800 text-xs md:text-sm">Endereço</h3>
             </div>
-            <div className="p-4 space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="p-3 md:p-4 space-y-2 md:space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
               <div className="md:col-span-1">
-                <Label htmlFor="cep" className="text-sm font-semibold text-slate-700">CEP</Label>
-                <div className="flex gap-2">
+                <Label htmlFor="cep" className="text-xs md:text-sm font-semibold text-slate-700">CEP</Label>
+                <div className="flex gap-1.5 md:gap-2 mt-1">
                   <Input
                     id="cep"
-                    placeholder="Somente números"
+                    placeholder="Números"
                     value={data.cep}
                     onChange={(e) => handleChange("cep", sanitizeCEP(e.target.value))}
+                    className="h-9 md:h-10 text-xs md:text-sm"
                   />
                   <Button
                     type="button"
                     variant="secondary"
                     onClick={buscarCEP}
                     disabled={cepLoading || !data.cep}
-                    className="whitespace-nowrap"
+                    className="whitespace-nowrap h-9 md:h-10 text-xs md:text-sm px-2 md:px-4"
                   >
-                    <Search className="w-4 h-4 mr-1" />
-                    {cepLoading ? "Buscando..." : "Buscar"}
+                    <Search className="w-3.5 h-3.5 md:w-4 md:h-4 md:mr-1" />
+                    <span className="hidden md:inline">{cepLoading ? "Buscando..." : "Buscar"}</span>
                   </Button>
                 </div>
-                {cepError && <p className="text-sm text-red-600 mt-1">{cepError}</p>}
+                {cepError && <p className="text-[10px] md:text-sm text-red-600 mt-1">{cepError}</p>}
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="logradouro">Logradouro</Label>
-                <Input id="logradouro" value={data.logradouro} onChange={(e) => handleChange("logradouro", e.target.value)} />
+                <Label htmlFor="logradouro" className="text-xs md:text-sm">Logradouro</Label>
+                <Input id="logradouro" value={data.logradouro} onChange={(e) => handleChange("logradouro", e.target.value)} className="h-9 md:h-10 text-xs md:text-sm mt-1" />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
               <div>
-                <Label htmlFor="numero">Número</Label>
-                <Input id="numero" value={data.numero} onChange={(e) => handleChange("numero", e.target.value)} />
+                <Label htmlFor="numero" className="text-xs md:text-sm">Número</Label>
+                <Input id="numero" value={data.numero} onChange={(e) => handleChange("numero", e.target.value)} className="h-9 md:h-10 text-xs md:text-sm mt-1" />
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="complemento">Complemento</Label>
-                <Input id="complemento" value={data.complemento} onChange={(e) => handleChange("complemento", e.target.value)} />
+                <Label htmlFor="complemento" className="text-xs md:text-sm">Complemento</Label>
+                <Input id="complemento" value={data.complemento} onChange={(e) => handleChange("complemento", e.target.value)} className="h-9 md:h-10 text-xs md:text-sm mt-1" />
               </div>
               <div>
-                <Label htmlFor="bairro">Bairro</Label>
-                <Input id="bairro" value={data.bairro} onChange={(e) => handleChange("bairro", e.target.value)} />
+                <Label htmlFor="bairro" className="text-xs md:text-sm">Bairro</Label>
+                <Input id="bairro" value={data.bairro} onChange={(e) => handleChange("bairro", e.target.value)} className="h-9 md:h-10 text-xs md:text-sm mt-1" />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3">
               <div className="md:col-span-2">
-                <Label htmlFor="cidade">Cidade</Label>
+                <Label htmlFor="cidade" className="text-xs md:text-sm">Cidade</Label>
                 <Input
                   id="cidade"
                   value={data.cidade}
                   onChange={(e) => handleChange("cidade", e.target.value)}
+                  className="h-9 md:h-10 text-xs md:text-sm mt-1"
                 />
               </div>
               <div>
-                <Label>Estado (UF)</Label>
+                <Label className="text-xs md:text-sm">UF</Label>
                 <Select
                   value={data.uf || undefined}
                   onValueChange={(v) => handleChange("uf", v)}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-9 md:h-10 text-xs md:text-sm mt-1">
                     <SelectValue placeholder="UF" />
                   </SelectTrigger>
                   <SelectContent>
@@ -251,9 +254,9 @@ export default function ClienteForm({ isOpen, cliente, onSave, onClose }) {
           </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-            <Button type="button" variant="outline" onClick={onClose} className="border-slate-300 text-slate-700 hover:bg-slate-50">Cancelar</Button>
-            <Button type="submit" disabled={saving} className="bg-slate-800 hover:bg-slate-900 text-white">{saving ? "Salvando..." : "Salvar"}</Button>
+          <div className="flex items-center justify-end gap-2 md:gap-3 pt-3 md:pt-4 border-t border-slate-200 flex-shrink-0">
+            <Button type="button" variant="outline" onClick={onClose} className="border-slate-300 text-slate-700 hover:bg-slate-50 h-8 md:h-10 text-xs md:text-sm px-3 md:px-4">Cancelar</Button>
+            <Button type="submit" disabled={saving} className="bg-slate-800 hover:bg-slate-900 text-white h-8 md:h-10 text-xs md:text-sm px-3 md:px-4">{saving ? "Salvando..." : "Salvar"}</Button>
           </div>
         </form>
       </DialogContent>

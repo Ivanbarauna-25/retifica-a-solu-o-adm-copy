@@ -303,28 +303,28 @@ export default function ClientesPage() {
                           </div>
                         </TableCell>
                         <TableCell className="no-print text-center">
-                          <div className="flex items-center justify-center gap-0.5 md:gap-2">
+                          <div className="flex items-center justify-center gap-0.5 md:gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => openVeiculoForm(null, cliente)}
                               title="Adicionar Veículo"
-                              className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-blue-50 text-blue-600">
-                              <Car className="h-4 w-4" />
+                              className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-blue-50 text-blue-600">
+                              <Car className="w-4 h-4 md:w-[18px] md:h-[18px]" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => openClienteForm(cliente)}
-                              className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-slate-100 text-slate-600 hidden sm:flex">
-                              <Edit className="h-4 w-4" />
+                              className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-slate-100 text-slate-600 hidden sm:flex">
+                              <Edit className="w-4 h-4 md:w-[18px] md:h-[18px]" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteCliente(cliente.id)}
-                              className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex">
-                              <Trash2 className="h-4 w-4" />
+                              className="h-8 w-8 md:h-9 md:w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex">
+                              <Trash2 className="w-4 h-4 md:w-[18px] md:h-[18px]" />
                             </Button>
                           </div>
                         </TableCell>
