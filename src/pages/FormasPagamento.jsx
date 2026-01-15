@@ -93,13 +93,13 @@ export default function FormasPagamentoPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white">Nome</TableHead>
-                    <TableHead className="text-white">Tipo</TableHead>
-                    <TableHead className="text-white">Taxa %</TableHead>
-                    <TableHead className="text-white">Taxa Fixa</TableHead>
-                    <TableHead className="text-white">Prazo Recebimento</TableHead>
-                    <TableHead className="text-white">Status</TableHead>
-                    <TableHead className="text-white w-[120px] no-print">Ações</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden md:table-cell">Tipo</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden lg:table-cell">Taxa %</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden xl:table-cell">Taxa Fixa</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden sm:table-cell">Prazo</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white w-[80px] md:w-[120px] no-print text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -110,23 +110,23 @@ export default function FormasPagamentoPage() {
                   ) : (
                     formasPagamento.map((forma) => (
                       <TableRow key={forma.id}>
-                        <TableCell className="font-medium">{forma.nome}</TableCell>
-                        <TableCell>{tiposLabels[forma.tipo] || forma.tipo}</TableCell>
-                        <TableCell>{formatPercentage(forma.taxa_percentual)}</TableCell>
-                        <TableCell>{formatCurrency(forma.taxa_fixa)}</TableCell>
-                        <TableCell>{forma.prazo_recebimento || 0} dias</TableCell>
-                        <TableCell>
-                          <Badge variant={forma.ativa ? 'default' : 'secondary'}>
+                        <TableCell className="font-medium text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{forma.nome}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden md:table-cell">{tiposLabels[forma.tipo] || forma.tipo}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden lg:table-cell">{formatPercentage(forma.taxa_percentual)}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden xl:table-cell">{formatCurrency(forma.taxa_fixa)}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden sm:table-cell">{forma.prazo_recebimento || 0}d</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant={forma.ativa ? 'default' : 'secondary'} className="text-[10px] md:text-xs">
                             {forma.ativa ? 'Ativa' : 'Inativa'}
                           </Badge>
                         </TableCell>
                         <TableCell className="no-print">
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(forma)}>
-                              <Edit className="h-4 w-4" />
+                          <div className="flex gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openForm(forma)} className="h-7 w-7 md:h-8 md:w-8 p-0">
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(forma.id)} className="text-red-600">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(forma.id)} className="text-red-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>

@@ -220,11 +220,11 @@ export default function Categorias() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
-                    <TableHead className="text-white font-semibold">Nome</TableHead>
-                    <TableHead className="text-white font-semibold">Tipo</TableHead>
-                    <TableHead className="text-white font-semibold">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold">Situação</TableHead>
-                    <TableHead className="text-white font-semibold text-center w-[120px]">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Tipo</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Descrição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Situação</TableHead>
+                    <TableHead className="text-white font-semibold text-center w-[80px] md:w-[120px] text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -243,30 +243,30 @@ export default function Categorias() {
                   ) : (
                     categoriasFiltradas.map((cat) => (
                       <TableRow key={cat.id} className="hover:bg-slate-50">
-                        <TableCell className="font-medium text-slate-900">{cat.nome}</TableCell>
+                        <TableCell className="font-medium text-slate-900 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{cat.nome}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={`${tipoColors[cat.tipo]} font-normal border`}>
+                          <Badge variant="outline" className={`${tipoColors[cat.tipo]} font-normal border text-[10px] md:text-xs`}>
                             {tipoLabels[cat.tipo]}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-slate-600">{cat.descricao || "—"}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={cat.ativa ? "bg-slate-100 text-slate-800 border-slate-200" : "bg-gray-100 text-gray-500 border-gray-200"}>
+                        <TableCell className="text-slate-600 text-xs md:text-sm hidden md:table-cell max-w-[200px] truncate">{cat.descricao || "—"}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline" className={`text-[10px] md:text-xs ${cat.ativa ? "bg-slate-100 text-slate-800 border-slate-200" : "bg-gray-100 text-gray-500 border-gray-200"}`}>
                             {cat.ativa ? "Ativa" : "Inativa"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <div className="flex justify-center gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(cat)} className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-4 w-4" />
+                          <div className="flex justify-center gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openForm(cat)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex"
                               onClick={() => handleDelete(cat.id)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>

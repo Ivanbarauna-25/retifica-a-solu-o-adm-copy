@@ -153,13 +153,13 @@ export default function CondicoesPagamentoPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white">Nome</TableHead>
-                    <TableHead className="text-white">Tipo</TableHead>
-                    <TableHead className="text-white">Parcelas</TableHead>
-                    <TableHead className="text-white">Intervalo</TableHead>
-                    <TableHead className="text-white">Desconto</TableHead>
-                    <TableHead className="text-white">Juros</TableHead>
-                    <TableHead className="text-white w-[120px]">Ações</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm">Tipo</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden md:table-cell">Parcelas</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden lg:table-cell">Intervalo</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-white text-xs md:text-sm hidden xl:table-cell">Juros</TableHead>
+                    <TableHead className="text-white w-[80px] md:w-[120px] text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -170,23 +170,23 @@ export default function CondicoesPagamentoPage() {
                   ) : (
                     condicoesFiltradas.map((condicao) => (
                       <TableRow key={condicao.id}>
-                        <TableCell className="font-medium">{condicao.nome}</TableCell>
+                        <TableCell className="font-medium text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{condicao.nome}</TableCell>
                         <TableCell>
-                          <Badge className={tipoColors[condicao.tipo] || 'bg-gray-100 text-gray-800'}>
+                          <Badge className={`${tipoColors[condicao.tipo] || 'bg-gray-100 text-gray-800'} text-[10px] md:text-xs`}>
                             {tipoLabels[condicao.tipo] || condicao.tipo}
                           </Badge>
                         </TableCell>
-                        <TableCell>{condicao.num_parcelas || 1}</TableCell>
-                        <TableCell>{condicao.intervalo_dias || 0} dias</TableCell>
-                        <TableCell>{formatPercentual(condicao.desconto_percentual)}</TableCell>
-                        <TableCell>{formatPercentual(condicao.juros_percentual)}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden md:table-cell">{condicao.num_parcelas || 1}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden lg:table-cell">{condicao.intervalo_dias || 0}d</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden xl:table-cell">{formatPercentual(condicao.desconto_percentual)}</TableCell>
+                        <TableCell className="text-xs md:text-sm hidden xl:table-cell">{formatPercentual(condicao.juros_percentual)}</TableCell>
                         <TableCell>
-                          <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(condicao)}>
-                              <Edit className="h-4 w-4" />
+                          <div className="flex gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="sm" onClick={() => openForm(condicao)} className="h-7 w-7 md:h-8 md:w-8 p-0">
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(condicao.id)} className="text-red-600">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="sm" onClick={() => handleDelete(condicao.id)} className="text-red-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>

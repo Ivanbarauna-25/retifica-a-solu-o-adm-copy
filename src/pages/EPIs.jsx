@@ -323,14 +323,14 @@ export default function EPIsPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Nome</TableHead>
-                    <TableHead className="text-white font-semibold">CA</TableHead>
-                    <TableHead className="text-white font-semibold">Categoria</TableHead>
-                    <TableHead className="text-white font-semibold">Unidade</TableHead>
-                    <TableHead className="text-white font-semibold">Vida Útil</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Preço Ref.</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-right text-white font-semibold">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">CA</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Categoria</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Unid.</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Vida Útil</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden md:table-cell">Preço</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-right text-white font-semibold text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -349,36 +349,36 @@ export default function EPIsPage() {
                   ) : (
                     episFiltrados.map((epi) => (
                       <TableRow key={epi.id} className="hover:bg-slate-50 bg-white">
-                        <TableCell className="font-medium text-black bg-white">{epi.nome}</TableCell>
-                        <TableCell className="font-mono text-sm text-black bg-white">{epi.numero_ca || '-'}</TableCell>
-                        <TableCell className="text-black bg-white">
+                        <TableCell className="font-medium text-black bg-white text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{epi.nome}</TableCell>
+                        <TableCell className="font-mono text-xs md:text-sm text-black bg-white hidden sm:table-cell">{epi.numero_ca || '-'}</TableCell>
+                        <TableCell className="text-black bg-white text-xs md:text-sm hidden lg:table-cell max-w-[150px] truncate">
                           {categoriaLabels[epi.categoria] || epi.categoria || '-'}
                         </TableCell>
-                        <TableCell className="text-black bg-white">{epi.unidade || 'UN'}</TableCell>
-                        <TableCell className="text-black bg-white">
-                          {epi.vida_util_meses ? `${epi.vida_util_meses} meses` : '-'}
+                        <TableCell className="text-black bg-white text-xs md:text-sm hidden xl:table-cell">{epi.unidade || 'UN'}</TableCell>
+                        <TableCell className="text-black bg-white text-xs md:text-sm hidden xl:table-cell">
+                          {epi.vida_util_meses ? `${epi.vida_util_meses}m` : '-'}
                         </TableCell>
-                        <TableCell className="text-right text-black bg-white font-semibold">
+                        <TableCell className="text-right text-black bg-white font-semibold text-xs md:text-sm hidden md:table-cell">
                           {epi.preco_referencia ? formatCurrency(epi.preco_referencia) : '-'}
                         </TableCell>
-                        <TableCell className="text-black bg-white">
-                          <Badge className={statusColors[epi.status] || statusColors.ativo}>
+                        <TableCell className="text-black bg-white hidden sm:table-cell">
+                          <Badge className={`${statusColors[epi.status] || statusColors.ativo} text-[10px] md:text-xs`}>
                             {epi.status === 'inativo' ? 'Inativo' : 'Ativo'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right text-black bg-white">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleView(epi)} title="Visualizar">
-                              <Eye className="w-4 h-4" />
+                          <div className="flex justify-end gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => handleView(epi)} title="Visualizar" className="h-7 w-7 md:h-8 md:w-8">
+                              <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             </Button>
                             {canEditEPI && (
-                              <Button variant="ghost" size="icon" onClick={() => handleEdit(epi)} title="Editar">
-                                <Edit className="w-4 h-4" />
+                              <Button variant="ghost" size="icon" onClick={() => handleEdit(epi)} title="Editar" className="h-7 w-7 md:h-8 md:w-8 hidden sm:flex">
+                                <Edit className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                             )}
                             {canDeleteEPI && (
-                              <Button variant="ghost" size="icon" onClick={() => handleDelete(epi)} title="Excluir" className="text-red-600 hover:text-red-700">
-                                <Trash2 className="w-4 h-4" />
+                              <Button variant="ghost" size="icon" onClick={() => handleDelete(epi)} title="Excluir" className="text-red-600 hover:text-red-700 h-7 w-7 md:h-8 md:w-8 hidden md:flex">
+                                <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                               </Button>
                             )}
                           </div>

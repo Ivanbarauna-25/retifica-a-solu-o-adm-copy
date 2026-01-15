@@ -219,13 +219,13 @@ export default function FornecedoresPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-700 hover:bg-slate-700">
-                    <TableHead className="text-white font-semibold">Nome</TableHead>
-                    <TableHead className="text-white font-semibold">CNPJ</TableHead>
-                    <TableHead className="text-white font-semibold">Contato</TableHead>
-                    <TableHead className="text-white font-semibold">Email</TableHead>
-                    <TableHead className="text-white font-semibold">Categoria</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold text-center w-[120px]">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">CNPJ</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Contato</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Email</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Categoria</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-center w-[80px] md:w-[120px] text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -236,37 +236,37 @@ export default function FornecedoresPage() {
                   ) : (
                     fornecedoresFiltrados.map((fornecedor) => (
                       <TableRow key={fornecedor.id} className="hover:bg-slate-50">
-                        <TableCell className="font-medium text-slate-900">{fornecedor.nome}</TableCell>
-                        <TableCell className="text-slate-600">{fornecedor.cnpj}</TableCell>
-                        <TableCell className="text-slate-600">{fornecedor.contato}</TableCell>
-                        <TableCell className="text-slate-600">{fornecedor.email}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`${categoriaColors[fornecedor.categoria]} border font-normal`}>
+                        <TableCell className="font-medium text-slate-900 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{fornecedor.nome}</TableCell>
+                        <TableCell className="text-slate-600 text-xs md:text-sm hidden md:table-cell">{fornecedor.cnpj}</TableCell>
+                        <TableCell className="text-slate-600 text-xs md:text-sm">{fornecedor.contato}</TableCell>
+                        <TableCell className="text-slate-600 text-xs md:text-sm hidden lg:table-cell max-w-[150px] truncate">{fornecedor.email}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline" className={`${categoriaColors[fornecedor.categoria]} border font-normal text-[10px] md:text-xs`}>
                             {fornecedor.categoria}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`${statusColors[fornecedor.status]} border font-normal`}>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline" className={`${statusColors[fornecedor.status]} border font-normal text-[10px] md:text-xs`}>
                             {fornecedor.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <div className="flex justify-center gap-2">
+                          <div className="flex justify-center gap-0.5 md:gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => openForm(fornecedor)}
-                              className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600"
+                              className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDelete(fornecedor.id)}
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>

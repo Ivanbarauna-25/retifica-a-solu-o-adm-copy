@@ -241,13 +241,13 @@ export default function ClientesPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-800 hover:bg-slate-800">
-                    <TableHead className="text-white font-semibold">Nome</TableHead>
-                    <TableHead className="text-white font-semibold">CPF/CNPJ</TableHead>
-                    <TableHead className="text-white font-semibold">Telefone</TableHead>
-                    <TableHead className="text-white font-semibold">Email</TableHead>
-                    <TableHead className="text-white font-semibold">Cidade/UF</TableHead>
-                    <TableHead className="text-white font-semibold">Veículos</TableHead>
-                    <TableHead className="text-white font-semibold w-[150px] text-center no-print">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">CPF/CNPJ</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Telefone</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Email</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Cidade/UF</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Veículos</TableHead>
+                    <TableHead className="text-white font-semibold w-[80px] md:w-[150px] text-center no-print text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -266,20 +266,20 @@ export default function ClientesPage() {
                   ) : (
                     clientesFiltrados.map((cliente) => (
                       <TableRow key={cliente.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium text-slate-900">{cliente.nome}</TableCell>
-                        <TableCell className="text-gray-600">{cliente.cpf_cnpj}</TableCell>
-                        <TableCell className="text-gray-600">{cliente.telefone}</TableCell>
-                        <TableCell className="text-gray-600">{cliente.email}</TableCell>
-                        <TableCell className="text-gray-600">
+                        <TableCell className="font-medium text-slate-900 text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{cliente.nome}</TableCell>
+                        <TableCell className="text-gray-600 text-xs md:text-sm hidden sm:table-cell">{cliente.cpf_cnpj}</TableCell>
+                        <TableCell className="text-gray-600 text-xs md:text-sm">{cliente.telefone}</TableCell>
+                        <TableCell className="text-gray-600 text-xs md:text-sm hidden md:table-cell max-w-[150px] truncate">{cliente.email}</TableCell>
+                        <TableCell className="text-gray-600 text-xs md:text-sm hidden lg:table-cell">
                           {cliente.cidade ? `${cliente.cidade}${cliente.uf ? '/' + cliente.uf : ''}` : '-'}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden xl:table-cell">
                           <div className="flex flex-col gap-1">
                             {getVeiculosDoCliente(cliente.id).map(veiculo => (
                               <div
                                 key={veiculo.id}
-                                className="text-sm bg-slate-50 border border-slate-200 px-3 py-2 rounded-md flex items-center justify-between hover:bg-slate-100 transition-colors">
-                                <span className="font-medium text-slate-700">
+                                className="text-xs bg-slate-50 border border-slate-200 px-2 py-1.5 rounded-md flex items-center justify-between hover:bg-slate-100 transition-colors">
+                                <span className="font-medium text-slate-700 truncate">
                                   {veiculo.marca} {veiculo.modelo} <span className="text-slate-500">- {veiculo.placa}</span>
                                 </span>
                                 <div className="flex gap-1 no-print">
@@ -303,28 +303,28 @@ export default function ClientesPage() {
                           </div>
                         </TableCell>
                         <TableCell className="no-print text-center">
-                          <div className="flex items-center justify-center gap-2">
+                          <div className="flex items-center justify-center gap-0.5 md:gap-2">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => openVeiculoForm(null, cliente)}
                               title="Adicionar Veículo"
-                              className="h-8 w-8 p-0 hover:bg-blue-50 text-blue-600">
-                              <Car className="h-4 w-4" />
+                              className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-blue-50 text-blue-600">
+                              <Car className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => openClienteForm(cliente)}
-                              className="h-8 w-8 p-0 hover:bg-slate-100 text-slate-600">
-                              <Edit className="h-4 w-4" />
+                              className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-slate-100 text-slate-600 hidden sm:flex">
+                              <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleDeleteCliente(cliente.id)}
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
-                              <Trash2 className="h-4 w-4" />
+                              className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex">
+                              <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                             </Button>
                           </div>
                         </TableCell>

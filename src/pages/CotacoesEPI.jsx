@@ -317,13 +317,13 @@ export default function CotacoesEPIPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Número</TableHead>
-                    <TableHead className="text-white font-semibold">Data</TableHead>
-                    <TableHead className="text-white font-semibold">Fornecedor</TableHead>
-                    <TableHead className="text-white font-semibold text-center">Itens</TableHead>
-                    <TableHead className="text-white font-semibold text-right">Valor Total</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-right text-white font-semibold">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Número</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Fornecedor</TableHead>
+                    <TableHead className="text-white font-semibold text-center text-xs md:text-sm hidden md:table-cell">Itens</TableHead>
+                    <TableHead className="text-white font-semibold text-right text-xs md:text-sm hidden lg:table-cell">Valor</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-right text-white font-semibold text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -342,38 +342,38 @@ export default function CotacoesEPIPage() {
                   ) : (
                     cotacoesFiltradas.map((cotacao) => (
                       <TableRow key={cotacao.id} className="hover:bg-slate-50 bg-white">
-                        <TableCell className="font-medium text-black bg-white">
+                        <TableCell className="font-medium text-black bg-white text-xs md:text-sm">
                           {cotacao.numero || `COT-${cotacao.id.substring(0, 6).toUpperCase()}`}
                         </TableCell>
-                        <TableCell className="text-black bg-white">{formatDate(cotacao.data_cotacao)}</TableCell>
-                        <TableCell className="text-black bg-white">{getFornecedorNome(cotacao.fornecedor_id)}</TableCell>
-                        <TableCell className="text-center text-black bg-white">{cotacao.itens?.length || 0}</TableCell>
-                        <TableCell className="text-right text-black bg-white font-semibold">
+                        <TableCell className="text-black bg-white text-xs md:text-sm hidden sm:table-cell">{formatDate(cotacao.data_cotacao)}</TableCell>
+                        <TableCell className="text-black bg-white text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{getFornecedorNome(cotacao.fornecedor_id)}</TableCell>
+                        <TableCell className="text-center text-black bg-white text-xs md:text-sm hidden md:table-cell">{cotacao.itens?.length || 0}</TableCell>
+                        <TableCell className="text-right text-black bg-white font-semibold text-xs md:text-sm hidden lg:table-cell">
                           {cotacao.valor_total ? formatCurrency(cotacao.valor_total) : '-'}
                         </TableCell>
-                        <TableCell className="text-black bg-white">
-                          <Badge className={statusColors[cotacao.status] || statusColors.rascunho}>
+                        <TableCell className="text-black bg-white hidden sm:table-cell">
+                          <Badge className={`${statusColors[cotacao.status] || statusColors.rascunho} text-[10px] md:text-xs`}>
                             {statusLabels[cotacao.status] || 'Rascunho'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right text-black bg-white">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleView(cotacao)} title="Visualizar">
-                              <Eye className="w-4 h-4" />
+                          <div className="flex justify-end gap-0.5 md:gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => handleView(cotacao)} title="Visualizar" className="h-7 w-7 md:h-8 md:w-8">
+                              <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             </Button>
-                            <Button variant="ghost" size="icon" onClick={() => handlePrint(cotacao)} title="Imprimir">
-                              <Printer className="w-4 h-4" />
+                            <Button variant="ghost" size="icon" onClick={() => handlePrint(cotacao)} title="Imprimir" className="h-7 w-7 md:h-8 md:w-8 hidden md:flex">
+                              <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
                             </Button>
                             {canEditCotacao && cotacao.status === 'pendente' && (
                               <>
-                                <Button variant="ghost" size="icon" onClick={() => handleAprovar(cotacao)} title="Aprovar" className="text-green-600 hover:text-green-700">
-                                  <CheckCircle className="w-4 h-4" />
+                                <Button variant="ghost" size="icon" onClick={() => handleAprovar(cotacao)} title="Aprovar" className="text-green-600 hover:text-green-700 h-7 w-7 md:h-8 md:w-8 hidden lg:flex">
+                                  <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                 </Button>
                                 <Button variant="ghost" size="icon" onClick={() => {
                                   const motivo = prompt('Motivo da rejeição:');
                                   if (motivo) handleRejeitar(cotacao, motivo);
-                                }} title="Rejeitar" className="text-red-600 hover:text-red-700">
-                                  <XCircle className="w-4 h-4" />
+                                }} title="Rejeitar" className="text-red-600 hover:text-red-700 h-7 w-7 md:h-8 md:w-8 hidden xl:flex">
+                                  <XCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                 </Button>
                               </>
                             )}

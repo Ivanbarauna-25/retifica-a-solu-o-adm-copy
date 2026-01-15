@@ -179,12 +179,12 @@ function CargosPage() {
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
-                    <TableHead className="text-white font-semibold">Nome</TableHead>
-                    <TableHead className="text-white font-semibold">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold">Nível</TableHead>
-                    <TableHead className="text-white font-semibold">Módulos</TableHead>
-                    <TableHead className="text-white font-semibold">Comissão</TableHead>
-                    <TableHead className="text-white font-semibold text-center w-[120px]">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Descrição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Nível</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Módulos</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Comissão</TableHead>
+                    <TableHead className="text-white font-semibold text-center w-[80px] md:w-[120px] text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -198,44 +198,34 @@ function CargosPage() {
                       
                       return (
                         <TableRow key={item.id} className="hover:bg-slate-50">
-                          <TableCell className="font-medium text-slate-900">{item.nome}</TableCell>
-                          <TableCell className="text-slate-600 max-w-xs truncate">{item.descricao || '-'}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="border-slate-300 text-slate-700">Nível {item.nivel_hierarquico || 5}</Badge>
+                          <TableCell className="font-medium text-slate-900 text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{item.nome}</TableCell>
+                          <TableCell className="text-slate-600 max-w-[200px] truncate text-xs md:text-sm hidden md:table-cell">{item.descricao || '-'}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <Badge variant="outline" className="border-slate-300 text-slate-700 text-[10px] md:text-xs">Nível {item.nivel_hierarquico || 5}</Badge>
                           </TableCell>
-                          <TableCell>
-                            <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                          <TableCell className="hidden lg:table-cell">
+                            <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200 text-[10px] md:text-xs">
                               {qtdModulos} módulos
                             </Badge>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="hidden xl:table-cell">
                             {item.tem_comissao ? (
                               <div className="flex flex-col gap-1">
-                                <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
-                                  {item.percentual_comissao}% {item.tipo_comissao === 'individual' ? '(Individual)' : '(Empresa)'}
+                                <Badge className="bg-green-100 text-green-800 hover:bg-green-200 text-[10px]">
+                                  {item.percentual_comissao}% {item.tipo_comissao === 'individual' ? '(Ind)' : '(Emp)'}
                                 </Badge>
-                                {item.tipo_comissao === 'individual' && item.meta_minima_individual > 0 && (
-                                  <span className="text-xs text-slate-500">
-                                    Meta: R$ {item.meta_minima_individual.toFixed(2)}
-                                  </span>
-                                )}
-                                {item.tipo_comissao === 'empresa' && item.meta_minima_empresa > 0 && (
-                                  <span className="text-xs text-slate-500">
-                                    Meta: R$ {item.meta_minima_empresa.toFixed(2)}
-                                  </span>
-                                )}
                               </div>
                             ) : (
-                              <span className="text-gray-400 text-sm">Sem comissão</span>
+                              <span className="text-gray-400 text-xs">Sem comissão</span>
                             )}
                           </TableCell>
                           <TableCell className="text-center">
-                            <div className="flex justify-center gap-2">
-                              <Button variant="ghost" size="sm" onClick={() => openForm(item)} className="h-8 w-8 p-0 hover:bg-amber-50 text-amber-600">
-                                <Edit className="h-4 w-4" />
+                            <div className="flex justify-center gap-0.5 md:gap-2">
+                              <Button variant="ghost" size="sm" onClick={() => openForm(item)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
+                                <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
                               </Button>
-                              <Button variant="ghost" size="sm" onClick={() => handleDelete(item.id)} className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50">
-                                <Trash2 className="h-4 w-4" />
+                              <Button variant="ghost" size="sm" onClick={() => handleDelete(item.id)} className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex">
+                                <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                               </Button>
                             </div>
                           </TableCell>

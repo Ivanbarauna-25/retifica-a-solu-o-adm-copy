@@ -164,15 +164,15 @@ export default function MotoresPage() {
         <Table>
           <TableHeader className="bg-slate-800">
             <TableRow>
-              <TableHead className="text-white">Código</TableHead>
-              <TableHead className="text-white">Fabricante</TableHead>
-              <TableHead className="text-white">Modelo</TableHead>
-              <TableHead className="text-white">Potência</TableHead>
-              <TableHead className="text-white">Cilindradas</TableHead>
-              <TableHead className="text-white">Combustível</TableHead>
-              <TableHead className="text-white">Ano</TableHead>
-              <TableHead className="text-white">Status</TableHead>
-              <TableHead className="text-white text-center">Ações</TableHead>
+              <TableHead className="text-white text-xs md:text-sm">Código</TableHead>
+              <TableHead className="text-white text-xs md:text-sm">Fabricante</TableHead>
+              <TableHead className="text-white text-xs md:text-sm">Modelo</TableHead>
+              <TableHead className="text-white text-xs md:text-sm hidden md:table-cell">Potência</TableHead>
+              <TableHead className="text-white text-xs md:text-sm hidden lg:table-cell">Cilindradas</TableHead>
+              <TableHead className="text-white text-xs md:text-sm hidden sm:table-cell">Combustível</TableHead>
+              <TableHead className="text-white text-xs md:text-sm hidden xl:table-cell">Ano</TableHead>
+              <TableHead className="text-white text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+              <TableHead className="text-white text-center text-xs md:text-sm">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -189,61 +189,61 @@ export default function MotoresPage() {
             ) : (
               filteredMotores.map((motor) => (
                 <TableRow key={motor.id}>
-                  <TableCell className="text-black font-mono text-sm">
+                  <TableCell className="text-black font-mono text-xs md:text-sm">
                     {motor.codigo || "—"}
                   </TableCell>
-                  <TableCell className="text-black font-medium">
+                  <TableCell className="text-black font-medium text-xs md:text-sm max-w-[100px] md:max-w-none truncate">
                     {motor.fabricante}
                   </TableCell>
-                  <TableCell className="text-black">
+                  <TableCell className="text-black text-xs md:text-sm max-w-[100px] md:max-w-none truncate">
                     {motor.modelo}
                   </TableCell>
-                  <TableCell className="text-black">
+                  <TableCell className="text-black text-xs md:text-sm hidden md:table-cell">
                     {motor.potencia || "—"}
                   </TableCell>
-                  <TableCell className="text-black">
+                  <TableCell className="text-black text-xs md:text-sm hidden lg:table-cell">
                     {motor.cilindradas || "—"}
                   </TableCell>
-                  <TableCell className="text-black">
+                  <TableCell className="text-black hidden sm:table-cell">
                     {motor.combustivel ? (
-                      <Badge variant="outline" className="capitalize">
+                      <Badge variant="outline" className="capitalize text-[10px] md:text-xs">
                         {combustivelLabels[motor.combustivel] || motor.combustivel}
                       </Badge>
                     ) : (
                       "—"
                     )}
                   </TableCell>
-                  <TableCell className="text-black">
+                  <TableCell className="text-black text-xs md:text-sm hidden xl:table-cell">
                     {motor.ano_fabricacao || "—"}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <Badge
-                      className={
+                      className={`text-[10px] md:text-xs ${
                         motor.ativo === false
                           ? "bg-red-100 text-red-800"
                           : "bg-green-100 text-green-800"
-                      }
+                      }`}
                     >
                       {motor.ativo === false ? "Inativo" : "Ativo"}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-0.5 md:gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEdit(motor)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8"
                       >
-                        <Pencil className="w-4 h-4" />
+                        <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(motor)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 hidden sm:flex"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       </Button>
                     </div>
                   </TableCell>

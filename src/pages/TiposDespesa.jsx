@@ -185,12 +185,12 @@ export default function TiposDespesaPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-800 hover:bg-slate-800">
-                    <TableHead className="text-white font-semibold">Nome</TableHead>
-                    <TableHead className="text-white font-semibold">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold">Categoria</TableHead>
-                    <TableHead className="text-white font-semibold">Plano de Contas</TableHead>
-                    <TableHead className="text-white font-semibold">Status</TableHead>
-                    <TableHead className="text-white font-semibold text-center">Ações</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm">Nome</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">Descrição</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Categoria</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Plano</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-semibold text-center text-xs md:text-sm">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -208,32 +208,34 @@ export default function TiposDespesaPage() {
                       
                       return (
                         <TableRow key={tipo.id} className="hover:bg-slate-50">
-                          <TableCell className="font-medium text-black">{tipo.nome}</TableCell>
-                          <TableCell className="text-black">{tipo.descricao || "—"}</TableCell>
-                          <TableCell className="text-black">{categoria?.nome || "—"}</TableCell>
-                          <TableCell className="text-black">{plano?.nome || "—"}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          <TableCell className="font-medium text-black text-xs md:text-sm max-w-[120px] md:max-w-none truncate">{tipo.nome}</TableCell>
+                          <TableCell className="text-black text-xs md:text-sm hidden md:table-cell max-w-[200px] truncate">{tipo.descricao || "—"}</TableCell>
+                          <TableCell className="text-black text-xs md:text-sm hidden lg:table-cell">{categoria?.nome || "—"}</TableCell>
+                          <TableCell className="text-black text-xs md:text-sm hidden xl:table-cell max-w-[150px] truncate">{plano?.nome || "—"}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <span className={`px-2 py-1 rounded text-[10px] md:text-xs font-semibold ${
                               tipo.ativo !== false ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
                             }`}>
                               {tipo.ativo !== false ? "Ativo" : "Inativo"}
                             </span>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center justify-center gap-2">
+                            <div className="flex items-center justify-center gap-0.5 md:gap-2">
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleEdit(tipo)}
-                                title="Editar">
-                                <Pencil className="w-4 h-4 text-blue-600" />
+                                title="Editar"
+                                className="h-7 w-7 md:h-8 md:w-8">
+                                <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-600" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleDelete(tipo)}
-                                title="Excluir">
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                title="Excluir"
+                                className="h-7 w-7 md:h-8 md:w-8 hidden sm:flex">
+                                <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-600" />
                               </Button>
                             </div>
                           </TableCell>
