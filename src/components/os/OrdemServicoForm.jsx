@@ -395,12 +395,12 @@ export default function OrdemServicoForm({
                       <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
                         <h3 className="text-sm font-bold text-slate-700">Dados Principais</h3>
                       </div>
-                      <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {!isEditing && (
-                            <div className="md:col-span-2">
-                              <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
-                                Orçamento de Origem
-                              </Label>
+                      <div className="p-3 md:p-5 grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                        {!isEditing && (
+                          <div className="md:col-span-2">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
+                              Orçamento de Origem
+                            </Label>
                               <Select
                                 value={formData.orcamento_id || 'null'}
                                 onValueChange={(value) => handleInputChange('orcamento_id', value === 'null' ? null : value)}
@@ -430,28 +430,28 @@ export default function OrdemServicoForm({
                           )}
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Número da OS</Label>
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Número da OS</Label>
                             <Input
                               value={formData.numero_os}
                               disabled
-                              className="modern-input bg-slate-50 font-mono text-slate-600"
+                              className="modern-input bg-slate-50 font-mono text-slate-600 h-9 md:h-10 text-xs md:text-sm"
                             />
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               Data de Abertura
                             </Label>
                             <Input
                               type="date"
                               value={formData.data_abertura}
                               onChange={(e) => handleInputChange('data_abertura', e.target.value)}
-                              className="modern-input"
+                              className="modern-input h-9 md:h-10 text-xs md:text-sm"
                             />
                           </div>
                           
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               Cliente/Contato
                             </Label>
                             <SmartInput
@@ -467,7 +467,7 @@ export default function OrdemServicoForm({
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               Veículo
                             </Label>
                             <Select
@@ -491,7 +491,7 @@ export default function OrdemServicoForm({
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               Técnico Responsável
                             </Label>
                             <SmartInput
@@ -504,7 +504,7 @@ export default function OrdemServicoForm({
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               Vendedor
                             </Label>
                             <SmartInput
@@ -517,14 +517,14 @@ export default function OrdemServicoForm({
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               Previsão de Conclusão
                             </Label>
                             <Input
                               type="date"
                               value={formData.data_conclusao}
                               onChange={(e) => handleInputChange('data_conclusao', e.target.value)}
-                              className="modern-input"
+                              className="modern-input h-9 md:h-10 text-xs md:text-sm"
                             />
                           </div>
                       </div>
@@ -533,20 +533,20 @@ export default function OrdemServicoForm({
 
                   <TabsContent value="itens" className="space-y-4 mt-0">
                     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                      <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
-                        <h3 className="text-sm font-bold text-slate-700">Adicionar Item</h3>
+                      <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3">
+                        <h3 className="text-xs md:text-sm font-bold text-slate-700">Adicionar Item</h3>
                       </div>
-                      <div className="p-5">
-                        <Tabs value={novoItem.tipo} onValueChange={handleTipoChange} className="w-full mb-4">
-                          <TabsList className="grid w-full grid-cols-2 h-9 bg-slate-100 p-1 rounded-md">
-                            <TabsTrigger value="produto" className="text-xs font-medium rounded-sm">Produtos</TabsTrigger>
-                            <TabsTrigger value="servico" className="text-xs font-medium rounded-sm">Serviços</TabsTrigger>
+                      <div className="p-3 md:p-5">
+                        <Tabs value={novoItem.tipo} onValueChange={handleTipoChange} className="w-full mb-3 md:mb-4">
+                          <TabsList className="grid w-full grid-cols-2 h-8 md:h-9 bg-slate-100 p-1 rounded-md">
+                            <TabsTrigger value="produto" className="text-[10px] md:text-xs font-medium rounded-sm">Produtos</TabsTrigger>
+                            <TabsTrigger value="servico" className="text-[10px] md:text-xs font-medium rounded-sm">Serviços</TabsTrigger>
                           </TabsList>
                         </Tabs>
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
                           <div className="md:col-span-2">
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">
                               {novoItem.tipo === 'produto' ? 'Produto' : 'Serviço'}
                             </Label>
                             <SmartInput
@@ -569,19 +569,19 @@ export default function OrdemServicoForm({
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Quantidade</Label>
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Quantidade</Label>
                             <Input
                               type="number"
                               value={novoItem.quantidade}
                               onChange={(e) => setNovoItem(p => ({ ...p, quantidade: Number(e.target.value) }))}
                               min="1"
                               step="0.01"
-                              className="modern-input"
+                              className="modern-input h-9 md:h-10 text-xs md:text-sm"
                             />
                           </div>
 
                           <div>
-                            <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Valor Unit.</Label>
+                            <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Valor Unit.</Label>
                             <Input
                               type="number"
                               step="0.01"
@@ -592,7 +592,7 @@ export default function OrdemServicoForm({
                                   valor_unitario: e.target.value === "" ? "" : Number(e.target.value)
                                 }))
                               }
-                              className="modern-input"
+                              className="modern-input h-9 md:h-10 text-xs md:text-sm"
                             />
                           </div>
                         </div>
@@ -627,20 +627,20 @@ export default function OrdemServicoForm({
                     </div>
 
                     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                      <div className="bg-slate-100 border-b border-slate-200 px-5 py-3 flex items-center justify-between">
-                         <h3 className="text-sm font-bold text-slate-700">Itens da Ordem ({formData.itens.length})</h3>
+                      <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3 flex items-center justify-between">
+                         <h3 className="text-xs md:text-sm font-bold text-slate-700">Itens ({formData.itens.length})</h3>
                       </div>
                       <div className="p-0">
                         <div className="max-h-80 overflow-y-auto">
                           <Table>
                             <TableHeader className="bg-slate-50">
                               <TableRow>
-                                <TableHead className="font-semibold text-xs text-slate-600 uppercase">Tipo</TableHead>
-                                <TableHead className="font-semibold text-xs text-slate-600 uppercase">Descrição</TableHead>
-                                <TableHead className="font-semibold text-xs text-slate-600 uppercase text-center">Qtd</TableHead>
-                                <TableHead className="font-semibold text-xs text-slate-600 uppercase text-right">Vlr. Unit.</TableHead>
-                                <TableHead className="font-semibold text-xs text-slate-600 uppercase text-right">Total</TableHead>
-                                <TableHead className="font-semibold text-xs text-slate-600 uppercase text-center">Ações</TableHead>
+                                <TableHead className="font-semibold text-[10px] md:text-xs text-slate-600 uppercase px-2 md:px-4 hidden sm:table-cell">Tipo</TableHead>
+                                <TableHead className="font-semibold text-[10px] md:text-xs text-slate-600 uppercase px-2 md:px-4">Descrição</TableHead>
+                                <TableHead className="font-semibold text-[10px] md:text-xs text-slate-600 uppercase text-center px-2 md:px-4">Qtd</TableHead>
+                                <TableHead className="font-semibold text-[10px] md:text-xs text-slate-600 uppercase text-right px-2 md:px-4 hidden md:table-cell">Vlr. Unit.</TableHead>
+                                <TableHead className="font-semibold text-[10px] md:text-xs text-slate-600 uppercase text-right px-2 md:px-4">Total</TableHead>
+                                <TableHead className="font-semibold text-[10px] md:text-xs text-slate-600 uppercase text-center px-2 md:px-4">Ações</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -653,20 +653,20 @@ export default function OrdemServicoForm({
                               ) : (
                                 formData.itens.map((item, index) => (
                                   <TableRow key={item.id} className="hover:bg-slate-50 border-b border-slate-50 last:border-0">
-                                    <TableCell className="capitalize text-xs text-slate-500 font-medium">{item.tipo}</TableCell>
-                                    <TableCell className="text-sm text-slate-700 font-medium">{item.descricao}</TableCell>
-                                    <TableCell className="text-sm text-slate-600 text-center">{item.quantidade}</TableCell>
-                                    <TableCell className="text-sm text-slate-600 text-right">{formatCurrency(item.valor_unitario)}</TableCell>
-                                    <TableCell className="font-bold text-sm text-slate-900 text-right">{formatCurrency(item.valor_total)}</TableCell>
-                                    <TableCell className="text-center">
+                                    <TableCell className="capitalize text-[10px] md:text-xs text-slate-500 font-medium px-2 md:px-4 py-1.5 md:py-2 hidden sm:table-cell">{item.tipo}</TableCell>
+                                    <TableCell className="text-xs md:text-sm text-slate-700 font-medium px-2 md:px-4 py-1.5 md:py-2 max-w-[120px] md:max-w-none truncate">{item.descricao}</TableCell>
+                                    <TableCell className="text-xs md:text-sm text-slate-600 text-center px-2 md:px-4 py-1.5 md:py-2">{item.quantidade}</TableCell>
+                                    <TableCell className="text-xs md:text-sm text-slate-600 text-right px-2 md:px-4 py-1.5 md:py-2 hidden md:table-cell">{formatCurrency(item.valor_unitario)}</TableCell>
+                                    <TableCell className="font-bold text-xs md:text-sm text-slate-900 text-right px-2 md:px-4 py-1.5 md:py-2">{formatCurrency(item.valor_total)}</TableCell>
+                                    <TableCell className="text-center px-2 md:px-4 py-1.5 md:py-2">
                                       <Button
                                         type="button"
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => removerItem(index)}
-                                        className="text-slate-400 hover:text-red-600 hover:bg-red-50 h-8 w-8 p-0 rounded-full"
+                                        className="text-slate-400 hover:text-red-600 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 p-0 rounded-full"
                                       >
-                                        <Trash2 className="w-3.5 h-3.5" />
+                                        <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                       </Button>
                                     </TableCell>
                                   </TableRow>
@@ -680,12 +680,12 @@ export default function OrdemServicoForm({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                        <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
-                          <h3 className="text-sm font-bold text-slate-700">Pagamento</h3>
+                        <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3">
+                          <h3 className="text-xs md:text-sm font-bold text-slate-700">Pagamento</h3>
                         </div>
-                        <div className="p-5 space-y-4">
+                        <div className="p-3 md:p-5 space-y-3 md:space-y-4">
                             <div>
-                              <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Forma de Pagamento</Label>
+                              <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Forma de Pagamento</Label>
                               <SmartInput
                                 options={formasPagamento.map(fp => ({ value: fp.id, label: fp.nome }))}
                                 value={formData.forma_pagamento_id}
@@ -696,7 +696,7 @@ export default function OrdemServicoForm({
                             </div>
 
                             <div>
-                              <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Condição de Pagamento</Label>
+                              <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Condição de Pagamento</Label>
                               <SmartInput
                                 options={condicoesPagamento.map(c => ({ value: c.id, label: c.nome }))}
                                 value={formData.condicao_pagamento_id}
@@ -709,13 +709,13 @@ export default function OrdemServicoForm({
                       </div>
 
                       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                        <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
-                          <h3 className="text-sm font-bold text-slate-700">Valores</h3>
+                        <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3">
+                          <h3 className="text-xs md:text-sm font-bold text-slate-700">Valores</h3>
                         </div>
-                        <div className="p-5 space-y-4">
-                           <div className="grid grid-cols-3 gap-4">
+                        <div className="p-3 md:p-5 space-y-3 md:space-y-4">
+                           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                               <div>
-                                <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Outras Despesas</Label>
+                                <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Outras Despesas</Label>
                                 <Input
                                   type="number"
                                   step="0.01"
@@ -726,7 +726,7 @@ export default function OrdemServicoForm({
                               </div>
                               {isEditing && (
                                 <div>
-                                  <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Despesas Lançadas</Label>
+                                  <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Despesas Lançadas</Label>
                                   <Input
                                     type="text"
                                     value={formatCurrency(despesasExternas)}
@@ -736,7 +736,7 @@ export default function OrdemServicoForm({
                                 </div>
                               )}
                               <div>
-                                <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Entrada</Label>
+                                <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Entrada</Label>
                                 <Input
                                   type="number"
                                   step="0.01"
@@ -747,9 +747,9 @@ export default function OrdemServicoForm({
                               </div>
                            </div>
                            
-                           <div className="grid grid-cols-2 gap-4">
+                           <div className="grid grid-cols-2 gap-3 md:gap-4">
                               <div>
-                                <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Tipo Desconto</Label>
+                                <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Tipo Desconto</Label>
                                 <Select
                                   value={formData.desconto_tipo}
                                   onValueChange={(v) => handleInputChange('desconto_tipo', v)}
@@ -764,7 +764,7 @@ export default function OrdemServicoForm({
                                 </Select>
                               </div>
                               <div>
-                                <Label className="text-xs font-semibold text-slate-600 mb-2 block uppercase">Valor Desconto</Label>
+                                <Label className="text-[10px] md:text-xs font-semibold text-slate-600 mb-1.5 md:mb-2 block uppercase">Valor Desconto</Label>
                                 <Input
                                   type="number"
                                   step="0.01"
@@ -775,9 +775,9 @@ export default function OrdemServicoForm({
                               </div>
                            </div>
 
-                           <div className="pt-4 border-t border-slate-100 flex justify-between items-center">
-                              <span className="text-sm font-bold text-slate-700 uppercase">Total Final</span>
-                              <span className="text-2xl font-bold text-slate-900">{formatCurrency(formData.valor_total)}</span>
+                           <div className="pt-3 md:pt-4 border-t border-slate-100 flex justify-between items-center">
+                              <span className="text-xs md:text-sm font-bold text-slate-700 uppercase">Total Final</span>
+                              <span className="text-lg md:text-2xl font-bold text-slate-900">{formatCurrency(formData.valor_total)}</span>
                            </div>
                         </div>
                       </div>
@@ -786,15 +786,15 @@ export default function OrdemServicoForm({
 
                   <TabsContent value="observacoes" className="mt-0 h-full">
                     <div className="bg-white rounded-xl border border-slate-200 overflow-hidden h-full flex flex-col shadow-sm">
-                       <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
-                          <h3 className="text-sm font-bold text-slate-700">Observações</h3>
+                       <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3">
+                          <h3 className="text-xs md:text-sm font-bold text-slate-700">Observações</h3>
                         </div>
-                        <div className="p-5 flex-1">
+                        <div className="p-3 md:p-5 flex-1">
                           <Textarea
                             value={formData.observacoes}
                             onChange={(e) => handleInputChange('observacoes', e.target.value)}
-                            placeholder="Digite observações sobre esta ordem de serviço..."
-                            className="resize-none bg-slate-50 border-slate-200 text-slate-700 h-full min-h-[300px] rounded-md focus:bg-white transition-all p-4"
+                            placeholder="Digite observações..."
+                            className="resize-none bg-slate-50 border-slate-200 text-slate-700 h-full min-h-[200px] md:min-h-[300px] rounded-md focus:bg-white transition-all p-3 md:p-4 text-xs md:text-sm"
                           />
                         </div>
                     </div>
@@ -803,38 +803,38 @@ export default function OrdemServicoForm({
               </Tabs>
             </div>
 
-            <DialogFooter className="px-5 py-3.5 border-t border-slate-200 bg-slate-50 flex-shrink-0">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-lg border border-slate-200">
-                   <p className="text-xs font-medium text-slate-500">Total Previsto</p>
-                   <p className="text-base font-bold text-slate-900">{formatCurrency(formData.valor_total)}</p>
+            <DialogFooter className="px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between w-full gap-2">
+                <div className="flex items-center gap-2 bg-slate-100 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-slate-200">
+                   <p className="text-[10px] md:text-xs font-medium text-slate-500">Total</p>
+                   <p className="text-sm md:text-base font-bold text-slate-900">{formatCurrency(formData.valor_total)}</p>
                 </div>
                 
-                <div className="flex gap-2">
+                <div className="flex gap-1.5 md:gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={onClose}
                     disabled={isSaving}
-                    className="bg-slate-800 text-white hover:bg-slate-700 font-semibold flex items-center gap-2"
+                    className="bg-slate-800 text-white hover:bg-slate-700 font-semibold flex items-center gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSaving}
-                    className="bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-5 flex items-center gap-2 font-semibold"
+                    className="bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-3 md:px-5 flex items-center gap-1 md:gap-2 font-semibold h-8 md:h-9 text-xs md:text-sm"
                   >
                     {isSaving ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" />
                         Salvando...
                       </>
                     ) : (
                       <>
-                        <Save className="w-4 h-4 mr-2" />
-                        {isEditing ? 'Salvar' : 'Criar Ordem'}
+                        <Save className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                        {isEditing ? 'Salvar' : 'Criar'}
                       </>
                     )}
                   </Button>

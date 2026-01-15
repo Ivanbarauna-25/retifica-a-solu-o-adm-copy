@@ -411,19 +411,19 @@ export default function OrdemServicoViewer({
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-slate-50">
-                            <TableHead className="text-xs font-semibold text-slate-600">Data</TableHead>
-                            <TableHead className="text-xs font-semibold text-slate-600">Tipo</TableHead>
-                            <TableHead className="text-xs font-semibold text-slate-600">Descrição</TableHead>
-                            <TableHead className="text-xs font-semibold text-slate-600 text-right">Valor</TableHead>
+                            <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600 px-2 md:px-4">Data</TableHead>
+                            <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600 px-2 md:px-4 hidden sm:table-cell">Tipo</TableHead>
+                            <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600 px-2 md:px-4">Descrição</TableHead>
+                            <TableHead className="text-[10px] md:text-xs font-semibold text-slate-600 text-right px-2 md:px-4">Valor</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
                           {despesas.map((d) => (
-                            <TableRow key={d.id} className="text-xs">
-                              <TableCell className="text-slate-700">{formatDate(d.data)}</TableCell>
-                              <TableCell className="text-slate-700">{d.tipo || "—"}</TableCell>
-                              <TableCell className="text-slate-700">{d.descricao || "—"}</TableCell>
-                              <TableCell className="text-right font-semibold text-red-600">
+                            <TableRow key={d.id} className="text-[10px] md:text-xs">
+                              <TableCell className="text-slate-700 px-2 md:px-4 py-1.5 md:py-2">{formatDate(d.data)}</TableCell>
+                              <TableCell className="text-slate-700 px-2 md:px-4 py-1.5 md:py-2 hidden sm:table-cell">{d.tipo || "—"}</TableCell>
+                              <TableCell className="text-slate-700 px-2 md:px-4 py-1.5 md:py-2 max-w-[120px] truncate">{d.descricao || "—"}</TableCell>
+                              <TableCell className="text-right font-semibold text-red-600 px-2 md:px-4 py-1.5 md:py-2">
                                 {formatCurrency(d.valor)}
                               </TableCell>
                             </TableRow>
