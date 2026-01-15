@@ -94,10 +94,8 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
     setLoadingMessage('Iniciando processamento...');
 
     try {
-      const isCSV = file.name.toLowerCase().endsWith('.csv') ||
-                    file.name.toLowerCase().endsWith('.xlsx') ||
-                    file.type.includes('csv') ||
-                    file.type.includes('spreadsheet');
+      const isCSV = file.name.toLowerCase().endsWith('.csv') || file.type.includes('csv');
+      const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls') || file.type.includes('spreadsheet');
 
       if (isCSV) {
         console.log('📊 Processando CSV...');
@@ -355,7 +353,111 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
           description: `${dados.length} orçamento(s) encontrado(s). Revise antes de importar.`
         });
 
+      } else if (isExcel) {
+        // Processar Excel (.xlsx) via API de extração
+        console.log('📊 Processando Excel...');
+        setLoadingProgress(20);
+        setLoadingMessage('Enviando arquivo Excel para processamento...');
+
+        const uploadResponse = await base44.integrations.Core.UploadFile({ file });
+        console.log('✅ Upload concluído:', uploadResponse);
+
+        const file_url = uploadResponse.file_url;
+
+        if (!file_url) {
+          throw new Error('URL do arquivo não retornada pelo upload');
+        }
+
+        if (!mountedRef.current) return;
+
+        setLoadingProgress(40);
+        setLoadingMessage('Extraindo dados do Excel... Isso pode levar alguns segundos...');
+
+        const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
+          file_url,
+          json_schema: {
+            type: "object",
+            properties: {
+              orcamentos: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    numero_orcamento: { type: "string", description: "Número do orçamento (coluna Nº ou N°)" },
+                    cliente_nome: { type: "string", description: "Nome do cliente" },
+                    vendedor_nome: { type: "string", description: "Nome do vendedor" },
+                    data_orcamento: { type: "string", description: "Data do orçamento no formato YYYY-MM-DD" },
+                    valor_produtos: { type: "number", description: "Valor de produtos" },
+                    valor_servicos: { type: "number", description: "Valor de serviços" },
+                    desconto: { type: "number", description: "Valor do desconto" },
+                    outras_despesas: { type: "number", description: "Outras despesas" },
+                    observacoes: { type: "string", description: "Observações" }
+                  },
+                  required: ["numero_orcamento", "data_orcamento"]
+                }
+              }
+            }
+          }
+        });
+
+        console.log('📊 Resultado da extração Excel:', extractResult);
+
+        if (!mountedRef.current) return;
+
+        setLoadingProgress(70);
+        setLoadingMessage('Processando dados extraídos...');
+
+        if (extractResult.status === 'error') {
+          throw new Error(extractResult.details || 'Erro ao extrair dados do arquivo Excel');
+        }
+
+        const dados = extractResult.output?.orcamentos || [];
+
+        console.log('📋 Dados extraídos do Excel:', dados);
+
+        if (!Array.isArray(dados) || dados.length === 0) {
+          throw new Error('Nenhum orçamento encontrado no arquivo Excel. Verifique se o arquivo contém os dados nas colunas corretas.');
+        }
+
+        setLoadingProgress(90);
+        setLoadingMessage('Preparando prévia...');
+
+        const dadosComId = dados.map((d, idx) => ({
+          id: `temp_${idx}_${Date.now()}`,
+          numero_orcamento: String(d.numero_orcamento || ''),
+          cliente_nome: d.cliente_nome || '',
+          vendedor_nome: d.vendedor_nome || '',
+          data_orcamento: d.data_orcamento || '',
+          data_validade: d.data_validade || '',
+          status: 'pendente',
+          valor_produtos: Number(d.valor_produtos) || 0,
+          valor_servicos: Number(d.valor_servicos) || 0,
+          desconto: Number(d.desconto) || 0,
+          valor_total: Number(d.valor_total) || 0,
+          outras_despesas: Number(d.outras_despesas) || 0,
+          observacoes: d.observacoes || ''
+        }));
+
+        console.log('📊 [PREVIEW] Definindo preview data do Excel:', dadosComId.length, 'registros');
+
+        if (!mountedRef.current) return;
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        setPreviewData(dadosComId);
+
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        setLoadingProgress(100);
+        setLoadingMessage('Concluído!');
+
+        toast({
+          title: 'Dados extraídos com sucesso!',
+          description: `${dados.length} orçamento(s) encontrado(s). Revise antes de importar.`
+        });
+
       } else {
+        // PDF ou outro formato
         console.log('📤 Fazendo upload do arquivo...');
         setLoadingProgress(20);
         setLoadingMessage('Enviando arquivo para servidor...');
