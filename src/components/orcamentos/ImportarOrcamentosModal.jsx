@@ -803,28 +803,28 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-2xl shadow-2xl">
-        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-6 py-4 flex-shrink-0">
+      <DialogContent className="w-[95vw] md:max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-xl md:rounded-2xl shadow-2xl">
+        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-3 md:py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-3 text-white">
-              <div className="h-11 w-11 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <Upload className="w-5 h-5 text-white" />
+            <DialogTitle className="flex items-center gap-2 md:gap-3 text-white">
+              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <div>
-                <span className="text-base font-semibold">Importar Orçamentos</span>
-                <p className="text-xs text-slate-300 mt-0.5">Importe múltiplos orçamentos a partir de um arquivo CSV, Excel ou PDF</p>
+                <span className="text-sm md:text-base font-semibold">Importar Orçamentos</span>
+                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">CSV, Excel ou PDF</p>
               </div>
             </DialogTitle>
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-3 md:px-8 py-4 md:py-6 space-y-4 md:space-y-6">
           {!previewData && !result && (
             <>
               <Alert className="bg-blue-50 border-blue-200">
-                <FileSpreadsheet className="w-4 h-4 text-blue-600" />
-                <AlertDescription className="text-sm text-neutral-700">
-                  <strong>Formato esperado:</strong> O arquivo deve conter as colunas: Nº, Data, Cliente, Vendedor, Produtos, Serviços, Desconto, Despesas, Observações.
+                <FileSpreadsheet className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                <AlertDescription className="text-xs md:text-sm text-neutral-700">
+                  <strong>Colunas:</strong> Nº, Data, Cliente, Vendedor, Produtos, Serviços, Desconto, Despesas
                 </AlertDescription>
               </Alert>
 
@@ -832,19 +832,19 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                 <Button
                   variant="outline"
                   onClick={downloadTemplate}
-                  className="gap-2 bg-white border-neutral-300 hover:bg-slate-50 transition-colors"
+                  className="gap-2 bg-white border-neutral-300 hover:bg-slate-50 transition-colors text-xs md:text-sm h-8 md:h-9"
                   type="button">
-                  <Download className="w-4 h-4" />
-                  Baixar Modelo CSV
+                  <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  Baixar Modelo
                 </Button>
               </div>
 
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                <div className="bg-slate-100 border-b border-slate-200 px-5 py-3">
-                  <h3 className="text-sm font-bold text-slate-700">Selecione o arquivo</h3>
+              <div className="bg-white border border-slate-200 rounded-lg md:rounded-xl overflow-hidden">
+                <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3">
+                  <h3 className="text-xs md:text-sm font-bold text-slate-700">Selecione o arquivo</h3>
                 </div>
-                <div className="p-5">
-                <div className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-slate-400 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
+                <div className="p-3 md:p-5">
+                <div className="border-2 border-dashed border-slate-300 rounded-lg md:rounded-xl p-6 md:p-12 text-center hover:border-slate-400 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
                   <Input
                     id="file-upload"
                     type="file"
@@ -854,44 +854,44 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                     className="hidden"
                   />
                   <label htmlFor="file-upload" className="cursor-pointer">
-                    <FileSpreadsheet className="w-20 h-20 mx-auto mb-4 text-slate-400" />
-                    <p className="text-sm font-medium text-slate-700">
+                    <FileSpreadsheet className="w-12 h-12 md:w-20 md:h-20 mx-auto mb-3 md:mb-4 text-slate-400" />
+                    <p className="text-xs md:text-sm font-medium text-slate-700">
                       {file ? (
-                        <span className="text-blue-600 flex items-center justify-center gap-2 text-base">
-                          <Upload className="w-4 h-4" />
-                          {file.name}
+                        <span className="text-blue-600 flex items-center justify-center gap-2 text-sm md:text-base">
+                          <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                          <span className="truncate max-w-[200px]">{file.name}</span>
                         </span>
                       ) : (
                         <>
-                          <span className="text-blue-600 text-base">Escolher arquivo</span>
-                          <span className="text-slate-500 ml-2">ou arraste e solte aqui</span>
+                          <span className="text-blue-600 text-sm md:text-base">Escolher arquivo</span>
+                          <span className="text-slate-500 ml-2 hidden sm:inline">ou arraste aqui</span>
                         </>
                       )}
                     </p>
-                    <p className="text-xs text-slate-500 mt-2">CSV, Excel ou PDF (máx. 10MB)</p>
+                    <p className="text-[10px] md:text-xs text-slate-500 mt-2">CSV, Excel ou PDF</p>
                   </label>
                 </div>
                 </div>
               </div>
 
               {isLoading && (
-                <div className="space-y-3 p-6 bg-blue-50 border-2 border-blue-200 rounded-xl shadow-sm">
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-                    <p className="text-sm font-semibold text-blue-900">{loadingMessage}</p>
+                <div className="space-y-2 md:space-y-3 p-3 md:p-6 bg-blue-50 border-2 border-blue-200 rounded-lg md:rounded-xl shadow-sm">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-blue-600" />
+                    <p className="text-xs md:text-sm font-semibold text-blue-900">{loadingMessage}</p>
                   </div>
-                  <Progress value={loadingProgress} className="h-3" />
+                  <Progress value={loadingProgress} className="h-2 md:h-3" />
                 </div>
               )}
             </>
           )}
 
           {previewData && !result && (
-            <div className="space-y-4 preview-section">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold flex items-center gap-2 text-neutral-900">
-                  <Eye className="w-5 h-5 text-blue-600" />
-                  Prévia dos Dados ({previewData.length} registro(s))
+            <div className="space-y-3 md:space-y-4 preview-section">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h3 className="text-sm md:text-lg font-bold flex items-center gap-2 text-neutral-900">
+                  <Eye className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                  Prévia ({previewData.length})
                 </h3>
                 <Button
                   variant="outline"
@@ -900,120 +900,112 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                     setPreviewData(null);
                     setFile(null);
                   }}
-                  className="bg-white hover:bg-slate-50 transition-colors">
-                  Cancelar e Selecionar Outro Arquivo
+                  className="bg-white hover:bg-slate-50 transition-colors text-xs h-7 md:h-8">
+                  Selecionar Outro
                 </Button>
               </div>
 
               <Alert className="bg-amber-50 border-amber-200">
-                <AlertCircle className="w-4 h-4 text-amber-600" />
-                <AlertDescription className="text-neutral-700">
-                  Revise os dados extraídos abaixo. Você pode editar os valores clicando nas células ou excluir linhas indesejadas. Os campos <strong className="font-semibold">Nº</strong> e <strong className="font-semibold">Data</strong> são obrigatórios.
+                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                <AlertDescription className="text-xs md:text-sm text-neutral-700">
+                  Revise e edite os dados. <strong>Nº</strong> e <strong>Data</strong> são obrigatórios.
                 </AlertDescription>
               </Alert>
 
-              <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div className="bg-slate-100 border-b border-slate-200 px-4 py-3">
-                  <h3 className="font-bold text-slate-800 text-sm">Dados Extraídos</h3>
+              <div className="rounded-lg md:rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-4 py-2 md:py-3">
+                  <h3 className="font-bold text-slate-800 text-xs md:text-sm">Dados Extraídos</h3>
                 </div>
-                <div className="overflow-auto max-h-[400px]">
+                <div className="overflow-auto max-h-[300px] md:max-h-[400px]">
                 <Table>
                   <TableHeader className="bg-slate-700 sticky top-0">
                     <TableRow>
-                      <TableHead className="text-white font-semibold w-36">Nº</TableHead>
-                      <TableHead className="text-white font-semibold w-36">Data</TableHead>
-                      <TableHead className="text-white font-semibold w-56">Cliente</TableHead>
-                      <TableHead className="text-white font-semibold w-48">Vendedor</TableHead>
-                      <TableHead className="text-white font-semibold w-32">Produtos</TableHead>
-                      <TableHead className="text-white font-semibold w-32">Serviços</TableHead>
-                      <TableHead className="text-white font-semibold w-32">Desconto</TableHead>
-                      <TableHead className="text-white font-semibold w-32">Despesas</TableHead>
-                      <TableHead className="text-white font-semibold w-56">Observações</TableHead>
-                      <TableHead className="text-white w-20 font-semibold">Ações</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-36">Nº</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-28 md:w-36">Data</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-32 md:w-56">Cliente</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-28 md:w-48 hidden sm:table-cell">Vendedor</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32">Produtos</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32 hidden md:table-cell">Serviços</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32 hidden lg:table-cell">Desconto</TableHead>
+                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32 hidden lg:table-cell">Despesas</TableHead>
+                      <TableHead className="text-white w-14 md:w-20 font-semibold text-[10px] md:text-xs px-1 md:px-4">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {previewData.map((row) => (
                       <TableRow key={row.id} className="hover:bg-slate-50 transition-colors">
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4">
                           <Input
                             value={row.numero_orcamento}
                             onChange={(e) => handleEditRow(row.id, 'numero_orcamento', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4">
                           <Input
                             type="date"
                             value={row.data_orcamento}
                             onChange={(e) => handleEditRow(row.id, 'data_orcamento', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4">
                           <Input
                             value={row.cliente_nome}
                             onChange={(e) => handleEditRow(row.id, 'cliente_nome', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4 hidden sm:table-cell">
                           <Input
                             value={row.vendedor_nome}
                             onChange={(e) => handleEditRow(row.id, 'vendedor_nome', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4">
                           <Input
                             type="number"
                             step="0.01"
                             value={row.valor_produtos}
                             onChange={(e) => handleEditRow(row.id, 'valor_produtos', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4 hidden md:table-cell">
                           <Input
                             type="number"
                             step="0.01"
                             value={row.valor_servicos}
                             onChange={(e) => handleEditRow(row.id, 'valor_servicos', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4 hidden lg:table-cell">
                           <Input
                             type="number"
                             step="0.01"
                             value={row.desconto}
                             onChange={(e) => handleEditRow(row.id, 'desconto', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-2 md:px-4 hidden lg:table-cell">
                           <Input
                             type="number"
                             step="0.01"
                             value={row.outras_despesas}
                             onChange={(e) => handleEditRow(row.id, 'outras_despesas', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
+                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
                           />
                         </TableCell>
-                        <TableCell>
-                          <Input
-                            value={row.observacoes || ''}
-                            onChange={(e) => handleEditRow(row.id, 'observacoes', e.target.value)}
-                            className="h-9 bg-white text-neutral-900 border-neutral-300"
-                          />
-                        </TableCell>
-                        <TableCell>
+                        <TableCell className="px-1 md:px-4">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDeleteRow(row.id)}
-                            className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
-                            <Trash2 className="w-4 h-4" />
+                            className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors h-7 w-7">
+                            <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -1027,28 +1019,25 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
 
           {result && (
             <div className="space-y-3">
-              <Alert className={`${result.erros === 0 ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} rounded-xl shadow-sm`}>
+              <Alert className={`${result.erros === 0 ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} rounded-lg md:rounded-xl shadow-sm`}>
                 {result.erros === 0 ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-green-600 flex-shrink-0" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-yellow-600" />
+                  <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-yellow-600 flex-shrink-0" />
                 )}
-                <AlertDescription className="text-neutral-700">
-                  <div className="space-y-2">
-                    <p className="font-semibold"><strong>Total de linhas:</strong> {result.total}</p>
-                    <p className="text-green-600 font-semibold"><strong>Importados com sucesso:</strong> {result.sucessos}</p>
+                <AlertDescription className="text-neutral-700 text-xs md:text-sm">
+                  <div className="space-y-1 md:space-y-2">
+                    <p className="font-semibold">Total: {result.total}</p>
+                    <p className="text-green-600 font-semibold">Importados: {result.sucessos}</p>
                     {result.erros > 0 && (
                       <>
-                        <p className="text-red-600 font-semibold"><strong>Com erro:</strong> {result.erros}</p>
+                        <p className="text-red-600 font-semibold">Erros: {result.erros}</p>
                         {result.mensagensErro.length > 0 && (
-                          <div className="mt-3">
-                            <p className="font-semibold">Primeiros erros:</p>
-                            <ul className="list-disc list-inside text-sm space-y-1 mt-1">
-                              {result.mensagensErro.map((msg, idx) => (
-                                <li key={idx} className="text-red-600">{msg}</li>
-                              ))}
-                            </ul>
-                          </div>
+                          <ul className="list-disc list-inside text-xs space-y-1 mt-2">
+                            {result.mensagensErro.slice(0, 3).map((msg, idx) => (
+                              <li key={idx} className="text-red-600 truncate">{msg}</li>
+                            ))}
+                          </ul>
                         )}
                       </>
                     )}
@@ -1059,12 +1048,12 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
           )}
         </div>
 
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-white flex-shrink-0">
+        <div className="flex justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t border-slate-100 bg-white flex-shrink-0 sticky bottom-0">
           <Button
             variant="ghost"
             onClick={handleClose}
             disabled={isLoading}
-            className="text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-9">
             {result?.sucessos > 0 && result?.erros === 0 ? 'Fechar' : 'Cancelar'}
           </Button>
 
@@ -1072,16 +1061,16 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
             <Button
               onClick={handleExtract}
               disabled={!file || isLoading}
-              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-5">
+              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 md:px-5 text-xs md:text-sm h-8 md:h-9">
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 animate-spin" />
                   Extraindo...
                 </>
               ) : (
                 <>
-                  <Eye className="w-4 h-4 mr-2" />
-                  Extrair e Visualizar
+                  <Eye className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2" />
+                  Extrair
                 </>
               )}
             </Button>
@@ -1091,16 +1080,16 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
             <Button
               onClick={handleConfirmImport}
               disabled={isLoading}
-              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-5">
+              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 md:px-5 text-xs md:text-sm h-8 md:h-9">
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 animate-spin" />
                   Importando...
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4 mr-2" />
-                  Confirmar Importação ({previewData.length})
+                  <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2" />
+                  Importar ({previewData.length})
                 </>
               )}
             </Button>
