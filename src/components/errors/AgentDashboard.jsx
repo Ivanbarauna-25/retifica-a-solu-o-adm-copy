@@ -20,8 +20,10 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
-export default function AgentDashboard({ acoes = [], onViewError, onViewTask }) {
+export default function AgentDashboard({ data = {}, onViewError, onViewTask }) {
   const [expandedAcao, setExpandedAcao] = useState(null);
+  
+  const acoes = data.actions || [];
 
   const getStatusColor = (status) => {
     const colors = {

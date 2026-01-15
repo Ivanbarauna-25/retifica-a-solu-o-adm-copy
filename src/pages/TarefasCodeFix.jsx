@@ -169,6 +169,26 @@ export default function TarefasCodeFix() {
     }
   };
 
+  const handleAlterarStatus = async (tarefa, novoStatus) => {
+    try {
+      await base44.entities.CodeFixTask.update(tarefa.id, {
+        status: novoStatus
+      });
+      toast({
+        title: 'Status atualizado',
+        description: `Tarefa marcada como ${novoStatus}`
+      });
+      await carregarTarefas();
+    } catch (error) {
+      console.error('Erro:', error);
+      toast({
+        title: 'Erro ao atualizar',
+        description: error.message,
+        variant: 'destructive'
+      });
+    }
+  };
+
   const getPriorityColor = (priority) => {
     const colors = {
       baixa: 'bg-slate-700 text-slate-300 border-slate-600',
@@ -396,6 +416,17 @@ export default function TarefasCodeFix() {
                         )}
                       </div>
                       <div className="flex gap-2 flex-shrink-0">
+                        {tarefa.status !== 'concluida' && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleAlterarStatus(tarefa, 'concluida')}
+                            className="text-green-600 hover:bg-green-50"
+                            title="Marcar como concluída"
+                          >
+                            <CheckCircle2 className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="ghost"

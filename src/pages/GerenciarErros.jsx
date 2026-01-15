@@ -23,7 +23,8 @@ import {
   MessageSquare,
   Copy,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Zap
 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
@@ -142,6 +143,40 @@ export default function GerenciarErros() {
     setMensagemChat('');
     setModalChat(true);
   };
+
+  const handleAnalisarComIA = async (erro) => {
+    setIsLoading(true);
+    try {
+      const response = await base44.functions.invoke('analyzeErrorWithAI', {
+        error_id: erro.id
+      });
+      
+      if (response.data?.success) {
+        toast({
+          title: '✅ Análise Completa',
+          description: 'Análise técnica gerada com sucesso'
+        });
+        
+        // Abrir modal de detalhes com a análise
+        setErroSelecionado({
+          ...erro,
+          analise_ia: response.data.analysis
+        });
+        setModalDetalhes(true);
+      }
+    } catch (error) {
+      console.error('Erro ao analisar:', error);
+      toast({
+        title: 'Erro na análise',
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEnviarMensagem = async () => {
     if (!mensagemChat.trim()) return;
@@ -526,6 +561,16 @@ Relatório gerado em: ${new Date().toLocaleString('pt-BR')}
                       <Button
                         size="sm"
                         variant="ghost"
+                        onClick={() => handleAnalisarComIA(erro)}
+                        className="h-8 w-8 p-0 hover:bg-purple-50 text-purple-600"
+                        title="Analisar com IA"
+                        disabled={isLoading}
+                      >
+                        <Zap className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         onClick={() => copiarRelatorioCompleto(erro)}
                         className="h-8 w-8 p-0 hover:bg-slate-100 text-slate-500"
                         title="Copiar relatório"
@@ -581,7 +626,16 @@ Relatório gerado em: ${new Date().toLocaleString('pt-BR')}
 
               <TabsContent value="relatorio" className="mt-6">
                 <div className="space-y-4">
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      onClick={() => handleAnalisarComIA(erroSelecionado)}
+                      variant="outline"
+                      size="sm"
+                      className="text-purple-600 border-purple-300 hover:bg-purple-50"
+                    >
+                      <Zap className="w-4 h-4 mr-2" />
+                      Analisar com IA
+                    </Button>
                     <Button
                       onClick={() => copiarRelatorioCompleto(erroSelecionado)}
                       variant="outline"
@@ -591,6 +645,19 @@ Relatório gerado em: ${new Date().toLocaleString('pt-BR')}
                       Copiar Relatório
                     </Button>
                   </div>
+                  
+                  {erroSelecionado.analise_ia && (
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                      <h4 className="font-bold text-purple-900 mb-3 flex items-center gap-2">
+                        <Zap className="h-5 w-5" />
+                        Análise com IA
+                      </h4>
+                      <div className="prose prose-sm max-w-none">
+                        <ReactMarkdown>{erroSelecionado.analise_ia}</ReactMarkdown>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="bg-slate-950 text-green-400 p-6 rounded-lg font-mono text-xs overflow-auto max-h-[600px] border border-slate-800 shadow-inner">
                     <pre className="whitespace-pre-wrap">
                       {gerarRelatorioCompleto(erroSelecionado)}

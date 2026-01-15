@@ -28,9 +28,9 @@ import {
   Copy
 } from 'lucide-react';
 
-export default function AgentReportModal({ isOpen, onClose }) {
+export default function AgentReportModal({ isOpen, onClose, report: reportProp }) {
   const [loading, setLoading] = useState(false);
-  const [report, setReport] = useState(null);
+  const [report, setReport] = useState(reportProp || null);
   const [sendingEmail, setSendingEmail] = useState(false);
   const isMountedRef = useRef(true);
   const { toast } = useToast();
@@ -43,21 +43,22 @@ export default function AgentReportModal({ isOpen, onClose }) {
   }, []);
 
   useEffect(() => {
-    if (isOpen && !report && !loading) {
+    if (reportProp) {
+      setReport(reportProp);
+    } else if (isOpen && !report && !loading) {
       loadReport();
     }
     
     if (!isOpen) {
-      // Cleanup quando modal fecha
       const timer = setTimeout(() => {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && !reportProp) {
           setReport(null);
           setLoading(false);
         }
       }, 200);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, reportProp]);
 
   const loadReport = async () => {
     if (!isMountedRef.current) return;
@@ -196,28 +197,32 @@ export default function AgentReportModal({ isOpen, onClose }) {
               <p className="text-gray-600">Gerando relatório...</p>
             </div>
           </div>
-        ) : report?.data ? (
-          <Tabs defaultValue="erros" className="flex-1 flex flex-col overflow-hidden">
+        ) : report?.report_data || report?.data ? (
+          <Tabs defaultValue="visual" className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="erros">🔴 Erros Ativos</TabsTrigger>
               <TabsTrigger value="visual">📊 Visual</TabsTrigger>
+              <TabsTrigger value="erros">🔴 Erros</TabsTrigger>
               <TabsTrigger value="texto">📄 Texto</TabsTrigger>
             </TabsList>
 
             <TabsContent value="erros" className="flex-1 overflow-y-auto mt-4 space-y-4">
-              {report.data.top_erros && report.data.top_erros.length > 0 ? (
+              {(() => {
+                const reportData = report.report_data || report.data;
+                const topErros = reportData?.top_erros || [];
+                
+                return topErros.length > 0 ? (
                 <>
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                     <h3 className="font-semibold text-red-900 mb-2 flex items-center gap-2">
                       <AlertTriangle className="h-5 w-5" />
-                      {report.data.top_erros.length} Erro(s) Ativo(s) Detectado(s)
+                      {topErros.length} Erro(s) Ativo(s) Detectado(s)
                     </h3>
                     <p className="text-sm text-red-700">
                       Estes erros precisam de atenção. Use o botão "Copiar ID" para buscar detalhes.
                     </p>
                   </div>
 
-                  {report.data.top_erros.map((erro, idx) => (
+                  {topErros.map((erro, idx) => (
                     <div
                       key={idx}
                       className={`border-l-4 rounded-lg p-4 space-y-3 ${
@@ -324,108 +329,107 @@ export default function AgentReportModal({ isOpen, onClose }) {
             </TabsContent>
 
             <TabsContent value="visual" className="flex-1 overflow-y-auto mt-4 space-y-4">
-              <div className={`p-6 rounded-lg border-l-4 ${
-                report.data.diagnostico.status.includes('Operacional') ? 'bg-green-50 border-green-500' : 
-                report.data.diagnostico.status.includes('Parcial') ? 'bg-yellow-50 border-yellow-500' : 
-                'bg-red-50 border-red-500'
-              }`}>
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <CheckCircle2 className="h-6 w-6" />
-                  Diagnóstico Final
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Status:</span>
-                    <span className="font-bold">{report.data.diagnostico.status}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Risco:</span>
-                    <Badge>{report.data.diagnostico.risco_atual}</Badge>
-                  </div>
-                  <div className="pt-3 border-t">
-                    <p className="text-sm text-gray-700">{report.data.diagnostico.recomendacao_imediata}</p>
-                  </div>
-                </div>
-              </div>
+              {/* Usar dados do report_data se disponível */}
+              {(() => {
+                const reportData = report.report_data || report.data;
+                const status = report.status || reportData?.diagnostico?.status || 'Indefinido';
+                const risco = report.risk_level || reportData?.diagnostico?.risco_atual || 'N/A';
+                
+                return (
+                  <>
+                    <div className={`p-6 rounded-lg border-l-4 ${
+                      status.includes('Operacional') ? 'bg-green-50 border-green-500' : 
+                      status.includes('Parcial') ? 'bg-yellow-50 border-yellow-500' : 
+                      'bg-red-50 border-red-500'
+                    }`}>
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <CheckCircle2 className="h-6 w-6" />
+                        Status do Sistema
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between">
+                          <span className="font-semibold">Status:</span>
+                          <span className="font-bold">{status}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-semibold">Nível de Risco:</span>
+                          <Badge>{risco}</Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-semibold">Data:</span>
+                          <span>{new Date(report.report_date || report.created_date).toLocaleString('pt-BR')}</span>
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-white rounded-lg border p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">Health Score</span>
-                    <BarChart3 className="h-4 w-4 text-purple-600" />
-                  </div>
-                  <div className="text-3xl font-bold text-purple-600">
-                    {report.data.metricas.system_health_score}/100
-                  </div>
-                </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-white rounded-lg border p-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">Health Score</span>
+                          <BarChart3 className="h-4 w-4 text-purple-600" />
+                        </div>
+                        <div className="text-3xl font-bold text-purple-600">
+                          {report.health_score || reportData?.metricas?.system_health_score || 0}/100
+                        </div>
+                      </div>
 
-                <div className="bg-white rounded-lg border p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">Críticos</span>
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                  </div>
-                  <div className="text-3xl font-bold text-red-600">
-                    {report.data.metricas.criticos}
-                  </div>
-                </div>
+                      <div className="bg-white rounded-lg border p-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">Total Erros</span>
+                          <AlertTriangle className="h-4 w-4 text-red-600" />
+                        </div>
+                        <div className="text-3xl font-bold text-red-600">
+                          {report.total_errors || reportData?.metricas?.total || 0}
+                        </div>
+                      </div>
 
-                <div className="bg-white rounded-lg border p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">Taxa</span>
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div className="text-3xl font-bold text-green-600">
-                    {report.data.metricas.taxa_resolucao}%
-                  </div>
-                </div>
-              </div>
+                      <div className="bg-white rounded-lg border p-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-600">Taxa Resolução</span>
+                          <TrendingUp className="h-4 w-4 text-green-600" />
+                        </div>
+                        <div className="text-3xl font-bold text-green-600">
+                          {report.resolution_rate || reportData?.metricas?.taxa_resolucao || 0}%
+                        </div>
+                      </div>
+                    </div>
 
-              <div className="bg-white rounded-lg border p-6">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-purple-600" />
-                  Aprendizado
-                </h3>
-                <div className="grid grid-cols-4 gap-4">
-                  <div>
-                    <div className="text-sm text-gray-600">Padrões</div>
-                    <div className="text-2xl font-bold">{report.data.aprendizado.total_padroes}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600">Versão</div>
-                    <div className="text-2xl font-bold">v{report.data.aprendizado.versao_modelo}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600">Confidence</div>
-                    <div className="text-2xl font-bold">{report.data.aprendizado.confidence_media}%</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600">Alta Conf.</div>
-                    <div className="text-2xl font-bold text-green-600">{report.data.aprendizado.padroes_alta_confianca}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg border p-6">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-green-600" />
-                  Segurança
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-gray-600">Safety Score</div>
-                    <div className="text-2xl font-bold text-green-600">{report.data.seguranca.safety_score_medio}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-600">Patches</div>
-                    <div className="text-2xl font-bold text-blue-600">{report.data.seguranca.patches_aplicados_total}</div>
-                  </div>
-                </div>
-              </div>
+                    {reportData?.aprendizado && (
+                      <div className="bg-white rounded-lg border p-6">
+                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                          <Brain className="h-5 w-5 text-purple-600" />
+                          Aprendizado do Agente
+                        </h3>
+                        <div className="grid grid-cols-4 gap-4">
+                          <div>
+                            <div className="text-sm text-gray-600">Padrões</div>
+                            <div className="text-2xl font-bold">{reportData.aprendizado.total_padroes || 0}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600">Versão</div>
+                            <div className="text-2xl font-bold">v{reportData.aprendizado.versao_modelo || 1}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600">Confiança</div>
+                            <div className="text-2xl font-bold">{reportData.aprendizado.confidence_media || 0}%</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-gray-600">Alta Conf.</div>
+                            <div className="text-2xl font-bold text-green-600">{reportData.aprendizado.padroes_alta_confianca || 0}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </TabsContent>
 
             <TabsContent value="texto" className="flex-1 overflow-y-auto mt-4">
               <div className="bg-black text-green-400 p-6 rounded-lg font-mono text-sm">
-                <pre className="whitespace-pre-wrap">{report.report_text}</pre>
+                <pre className="whitespace-pre-wrap">
+                  {report.report_text || JSON.stringify(report.report_data || report.data, null, 2)}
+                </pre>
               </div>
             </TabsContent>
           </Tabs>
