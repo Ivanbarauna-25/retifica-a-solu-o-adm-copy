@@ -1,22 +1,82 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Eye, Trash2, Loader2, X } from 'lucide-react';
+import { 
+  Upload, FileSpreadsheet, AlertCircle, CheckCircle2, Download, Eye, Trash2, 
+  Loader2, FileText, Table as TableIcon, Sparkles, Check, X, AlertTriangle,
+  RefreshCw, Edit3, ArrowRight, FileUp, Wand2
+} from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Componente de etapa de progresso
+const ProgressStep = ({ step, currentStep, label, icon: Icon, isCompleted }) => {
+  const isActive = currentStep === step;
+  const isPast = currentStep > step || isCompleted;
+  
+  return (
+    <div className="flex items-center gap-2">
+      <div className={`
+        w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300
+        ${isPast ? 'bg-green-500 text-white' : 
+          isActive ? 'bg-blue-600 text-white ring-4 ring-blue-100' : 
+          'bg-slate-200 text-slate-500'}
+      `}>
+        {isPast ? <Check className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+      </div>
+      <span className={`text-xs font-medium hidden sm:block ${isActive ? 'text-blue-600' : isPast ? 'text-green-600' : 'text-slate-500'}`}>
+        {label}
+      </span>
+    </div>
+  );
+};
+
+// Indicador de status de validação
+const ValidationBadge = ({ status, count }) => {
+  if (status === 'valid') {
+    return (
+      <Badge className="bg-green-100 text-green-700 border-green-200 gap-1">
+        <CheckCircle2 className="w-3 h-3" />
+        {count} válidos
+      </Badge>
+    );
+  }
+  if (status === 'warning') {
+    return (
+      <Badge className="bg-amber-100 text-amber-700 border-amber-200 gap-1">
+        <AlertTriangle className="w-3 h-3" />
+        {count} avisos
+      </Badge>
+    );
+  }
+  if (status === 'error') {
+    return (
+      <Badge className="bg-red-100 text-red-700 border-red-200 gap-1">
+        <X className="w-3 h-3" />
+        {count} erros
+      </Badge>
+    );
+  }
+  return null;
+};
 
 export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) {
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1); // 1: Upload, 2: Processando, 3: Validação, 4: Resultado
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadingMessage, setLoadingMessage] = useState('');
+  const [loadingStage, setLoadingStage] = useState('');
+  const [loadingSubStage, setLoadingSubStage] = useState('');
   const [previewData, setPreviewData] = useState(null);
+  const [validationResults, setValidationResults] = useState(null);
   const [result, setResult] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
   const { toast } = useToast();
   const mountedRef = useRef(true);
   const abortControllerRef = useRef(null);
@@ -31,31 +91,70 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
     };
   }, []);
 
+  // Reset quando modal abre
   useEffect(() => {
-    if (previewData) {
-      console.log('✅ [PREVIEW] Preview data atualizado:', previewData.length, 'registros');
+    if (isOpen) {
+      setCurrentStep(1);
+      setFile(null);
+      setPreviewData(null);
+      setValidationResults(null);
+      setResult(null);
+      setLoadingProgress(0);
     }
-  }, [previewData]);
+  }, [isOpen]);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelection(e.dataTransfer.files[0]);
+    }
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/pdf'];
-      if (!validTypes.includes(selectedFile.type) &&
-          !selectedFile.name.endsWith('.csv') &&
-          !selectedFile.name.endsWith('.xlsx') &&
-          !selectedFile.name.endsWith('.pdf')) {
-        toast({
-          title: 'Arquivo inválido',
-          description: 'Por favor, selecione um arquivo CSV, Excel ou PDF',
-          variant: 'destructive'
-        });
-        return;
-      }
-      setFile(selectedFile);
-      setPreviewData(null);
-      setResult(null);
+      handleFileSelection(selectedFile);
     }
+  };
+
+  const handleFileSelection = (selectedFile) => {
+    const validExtensions = ['.csv', '.xlsx', '.xls', '.pdf'];
+    const fileExt = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'));
+    
+    if (!validExtensions.includes(fileExt)) {
+      toast({
+        title: 'Formato não suportado',
+        description: 'Selecione um arquivo CSV, Excel (.xlsx) ou PDF',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    setFile(selectedFile);
+    setPreviewData(null);
+    setValidationResults(null);
+    setResult(null);
+  };
+
+  const getFileIcon = () => {
+    if (!file) return FileUp;
+    const ext = file.name.toLowerCase();
+    if (ext.endsWith('.pdf')) return FileText;
+    if (ext.endsWith('.xlsx') || ext.endsWith('.xls')) return TableIcon;
+    return FileSpreadsheet;
   };
 
   const downloadTemplate = () => {
@@ -73,305 +172,150 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
 
     toast({
       title: 'Modelo baixado!',
-      description: 'O arquivo modelo_orcamentos.csv foi baixado com sucesso.'
+      description: 'Use este modelo como referência para seus dados.'
     });
+  };
+
+  // Função de validação dos dados
+  const validateData = (data) => {
+    const results = {
+      valid: [],
+      warnings: [],
+      errors: []
+    };
+
+    data.forEach((row, idx) => {
+      const issues = [];
+      let hasError = false;
+
+      // Validar campos obrigatórios
+      if (!row.numero_orcamento || row.numero_orcamento.trim() === '') {
+        issues.push({ field: 'numero_orcamento', message: 'Número obrigatório', type: 'error' });
+        hasError = true;
+      }
+
+      if (!row.data_orcamento || row.data_orcamento.trim() === '') {
+        issues.push({ field: 'data_orcamento', message: 'Data obrigatória', type: 'error' });
+        hasError = true;
+      } else {
+        // Validar formato da data
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(row.data_orcamento)) {
+          issues.push({ field: 'data_orcamento', message: 'Formato inválido', type: 'warning' });
+        }
+      }
+
+      // Avisos
+      if (!row.cliente_nome || row.cliente_nome.trim() === '') {
+        issues.push({ field: 'cliente_nome', message: 'Cliente não informado', type: 'warning' });
+      }
+
+      if ((Number(row.valor_produtos) || 0) === 0 && (Number(row.valor_servicos) || 0) === 0) {
+        issues.push({ field: 'valores', message: 'Sem valores', type: 'warning' });
+      }
+
+      // Classificar
+      if (hasError) {
+        results.errors.push({ index: idx, row, issues });
+      } else if (issues.length > 0) {
+        results.warnings.push({ index: idx, row, issues });
+      } else {
+        results.valid.push({ index: idx, row });
+      }
+    });
+
+    return results;
+  };
+
+  const updateProgress = (progress, stage, subStage = '') => {
+    if (mountedRef.current) {
+      setLoadingProgress(progress);
+      setLoadingStage(stage);
+      setLoadingSubStage(subStage);
+    }
   };
 
   const handleExtract = async () => {
     if (!file) {
       toast({
         title: 'Nenhum arquivo selecionado',
-        description: 'Por favor, selecione um arquivo para extrair',
         variant: 'destructive'
       });
       return;
     }
 
     abortControllerRef.current = new AbortController();
-
     setIsLoading(true);
-    setLoadingProgress(10);
-    setLoadingMessage('Iniciando processamento...');
+    setCurrentStep(2);
 
     try {
       const isCSV = file.name.toLowerCase().endsWith('.csv') || file.type.includes('csv');
-      const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls') || file.type.includes('spreadsheet');
+      const isExcel = file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls');
+      const isPDF = file.name.toLowerCase().endsWith('.pdf');
+
+      let dados = [];
 
       if (isCSV) {
-        console.log('📊 Processando CSV...');
-        setLoadingProgress(30);
-        setLoadingMessage('Lendo arquivo CSV...');
-
+        updateProgress(10, 'Lendo arquivo', 'Carregando CSV...');
+        await new Promise(r => setTimeout(r, 300));
+        
         const text = await file.text();
-        console.log('📄 Arquivo lido, tamanho:', text.length);
+        updateProgress(25, 'Analisando estrutura', 'Identificando colunas...');
+        await new Promise(r => setTimeout(r, 300));
 
         const lines = text.split('\n').filter(line => line.trim());
-        console.log('📋 Total de linhas:', lines.length);
-
+        
         if (lines.length < 2) {
-          throw new Error('Arquivo CSV vazio ou inválido. É necessário pelo menos um cabeçalho e uma linha de dados.');
+          throw new Error('Arquivo vazio ou sem dados após o cabeçalho.');
         }
 
         const primeiraLinha = lines[0];
         const separador = primeiraLinha.includes(';') ? ';' : ',';
-        console.log('🔧 Separador detectado:', separador);
-
         const headers = primeiraLinha.split(separador).map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
-        console.log('📌 Colunas encontradas:', headers);
 
-        const mapearColuna = (header) => {
-          const h = header.toLowerCase().trim().replace(/\s+/g, ' ');
-          console.log('🔍 Tentando mapear coluna:', `"${header}"`, '→ normalizado:', `"${h}"`);
-          
-          if (h.includes('margem') || h.includes('status') || h.includes('acao') || h.includes('açao') || h.includes('acoes') || h.includes('ações')) {
-            console.log('   ⏭️ Coluna ignorada (calculada/controle)');
-            return null;
-          }
-          
-          if (h.includes('resultado') && h.includes('empresa')) {
-            console.log('   ⏭️ Coluna ignorada (calculada)');
-            return null;
-          }
-          
-          if (h === 'nº' || h === 'no' || h === 'n°' || h === 'n' || h === 'numero' || h.includes('numero') || h.includes('nro')) {
-            console.log('   ✅ Mapeado para: numero_orcamento');
-            return 'numero_orcamento';
-          }
-          
-          if (h === 'data' || h === 'dados' || h.includes('dt') || h.includes('data orcamento') || h.includes('data orc')) {
-            console.log('   ✅ Mapeado para: data_orcamento');
-            return 'data_orcamento';
-          }
-          if (h.includes('validade')) {
-            console.log('   ✅ Mapeado para: data_validade');
-            return 'data_validade';
-          }
-          
-          if (h === 'cliente' || h.includes('cliente')) {
-            console.log('   ✅ Mapeado para: cliente_nome');
-            return 'cliente_nome';
-          }
-          
-          if (h === 'vendedor' || h.includes('vendedor')) {
-            console.log('   ✅ Mapeado para: vendedor_nome');
-            return 'vendedor_nome';
-          }
-          
-          if (h === 'produtos' || h === 'produto' || h.includes('vl. produto') || h.includes('valor produto') || h.includes('prod')) {
-            console.log('   ✅ Mapeado para: valor_produtos');
-            return 'valor_produtos';
-          }
-          if (h === 'servicos' || h === 'serviços' || h === 'servico' || h === 'serviço' || h.includes('vl. servic') || h.includes('valor servic') || h.includes('serv')) {
-            console.log('   ✅ Mapeado para: valor_servicos');
-            return 'valor_servicos';
-          }
-          if (h === 'desconto' || h.includes('desconto') || h.includes('desc')) {
-            console.log('   ✅ Mapeado para: desconto');
-            return 'desconto';
-          }
-          
-          if (h.includes('total') && h.includes('cliente')) {
-            console.log('   ✅ Mapeado para: valor_total');
-            return 'valor_total';
-          }
-          
-          if (h === 'despesas' || h === 'despesa' || h.includes('outras despesas') || h.includes('outras desp') || h.includes('desp')) {
-            console.log('   ✅ Mapeado para: outras_despesas');
-            return 'outras_despesas';
-          }
-          
-          if (h === 'total' && !h.includes('cliente')) {
-            console.log('   ✅ Mapeado para: valor_total');
-            return 'valor_total';
-          }
-          
-          if (h.includes('observ')) {
-            console.log('   ✅ Mapeado para: observacoes');
-            return 'observacoes';
-          }
-          
-          console.log('   ⚠️ Coluna não mapeada');
-          return null;
-        };
+        updateProgress(40, 'Mapeando colunas', `${headers.length} colunas encontradas`);
+        await new Promise(r => setTimeout(r, 300));
 
         const colunaMap = {};
         headers.forEach((h, idx) => {
           const campo = mapearColuna(h);
-          if (campo) {
-            colunaMap[idx] = campo;
-            console.log(`✅ Coluna ${idx} (${h}) mapeada para: ${campo}`);
-          }
+          if (campo) colunaMap[idx] = campo;
         });
 
-        console.log('📊 Mapeamento final:', colunaMap);
-        console.log('📊 Total de colunas mapeadas:', Object.keys(colunaMap).length);
-
         if (Object.keys(colunaMap).length === 0) {
-          throw new Error('Não foi possível identificar as colunas do CSV. Verifique se o cabeçalho contém: numero_orcamento, cliente_nome, data_orcamento, etc.');
+          throw new Error('Não foi possível identificar as colunas. Verifique o cabeçalho do arquivo.');
         }
 
-        setLoadingProgress(60);
-        setLoadingMessage('Extraindo dados das linhas...');
-
-        const dados = [];
+        updateProgress(60, 'Extraindo dados', `Processando ${lines.length - 1} linhas...`);
+        
         for (let i = 1; i < lines.length; i++) {
-          if (abortControllerRef.current?.signal.aborted) {
-            throw new Error('Operação cancelada');
-          }
-
           const line = lines[i].trim();
           if (!line) continue;
 
-          const valores = [];
-          let atual = '';
-          let dentroAspas = false;
-
-          for (let j = 0; j < line.length; j++) {
-            const char = line[j];
-
-            if (char === '"' || char === "'") {
-              dentroAspas = !dentroAspas;
-            } else if (char === separador && !dentroAspas) {
-              valores.push(atual.trim());
-              atual = '';
-            } else {
-              atual += char;
-            }
-          }
-          valores.push(atual.trim());
-
-          const orcamento = {
-            numero_orcamento: '',
-            cliente_nome: '',
-            vendedor_nome: '',
-            data_orcamento: '',
-            data_validade: '',
-            status: 'pendente',
-            valor_produtos: 0,
-            valor_servicos: 0,
-            desconto: 0,
-            valor_total: 0,
-            outras_despesas: 0,
-            observacoes: ''
-          };
-
-          valores.forEach((valor, idx) => {
-            const campo = colunaMap[idx];
-            if (campo) {
-              const valorLimpo = valor.replace(/^["']|["']$/g, '').trim();
-
-              if (!valorLimpo || valorLimpo === '' || valorLimpo === '-') {
-                return;
-              }
-              
-              if (['valor_produtos', 'valor_servicos', 'desconto', 'valor_total', 'outras_despesas'].includes(campo)) {
-                try {
-                  const numeroLimpo = valorLimpo
-                    .replace(/[R$\s]/g, '')
-                    .replace(/\./g, '')
-                    .replace(',', '.');
-
-                  const numero = Number(numeroLimpo);
-                  orcamento[campo] = isNaN(numero) ? 0 : numero;
-                } catch (e) {
-                  console.warn(`Erro ao converter ${campo}:`, valorLimpo, e);
-                  orcamento[campo] = 0;
-                }
-              } else {
-                orcamento[campo] = valorLimpo;
-              }
-            }
-          });
-
-          if (!orcamento.numero_orcamento || orcamento.numero_orcamento === '') {
-            console.warn(`⚠️ Linha ${i + 1} sem número de orçamento - será rejeitada`);
-            continue;
-          }
-
-          if (!orcamento.data_orcamento || orcamento.data_orcamento === '') {
-            console.warn(`⚠️ Linha ${i + 1} sem data de orçamento - será rejeitada`);
-            continue;
-          }
-
-          if (orcamento.data_orcamento && orcamento.data_orcamento.includes('/')) {
-            try {
-              const partes = orcamento.data_orcamento.split('/');
-              if (partes.length === 3) {
-                const [dia, mes, ano] = partes;
-                orcamento.data_orcamento = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-              }
-            } catch (e) {
-              console.warn('⚠️ Erro ao converter data:', orcamento.data_orcamento, e);
-              continue;
-            }
-          }
-
-          if (orcamento.valor_total === 0 || !orcamento.valor_total) {
-            const subtotal = (orcamento.valor_produtos || 0) + (orcamento.valor_servicos || 0);
-            orcamento.valor_total = Math.max(0, subtotal - (orcamento.desconto || 0) + (orcamento.outras_despesas || 0));
-          }
-
+          const valores = parseCSVLine(line, separador);
+          const orcamento = extrairOrcamento(valores, colunaMap);
+          
           if (orcamento.numero_orcamento && orcamento.data_orcamento) {
             dados.push(orcamento);
-          } else {
-            console.warn(`⚠️ Linha ${i + 1} rejeitada - faltam dados obrigatórios (número ou data do orçamento)`);
+          }
+
+          if (i % 10 === 0) {
+            updateProgress(60 + Math.floor((i / lines.length) * 25), 'Extraindo dados', `Linha ${i} de ${lines.length - 1}`);
           }
         }
 
-        console.log(`✅ ${dados.length} orçamentos extraídos`);
-
-        if (dados.length === 0) {
-          throw new Error('Nenhum orçamento válido encontrado no arquivo. Verifique se há dados nas linhas após o cabeçalho, e se os campos obrigatórios (Número e Data do Orçamento) estão preenchidos.');
-        }
-
-        setLoadingProgress(90);
-        setLoadingMessage('Preparando prévia...');
-
-        const dadosComId = dados.map((d, idx) => ({
-          id: `temp_${idx}_${Date.now()}`,
-          ...d,
-        }));
-
-        console.log('📊 [PREVIEW] Definindo preview data:', dadosComId.length, 'registros');
-
-        if (!mountedRef.current) {
-          console.warn('⚠️ Componente desmontado, abortando');
-          return;
-        }
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setPreviewData(dadosComId);
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setLoadingProgress(100);
-        setLoadingMessage('Concluído!');
-
-        toast({
-          title: 'Dados extraídos com sucesso!',
-          description: `${dados.length} orçamento(s) encontrado(s). Revise antes de importar.`
-        });
-
-      } else if (isExcel) {
-        // Processar Excel (.xlsx) via API de extração
-        console.log('📊 Processando Excel...');
-        setLoadingProgress(20);
-        setLoadingMessage('Enviando arquivo Excel para processamento...');
-
+      } else if (isExcel || isPDF) {
+        updateProgress(10, 'Enviando arquivo', 'Fazendo upload...');
+        
         const uploadResponse = await base44.integrations.Core.UploadFile({ file });
-        console.log('✅ Upload concluído:', uploadResponse);
-
         const file_url = uploadResponse.file_url;
 
-        if (!file_url) {
-          throw new Error('URL do arquivo não retornada pelo upload');
-        }
+        if (!file_url) throw new Error('Falha no upload do arquivo');
 
-        if (!mountedRef.current) return;
+        updateProgress(30, 'Analisando com IA', isPDF ? 'Extraindo texto do PDF...' : 'Lendo planilha...');
+        await new Promise(r => setTimeout(r, 500));
 
-        setLoadingProgress(40);
-        setLoadingMessage('Extraindo dados do Excel... Isso pode levar alguns segundos...');
+        updateProgress(50, 'Analisando com IA', 'Identificando orçamentos...');
 
         const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
           file_url,
@@ -383,13 +327,13 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                 items: {
                   type: "object",
                   properties: {
-                    numero_orcamento: { type: "string", description: "Número do orçamento (coluna Nº ou N°)" },
+                    numero_orcamento: { type: "string", description: "Número do orçamento" },
                     cliente_nome: { type: "string", description: "Nome do cliente" },
                     vendedor_nome: { type: "string", description: "Nome do vendedor" },
-                    data_orcamento: { type: "string", description: "Data do orçamento no formato YYYY-MM-DD" },
+                    data_orcamento: { type: "string", description: "Data do orçamento (YYYY-MM-DD)" },
                     valor_produtos: { type: "number", description: "Valor de produtos" },
                     valor_servicos: { type: "number", description: "Valor de serviços" },
-                    desconto: { type: "number", description: "Valor do desconto" },
+                    desconto: { type: "number", description: "Desconto" },
                     outras_despesas: { type: "number", description: "Outras despesas" },
                     observacoes: { type: "string", description: "Observações" }
                   },
@@ -400,30 +344,13 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
           }
         });
 
-        console.log('📊 Resultado da extração Excel:', extractResult);
-
-        if (!mountedRef.current) return;
-
-        setLoadingProgress(70);
-        setLoadingMessage('Processando dados extraídos...');
+        updateProgress(75, 'Processando resultados', 'Organizando dados...');
 
         if (extractResult.status === 'error') {
-          throw new Error(extractResult.details || 'Erro ao extrair dados do arquivo Excel');
+          throw new Error(extractResult.details || 'Erro ao extrair dados do arquivo');
         }
 
-        const dados = extractResult.output?.orcamentos || [];
-
-        console.log('📋 Dados extraídos do Excel:', dados);
-
-        if (!Array.isArray(dados) || dados.length === 0) {
-          throw new Error('Nenhum orçamento encontrado no arquivo Excel. Verifique se o arquivo contém os dados nas colunas corretas.');
-        }
-
-        setLoadingProgress(90);
-        setLoadingMessage('Preparando prévia...');
-
-        const dadosComId = dados.map((d, idx) => ({
-          id: `temp_${idx}_${Date.now()}`,
+        dados = (extractResult.output?.orcamentos || []).map(d => ({
           numero_orcamento: String(d.numero_orcamento || ''),
           cliente_nome: d.cliente_nome || '',
           vendedor_nome: d.vendedor_nome || '',
@@ -437,199 +364,175 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
           outras_despesas: Number(d.outras_despesas) || 0,
           observacoes: d.observacoes || ''
         }));
-
-        console.log('📊 [PREVIEW] Definindo preview data do Excel:', dadosComId.length, 'registros');
-
-        if (!mountedRef.current) return;
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setPreviewData(dadosComId);
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setLoadingProgress(100);
-        setLoadingMessage('Concluído!');
-
-        toast({
-          title: 'Dados extraídos com sucesso!',
-          description: `${dados.length} orçamento(s) encontrado(s). Revise antes de importar.`
-        });
-
-      } else {
-        // PDF ou outro formato
-        console.log('📤 Fazendo upload do arquivo...');
-        setLoadingProgress(20);
-        setLoadingMessage('Enviando arquivo para servidor...');
-
-        const uploadResponse = await base44.integrations.Core.UploadFile({ file });
-        console.log('✅ Upload concluído:', uploadResponse);
-
-        const file_url = uploadResponse.file_url;
-
-        if (!file_url) {
-          throw new Error('URL do arquivo não retornada pelo upload');
-        }
-
-        if (!mountedRef.current) return;
-
-        setLoadingProgress(40);
-        setLoadingMessage('Analisando conteúdo com IA... Isso pode levar alguns minutos...');
-        console.log('🔍 Extraindo dados do arquivo...', file_url);
-
-        const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
-          file_url,
-          json_schema: {
-            type: "object",
-            properties: {
-              orcamentos: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    numero_orcamento: { type: "string" },
-                    cliente_nome: { type: "string" },
-                    vendedor_nome: { type: "string" },
-                    data_orcamento: { type: "string" },
-                    data_validade: { type: "string" },
-                    status: { type: "string" },
-                    valor_produtos: { type: "number" },
-                    valor_servicos: { type: "number" },
-                    desconto: { type: "number" },
-                    valor_total: { type: "number" },
-                    outras_despesas: { type: "number" },
-                    observacoes: { type: "string" }
-                  },
-                  required: ["numero_orcamento", "data_orcamento"]
-                }
-              }
-            }
-          }
-        });
-
-        console.log('📊 Resultado da extração:', extractResult);
-
-        if (!mountedRef.current) return;
-
-        setLoadingProgress(70);
-        setLoadingMessage('Processando dados extraídos...');
-
-        if (extractResult.status === 'error') {
-          throw new Error(extractResult.details || 'Erro ao extrair dados do arquivo');
-        }
-
-        const dados = extractResult.output?.orcamentos || [];
-
-        console.log('📋 Dados extraídos:', dados);
-
-        if (!Array.isArray(dados) || dados.length === 0) {
-          throw new Error('Nenhum orçamento encontrado no arquivo. Verifique se o PDF contém uma tabela com os dados esperados.');
-        }
-
-        setLoadingProgress(90);
-        setLoadingMessage('Preparando prévia...');
-
-        const dadosComId = dados.map((d, idx) => ({
-          id: `temp_${idx}_${Date.now()}`,
-          numero_orcamento: d.numero_orcamento,
-          cliente_nome: d.cliente_nome || '',
-          vendedor_nome: d.vendedor_nome || '',
-          data_orcamento: d.data_orcamento,
-          data_validade: d.data_validade || '',
-          status: d.status || 'pendente',
-          valor_produtos: Number(d.valor_produtos) || 0,
-          valor_servicos: Number(d.valor_servicos) || 0,
-          desconto: Number(d.desconto) || 0,
-          valor_total: Number(d.valor_total) || 0,
-          outras_despesas: Number(d.outras_despesas) || 0,
-          observacoes: d.observacoes || ''
-        }));
-
-        console.log('📊 [PREVIEW] Definindo preview data:', dadosComId.length, 'registros');
-
-        if (!mountedRef.current) return;
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setPreviewData(dadosComId);
-
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setLoadingProgress(100);
-        setLoadingMessage('Concluído!');
-
-        toast({
-          title: 'Dados extraídos com sucesso!',
-          description: `${dados.length} orçamento(s) encontrado(s). Revise antes de importar.`
-        });
       }
+
+      if (dados.length === 0) {
+        throw new Error('Nenhum orçamento válido encontrado. Verifique se os campos Número e Data estão preenchidos.');
+      }
+
+      updateProgress(90, 'Validando dados', 'Verificando integridade...');
+      await new Promise(r => setTimeout(r, 300));
+
+      // Adicionar IDs temporários
+      const dadosComId = dados.map((d, idx) => ({
+        id: `temp_${idx}_${Date.now()}`,
+        ...d,
+        valor_total: d.valor_total || Math.max(0, (d.valor_produtos || 0) + (d.valor_servicos || 0) - (d.desconto || 0) + (d.outras_despesas || 0))
+      }));
+
+      // Validar dados
+      const validation = validateData(dadosComId);
+
+      updateProgress(100, 'Concluído!', `${dados.length} orçamento(s) encontrado(s)`);
+      await new Promise(r => setTimeout(r, 300));
+
+      setPreviewData(dadosComId);
+      setValidationResults(validation);
+      setCurrentStep(3);
+
+      toast({
+        title: 'Extração concluída!',
+        description: `${dados.length} orçamento(s) encontrado(s). Revise antes de importar.`
+      });
 
     } catch (error) {
-      if (error.message === 'Operação cancelada') {
-        console.log('⚠️ Operação cancelada pelo usuário');
-        return;
-      }
+      if (error.message === 'Operação cancelada') return;
 
-      console.error('❌ Erro ao extrair:', error);
+      console.error('Erro na extração:', error);
 
-      // Registrar erro automaticamente no sistema do agente
+      // Registrar erro
       try {
         await base44.functions.invoke('registerAndAnalyzeError', {
-          message: `Falha na importação de orçamentos: ${error.message}`,
-          stack: error.stack || '',
+          message: `Falha na importação: ${error.message}`,
           source: 'ImportarOrcamentosModal',
-          url: window.location.href,
-          user_agent: navigator.userAgent,
           component: 'ImportarOrcamentosModal',
           severity: 'error',
-          extra: {
-            fileName: file?.name,
-            fileType: file?.type,
-            fileSize: file?.size,
-            action: 'extract',
-            errorType: 'import_failure'
-          }
+          extra: { fileName: file?.name, fileType: file?.type }
         });
-      } catch (regError) {
-        console.error('Erro ao registrar falha:', regError);
-      }
+      } catch (e) {}
 
-      if (mountedRef.current) {
-        toast({
-          title: 'Erro na extração',
-          description: error.message || 'Não foi possível extrair dados do arquivo',
-          variant: 'destructive'
-        });
-      }
+      toast({
+        title: 'Erro na extração',
+        description: error.message,
+        variant: 'destructive'
+      });
+
+      setCurrentStep(1);
     } finally {
-      if (mountedRef.current) {
-        setIsLoading(false);
-        setLoadingProgress(0);
-        setLoadingMessage('');
-      }
+      setIsLoading(false);
     }
   };
 
+  const mapearColuna = (header) => {
+    const h = header.toLowerCase().trim().replace(/\s+/g, ' ');
+    
+    // Ignorar colunas calculadas
+    if (h.includes('margem') || h.includes('status') || h.includes('acao') || h.includes('resultado')) return null;
+    
+    if (h === 'nº' || h === 'no' || h === 'n°' || h === 'n' || h === 'numero' || h.includes('numero') || h.includes('nro')) return 'numero_orcamento';
+    if (h === 'data' || h.includes('dt') || h.includes('data orcamento') || h.includes('data orc')) return 'data_orcamento';
+    if (h.includes('validade')) return 'data_validade';
+    if (h === 'cliente' || h.includes('cliente')) return 'cliente_nome';
+    if (h === 'vendedor' || h.includes('vendedor')) return 'vendedor_nome';
+    if (h === 'produtos' || h === 'produto' || h.includes('vl. produto') || h.includes('valor produto') || h.includes('prod')) return 'valor_produtos';
+    if (h === 'servicos' || h === 'serviços' || h.includes('vl. servic') || h.includes('valor servic') || h.includes('serv')) return 'valor_servicos';
+    if (h === 'desconto' || h.includes('desconto') || h.includes('desc')) return 'desconto';
+    if (h.includes('total') && h.includes('cliente')) return 'valor_total';
+    if (h === 'despesas' || h === 'despesa' || h.includes('outras despesas') || h.includes('desp')) return 'outras_despesas';
+    if (h === 'total' && !h.includes('cliente')) return 'valor_total';
+    if (h.includes('observ')) return 'observacoes';
+    
+    return null;
+  };
+
+  const parseCSVLine = (line, separador) => {
+    const valores = [];
+    let atual = '';
+    let dentroAspas = false;
+
+    for (let j = 0; j < line.length; j++) {
+      const char = line[j];
+      if (char === '"' || char === "'") {
+        dentroAspas = !dentroAspas;
+      } else if (char === separador && !dentroAspas) {
+        valores.push(atual.trim());
+        atual = '';
+      } else {
+        atual += char;
+      }
+    }
+    valores.push(atual.trim());
+    return valores;
+  };
+
+  const extrairOrcamento = (valores, colunaMap) => {
+    const orcamento = {
+      numero_orcamento: '',
+      cliente_nome: '',
+      vendedor_nome: '',
+      data_orcamento: '',
+      data_validade: '',
+      status: 'pendente',
+      valor_produtos: 0,
+      valor_servicos: 0,
+      desconto: 0,
+      valor_total: 0,
+      outras_despesas: 0,
+      observacoes: ''
+    };
+
+    valores.forEach((valor, idx) => {
+      const campo = colunaMap[idx];
+      if (!campo) return;
+
+      const valorLimpo = valor.replace(/^["']|["']$/g, '').trim();
+      if (!valorLimpo || valorLimpo === '-') return;
+
+      if (['valor_produtos', 'valor_servicos', 'desconto', 'valor_total', 'outras_despesas'].includes(campo)) {
+        const numeroLimpo = valorLimpo.replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
+        orcamento[campo] = Number(numeroLimpo) || 0;
+      } else {
+        orcamento[campo] = valorLimpo;
+      }
+    });
+
+    // Converter data DD/MM/YYYY para YYYY-MM-DD
+    if (orcamento.data_orcamento && orcamento.data_orcamento.includes('/')) {
+      const partes = orcamento.data_orcamento.split('/');
+      if (partes.length === 3) {
+        const [dia, mes, ano] = partes;
+        orcamento.data_orcamento = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+      }
+    }
+
+    return orcamento;
+  };
+
   const handleEditRow = (id, field, value) => {
-    setPreviewData(prev => prev.map(row =>
-      row.id === id ? { ...row, [field]: value } : row
-    ));
+    setPreviewData(prev => {
+      const updated = prev.map(row => row.id === id ? { ...row, [field]: value } : row);
+      setValidationResults(validateData(updated));
+      return updated;
+    });
   };
 
   const handleDeleteRow = (id) => {
-    setPreviewData(prev => prev.filter(row => row.id !== id));
+    setPreviewData(prev => {
+      const updated = prev.filter(row => row.id !== id);
+      setValidationResults(validateData(updated));
+      return updated;
+    });
   };
 
   const handleConfirmImport = async () => {
     if (!previewData || previewData.length === 0) {
-      toast({
-        title: 'Nenhum dado para importar',
-        variant: 'destructive'
-      });
+      toast({ title: 'Nenhum dado para importar', variant: 'destructive' });
       return;
     }
 
     setIsLoading(true);
+    setCurrentStep(2);
+    updateProgress(0, 'Iniciando importação', 'Carregando dados auxiliares...');
 
     try {
       const [clientesData, funcionariosData] = await Promise.all([
@@ -640,501 +543,548 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
       let sucessos = 0;
       let erros = 0;
       const mensagensErro = [];
-      const clientesCriadosAutomaticamente = [];
+      const clientesCriados = [];
 
-      const BATCH_SIZE = 10;
-      const DELAY_BETWEEN_BATCHES = 1000;
+      updateProgress(20, 'Importando', `0 de ${previewData.length}`);
 
-      for (let i = 0; i < previewData.length; i += BATCH_SIZE) {
-        if (!mountedRef.current) break;
-
-        const batch = previewData.slice(i, i + BATCH_SIZE);
-
-        const batchPromises = batch.map(async (linha) => {
-          try {
-            if (!linha.numero_orcamento || linha.numero_orcamento.trim() === '') {
-              throw new Error('Número do orçamento é obrigatório');
-            }
-
-            if (!linha.data_orcamento || linha.data_orcamento.trim() === '') {
-              throw new Error('Data do orçamento é obrigatória');
-            }
-
-            let cliente = clientesData.find(c => 
-              c.nome.toLowerCase().trim() === (linha.cliente_nome || '').toLowerCase().trim()
-            );
-
-            if (!cliente && linha.cliente_nome && linha.cliente_nome.trim() !== '') {
-              try {
-                const novoCliente = await base44.entities.Cliente.create({
-                  nome: linha.cliente_nome.trim(),
-                  telefone: 'A completar'
-                });
-                cliente = novoCliente;
-                clientesData.push(novoCliente);
-                clientesCriadosAutomaticamente.push({
-                  nome: linha.cliente_nome.trim(),
-                  id: novoCliente.id
-                });
-              } catch (errCliente) {
-                console.warn('Erro ao criar cliente automaticamente:', errCliente);
-              }
-            }
-
-            const vendedor = funcionariosData.find(f => 
-              f.nome.toLowerCase().trim() === (linha.vendedor_nome || '').toLowerCase().trim()
-            );
-
-            const subtotal = (Number(linha.valor_produtos) || 0) + (Number(linha.valor_servicos) || 0);
-            const valorTotal = Math.max(0, subtotal - (Number(linha.desconto) || 0) + (Number(linha.outras_despesas) || 0));
-
-            const itens = [];
-            
-            if (linha.valor_produtos > 0) {
-              itens.push({
-                tipo: 'produto',
-                descricao: 'Produtos importados',
-                quantidade: 1,
-                valor_unitario: Number(linha.valor_produtos),
-                desconto: 0,
-                valor_total: Number(linha.valor_produtos)
-              });
-            }
-
-            if (linha.valor_servicos > 0) {
-              itens.push({
-                tipo: 'servico',
-                descricao: 'Serviços importados',
-                quantidade: 1,
-                valor_unitario: Number(linha.valor_servicos),
-                desconto: 0,
-                valor_total: Number(linha.valor_servicos)
-              });
-            }
-
-            await base44.entities.Orcamento.create({
-              numero_orcamento: linha.numero_orcamento.trim(),
-              data_orcamento: linha.data_orcamento.trim(),
-              contato_id: cliente?.id || '',
-              contato_tipo: 'cliente',
-              cliente_id: cliente?.id || '',
-              vendedor_id: vendedor?.id || '',
-              status: 'pendente',
-              desconto_tipo: 'valor',
-              desconto_valor: Number(linha.desconto) || 0,
-              valor_total: valorTotal,
-              itens: itens,
-              outras_despesas: Number(linha.outras_despesas) || 0,
-              observacoes: linha.observacoes || ''
-            });
-
-            return { success: true };
-          } catch (err) {
-            return {
-              success: false,
-              error: `Orçamento ${linha.numero_orcamento || 'N/A'}: ${err.message}`
-            };
-          }
-        });
-
-        const results = await Promise.all(batchPromises);
-
-        results.forEach(result => {
-          if (result.success) {
-            sucessos++;
-          } else {
-            erros++;
-            mensagensErro.push(result.error);
-          }
-        });
-
-        if (i + BATCH_SIZE < previewData.length) {
-          await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_BATCHES));
-        }
-      }
-
-      if (clientesCriadosAutomaticamente.length > 0) {
+      for (let i = 0; i < previewData.length; i++) {
+        const linha = previewData[i];
+        
         try {
-          await base44.functions.invoke('notificarClientesIncompletos', {
-            clientes: clientesCriadosAutomaticamente
+          if (!linha.numero_orcamento?.trim() || !linha.data_orcamento?.trim()) {
+            throw new Error('Número e data são obrigatórios');
+          }
+
+          // Buscar ou criar cliente
+          let cliente = clientesData.find(c => 
+            c.nome.toLowerCase().trim() === (linha.cliente_nome || '').toLowerCase().trim()
+          );
+
+          if (!cliente && linha.cliente_nome?.trim()) {
+            try {
+              cliente = await base44.entities.Cliente.create({
+                nome: linha.cliente_nome.trim(),
+                telefone: 'A completar'
+              });
+              clientesData.push(cliente);
+              clientesCriados.push(linha.cliente_nome.trim());
+            } catch (e) {}
+          }
+
+          const vendedor = funcionariosData.find(f => 
+            f.nome.toLowerCase().trim() === (linha.vendedor_nome || '').toLowerCase().trim()
+          );
+
+          const subtotal = (Number(linha.valor_produtos) || 0) + (Number(linha.valor_servicos) || 0);
+          const valorTotal = Math.max(0, subtotal - (Number(linha.desconto) || 0) + (Number(linha.outras_despesas) || 0));
+
+          const itens = [];
+          if (linha.valor_produtos > 0) {
+            itens.push({
+              tipo: 'produto',
+              descricao: 'Produtos importados',
+              quantidade: 1,
+              valor_unitario: Number(linha.valor_produtos),
+              desconto: 0,
+              valor_total: Number(linha.valor_produtos)
+            });
+          }
+          if (linha.valor_servicos > 0) {
+            itens.push({
+              tipo: 'servico',
+              descricao: 'Serviços importados',
+              quantidade: 1,
+              valor_unitario: Number(linha.valor_servicos),
+              desconto: 0,
+              valor_total: Number(linha.valor_servicos)
+            });
+          }
+
+          await base44.entities.Orcamento.create({
+            numero_orcamento: linha.numero_orcamento.trim(),
+            data_orcamento: linha.data_orcamento.trim(),
+            contato_id: cliente?.id || '',
+            contato_tipo: 'cliente',
+            cliente_id: cliente?.id || '',
+            vendedor_id: vendedor?.id || '',
+            status: 'pendente',
+            desconto_tipo: 'valor',
+            desconto_valor: Number(linha.desconto) || 0,
+            valor_total: valorTotal,
+            itens,
+            outras_despesas: Number(linha.outras_despesas) || 0,
+            observacoes: linha.observacoes || ''
           });
-        } catch (alertError) {
-          console.warn('Erro ao enviar alerta de clientes incompletos:', alertError);
+
+          sucessos++;
+        } catch (err) {
+          erros++;
+          mensagensErro.push(`${linha.numero_orcamento || 'N/A'}: ${err.message}`);
         }
+
+        updateProgress(20 + Math.floor((i / previewData.length) * 70), 'Importando', `${i + 1} de ${previewData.length}`);
       }
 
-      if (!mountedRef.current) return;
+      updateProgress(100, 'Concluído!', '');
 
       setResult({
         total: previewData.length,
         sucessos,
         erros,
         mensagensErro: mensagensErro.slice(0, 5),
-        clientesCriados: clientesCriadosAutomaticamente.length
+        clientesCriados: clientesCriados.length
       });
+      setCurrentStep(4);
 
       if (sucessos > 0) {
-        const alertaClientes = clientesCriadosAutomaticamente.length > 0 
-          ? ` • ${clientesCriadosAutomaticamente.length} cliente(s) cadastrado(s) automaticamente com dados incompletos.`
-          : '';
-        
         toast({
           title: 'Importação concluída',
-          description: `${sucessos} orçamento(s) importado(s)${erros > 0 ? `, ${erros} com erro` : ''}${alertaClientes}`,
+          description: `${sucessos} orçamento(s) importado(s)${erros > 0 ? `, ${erros} com erro` : ''}`
         });
 
         if (erros === 0) {
-          setTimeout(() => {
-            if (mountedRef.current) {
-              onSuccess();
-            }
-          }, 2000);
+          setTimeout(() => onSuccess(), 2000);
         }
       }
 
     } catch (error) {
-      console.error('Erro ao importar:', error);
-      
-      // Registrar erro automaticamente no sistema do agente
-      try {
-        await base44.functions.invoke('registerAndAnalyzeError', {
-          message: `Falha na importação de orçamentos (confirmação): ${error.message}`,
-          stack: error.stack || '',
-          source: 'ImportarOrcamentosModal',
-          url: window.location.href,
-          user_agent: navigator.userAgent,
-          component: 'ImportarOrcamentosModal',
-          severity: 'error',
-          extra: {
-            action: 'confirm_import',
-            totalRecords: previewData?.length || 0,
-            errorType: 'import_failure'
-          }
-        });
-      } catch (regError) {
-        console.error('Erro ao registrar falha:', regError);
-      }
-      
-      if (mountedRef.current) {
-        toast({
-          title: 'Erro na importação',
-          description: error.message || 'Não foi possível importar os dados',
-          variant: 'destructive'
-        });
-      }
+      console.error('Erro na importação:', error);
+      toast({
+        title: 'Erro na importação',
+        description: error.message,
+        variant: 'destructive'
+      });
+      setCurrentStep(3);
     } finally {
-      if (mountedRef.current) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
+    if (abortControllerRef.current) abortControllerRef.current.abort();
     if (!isLoading) {
       setFile(null);
       setPreviewData(null);
+      setValidationResults(null);
       setResult(null);
-      setLoadingProgress(0);
-      setLoadingMessage('');
+      setCurrentStep(1);
       onClose();
     }
   };
 
+  const FileIcon = getFileIcon();
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[95vw] md:max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-xl md:rounded-2xl shadow-2xl">
-        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-3 md:py-4 flex-shrink-0">
+      <DialogContent className="w-[95vw] md:max-w-5xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-2xl shadow-2xl">
+        {/* Header */}
+        <DialogHeader className="bg-gradient-to-r from-slate-800 via-slate-800 to-slate-900 text-white px-4 md:px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center gap-2 md:gap-3 text-white">
-              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <DialogTitle className="flex items-center gap-3 text-white">
+              <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                <Upload className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
-                <span className="text-sm md:text-base font-semibold">Importar Orçamentos</span>
-                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">CSV, Excel ou PDF</p>
+                <span className="text-base md:text-lg font-semibold">Importar Orçamentos</span>
+                <p className="text-xs text-slate-300 mt-0.5">PDF, CSV ou Excel (.xlsx)</p>
               </div>
             </DialogTitle>
           </div>
+
+          {/* Progress Steps */}
+          <div className="flex items-center justify-center gap-2 md:gap-4 mt-4 pt-4 border-t border-white/10">
+            <ProgressStep step={1} currentStep={currentStep} label="Arquivo" icon={FileUp} isCompleted={currentStep > 1} />
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+            <ProgressStep step={2} currentStep={currentStep} label="Processando" icon={Wand2} isCompleted={currentStep > 2} />
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+            <ProgressStep step={3} currentStep={currentStep} label="Validar" icon={Edit3} isCompleted={currentStep > 3} />
+            <ArrowRight className="w-4 h-4 text-slate-500" />
+            <ProgressStep step={4} currentStep={currentStep} label="Resultado" icon={CheckCircle2} isCompleted={result?.sucessos > 0} />
+          </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-3 md:px-8 py-4 md:py-6 space-y-4 md:space-y-6">
-          {!previewData && !result && (
-            <>
-              <Alert className="bg-blue-50 border-blue-200">
-                <FileSpreadsheet className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                <AlertDescription className="text-xs md:text-sm text-neutral-700">
-                  <strong>Colunas:</strong> Nº, Data, Cliente, Vendedor, Produtos, Serviços, Desconto, Despesas
-                </AlertDescription>
-              </Alert>
-
-              <div className="flex justify-center">
-                <Button
-                  variant="outline"
-                  onClick={downloadTemplate}
-                  className="gap-2 bg-white border-neutral-300 hover:bg-slate-50 transition-colors text-xs md:text-sm h-8 md:h-9"
-                  type="button">
-                  <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Baixar Modelo
-                </Button>
-              </div>
-
-              <div className="bg-white border border-slate-200 rounded-lg md:rounded-xl overflow-hidden">
-                <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-5 py-2 md:py-3">
-                  <h3 className="text-xs md:text-sm font-bold text-slate-700">Selecione o arquivo</h3>
-                </div>
-                <div className="p-3 md:p-5">
-                <div className="border-2 border-dashed border-slate-300 rounded-lg md:rounded-xl p-6 md:p-12 text-center hover:border-slate-400 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-5">
+          <AnimatePresence mode="wait">
+            {/* Step 1: Upload */}
+            {currentStep === 1 && (
+              <motion.div
+                key="upload"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-5"
+              >
+                {/* Área de upload */}
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  className={`
+                    relative border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 cursor-pointer
+                    ${dragActive ? 'border-blue-500 bg-blue-50 scale-[1.02]' : file ? 'border-green-400 bg-green-50' : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50'}
+                  `}
+                >
                   <Input
                     id="file-upload"
                     type="file"
-                    accept=".csv,.xlsx,.pdf"
+                    accept=".csv,.xlsx,.xls,.pdf"
                     onChange={handleFileChange}
-                    disabled={isLoading}
                     className="hidden"
                   />
-                  <label htmlFor="file-upload" className="cursor-pointer">
-                    <FileSpreadsheet className="w-12 h-12 md:w-20 md:h-20 mx-auto mb-3 md:mb-4 text-slate-400" />
-                    <p className="text-xs md:text-sm font-medium text-slate-700">
-                      {file ? (
-                        <span className="text-blue-600 flex items-center justify-center gap-2 text-sm md:text-base">
-                          <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                          <span className="truncate max-w-[200px]">{file.name}</span>
-                        </span>
-                      ) : (
-                        <>
-                          <span className="text-blue-600 text-sm md:text-base">Escolher arquivo</span>
-                          <span className="text-slate-500 ml-2 hidden sm:inline">ou arraste aqui</span>
-                        </>
-                      )}
-                    </p>
-                    <p className="text-[10px] md:text-xs text-slate-500 mt-2">CSV, Excel ou PDF</p>
+                  <label htmlFor="file-upload" className="cursor-pointer block">
+                    <div className={`
+                      w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center transition-all
+                      ${file ? 'bg-green-100' : dragActive ? 'bg-blue-100' : 'bg-slate-100'}
+                    `}>
+                      <FileIcon className={`w-8 h-8 md:w-10 md:h-10 ${file ? 'text-green-600' : dragActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                    </div>
+
+                    {file ? (
+                      <div className="space-y-2">
+                        <p className="text-base md:text-lg font-semibold text-green-700">{file.name}</p>
+                        <p className="text-sm text-green-600">{(file.size / 1024).toFixed(1)} KB</p>
+                        <Badge className="bg-green-100 text-green-700 border-green-200">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Pronto para processar
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-base md:text-lg font-medium text-slate-700">
+                          <span className="text-blue-600">Clique para selecionar</span> ou arraste o arquivo
+                        </p>
+                        <p className="text-sm text-slate-500">PDF, CSV, Excel (.xlsx)</p>
+                      </div>
+                    )}
                   </label>
                 </div>
-                </div>
-              </div>
 
-              {isLoading && (
-                <div className="space-y-2 md:space-y-3 p-3 md:p-6 bg-blue-50 border-2 border-blue-200 rounded-lg md:rounded-xl shadow-sm">
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <Loader2 className="w-5 h-5 md:w-6 md:h-6 animate-spin text-blue-600" />
-                    <p className="text-xs md:text-sm font-semibold text-blue-900">{loadingMessage}</p>
+                {/* Dicas e modelo */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Alert className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+                    <Sparkles className="w-4 h-4 text-blue-600" />
+                    <AlertDescription className="text-sm text-slate-700">
+                      <strong className="text-blue-700">IA Inteligente:</strong> Identificamos automaticamente as colunas e corrigimos dados inconsistentes.
+                    </AlertDescription>
+                  </Alert>
+
+                  <div className="flex items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <Button
+                      variant="outline"
+                      onClick={downloadTemplate}
+                      className="gap-2 bg-white hover:bg-slate-100"
+                    >
+                      <Download className="w-4 h-4" />
+                      Baixar Modelo CSV
+                    </Button>
                   </div>
-                  <Progress value={loadingProgress} className="h-2 md:h-3" />
                 </div>
-              )}
-            </>
-          )}
 
-          {previewData && !result && (
-            <div className="space-y-3 md:space-y-4 preview-section">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <h3 className="text-sm md:text-lg font-bold flex items-center gap-2 text-neutral-900">
-                  <Eye className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
-                  Prévia ({previewData.length})
-                </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setPreviewData(null);
-                    setFile(null);
-                  }}
-                  className="bg-white hover:bg-slate-50 transition-colors text-xs h-7 md:h-8">
-                  Selecionar Outro
-                </Button>
-              </div>
-
-              <Alert className="bg-amber-50 border-amber-200">
-                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                <AlertDescription className="text-xs md:text-sm text-neutral-700">
-                  Revise e edite os dados. <strong>Nº</strong> e <strong>Data</strong> são obrigatórios.
-                </AlertDescription>
-              </Alert>
-
-              <div className="rounded-lg md:rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div className="bg-slate-100 border-b border-slate-200 px-3 md:px-4 py-2 md:py-3">
-                  <h3 className="font-bold text-slate-800 text-xs md:text-sm">Dados Extraídos</h3>
-                </div>
-                <div className="overflow-auto max-h-[300px] md:max-h-[400px]">
-                <Table>
-                  <TableHeader className="bg-slate-700 sticky top-0">
-                    <TableRow>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-36">Nº</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-28 md:w-36">Data</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-32 md:w-56">Cliente</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-28 md:w-48 hidden sm:table-cell">Vendedor</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32">Produtos</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32 hidden md:table-cell">Serviços</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32 hidden lg:table-cell">Desconto</TableHead>
-                      <TableHead className="text-white font-semibold text-[10px] md:text-xs px-2 md:px-4 w-24 md:w-32 hidden lg:table-cell">Despesas</TableHead>
-                      <TableHead className="text-white w-14 md:w-20 font-semibold text-[10px] md:text-xs px-1 md:px-4">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {previewData.map((row) => (
-                      <TableRow key={row.id} className="hover:bg-slate-50 transition-colors">
-                        <TableCell className="px-2 md:px-4">
-                          <Input
-                            value={row.numero_orcamento}
-                            onChange={(e) => handleEditRow(row.id, 'numero_orcamento', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4">
-                          <Input
-                            type="date"
-                            value={row.data_orcamento}
-                            onChange={(e) => handleEditRow(row.id, 'data_orcamento', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4">
-                          <Input
-                            value={row.cliente_nome}
-                            onChange={(e) => handleEditRow(row.id, 'cliente_nome', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4 hidden sm:table-cell">
-                          <Input
-                            value={row.vendedor_nome}
-                            onChange={(e) => handleEditRow(row.id, 'vendedor_nome', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={row.valor_produtos}
-                            onChange={(e) => handleEditRow(row.id, 'valor_produtos', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4 hidden md:table-cell">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={row.valor_servicos}
-                            onChange={(e) => handleEditRow(row.id, 'valor_servicos', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4 hidden lg:table-cell">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={row.desconto}
-                            onChange={(e) => handleEditRow(row.id, 'desconto', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-2 md:px-4 hidden lg:table-cell">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            value={row.outras_despesas}
-                            onChange={(e) => handleEditRow(row.id, 'outras_despesas', e.target.value)}
-                            className="h-7 md:h-9 bg-white text-neutral-900 border-neutral-300 text-xs md:text-sm"
-                          />
-                        </TableCell>
-                        <TableCell className="px-1 md:px-4">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteRow(row.id)}
-                            className="text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors h-7 w-7">
-                            <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+                {/* Colunas aceitas */}
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                  <p className="text-xs font-semibold text-slate-600 mb-2">COLUNAS RECONHECIDAS:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {['Nº/Número', 'Data', 'Cliente', 'Vendedor', 'Produtos', 'Serviços', 'Desconto', 'Despesas', 'Observações'].map(col => (
+                      <Badge key={col} variant="outline" className="bg-white text-slate-600 text-xs">
+                        {col}
+                      </Badge>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
 
-          {result && (
-            <div className="space-y-3">
-              <Alert className={`${result.erros === 0 ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'} rounded-lg md:rounded-xl shadow-sm`}>
-                {result.erros === 0 ? (
-                  <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-green-600 flex-shrink-0" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-yellow-600 flex-shrink-0" />
-                )}
-                <AlertDescription className="text-neutral-700 text-xs md:text-sm">
-                  <div className="space-y-1 md:space-y-2">
-                    <p className="font-semibold">Total: {result.total}</p>
-                    <p className="text-green-600 font-semibold">Importados: {result.sucessos}</p>
-                    {result.erros > 0 && (
+            {/* Step 2: Processing */}
+            {currentStep === 2 && (
+              <motion.div
+                key="processing"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex flex-col items-center justify-center py-12 space-y-6"
+              >
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                    <Loader2 className="w-12 h-12 text-white animate-spin" />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <Wand2 className="w-4 h-4 text-blue-600" />
+                  </div>
+                </div>
+
+                <div className="text-center space-y-2">
+                  <h3 className="text-xl font-bold text-slate-800">{loadingStage}</h3>
+                  <p className="text-sm text-slate-500">{loadingSubStage}</p>
+                </div>
+
+                <div className="w-full max-w-md space-y-2">
+                  <Progress value={loadingProgress} className="h-3" />
+                  <p className="text-center text-sm font-medium text-blue-600">{loadingProgress}%</p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 3: Validation & Preview */}
+            {currentStep === 3 && previewData && (
+              <motion.div
+                key="validation"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="space-y-4"
+              >
+                {/* Resumo de validação */}
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                      <Eye className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800">{previewData.length} orçamento(s)</h3>
+                      <p className="text-xs text-slate-500">Revise e edite antes de importar</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {validationResults && (
                       <>
-                        <p className="text-red-600 font-semibold">Erros: {result.erros}</p>
-                        {result.mensagensErro.length > 0 && (
-                          <ul className="list-disc list-inside text-xs space-y-1 mt-2">
-                            {result.mensagensErro.slice(0, 3).map((msg, idx) => (
-                              <li key={idx} className="text-red-600 truncate">{msg}</li>
-                            ))}
-                          </ul>
+                        <ValidationBadge status="valid" count={validationResults.valid.length} />
+                        {validationResults.warnings.length > 0 && (
+                          <ValidationBadge status="warning" count={validationResults.warnings.length} />
+                        )}
+                        {validationResults.errors.length > 0 && (
+                          <ValidationBadge status="error" count={validationResults.errors.length} />
                         )}
                       </>
                     )}
                   </div>
-                </AlertDescription>
-              </Alert>
-            </div>
-          )}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setPreviewData(null);
+                      setFile(null);
+                      setCurrentStep(1);
+                    }}
+                    className="gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Outro arquivo
+                  </Button>
+                </div>
+
+                {/* Alertas de validação */}
+                {validationResults?.errors.length > 0 && (
+                  <Alert className="bg-red-50 border-red-200">
+                    <AlertCircle className="w-4 h-4 text-red-600" />
+                    <AlertDescription className="text-sm text-red-700">
+                      <strong>{validationResults.errors.length} registro(s) com erro</strong> - Corrija os campos obrigatórios antes de importar.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Tabela de preview */}
+                <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                  <div className="overflow-auto max-h-[350px]">
+                    <Table>
+                      <TableHeader className="bg-slate-800 sticky top-0 z-10">
+                        <TableRow>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-32">Nº *</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-32">Data *</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-40">Cliente</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-36 hidden md:table-cell">Vendedor</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-28">Produtos</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-28 hidden lg:table-cell">Serviços</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-24 hidden lg:table-cell">Desconto</TableHead>
+                          <TableHead className="text-white font-semibold text-xs px-3 w-16"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {previewData.map((row) => {
+                          const hasError = validationResults?.errors.some(e => e.row.id === row.id);
+                          const hasWarning = validationResults?.warnings.some(w => w.row.id === row.id);
+                          
+                          return (
+                            <TableRow 
+                              key={row.id} 
+                              className={`
+                                transition-colors
+                                ${hasError ? 'bg-red-50 hover:bg-red-100' : hasWarning ? 'bg-amber-50 hover:bg-amber-100' : 'hover:bg-slate-50'}
+                              `}
+                            >
+                              <TableCell className="px-3">
+                                <Input
+                                  value={row.numero_orcamento}
+                                  onChange={(e) => handleEditRow(row.id, 'numero_orcamento', e.target.value)}
+                                  className={`h-8 text-xs ${!row.numero_orcamento ? 'border-red-300 bg-red-50' : 'bg-white'}`}
+                                />
+                              </TableCell>
+                              <TableCell className="px-3">
+                                <Input
+                                  type="date"
+                                  value={row.data_orcamento}
+                                  onChange={(e) => handleEditRow(row.id, 'data_orcamento', e.target.value)}
+                                  className={`h-8 text-xs ${!row.data_orcamento ? 'border-red-300 bg-red-50' : 'bg-white'}`}
+                                />
+                              </TableCell>
+                              <TableCell className="px-3">
+                                <Input
+                                  value={row.cliente_nome}
+                                  onChange={(e) => handleEditRow(row.id, 'cliente_nome', e.target.value)}
+                                  className="h-8 text-xs bg-white"
+                                  placeholder="Cliente"
+                                />
+                              </TableCell>
+                              <TableCell className="px-3 hidden md:table-cell">
+                                <Input
+                                  value={row.vendedor_nome}
+                                  onChange={(e) => handleEditRow(row.id, 'vendedor_nome', e.target.value)}
+                                  className="h-8 text-xs bg-white"
+                                  placeholder="Vendedor"
+                                />
+                              </TableCell>
+                              <TableCell className="px-3">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={row.valor_produtos}
+                                  onChange={(e) => handleEditRow(row.id, 'valor_produtos', parseFloat(e.target.value) || 0)}
+                                  className="h-8 text-xs bg-white"
+                                />
+                              </TableCell>
+                              <TableCell className="px-3 hidden lg:table-cell">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={row.valor_servicos}
+                                  onChange={(e) => handleEditRow(row.id, 'valor_servicos', parseFloat(e.target.value) || 0)}
+                                  className="h-8 text-xs bg-white"
+                                />
+                              </TableCell>
+                              <TableCell className="px-3 hidden lg:table-cell">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={row.desconto}
+                                  onChange={(e) => handleEditRow(row.id, 'desconto', parseFloat(e.target.value) || 0)}
+                                  className="h-8 text-xs bg-white"
+                                />
+                              </TableCell>
+                              <TableCell className="px-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDeleteRow(row.id)}
+                                  className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 4: Result */}
+            {currentStep === 4 && result && (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex flex-col items-center justify-center py-8 space-y-6"
+              >
+                <div className={`w-20 h-20 rounded-full flex items-center justify-center ${result.erros === 0 ? 'bg-green-100' : 'bg-amber-100'}`}>
+                  {result.erros === 0 ? (
+                    <CheckCircle2 className="w-10 h-10 text-green-600" />
+                  ) : (
+                    <AlertTriangle className="w-10 h-10 text-amber-600" />
+                  )}
+                </div>
+
+                <div className="text-center space-y-2">
+                  <h3 className="text-2xl font-bold text-slate-800">
+                    {result.erros === 0 ? 'Importação Concluída!' : 'Importação Parcial'}
+                  </h3>
+                  <p className="text-slate-500">
+                    {result.sucessos} de {result.total} orçamento(s) importado(s)
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-lg">
+                  <div className="text-center p-4 bg-slate-50 rounded-xl">
+                    <p className="text-2xl font-bold text-slate-800">{result.total}</p>
+                    <p className="text-xs text-slate-500">Total</p>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-xl">
+                    <p className="text-2xl font-bold text-green-600">{result.sucessos}</p>
+                    <p className="text-xs text-green-600">Sucesso</p>
+                  </div>
+                  <div className="text-center p-4 bg-red-50 rounded-xl">
+                    <p className="text-2xl font-bold text-red-600">{result.erros}</p>
+                    <p className="text-xs text-red-600">Erros</p>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 rounded-xl">
+                    <p className="text-2xl font-bold text-blue-600">{result.clientesCriados}</p>
+                    <p className="text-xs text-blue-600">Clientes Criados</p>
+                  </div>
+                </div>
+
+                {result.mensagensErro.length > 0 && (
+                  <Alert className="bg-red-50 border-red-200 w-full max-w-lg">
+                    <AlertCircle className="w-4 h-4 text-red-600" />
+                    <AlertDescription className="text-sm">
+                      <ul className="list-disc list-inside space-y-1">
+                        {result.mensagensErro.map((msg, idx) => (
+                          <li key={idx} className="text-red-700 text-xs">{msg}</li>
+                        ))}
+                      </ul>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        <div className="flex justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t border-slate-100 bg-white flex-shrink-0 sticky bottom-0">
+        {/* Footer */}
+        <div className="flex justify-end gap-3 px-4 md:px-6 py-4 border-t border-slate-100 bg-slate-50 flex-shrink-0">
           <Button
             variant="ghost"
             onClick={handleClose}
             disabled={isLoading}
-            className="text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-9">
+            className="text-slate-600 hover:text-slate-900"
+          >
             {result?.sucessos > 0 && result?.erros === 0 ? 'Fechar' : 'Cancelar'}
           </Button>
 
-          {!previewData && !result && (
+          {currentStep === 1 && (
             <Button
               onClick={handleExtract}
               disabled={!file || isLoading}
-              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 md:px-5 text-xs md:text-sm h-8 md:h-9">
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 animate-spin" />
-                  Extraindo...
-                </>
-              ) : (
-                <>
-                  <Eye className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Extrair
-                </>
-              )}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
+              <Wand2 className="w-4 h-4" />
+              Processar Arquivo
             </Button>
           )}
 
-          {previewData && !result && (
+          {currentStep === 3 && previewData && (
             <Button
               onClick={handleConfirmImport}
-              disabled={isLoading}
-              className="bg-slate-800 hover:bg-slate-900 text-white rounded-lg px-3 md:px-5 text-xs md:text-sm h-8 md:h-9">
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2 animate-spin" />
-                  Importando...
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1 md:mr-2" />
-                  Importar ({previewData.length})
-                </>
-              )}
+              disabled={isLoading || validationResults?.errors.length > 0}
+              className="bg-green-600 hover:bg-green-700 text-white gap-2"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              Importar {previewData.length} Orçamento(s)
             </Button>
           )}
         </div>
