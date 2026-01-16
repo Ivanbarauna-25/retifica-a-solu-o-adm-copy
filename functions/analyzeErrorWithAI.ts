@@ -9,16 +9,20 @@ Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
   
   try {
-    const user = await base44.auth.me();
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const payload = await req.json();
+    
+    // Suporte para automação de entidade (event.entity_id) ou chamada manual (errorId)
+    let errorId;
+    if (payload.event && payload.event.entity_id) {
+      // Chamada via automação de entidade
+      errorId = payload.event.entity_id;
+    } else if (payload.errorId) {
+      // Chamada manual
+      errorId = payload.errorId;
     }
 
-    const payload = await req.json();
-    const errorId = payload.errorId;
-
     if (!errorId) {
-      return Response.json({ error: 'errorId required' }, { status: 400 });
+      return Response.json({ error: 'errorId required (or entity automation event)' }, { status: 400 });
     }
 
     // Buscar erro
