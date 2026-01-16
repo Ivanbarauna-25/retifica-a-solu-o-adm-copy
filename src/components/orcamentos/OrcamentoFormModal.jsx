@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  FileText, Plus, Save, Pencil, Trash2, Loader2 } from
+  FileText, Plus, Save, Pencil, Trash2, Loader2, Camera, Upload, Sparkles } from
 "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SmartInput from "@/components/SmartInput";
@@ -64,9 +64,15 @@ export default function OrcamentoFormModal({
     valor_total: 0
   });
 
+  const [isProcessingOCR, setIsProcessingOCR] = useState(false);
+  const [modeloOrcamentoUrl, setModeloOrcamentoUrl] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const cameraInputRef = React.useRef(null);
+
   useEffect(() => {
     if (isOpen) {
       loadData();
+      loadModeloOrcamento();
       if (orcamento) {
         setFormData({
           ...orcamento,
@@ -78,6 +84,185 @@ export default function OrcamentoFormModal({
       }
     }
   }, [isOpen, orcamento]);
+
+  const loadModeloOrcamento = async () => {
+    try {
+      const configs = await base44.entities.Configuracoes.list();
+      if (configs?.[0]?.modelo_orcamento_url) {
+        setModeloOrcamentoUrl(configs[0].modelo_orcamento_url);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar modelo:", error);
+    }
+  };
+
+  const processarImagemOCR = async (file) => {
+    setIsProcessingOCR(true);
+    try {
+      // Upload do arquivo
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      // Montar prompt com contexto do modelo
+      let promptContexto = "";
+      if (modeloOrcamentoUrl) {
+        promptContexto = `Você tem acesso a um modelo de orçamento padrão da empresa em: ${modeloOrcamentoUrl}. Use este modelo como referência para entender o layout e campos esperados.`;
+      }
+
+      // Usar LLM com visão para extrair dados
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `${promptContexto}
+        
+Analise esta imagem/documento de orçamento e extraia TODOS os dados possíveis.
+Retorne um JSON com os seguintes campos (deixe vazio se não encontrar):
+
+- numero_orcamento: número/código do orçamento
+- data_orcamento: data no formato YYYY-MM-DD
+- data_validade: data de validade no formato YYYY-MM-DD
+- cliente_nome: nome do cliente
+- vendedor_nome: nome do vendedor
+- observacoes: observações gerais
+- outras_despesas: valor numérico de outras despesas
+- desconto_valor: valor numérico do desconto total
+- forma_pagamento: forma de pagamento (texto)
+- condicao_pagamento: condição de pagamento (texto)
+- itens: array de itens, cada um com:
+  - descricao: descrição do produto/serviço
+  - tipo: "produto" ou "servico"
+  - quantidade: número
+  - valor_unitario: valor numérico
+  - desconto_valor: desconto do item (numérico)
+
+Extraia o máximo de informações possível. Se houver tabela de itens/produtos/serviços, extraia cada linha.`,
+        file_urls: [file_url],
+        response_json_schema: {
+          type: "object",
+          properties: {
+            numero_orcamento: { type: "string" },
+            data_orcamento: { type: "string" },
+            data_validade: { type: "string" },
+            cliente_nome: { type: "string" },
+            vendedor_nome: { type: "string" },
+            observacoes: { type: "string" },
+            outras_despesas: { type: "number" },
+            desconto_valor: { type: "number" },
+            forma_pagamento: { type: "string" },
+            condicao_pagamento: { type: "string" },
+            itens: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  descricao: { type: "string" },
+                  tipo: { type: "string" },
+                  quantidade: { type: "number" },
+                  valor_unitario: { type: "number" },
+                  desconto_valor: { type: "number" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Preencher formulário com dados extraídos
+      const dados = result;
+      
+      // Buscar cliente pelo nome
+      let clienteId = "";
+      if (dados.cliente_nome) {
+        const clienteEncontrado = clientes.find(c => 
+          c.nome.toLowerCase().includes(dados.cliente_nome.toLowerCase()) ||
+          dados.cliente_nome.toLowerCase().includes(c.nome.toLowerCase())
+        );
+        if (clienteEncontrado) clienteId = clienteEncontrado.id;
+      }
+
+      // Buscar vendedor pelo nome
+      let vendedorId = "";
+      if (dados.vendedor_nome) {
+        const vendedorEncontrado = funcionarios.find(f => 
+          f.nome.toLowerCase().includes(dados.vendedor_nome.toLowerCase()) ||
+          dados.vendedor_nome.toLowerCase().includes(f.nome.toLowerCase())
+        );
+        if (vendedorEncontrado) vendedorId = vendedorEncontrado.id;
+      }
+
+      // Buscar forma de pagamento
+      let formaPagamentoId = "";
+      if (dados.forma_pagamento) {
+        const formaEncontrada = formasPagamento.find(f => 
+          f.nome.toLowerCase().includes(dados.forma_pagamento.toLowerCase())
+        );
+        if (formaEncontrada) formaPagamentoId = formaEncontrada.id;
+      }
+
+      // Buscar condição de pagamento
+      let condicaoPagamentoId = "";
+      if (dados.condicao_pagamento) {
+        const condicaoEncontrada = condicoesPagamento.find(c => 
+          c.nome.toLowerCase().includes(dados.condicao_pagamento.toLowerCase())
+        );
+        if (condicaoEncontrada) condicaoPagamentoId = condicaoEncontrada.id;
+      }
+
+      // Processar itens
+      const itensProcessados = (dados.itens || []).map((item, idx) => ({
+        id: `item-ocr-${Date.now()}-${idx}`,
+        item_id: "",
+        descricao: item.descricao || "",
+        tipo: item.tipo || "produto",
+        quantidade: Number(item.quantidade) || 1,
+        valor_unitario: Number(item.valor_unitario) || 0,
+        desconto_tipo: "valor",
+        desconto_valor: Number(item.desconto_valor) || 0,
+        valor_total: Math.max(0, (Number(item.quantidade) || 1) * (Number(item.valor_unitario) || 0) - (Number(item.desconto_valor) || 0))
+      }));
+
+      setFormData(prev => ({
+        ...prev,
+        numero_orcamento: dados.numero_orcamento || prev.numero_orcamento,
+        data_orcamento: dados.data_orcamento || prev.data_orcamento,
+        data_validade: dados.data_validade || prev.data_validade,
+        contato_id: clienteId || prev.contato_id,
+        vendedor_id: vendedorId || prev.vendedor_id,
+        forma_pagamento_id: formaPagamentoId || prev.forma_pagamento_id,
+        condicao_pagamento_id: condicaoPagamentoId || prev.condicao_pagamento_id,
+        outras_despesas: Number(dados.outras_despesas) || prev.outras_despesas,
+        desconto_valor: Number(dados.desconto_valor) || prev.desconto_valor,
+        observacoes: dados.observacoes || prev.observacoes,
+        itens: itensProcessados.length > 0 ? itensProcessados : prev.itens
+      }));
+
+      toast({
+        title: "✅ Dados extraídos com sucesso!",
+        description: `${itensProcessados.length} item(s) encontrado(s). Confira e ajuste se necessário.`
+      });
+
+    } catch (error) {
+      console.error("Erro ao processar OCR:", error);
+      toast({
+        title: "❌ Erro ao processar imagem",
+        description: error.message || "Não foi possível extrair os dados. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsProcessingOCR(false);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processarImagemOCR(file);
+    }
+  };
+
+  const handleCameraCapture = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processarImagemOCR(file);
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -274,8 +459,73 @@ export default function OrcamentoFormModal({
                 <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">{formData.numero_orcamento || "Gerando número..."}</p>
               </div>
             </div>
+            
+            {/* Botões de Captura/Upload */}
+            {!orcamento && (
+              <div className="flex items-center gap-1.5 md:gap-2">
+                {/* Input oculto para câmera */}
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraCapture}
+                  className="hidden"
+                />
+                {/* Input oculto para upload de arquivo */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={isProcessingOCR}
+                  className="h-8 md:h-9 px-2 md:px-3 bg-white/10 hover:bg-white/20 text-white border-0"
+                  title="Fotografar orçamento"
+                >
+                  {isProcessingOCR ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4" />
+                  )}
+                  <span className="hidden md:inline ml-1.5 text-xs">Câmera</span>
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isProcessingOCR}
+                  className="h-8 md:h-9 px-2 md:px-3 bg-white/10 hover:bg-white/20 text-white border-0"
+                  title="Enviar foto ou PDF"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span className="hidden md:inline ml-1.5 text-xs">Upload</span>
+                </Button>
+              </div>
+            )}
           </DialogTitle>
         </DialogHeader>
+        
+        {/* Banner de processamento OCR */}
+        {isProcessingOCR && (
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2.5 flex items-center gap-3">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <div className="flex-1">
+              <p className="text-xs md:text-sm font-medium">Processando imagem...</p>
+              <p className="text-[10px] md:text-xs opacity-80">Extraindo dados do orçamento com IA</p>
+            </div>
+            <Sparkles className="w-5 h-5 opacity-80" />
+          </div>
+        )}
 
         {/* CONTEÚDO COM SCROLL */}
         <div className="flex-1 overflow-y-auto p-2.5 md:p-5 bg-slate-100/50">

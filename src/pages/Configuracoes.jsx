@@ -429,6 +429,42 @@ function ConfiguracoesPage() {
                     )}
                   </div>
                 </div>
+
+                <Separator className="my-4" />
+
+                {/* Modelo de Orçamento para OCR */}
+                <div className="space-y-1.5 md:space-y-2 p-3 md:p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                  <Label htmlFor="modelo_orcamento" className="text-xs md:text-sm font-semibold text-blue-900">
+                    📋 Modelo de Orçamento (para reconhecimento automático)
+                  </Label>
+                  <p className="text-[10px] md:text-xs text-blue-700 mb-2">
+                    Faça upload de um modelo de orçamento em PDF. O sistema usará este modelo como referência para extrair dados automaticamente de fotos ou PDFs de orçamentos.
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <Input
+                      id="modelo_orcamento"
+                      type="file"
+                      accept=".pdf"
+                      onChange={(e) => handleDocUpload(e, 'modelo_orcamento_url')}
+                      className="h-9 md:h-10 text-xs md:text-sm flex-1 bg-white"
+                    />
+                    {config?.modelo_orcamento_url && (
+                      <a
+                        href={config.modelo_orcamento_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline text-xs md:text-sm whitespace-nowrap font-medium"
+                      >
+                        Ver modelo
+                      </a>
+                    )}
+                  </div>
+                  {config?.modelo_orcamento_url && (
+                    <div className="mt-2 p-2 bg-green-100 rounded text-[10px] md:text-xs text-green-800">
+                      ✅ Modelo configurado! Agora você pode usar a câmera no formulário de orçamento ou enviar pelo WhatsApp.
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
