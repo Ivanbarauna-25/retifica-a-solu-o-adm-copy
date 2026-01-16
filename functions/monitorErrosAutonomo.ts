@@ -222,46 +222,58 @@ Deno.serve(async (req) => {
     // ============================================================
     // NÍVEL 5: APRENDIZADO CONTÍNUO
     // ============================================================
-    console.log('🧠 [NÍVEL 5] Executando aprendizado contínuo...');
+    console.log('🧠 [NÍVEL 5] Verificando tarefas de aprendizado...');
     
-    // Executar aprendizado de erros resolvidos (diariamente)
+    // Executar aprendizado de erros resolvidos (diariamente às 02:00)
     const horaAtual = agora.getHours();
-    if (horaAtual === 2) { // 02:00 da manhã
-      const learnResponse = await base44.asServiceRole.functions.invoke('learnFromResolvedErrors', {});
-      
-      if (learnResponse.data && learnResponse.data.success) {
-        results.levels_executed.push('Nível 5: Aprendizado de Erros');
-        results.actions_taken.push({
-          level: 5,
-          action: 'Aprendizado de erros resolvidos',
-          learned_count: learnResponse.data.learned_count
-        });
+    if (horaAtual === 2) {
+      try {
+        const learnResponse = await base44.asServiceRole.functions.invoke('learnFromResolvedErrors', {});
+        
+        if (learnResponse?.data?.success) {
+          results.levels_executed.push('Nível 5: Aprendizado de Erros');
+          results.actions_taken.push({
+            level: 5,
+            action: 'Aprendizado de erros resolvidos',
+            learned_count: learnResponse.data.learned_count || 0
+          });
+        }
+      } catch (e) {
+        console.warn('⚠️ [NÍVEL 5] Erro em learnFromResolvedErrors:', e.message);
       }
     }
 
-    // Melhorar modelo do agente (semanalmente)
-    const diaSemana = agora.getDay(); // 0 = Domingo
-    if (diaSemana === 1 && horaAtual === 3) { // Segunda-feira às 03:00
-      const improveResponse = await base44.asServiceRole.functions.invoke('selfImproveAgentModel', {});
-      
-      if (improveResponse.data && improveResponse.data.success) {
-        results.levels_executed.push('Nível 5: Auto-Melhoria');
-        results.actions_taken.push({
-          level: 5,
-          action: 'Modelo do agente melhorado',
-          version: improveResponse.data.version,
-          patterns_learned: improveResponse.data.metrics.total_patterns
-        });
+    // Melhorar modelo do agente (semanalmente - segunda às 03:00)
+    const diaSemana = agora.getDay();
+    if (diaSemana === 1 && horaAtual === 3) {
+      try {
+        const improveResponse = await base44.asServiceRole.functions.invoke('selfImproveAgentModel', {});
+        
+        if (improveResponse?.data?.success) {
+          results.levels_executed.push('Nível 5: Auto-Melhoria');
+          results.actions_taken.push({
+            level: 5,
+            action: 'Modelo do agente melhorado',
+            version: improveResponse.data.version || 1,
+            patterns_learned: improveResponse.data.metrics?.total_patterns || 0
+          });
+        }
+      } catch (e) {
+        console.warn('⚠️ [NÍVEL 5] Erro em selfImproveAgentModel:', e.message);
       }
     }
 
-    // Enviar relatório semanal (segunda-feira às 09:00)
+    // Enviar relatório semanal (segunda às 09:00)
     if (diaSemana === 1 && horaAtual === 9) {
-      await base44.asServiceRole.functions.invoke('sendWeeklyReport', {});
-      results.actions_taken.push({
-        level: 4,
-        action: 'Relatório semanal enviado'
-      });
+      try {
+        await base44.asServiceRole.functions.invoke('sendWeeklyReport', {});
+        results.actions_taken.push({
+          level: 4,
+          action: 'Relatório semanal enviado'
+        });
+      } catch (e) {
+        console.warn('⚠️ [NÍVEL 5] Erro em sendWeeklyReport:', e.message);
+      }
     }
 
     console.log(`✅ [MONITOR] Varredura concluída. ${results.errors_processed} erros processados.`);
