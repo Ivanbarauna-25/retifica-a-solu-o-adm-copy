@@ -27,6 +27,8 @@ const CAMPOS_IMPORTACAO = [
   { key: 'valor_servicos', label: 'Serviços', defaultRequired: false },
   { key: 'desconto', label: 'Desconto', defaultRequired: false },
   { key: 'outras_despesas', label: 'Despesas', defaultRequired: false },
+  { key: 'forma_pagamento_nome', label: 'Forma Pagamento', defaultRequired: false },
+  { key: 'condicao_pagamento_nome', label: 'Condição Pagamento', defaultRequired: false },
   { key: 'observacoes', label: 'Observações', defaultRequired: false },
 ];
 
@@ -178,13 +180,13 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
 
   const downloadTemplate = async () => {
     // Cabeçalhos no formato exato da tabela do app
-    const headers = ['Nº/Número', 'Data', 'Cliente', 'Vendedor', 'Produtos', 'Serviços', 'Desconto', 'Despesas', 'Observações'];
+    const headers = ['Nº/Número', 'Data', 'Cliente', 'Vendedor', 'Produtos', 'Serviços', 'Desconto', 'Despesas', 'Forma Pagamento', 'Condição Pagamento', 'Observações'];
     const keys = CAMPOS_IMPORTACAO.map(c => c.key);
     
     const exampleData = [
-      ['ORC-001', '2024-01-15', 'João Silva', 'Maria Vendedora', 1500.00, 800.00, 100.00, 50.00, 'Orçamento de exemplo'],
-      ['ORC-002', '2024-01-16', 'José Santos', 'Pedro Vendedor', 2000.00, 500.00, 150.00, 0.00, 'Outro exemplo'],
-      ['', '', '', '', '', '', '', '', ''],
+      ['ORC-001', '2024-01-15', 'João Silva', 'Maria Vendedora', 1500.00, 800.00, 100.00, 50.00, 'Dinheiro', 'À Vista', 'Orçamento de exemplo'],
+      ['ORC-002', '2024-01-16', 'José Santos', 'Pedro Vendedor', 2000.00, 500.00, 150.00, 0.00, 'Cartão', '30/60/90', 'Outro exemplo'],
+      ['', '', '', '', '', '', '', '', '', '', ''],
     ];
 
     // Criar CSV formatado para Excel (com BOM e separador ;)
@@ -414,6 +416,8 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
       const dadosComId = dados.map((d, idx) => ({
         id: `temp_${idx}_${Date.now()}`,
         ...d,
+        forma_pagamento_nome: d.forma_pagamento_nome || '',
+        condicao_pagamento_nome: d.condicao_pagamento_nome || '',
         valor_total: d.valor_total || Math.max(0, (d.valor_produtos || 0) + (d.valor_servicos || 0) - (d.desconto || 0) + (d.outras_despesas || 0))
       }));
 
@@ -479,6 +483,10 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
     if (h === 'desconto' || h.includes('desconto') || h.includes('desc')) return 'desconto';
     // Despesas
     if (h === 'despesas' || h === 'despesa' || h.includes('outras despesas') || h.includes('desp') || h === 'outras_despesas') return 'outras_despesas';
+    // Forma de Pagamento
+    if (h === 'forma pagamento' || h === 'forma_pagamento' || h === 'forma_pagamento_nome' || h.includes('forma pag') || h === 'pagamento') return 'forma_pagamento_nome';
+    // Condição de Pagamento
+    if (h === 'condição pagamento' || h === 'condicao pagamento' || h === 'condição' || h === 'condicao' || h === 'condicao_pagamento_nome' || h.includes('condição pag') || h.includes('condicao pag')) return 'condicao_pagamento_nome';
     // Observações
     if (h.includes('observ') || h === 'observacoes' || h === 'observações') return 'observacoes';
     // Total (ignorar para cálculo automático)
@@ -520,6 +528,8 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
       desconto: 0,
       valor_total: 0,
       outras_despesas: 0,
+      forma_pagamento_nome: '',
+      condicao_pagamento_nome: '',
       observacoes: ''
     };
 
@@ -577,9 +587,11 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
     updateProgress(0, 'Iniciando importação', 'Carregando dados...');
 
     try {
-      const [clientesData, funcionariosData] = await Promise.all([
+      const [clientesData, funcionariosData, formasPagamentoData, condicoesPagamentoData] = await Promise.all([
         base44.entities.Cliente.list(),
-        base44.entities.Funcionario.list()
+        base44.entities.Funcionario.list(),
+        base44.entities.FormaPagamento.list(),
+        base44.entities.CondicaoPagamento.list()
       ]);
 
       let sucessos = 0;
@@ -623,6 +635,16 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
             f.nome.toLowerCase().trim() === (linha.vendedor_nome || '').toLowerCase().trim()
           );
 
+          // Buscar forma de pagamento
+          const formaPagamento = formasPagamentoData.find(f => 
+            f.nome.toLowerCase().trim() === (linha.forma_pagamento_nome || '').toLowerCase().trim()
+          );
+
+          // Buscar condição de pagamento
+          const condicaoPagamento = condicoesPagamentoData.find(c => 
+            c.nome.toLowerCase().trim() === (linha.condicao_pagamento_nome || '').toLowerCase().trim()
+          );
+
           const subtotal = (Number(linha.valor_produtos) || 0) + (Number(linha.valor_servicos) || 0);
           const valorTotal = Math.max(0, subtotal - (Number(linha.desconto) || 0) + (Number(linha.outras_despesas) || 0));
 
@@ -656,6 +678,8 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
             contato_tipo: 'cliente',
             cliente_id: cliente?.id || '',
             vendedor_id: vendedor?.id || '',
+            forma_pagamento_id: formaPagamento?.id || '',
+            condicao_pagamento_id: condicaoPagamento?.id || '',
             status: 'pendente',
             desconto_tipo: 'valor',
             desconto_valor: Number(linha.desconto) || 0,
