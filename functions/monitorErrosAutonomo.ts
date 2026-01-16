@@ -184,31 +184,39 @@ Deno.serve(async (req) => {
     // ============================================================
     console.log('📊 [NÍVEL 4] Gerando relatório de saúde e criando tarefas...');
     
-    const healthResponse = await base44.asServiceRole.functions.invoke('generateSystemHealthReport', {
-      hours: 72
-    });
-    
-    if (healthResponse.data && healthResponse.data.success) {
-      results.levels_executed.push('Nível 4: Gestão e Prioridade');
-      results.actions_taken.push({
-        level: 4,
-        action: 'Relatório de saúde gerado',
-        health_score: healthResponse.data.health_score
-      });
-
-      // Criar tarefas automaticamente baseado no relatório
-      const tasksResponse = await base44.asServiceRole.functions.invoke('autoCreateTasks', {
-        report: healthResponse.data
+    try {
+      const healthResponse = await base44.asServiceRole.functions.invoke('generateSystemHealthReport', {
+        hours: 72
       });
       
-      if (tasksResponse.data && tasksResponse.data.success) {
-        results.tasks_created = tasksResponse.data.tasks_created;
+      if (healthResponse?.data?.success) {
+        results.levels_executed.push('Nível 4: Gestão e Prioridade');
         results.actions_taken.push({
           level: 4,
-          action: 'Tarefas criadas automaticamente',
-          count: tasksResponse.data.tasks_created
+          action: 'Relatório de saúde gerado',
+          health_score: healthResponse.data.health_score || 0
         });
+
+        // Criar tarefas automaticamente baseado no relatório
+        try {
+          const tasksResponse = await base44.asServiceRole.functions.invoke('autoCreateTasks', {
+            report: healthResponse.data
+          });
+          
+          if (tasksResponse?.data?.success) {
+            results.tasks_created = tasksResponse.data.tasks_created || 0;
+            results.actions_taken.push({
+              level: 4,
+              action: 'Tarefas criadas automaticamente',
+              count: tasksResponse.data.tasks_created || 0
+            });
+          }
+        } catch (e) {
+          console.warn('⚠️ [NÍVEL 4] Erro em autoCreateTasks:', e.message);
+        }
       }
+    } catch (e) {
+      console.warn('⚠️ [NÍVEL 4] Erro em generateSystemHealthReport:', e.message);
     }
 
     // ============================================================
