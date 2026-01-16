@@ -32,29 +32,37 @@ Deno.serve(async (req) => {
     // ============================================================
     console.log('📊 [NÍVEL 1] Executando análise de padrões...');
     
-    const patternsResponse = await base44.asServiceRole.functions.invoke('analyzeErrorPatterns', {
-      windowHours: 72
-    });
-    
-    if (patternsResponse.data && patternsResponse.data.success) {
-      results.levels_executed.push('Nível 1: Análise de Padrões');
-      results.actions_taken.push({
-        level: 1,
-        action: 'Padrões analisados',
-        critical_patterns: patternsResponse.data.patterns.critical.length,
-        warning_patterns: patternsResponse.data.patterns.warning.length
+    try {
+      const patternsResponse = await base44.asServiceRole.functions.invoke('analyzeErrorPatterns', {
+        windowHours: 72
       });
+      
+      if (patternsResponse?.data?.success) {
+        results.levels_executed.push('Nível 1: Análise de Padrões');
+        results.actions_taken.push({
+          level: 1,
+          action: 'Padrões analisados',
+          critical_patterns: patternsResponse.data.patterns?.critical?.length || 0,
+          warning_patterns: patternsResponse.data.patterns?.warning?.length || 0
+        });
+      }
+    } catch (e) {
+      console.warn('⚠️ [NÍVEL 1] Erro em analyzeErrorPatterns:', e.message);
     }
 
-    const trendsResponse = await base44.asServiceRole.functions.invoke('detectErrorTrends', {});
-    
-    if (trendsResponse.data && trendsResponse.data.success) {
-      results.actions_taken.push({
-        level: 1,
-        action: 'Tendências detectadas',
-        health_score: trendsResponse.data.summary.health_score,
-        escalating: trendsResponse.data.trends.escalating.length
-      });
+    try {
+      const trendsResponse = await base44.asServiceRole.functions.invoke('detectErrorTrends', {});
+      
+      if (trendsResponse?.data?.success) {
+        results.actions_taken.push({
+          level: 1,
+          action: 'Tendências detectadas',
+          health_score: trendsResponse.data.summary?.health_score || 0,
+          escalating: trendsResponse.data.trends?.escalating?.length || 0
+        });
+      }
+    } catch (e) {
+      console.warn('⚠️ [NÍVEL 1] Erro em detectErrorTrends:', e.message);
     }
 
     // ============================================================
