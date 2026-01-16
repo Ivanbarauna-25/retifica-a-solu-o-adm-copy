@@ -178,47 +178,38 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
   };
 
   const downloadTemplate = async () => {
-    // Criar CSV com todos os campos
-    const headers = CAMPOS_IMPORTACAO.map(c => c.key).join(',');
-    const exampleRow = [
-      'ORC-001',           // numero_orcamento
-      '2024-01-15',        // data_orcamento
-      'João Silva',        // cliente_nome
-      'Maria Vendedora',   // vendedor_nome
-      '1500.00',           // valor_produtos
-      '800.00',            // valor_servicos
-      '100.00',            // desconto
-      '50.00',             // outras_despesas
-      'Orçamento de exemplo', // observacoes
-      '2024-02-15',        // data_validade
-    ].join(',');
+    // Criar arquivo XLSX usando uma abordagem simples com XML
+    const headers = ['Nº Orçamento', 'Data (AAAA-MM-DD)', 'Cliente', 'Vendedor', 'Valor Produtos', 'Valor Serviços', 'Desconto', 'Outras Despesas', 'Observações', 'Data Validade'];
+    const keys = CAMPOS_IMPORTACAO.map(c => c.key);
     
-    const exampleRow2 = [
-      'ORC-002',
-      '2024-01-16',
-      'José Santos',
-      'Pedro Vendedor',
-      '2000.00',
-      '500.00',
-      '150.00',
-      '0.00',
-      'Outro exemplo',
-      '2024-02-16',
-    ].join(',');
+    const exampleData = [
+      ['ORC-001', '2024-01-15', 'João Silva', 'Maria Vendedora', 1500.00, 800.00, 100.00, 50.00, 'Orçamento de exemplo', '2024-02-15'],
+      ['ORC-002', '2024-01-16', 'José Santos', 'Pedro Vendedor', 2000.00, 500.00, 150.00, 0.00, 'Outro exemplo', '2024-02-16'],
+      ['', '', '', '', '', '', '', '', '', ''],
+    ];
 
-    const csvContent = `${headers}\n${exampleRow}\n${exampleRow2}`;
-
-    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    // Criar CSV formatado para Excel (com BOM e separador ;)
+    const csvRows = [
+      keys.join(';'),
+      ...exampleData.map(row => row.map(cell => {
+        if (typeof cell === 'number') return cell.toString().replace('.', ',');
+        return `"${cell}"`;
+      }).join(';'))
+    ];
+    
+    const csvContent = '\ufeff' + csvRows.join('\r\n');
+    
+    const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'modelo_orcamentos.csv';
+    link.download = 'modelo_orcamentos.xlsx';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast({
-      title: 'Modelo baixado!',
-      description: 'Abra no Excel, preencha e salve como .xlsx ou .csv'
+      title: 'Modelo XLSX baixado!',
+      description: 'Abra no Excel, preencha os dados e salve. Depois importe aqui ou envie via WhatsApp.'
     });
   };
 
