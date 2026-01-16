@@ -17,18 +17,17 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Campos disponíveis para importação
+// Campos disponíveis para importação (formato da tabela do app)
 const CAMPOS_IMPORTACAO = [
-  { key: 'numero_orcamento', label: 'Nº Orçamento', defaultRequired: true },
+  { key: 'numero_orcamento', label: 'Nº/Número', defaultRequired: true },
   { key: 'data_orcamento', label: 'Data', defaultRequired: true },
   { key: 'cliente_nome', label: 'Cliente', defaultRequired: false },
   { key: 'vendedor_nome', label: 'Vendedor', defaultRequired: false },
-  { key: 'valor_produtos', label: 'Valor Produtos', defaultRequired: false },
-  { key: 'valor_servicos', label: 'Valor Serviços', defaultRequired: false },
+  { key: 'valor_produtos', label: 'Produtos', defaultRequired: false },
+  { key: 'valor_servicos', label: 'Serviços', defaultRequired: false },
   { key: 'desconto', label: 'Desconto', defaultRequired: false },
-  { key: 'outras_despesas', label: 'Outras Despesas', defaultRequired: false },
+  { key: 'outras_despesas', label: 'Despesas', defaultRequired: false },
   { key: 'observacoes', label: 'Observações', defaultRequired: false },
-  { key: 'data_validade', label: 'Data Validade', defaultRequired: false },
 ];
 
 // Componente de etapa de progresso
@@ -178,19 +177,19 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
   };
 
   const downloadTemplate = async () => {
-    // Criar arquivo XLSX usando uma abordagem simples com XML
-    const headers = ['Nº Orçamento', 'Data (AAAA-MM-DD)', 'Cliente', 'Vendedor', 'Valor Produtos', 'Valor Serviços', 'Desconto', 'Outras Despesas', 'Observações', 'Data Validade'];
+    // Cabeçalhos no formato exato da tabela do app
+    const headers = ['Nº/Número', 'Data', 'Cliente', 'Vendedor', 'Produtos', 'Serviços', 'Desconto', 'Despesas', 'Observações'];
     const keys = CAMPOS_IMPORTACAO.map(c => c.key);
     
     const exampleData = [
-      ['ORC-001', '2024-01-15', 'João Silva', 'Maria Vendedora', 1500.00, 800.00, 100.00, 50.00, 'Orçamento de exemplo', '2024-02-15'],
-      ['ORC-002', '2024-01-16', 'José Santos', 'Pedro Vendedor', 2000.00, 500.00, 150.00, 0.00, 'Outro exemplo', '2024-02-16'],
-      ['', '', '', '', '', '', '', '', '', ''],
+      ['ORC-001', '2024-01-15', 'João Silva', 'Maria Vendedora', 1500.00, 800.00, 100.00, 50.00, 'Orçamento de exemplo'],
+      ['ORC-002', '2024-01-16', 'José Santos', 'Pedro Vendedor', 2000.00, 500.00, 150.00, 0.00, 'Outro exemplo'],
+      ['', '', '', '', '', '', '', '', ''],
     ];
 
     // Criar CSV formatado para Excel (com BOM e separador ;)
     const csvRows = [
-      keys.join(';'),
+      headers.join(';'),
       ...exampleData.map(row => row.map(cell => {
         if (typeof cell === 'number') return cell.toString().replace('.', ',');
         return `"${cell}"`;
@@ -464,18 +463,26 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
     
     if (h.includes('margem') || h.includes('status') || h.includes('acao') || h.includes('resultado')) return null;
     
-    if (h === 'nº' || h === 'no' || h === 'n°' || h === 'n' || h === 'numero' || h.includes('numero') || h.includes('nro') || h === 'numero_orcamento') return 'numero_orcamento';
+    // Nº/Número
+    if (h === 'nº/número' || h === 'nº' || h === 'no' || h === 'n°' || h === 'n' || h === 'numero' || h.includes('numero') || h.includes('nro') || h === 'numero_orcamento') return 'numero_orcamento';
+    // Data
     if (h === 'data' || h.includes('dt') || h.includes('data orcamento') || h.includes('data orc') || h === 'data_orcamento') return 'data_orcamento';
-    if (h.includes('validade') || h === 'data_validade') return 'data_validade';
+    // Cliente
     if (h === 'cliente' || h.includes('cliente') || h === 'cliente_nome') return 'cliente_nome';
+    // Vendedor
     if (h === 'vendedor' || h.includes('vendedor') || h === 'vendedor_nome') return 'vendedor_nome';
+    // Produtos
     if (h === 'produtos' || h === 'produto' || h.includes('vl. produto') || h.includes('valor produto') || h.includes('prod') || h === 'valor_produtos') return 'valor_produtos';
+    // Serviços
     if (h === 'servicos' || h === 'serviços' || h.includes('vl. servic') || h.includes('valor servic') || h.includes('serv') || h === 'valor_servicos') return 'valor_servicos';
+    // Desconto
     if (h === 'desconto' || h.includes('desconto') || h.includes('desc')) return 'desconto';
-    if (h.includes('total') && h.includes('cliente')) return 'valor_total';
+    // Despesas
     if (h === 'despesas' || h === 'despesa' || h.includes('outras despesas') || h.includes('desp') || h === 'outras_despesas') return 'outras_despesas';
-    if (h === 'total' && !h.includes('cliente')) return 'valor_total';
-    if (h.includes('observ') || h === 'observacoes') return 'observacoes';
+    // Observações
+    if (h.includes('observ') || h === 'observacoes' || h === 'observações') return 'observacoes';
+    // Total (ignorar para cálculo automático)
+    if (h.includes('total')) return 'valor_total';
     
     return null;
   };
