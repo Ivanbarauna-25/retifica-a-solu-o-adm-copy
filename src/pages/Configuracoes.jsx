@@ -187,7 +187,8 @@ function ConfiguracoesPage() {
 
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setConfig({ ...config, [field]: file_url });
+      setConfig(prev => ({ ...prev, [field]: file_url }));
+      setHasUnsavedChanges(true);
       
       toast({
         title: 'Sucesso',
