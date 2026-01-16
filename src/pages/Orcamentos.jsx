@@ -295,9 +295,9 @@ export default function OrcamentosPage() {
                 <Button
                   variant="outline"
                   onClick={() => setShowImportModal(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 hidden sm:flex">
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3">
                   <Upload className="w-3 h-3 md:w-4 md:h-4" />
-                  Importar
+                  <span className="hidden sm:inline">Importar</span>
                 </Button>
 
                 <Button
