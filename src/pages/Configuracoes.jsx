@@ -187,12 +187,19 @@ function ConfiguracoesPage() {
 
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setConfig(prev => ({ ...prev, [field]: file_url }));
+      
+      // Atualizar config com o novo valor
+      setConfig(prev => {
+        const newConfig = { ...prev, [field]: file_url };
+        return newConfig;
+      });
+      
+      // Forçar flag de mudanças não salvas
       setHasUnsavedChanges(true);
       
       toast({
         title: 'Sucesso',
-        description: 'Documento carregado com sucesso',
+        description: 'Documento carregado com sucesso. Clique em Salvar para confirmar.',
       });
     } catch (error) {
       console.error('Erro ao fazer upload:', error);
