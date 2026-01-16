@@ -87,7 +87,7 @@ export default function AdiantamentosPage() {
     setIsLoading(true);
     setErro(null);
     try {
-      const [ads, funcs, pcs, cbs, depts] = await Promise.all([
+      const results = await Promise.allSettled([
         base44.entities.Adiantamento.list("-created_date"),
         base44.entities.Funcionario.list(),
         base44.entities.PlanoContas.list(),
@@ -95,11 +95,22 @@ export default function AdiantamentosPage() {
         base44.entities.Departamento.list()
       ]);
 
+      const [ads, funcs, pcs, cbs, depts] = results.map(r => r.status === 'fulfilled' ? r.value : []);
+
       setItens((ads || []).filter(Boolean));
-      setFuncionarios((funcs || []).sort((a, b) => a.nome.localeCompare(b.nome)));
-      setPlanos((pcs || []).sort((a, b) => a.nome.localeCompare(b.nome)));
-      setContasBancarias((cbs || []).sort((a, b) => a.nome.localeCompare(b.nome)));
-      setDepartamentos((depts || []).sort((a, b) => a.nome.localeCompare(b.nome)));
+      setFuncionarios((funcs || []).sort((a, b) => (a?.nome || '').localeCompare(b?.nome || '')));
+      setPlanos((pcs || []).sort((a, b) => (a?.nome || '').localeCompare(b?.nome || '')));
+      setContasBancarias((cbs || []).sort((a, b) => (a?.nome || '').localeCompare(b?.nome || '')));
+      setDepartamentos((depts || []).sort((a, b) => (a?.nome || '').localeCompare(b?.nome || '')));
+      
+      const failedCount = results.filter(r => r.status === 'rejected').length;
+      if (failedCount > 0) {
+        toast({
+          title: "⚠️ Aviso",
+          description: `Alguns dados podem estar incompletos (${failedCount} falha(s)).`,
+          variant: "default"
+        });
+      }
     } catch (e) {
       console.error("Erro ao carregar adiantamentos:", e);
       setErro("Não foi possível carregar os dados.");
