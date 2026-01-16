@@ -369,7 +369,11 @@ function ConfiguracoesPage() {
                       id="contrato_social"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleDocUpload(e, 'contrato_social_url')}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        handleDocUpload(e, 'contrato_social_url');
+                      }}
+                      onClick={(e) => e.stopPropagation()}
                       className="h-9 md:h-10 text-xs md:text-sm flex-1"
                     />
                     {config?.contrato_social_url && (
@@ -392,7 +396,11 @@ function ConfiguracoesPage() {
                       id="alvara"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleDocUpload(e, 'alvara_url')}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        handleDocUpload(e, 'alvara_url');
+                      }}
+                      onClick={(e) => e.stopPropagation()}
                       className="h-9 md:h-10 text-xs md:text-sm flex-1"
                     />
                     {config?.alvara_url && (
@@ -415,7 +423,11 @@ function ConfiguracoesPage() {
                       id="outros_docs"
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={(e) => handleDocUpload(e, 'outros_docs_url')}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        handleDocUpload(e, 'outros_docs_url');
+                      }}
+                      onClick={(e) => e.stopPropagation()}
                       className="h-9 md:h-10 text-xs md:text-sm flex-1"
                     />
                     {config?.outros_docs_url && (
@@ -446,7 +458,11 @@ function ConfiguracoesPage() {
                       id="modelo_orcamento"
                       type="file"
                       accept=".pdf"
-                      onChange={(e) => handleDocUpload(e, 'modelo_orcamento_url')}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        handleDocUpload(e, 'modelo_orcamento_url');
+                      }}
+                      onClick={(e) => e.stopPropagation()}
                       className="h-9 md:h-10 text-xs md:text-sm flex-1 bg-white"
                     />
                     {config?.modelo_orcamento_url && (
