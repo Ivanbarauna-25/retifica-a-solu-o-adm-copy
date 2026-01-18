@@ -294,14 +294,14 @@ export default function GerarFinanceiroModal({ isOpen, onClose, nota, fornecedor
 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-full max-w-[95vw] md:max-w-4xl h-[95vh] md:max-h-[90vh] overflow-hidden modern-modal bg-white flex flex-col p-0">
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-4 md:px-6 py-4">
+          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4 sticky top-0 z-10">
             <DialogTitle className="flex items-center gap-3 text-white">
               <DollarSign className="w-5 h-5 md:w-6 md:h-6 text-white" />
               <span className="text-base md:text-lg">Gerar Movimentação Financeira</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="gerar-financeiro-scroll flex-1 px-4 md:px-6 pb-4 md:pb-6 space-y-4 md:space-y-6 mt-4 md:mt-6">
+          <div className="gerar-financeiro-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6 space-y-3 md:space-y-6 mt-3 md:mt-6">
             <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-3 md:p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
@@ -524,12 +524,12 @@ export default function GerarFinanceiroModal({ isOpen, onClose, nota, fornecedor
             </Card>
           </div>
 
-          <DialogFooter className="flex-shrink-0 flex justify-end gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 border-t bg-white">
+          <DialogFooter className="flex-shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t bg-white">
             <Button
               variant="outline"
               onClick={onClose}
               disabled={isProcessing}
-              className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10"
+              className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10 w-full sm:w-auto text-sm"
             >
               Cancelar
             </Button>

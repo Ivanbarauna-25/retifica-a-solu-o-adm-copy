@@ -134,14 +134,14 @@ export default function NotaFiscalForm({ isOpen, onClose, nota, fornecedores, on
 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-full max-w-[95vw] md:max-w-4xl h-[95vh] md:max-h-[90vh] overflow-hidden modern-modal bg-white flex flex-col p-0">
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-4 md:px-6 py-4">
+          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4 sticky top-0 z-10">
             <DialogTitle className="flex items-center gap-3 text-white">
               <FileText className="w-5 h-5 md:w-6 md:h-6" />
               <span className="text-base md:text-lg">{nota ? 'Editar Nota Fiscal' : 'Nova Nota Fiscal'}</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="nota-form-scroll flex-1 px-4 md:px-6 pb-4 md:pb-6">
+          <div className="nota-form-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6">
             <Tabs defaultValue="dados" className="mt-4">
               <TabsList className="grid grid-cols-3 bg-slate-100 p-1 rounded-lg sticky top-0 z-10">
                 <TabsTrigger value="dados" className="TabsTrigger data-[state=active]:bg-slate-800 data-[state=active]:text-white text-black text-xs md:text-sm">Dados da Nota</TabsTrigger>
@@ -358,11 +358,11 @@ export default function NotaFiscalForm({ isOpen, onClose, nota, fornecedores, on
             </Tabs>
           </div>
 
-          <DialogFooter className="flex-shrink-0 flex justify-end gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 border-t bg-white">
+          <DialogFooter className="flex-shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t bg-white">
             <Button 
               variant="outline" 
               onClick={onClose} 
-              className="bg-slate-600 hover:bg-slate-700 text-white gap-2 h-10"
+              className="bg-slate-600 hover:bg-slate-700 text-white gap-2 h-10 w-full sm:w-auto text-sm"
             >
               <X className="w-4 h-4" /> Cancelar
             </Button>

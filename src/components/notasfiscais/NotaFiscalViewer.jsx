@@ -360,7 +360,7 @@ export default function NotaFiscalViewer({ isOpen, onClose, nota, fornecedores, 
 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-full max-w-[95vw] md:max-w-7xl h-[95vh] md:max-h-[92vh] overflow-hidden modern-modal bg-white flex flex-col p-0">
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-4 md:px-6 py-4">
+          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4 sticky top-0 z-10">
             <div className="flex items-center justify-between w-full">
               <DialogTitle className="flex items-center gap-2 md:gap-3 text-white text-base md:text-lg">
                 <FileText className="w-5 h-5 md:w-6 md:h-6 text-white flex-shrink-0" />
@@ -377,7 +377,7 @@ export default function NotaFiscalViewer({ isOpen, onClose, nota, fornecedores, 
             </div>
           </DialogHeader>
 
-          <div className="nota-fiscal-scroll flex-1 px-4 md:px-6 pb-4 md:pb-6">
+          <div className="nota-fiscal-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6">
             <Tabs defaultValue="geral" className="mt-4">
               <TabsList className="grid grid-cols-3 bg-slate-100 p-1 rounded-lg sticky top-0 z-10 w-full">
                 <TabsTrigger value="geral" className="TabsTrigger data-[state=active]:bg-slate-800 data-[state=active]:text-white text-black text-xs md:text-sm">Geral</TabsTrigger>

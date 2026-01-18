@@ -165,14 +165,14 @@ export default function ImportarXMLLoteModal({ isOpen, onClose, onSuccess }) {
 
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="w-full max-w-[95vw] md:max-w-5xl h-[95vh] md:max-h-[95vh] overflow-hidden modern-modal bg-white flex flex-col p-0">
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-4 md:px-6 py-4">
+          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4 sticky top-0 z-10">
             <DialogTitle className="flex items-center gap-3 text-white">
               <Upload className="w-5 h-5 md:w-6 md:h-6" />
               <span className="text-base md:text-lg">Importação em Lote de NF-e</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="importar-lote-scroll flex-1 px-4 md:px-6 pb-4 md:pb-6 space-y-4 md:space-y-6 mt-4 md:mt-6">
+          <div className="importar-lote-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6 space-y-3 md:space-y-6 mt-3 md:mt-6">
             {!resultados && (
               <>
                 <Alert className="bg-blue-50 border-blue-200">
@@ -340,13 +340,13 @@ export default function ImportarXMLLoteModal({ isOpen, onClose, onSuccess }) {
             )}
           </div>
 
-          <DialogFooter className="flex-shrink-0 flex justify-between gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 border-t bg-white">
+          <DialogFooter className="flex-shrink-0 flex flex-col-reverse sm:flex-row justify-between gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t bg-white">
             {!resultados && !isProcessing && (
               <>
                 <Button 
                   variant="outline" 
                   onClick={handleClose}
-                  className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10"
+                  className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10 w-full sm:w-auto text-sm"
                 >
                   Cancelar
                 </Button>

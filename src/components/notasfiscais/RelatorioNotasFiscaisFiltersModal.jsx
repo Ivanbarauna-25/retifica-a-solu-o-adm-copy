@@ -29,7 +29,7 @@ export default function RelatorioNotasFiscaisFiltersModal({ isOpen, onClose, onG
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto bg-white" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className="w-[95vw] md:max-w-3xl max-h-[92vh] overflow-y-auto bg-white" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader className="pb-4 border-b border-slate-200 bg-white sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-3 text-slate-900 text-xl font-bold">
@@ -150,19 +150,19 @@ export default function RelatorioNotasFiscaisFiltersModal({ isOpen, onClose, onG
           </div>
         </div>
 
-        <DialogFooter className="mt-6 pt-4 border-t-2 border-slate-200 flex items-center justify-between gap-4 bg-slate-50 -mx-6 -mb-6 px-6 py-4 rounded-b-lg">
+        <DialogFooter className="mt-6 pt-4 border-t-2 border-slate-200 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 bg-slate-50 -mx-6 -mb-6 px-4 md:px-6 py-3 md:py-4 rounded-b-lg">
           <p className="text-sm text-slate-700 font-medium">Aplique os filtros desejados e clique em Gerar</p>
           <div className="flex gap-3">
             <Button
               variant="outline"
               onClick={onClose}
-              className="bg-white border-2 border-slate-400 text-slate-900 hover:bg-slate-100 font-bold px-6"
+              className="bg-white border-2 border-slate-400 text-slate-900 hover:bg-slate-100 font-bold px-6 w-full sm:w-auto text-sm"
             >
               Cancelar
             </Button>
             <Button
               onClick={handleGenerate}
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 shadow-lg gap-2"
+              className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 shadow-lg gap-2 w-full sm:w-auto text-sm"
             >
               <Printer className="w-4 h-4" />
               Gerar
