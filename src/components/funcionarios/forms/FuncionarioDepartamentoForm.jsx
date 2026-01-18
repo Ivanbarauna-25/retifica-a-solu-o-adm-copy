@@ -198,13 +198,13 @@ export default function FuncionarioDepartamentoForm({ isOpen, onClose, funcionar
       `}</style>
 
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="w-full max-w-[95vw] md:max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-hidden modern-modal bg-white flex flex-col p-0">
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4">
+        <DialogContent className="w-full max-w-[95vw] md:max-w-2xl h-[95vh] md:max-h-[90vh] overflow-hidden modern-modal bg-white flex flex-col p-0">
+          <DialogHeader className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4 sticky top-0 z-10">
             <DialogTitle className="text-white text-base md:text-lg">Solicitar Transferência de Departamento - {funcionario?.nome}</DialogTitle>
           </DialogHeader>
 
           <div className="departamento-form-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6">
-            <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 mt-3 md:mt-4">
               <div className="bg-slate-50 p-3 md:p-4 rounded-lg">
                 <Label className="text-xs text-black">Departamento Atual</Label>
                 <p className="text-base md:text-lg font-semibold text-black">
@@ -222,7 +222,7 @@ export default function FuncionarioDepartamentoForm({ isOpen, onClose, funcionar
                   <SelectTrigger className="mt-1.5 bg-white text-black">
                     <SelectValue placeholder="Selecione o novo departamento..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-white max-h-60 overflow-auto">
+                  <SelectContent className="bg-white">
                     {departamentos.filter(d => d.id !== funcionario?.departamento_id).map((dept) => (
                       <SelectItem key={dept.id} value={dept.id}>
                         {dept.nome}
@@ -267,7 +267,7 @@ export default function FuncionarioDepartamentoForm({ isOpen, onClose, funcionar
                   <SelectTrigger className="mt-1.5 bg-white text-black">
                     <SelectValue placeholder="Selecione quem deve aprovar..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-white max-h-60 overflow-auto">
+                  <SelectContent className="bg-white">
                     {aprovadores.map((aprovador) => (
                       <SelectItem key={aprovador.id} value={aprovador.id}>
                         {aprovador.full_name || aprovador.email}
@@ -283,12 +283,12 @@ export default function FuncionarioDepartamentoForm({ isOpen, onClose, funcionar
             </form>
           </div>
 
-          <DialogFooter className="flex-shrink-0 flex justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t bg-white flex-col-reverse sm:flex-row">
+          <DialogFooter className="flex-shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t bg-white">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose}
-              className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10 w-full sm:w-auto text-sm px-4"
+              className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10 w-full sm:w-auto text-sm"
             >
               Cancelar
             </Button>
@@ -296,7 +296,7 @@ export default function FuncionarioDepartamentoForm({ isOpen, onClose, funcionar
               type="submit" 
               disabled={isLoading}
               onClick={handleSubmit}
-              className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-full sm:w-auto text-sm px-4"
+              className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-full sm:w-auto text-sm"
             >
               {isLoading ? 'Enviando...' : 'Enviar Solicitação'}
             </Button>
