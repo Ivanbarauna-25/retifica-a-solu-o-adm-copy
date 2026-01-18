@@ -22,8 +22,8 @@ import {
   Printer,
   HardHat,
   Plus,
-  History
-} from 'lucide-react';
+  History } from
+'lucide-react';
 import EntregaEPIModal from '@/components/epi/EntregaEPIModal';
 import HistoricoEPIModal from '@/components/epi/HistoricoEPIModal';
 import { formatCurrency, formatDate } from '@/components/formatters';
@@ -128,7 +128,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
       {Icon && <Icon className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />}
       <div className="flex-1 min-w-0">
         <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
-        <p className="text-sm text-slate-900 mt-0.5 break-words">{value || '-'}</p>
+        <p className="text-slate-900 mx-auto text-sm break-words">{value || '-'}</p>
       </div>
     </div>;
 
@@ -137,7 +137,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto modern-modal p-0">
         <DialogHeader className="px-6 py-5 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg sticky top-0 z-10">
-          <div className="flex items-start justify-between">
+          <div className="mx-auto flex items-start justify-between">
             <div className="flex-1">
               <DialogTitle className="text-2xl font-bold text-white mb-2">
                 {funcionario.nome}
@@ -170,8 +170,8 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
                 onClick={() => setShowEntregaEPI(true)}
                 variant="outline"
                 size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2"
-              >
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2">
+
                 <HardHat className="w-4 h-4" />
                 Entregar EPI
               </Button>
@@ -179,8 +179,8 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
                 onClick={() => setShowHistoricoEPI(true)}
                 variant="outline"
                 size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2"
-              >
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2">
+
                 <History className="w-4 h-4" />
                 Histórico EPI
               </Button>
@@ -188,16 +188,16 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
                 onClick={handlePrint}
                 variant="outline"
                 size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2"
-              >
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2">
+
                 <Printer className="w-4 h-4" />
                 Imprimir
               </Button>
               <Button
                 onClick={() => onEdit(funcionario)}
                 size="sm"
-                className="gap-2 bg-white text-slate-800 hover:bg-white/90"
-              >
+                className="gap-2 bg-white text-slate-800 hover:bg-white/90">
+
                 <Edit className="w-4 h-4" />
                 Editar
               </Button>
@@ -381,15 +381,15 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
           funcionario={funcionario}
           onSave={() => {
             setShowEntregaEPI(false);
-          }}
-        />
+          }} />
+
 
         {/* Modal de Histórico de EPI */}
         <HistoricoEPIModal
           isOpen={showHistoricoEPI}
           onClose={() => setShowHistoricoEPI(false)}
-          funcionario={funcionario}
-        />
+          funcionario={funcionario} />
+
       </DialogContent>
     </Dialog>);
 
