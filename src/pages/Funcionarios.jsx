@@ -335,15 +335,15 @@ export default function FuncionariosPage() {
       <Toaster />
       <div className="min-h-screen bg-slate-50">
         {/* Header com Botões */}
-        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-3 md:py-6 mb-3 md:mb-6 shadow-xl">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4">
               <div className="flex items-center gap-3">
-                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
-                  <Users className="w-6 h-6 md:w-8 md:h-8" />
+                <div className="bg-slate-700 p-1.5 md:p-3 rounded-lg">
+                  <Users className="w-5 h-5 md:w-8 md:h-8" />
                 </div>
                 <div>
-                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Equipe</h1>
+                  <h1 className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1">Equipe</h1>
                   <p className="text-slate-300 text-xs md:text-base">Gerenciamento de funcionários</p>
                 </div>
               </div>
@@ -417,11 +417,11 @@ export default function FuncionariosPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
             <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-2 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total</p>
@@ -433,7 +433,7 @@ export default function FuncionariosPage() {
             </Card>
 
             <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-2 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Ativos</p>
@@ -445,7 +445,7 @@ export default function FuncionariosPage() {
             </Card>
 
             <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-2 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Férias</p>
@@ -457,7 +457,7 @@ export default function FuncionariosPage() {
             </Card>
 
             <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
+              <CardContent className="p-2 md:p-6">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Afastados</p>
@@ -537,7 +537,7 @@ export default function FuncionariosPage() {
 
           {/* Busca Simples */}
           {!showFilters && (
-            <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
+            <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-3 md:mb-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
                 <Input
