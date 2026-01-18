@@ -109,14 +109,14 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
 
   const InfoSection = ({ title, icon: Icon, children }) =>
   <Card className="border-slate-200">
-      <CardContent className="p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 bg-slate-100 rounded-lg">
-            <Icon className="w-5 h-5 text-slate-700" />
+      <CardContent className="p-3 md:p-5">
+        <div className="flex items-center gap-2 mb-3 md:mb-4">
+          <div className="p-1.5 md:p-2 bg-slate-100 rounded-lg">
+            <Icon className="w-4 h-4 md:w-5 md:h-5 text-slate-700" />
           </div>
-          <h3 className="font-semibold text-slate-900">{title}</h3>
+          <h3 className="font-semibold text-slate-900 text-sm md:text-base">{title}</h3>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {children}
         </div>
       </CardContent>
@@ -124,81 +124,77 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
 
 
   const InfoItem = ({ label, value, icon: Icon }) =>
-  <div className="flex items-start gap-3">
-      {Icon && <Icon className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />}
+  <div className="flex items-start gap-2 md:gap-3">
+      {Icon && <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-400 mt-0.5 flex-shrink-0" />}
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
-        <p className="text-slate-900 mx-auto text-sm break-words">{value || '-'}</p>
+        <p className="text-[10px] md:text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
+        <p className="text-slate-900 text-xs md:text-sm break-words">{value || '-'}</p>
       </div>
     </div>;
 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto modern-modal p-0">
-        <DialogHeader className="px-6 py-5 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg sticky top-0 z-10">
-          <div className="mx-auto flex items-start justify-between">
-            <div className="flex-1">
-              <DialogTitle className="text-2xl font-bold text-white mb-2">
+      <DialogContent className="max-w-4xl w-[95vw] max-h-[95vh] md:max-h-[90vh] overflow-y-auto modern-modal p-0">
+        <DialogHeader className="px-3 md:px-6 py-3 md:py-5 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg sticky top-0 z-10">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <DialogTitle className="text-lg md:text-2xl font-bold text-white mb-2 truncate">
                 {funcionario.nome}
               </DialogTitle>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className={`${statusConfig.className} border px-3 py-1 font-semibold`}>
+              <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
+                <Badge className={`${statusConfig.className} border px-2 md:px-3 py-0.5 md:py-1 font-semibold text-xs md:text-sm`}>
                   {statusConfig.label}
                 </Badge>
                 {funcionario.regime &&
-                <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
+                <Badge variant="outline" className="border-white/30 bg-white/10 text-white text-xs md:text-sm px-2 py-0.5">
                     {getRegimeLabel(funcionario.regime)}
                   </Badge>
                 }
                 {funcionario.cargo_id && cargo &&
-                <Badge variant="outline" className="border-white/30 bg-white/10 text-white">
+                <Badge variant="outline" className="border-white/30 bg-white/10 text-white text-xs md:text-sm px-2 py-0.5 hidden md:inline-flex">
                     {cargo.nome}
                   </Badge>
                 }
                 {funcionario.data_fim_experiencia && new Date(funcionario.data_fim_experiencia) > new Date() &&
-                <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">
+                <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50 text-xs px-2 py-0.5">
                     <AlertCircle className="w-3 h-3 mr-1" />
-                    Experiência até {formatDate(funcionario.data_fim_experiencia)}
+                    <span className="hidden sm:inline">Experiência até</span> {formatDate(funcionario.data_fim_experiencia)}
                   </Badge>
                 }
               </div>
             </div>
             {/* Action buttons */}
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-1.5 md:gap-2 flex-wrap">
               <Button
                 onClick={() => setShowEntregaEPI(true)}
                 variant="outline"
                 size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2">
-
-                <HardHat className="w-4 h-4" />
-                Entregar EPI
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9">
+                <HardHat className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Entregar</span> EPI
               </Button>
               <Button
                 onClick={() => setShowHistoricoEPI(true)}
                 variant="outline"
                 size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2">
-
-                <History className="w-4 h-4" />
-                Histórico EPI
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9">
+                <History className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Histórico</span>
               </Button>
               <Button
                 onClick={handlePrint}
                 variant="outline"
                 size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-2">
-
-                <Printer className="w-4 h-4" />
-                Imprimir
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9">
+                <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Imprimir</span>
               </Button>
               <Button
                 onClick={() => onEdit(funcionario)}
                 size="sm"
-                className="gap-2 bg-white text-slate-800 hover:bg-white/90">
-
-                <Edit className="w-4 h-4" />
+                className="gap-1 md:gap-2 bg-white text-slate-800 hover:bg-white/90 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9">
+                <Edit className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 Editar
               </Button>
             </div>
@@ -206,14 +202,14 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
         </DialogHeader>
 
         {isLoading ?
-        <div className="py-12 text-center text-slate-500">
+        <div className="py-8 md:py-12 text-center text-slate-500 text-sm md:text-base">
             Carregando informações...
           </div> :
 
-        <div className="space-y-4 p-6">
+        <div className="space-y-3 md:space-y-4 p-3 md:p-6">
             {/* Informações Profissionais */}
             <InfoSection title="Informações Profissionais" icon={Briefcase}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
                 <InfoItem
                 label="Cargo"
                 value={cargo?.nome || 'Não especificado'}
@@ -239,7 +235,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
 
             {/* Informações Pessoais */}
             <InfoSection title="Informações Pessoais" icon={User}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
                 <InfoItem
                 label="CPF"
                 value={funcionario.cpf}
@@ -276,7 +272,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
             {/* Contato de Emergência */}
             {(funcionario.contato_emergencia || funcionario.telefone_emergencia) &&
           <InfoSection title="Contato de Emergência" icon={AlertCircle}>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
                   <InfoItem
                 label="Nome"
                 value={funcionario.contato_emergencia}
@@ -299,7 +295,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
             {/* Endereço */}
             {(funcionario.logradouro || funcionario.cidade) &&
           <InfoSection title="Endereço" icon={MapPin}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2 md:gap-4">
                   <InfoItem
                 label="CEP"
                 value={funcionario.cep} />
@@ -335,7 +331,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
             {/* Dados Bancários */}
             {(funcionario.banco || funcionario.conta || funcionario.pix) &&
           <InfoSection title="Dados Bancários" icon={CreditCard}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2 md:gap-4">
                   <InfoItem
                 label="Banco"
                 value={funcionario.banco} />

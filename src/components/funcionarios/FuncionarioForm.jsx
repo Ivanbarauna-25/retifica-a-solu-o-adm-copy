@@ -361,9 +361,9 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
   };
 
   const SectionTitle = ({ children, icon: Icon }) =>
-    <div className="flex items-center gap-3 bg-slate-800 text-white px-4 py-3 rounded-lg mb-4 mt-6 first:mt-0 shadow-sm">
-      {Icon && <Icon className="w-5 h-5 flex-shrink-0" />}
-      <h3 className="text-sm font-bold uppercase tracking-wider">{children}</h3>
+    <div className="flex items-center gap-2 md:gap-3 bg-slate-800 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg mb-3 md:mb-4 mt-4 md:mt-6 first:mt-0 shadow-sm">
+      {Icon && <Icon className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />}
+      <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider">{children}</h3>
     </div>;
 
   const RequiredLabel = ({ children, htmlFor }) =>
@@ -407,38 +407,38 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
       `}</style>
 
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col modern-modal p-0">
+        <DialogContent className="max-w-4xl w-[95vw] max-h-[95vh] md:max-h-[90vh] overflow-hidden flex flex-col modern-modal p-0">
           <form onSubmit={handleSubmit} className="flex flex-col h-full">
-            <DialogHeader className="px-6 py-4 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg">
-              <DialogTitle className="text-xl font-bold text-white">
+            <DialogHeader className="px-3 md:px-6 py-3 md:py-4 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg">
+              <DialogTitle className="text-base md:text-xl font-bold text-white">
                 {funcionario ? 'Editar Funcionário' : 'Novo Funcionário'}
               </DialogTitle>
             </DialogHeader>
 
-            <Tabs defaultValue="pessoal" className="flex-1 overflow-hidden flex flex-col px-6 mt-4">
-              <TabsList className="grid grid-cols-5 bg-slate-100 p-1 rounded-lg mb-4">
-                <TabsTrigger value="pessoal" className="text-xs flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5" /> Pessoal
+            <Tabs defaultValue="pessoal" className="flex-1 overflow-hidden flex flex-col px-3 md:px-6 mt-2 md:mt-4">
+              <TabsList className="grid grid-cols-5 bg-slate-100 p-0.5 md:p-1 rounded-lg mb-2 md:mb-4 h-auto">
+                <TabsTrigger value="pessoal" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
+                  <User className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Pessoal</span><span className="sm:hidden">Pessoal</span>
                 </TabsTrigger>
-                <TabsTrigger value="profissional" className="text-xs flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5" /> Profissional
+                <TabsTrigger value="profissional" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
+                  <Briefcase className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Profissional</span><span className="sm:hidden">Prof.</span>
                 </TabsTrigger>
-                <TabsTrigger value="endereco" className="text-xs flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" /> Endereço
+                <TabsTrigger value="endereco" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
+                  <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Endereço</span><span className="sm:hidden">End.</span>
                 </TabsTrigger>
-                <TabsTrigger value="bancario" className="text-xs flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5" /> Bancário
+                <TabsTrigger value="bancario" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
+                  <CreditCard className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Bancário</span><span className="sm:hidden">Banco</span>
                 </TabsTrigger>
-                <TabsTrigger value="acesso" className="text-xs flex items-center gap-1.5">
-                  <Settings className="w-3.5 h-3.5" /> Acesso
+                <TabsTrigger value="acesso" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
+                  <Settings className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Acesso</span><span className="sm:hidden">Acesso</span>
                 </TabsTrigger>
               </TabsList>
 
               <div className="flex-1 overflow-y-auto pr-2 pb-4 funcionario-form-scroll">
-                <TabsContent value="pessoal" className="space-y-4 mt-0">
+                <TabsContent value="pessoal" className="space-y-3 md:space-y-4 mt-0">
                   <SectionTitle icon={User}>Dados Pessoais</SectionTitle>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
                       <RequiredLabel htmlFor="nome">Nome Completo</RequiredLabel>
                       <Input
@@ -482,7 +482,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
 
                   <SectionTitle icon={Phone}>Contatos</SectionTitle>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
                       <OptionalLabel htmlFor="email">Email</OptionalLabel>
                       <Input
@@ -517,7 +517,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
 
                   <SectionTitle icon={Phone}>Contato de Emergência</SectionTitle>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
                       <OptionalLabel htmlFor="contato_emergencia">Nome do Contato</OptionalLabel>
                       <Input
@@ -550,10 +550,10 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
                   </div>
                 </TabsContent>
 
-                <TabsContent value="profissional" className="space-y-4 mt-0">
+                <TabsContent value="profissional" className="space-y-3 md:space-y-4 mt-0">
                   <SectionTitle icon={Briefcase}>Informações Profissionais</SectionTitle>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
                       <RequiredLabel htmlFor="cargo_id">Cargo</RequiredLabel>
                       <SmartInput
@@ -665,7 +665,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
 
                   <SectionTitle icon={DollarSign}>Remuneração e Benefícios</SectionTitle>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
                       <RequiredLabel htmlFor="salario">Salário Bruto</RequiredLabel>
                       <div className="relative mt-1.5">
@@ -723,10 +723,10 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
                   </div>
                 </TabsContent>
 
-                <TabsContent value="endereco" className="space-y-4 mt-0">
+                <TabsContent value="endereco" className="space-y-3 md:space-y-4 mt-0">
                   <SectionTitle icon={MapPin}>Endereço Residencial</SectionTitle>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                     <div>
                       <OptionalLabel htmlFor="cep">CEP</OptionalLabel>
                       <div className="flex gap-2 mt-1.5">
@@ -819,10 +819,10 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
                   </div>
                 </TabsContent>
 
-                <TabsContent value="bancario" className="space-y-4 mt-0">
+                <TabsContent value="bancario" className="space-y-3 md:space-y-4 mt-0">
                   <SectionTitle icon={CreditCard}>Dados Bancários</SectionTitle>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     <div>
                       <OptionalLabel htmlFor="banco">Banco</OptionalLabel>
                       <Input
@@ -879,7 +879,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
                   </div>
                 </TabsContent>
 
-                <TabsContent value="acesso" className="space-y-4 mt-0">
+                <TabsContent value="acesso" className="space-y-3 md:space-y-4 mt-0">
                   <SectionTitle icon={Settings}>Configurações de Acesso ao Sistema</SectionTitle>
 
                   <div className="space-y-4">
@@ -977,15 +977,15 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
               </div>
             </Tabs>
 
-            <DialogFooter className="gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50 rounded-b-lg">
-              <Button type="button" variant="outline" onClick={onClose} className="border-2 border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold px-6" disabled={isLoading}>
+            <DialogFooter className="gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t border-slate-200 bg-slate-50 rounded-b-lg flex-col-reverse sm:flex-row">
+              <Button type="button" variant="outline" onClick={onClose} className="border-2 border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold px-4 md:px-6 w-full sm:w-auto text-sm" disabled={isLoading}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-6" disabled={isLoading}>
+              <Button type="submit" className="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 md:px-6 w-full sm:w-auto text-sm" disabled={isLoading}>
                 {isLoading ?
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :
                   null}
-                {funcionario ? 'Salvar Alterações' : 'Cadastrar Funcionário'}
+                {funcionario ? 'Salvar' : 'Cadastrar'}
               </Button>
             </DialogFooter>
           </form>

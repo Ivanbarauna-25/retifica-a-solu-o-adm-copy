@@ -550,7 +550,8 @@ export default function FuncionariosPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {/* Desktop Table */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden hidden md:block">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader className="bg-slate-700">
@@ -681,6 +682,111 @@ export default function FuncionariosPage() {
                 </TableBody>
               </Table>
             </div>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-3">
+            {isLoading ? (
+              <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow-sm">
+                Carregando funcionários...
+              </div>
+            ) : funcionariosFiltrados.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow-sm">
+                Nenhum funcionário encontrado
+              </div>
+            ) : (
+              funcionariosFiltrados.map((funcionario) => (
+                <Card key={funcionario.id} className="bg-white shadow-sm border-l-4 border-l-slate-600">
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold text-slate-900 text-sm truncate">{funcionario.nome}</h3>
+                          <Badge className={`${statusColors[funcionario.status] || 'bg-gray-100 text-gray-800'} text-[10px] px-1.5 py-0`}>
+                            {statusLabels[funcionario.status] || funcionario.status}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-slate-600">
+                          <div className="flex items-center gap-1">
+                            <Briefcase className="w-3 h-3 text-slate-400" />
+                            <span className="truncate">{getCargoNome(funcionario.cargo_id)}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Building2 className="w-3 h-3 text-slate-400" />
+                            <span className="truncate">{getDepartamentoNome(funcionario.departamento_id)}</span>
+                          </div>
+                          <div className="font-mono">{funcionario.cpf}</div>
+                          <div className="font-semibold text-slate-900">{formatCurrency(funcionario.salario || 0)}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleView(funcionario)}>
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        {(canEditFunc || canDeleteFunc) && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56">
+                              {canEditFunc && (
+                                <>
+                                  <DropdownMenuItem onClick={() => openFormForEdit(funcionario)}>
+                                    <Edit className="w-4 h-4 mr-2" />
+                                    Editar
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onClick={() => openFeriasModal(funcionario)}>
+                                    <Calendar className="w-4 h-4 mr-2" />
+                                    Programar Férias
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openCargoModal(funcionario)}>
+                                    <Briefcase className="w-4 h-4 mr-2" />
+                                    Alterar Cargo
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openSalarioModal(funcionario)}>
+                                    <TrendingUp className="w-4 h-4 mr-2" />
+                                    Reajustar Salário
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openDepartamentoModal(funcionario)}>
+                                    <Building2 className="w-4 h-4 mr-2" />
+                                    Alterar Departamento
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => openDesligamentoModal(funcionario)}
+                                    className="text-red-600 focus:text-red-600">
+                                    <UserX className="w-4 h-4 mr-2" />
+                                    Registrar Desligamento
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {canDeleteFunc && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => handleDelete(funcionario.id)}
+                                    className="text-red-600 focus:text-red-600">
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
         </div>
       </div>
