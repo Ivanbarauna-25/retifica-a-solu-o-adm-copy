@@ -201,8 +201,8 @@ export default function FuncionarioCargoForm({ isOpen, onClose, funcionario, onS
       )}
       
       {isOpen && (
-        <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-[95vw] md:max-w-2xl h-[95vh] md:max-h-[90vh] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-0 shadow-lg duration-200 sm:rounded-lg overflow-hidden flex flex-col">
-          <div className="modern-modal-header flex-shrink-0 bg-slate-800 px-4 md:px-6 py-4">
+        <div className="fixed left-[50%] top-[50%] z-50 grid w-[95vw] md:w-full max-w-[95vw] md:max-w-2xl max-h-[95vh] md:max-h-[90vh] translate-x-[-50%] translate-y-[-50%] gap-3 md:gap-4 border bg-white p-0 shadow-lg duration-200 sm:rounded-lg overflow-hidden flex flex-col">
+          <div className="modern-modal-header flex-shrink-0 bg-slate-800 px-3 md:px-6 py-3 md:py-4">
             <h2 className="text-white text-base md:text-lg font-semibold">Solicitar Alteração de Cargo - {funcionario?.nome}</h2>
             <button
               className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none text-white"
@@ -224,9 +224,9 @@ export default function FuncionarioCargoForm({ isOpen, onClose, funcionario, onS
             </button>
           </div>
 
-          <div className="cargo-form-scroll flex-1 px-4 md:px-6 pb-4 md:pb-6">
+          <div className="cargo-form-scroll flex-1 px-3 md:px-6 pb-3 md:pb-6">
             <form onSubmit={handleSubmit} id="cargo-form" className="space-y-4 mt-4">
-              <div className="bg-slate-50 p-4 rounded-lg">
+              <div className="bg-slate-50 p-3 md:p-4 rounded-lg">
                 <Label className="text-xs text-black">Cargo Atual</Label>
                 <p className="text-base md:text-lg font-semibold text-black">
                   {cargos.find(c => c.id === funcionario?.cargo_id)?.nome || 'Não definido'}
@@ -243,7 +243,7 @@ export default function FuncionarioCargoForm({ isOpen, onClose, funcionario, onS
                   <SelectTrigger className="mt-1.5 bg-white text-black">
                     <SelectValue placeholder="Selecione o novo cargo..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-white max-h-60 overflow-auto">
                     {cargos.filter(c => c.id !== funcionario?.cargo_id).map((cargo) => (
                       <SelectItem key={cargo.id} value={cargo.id}>
                         {cargo.nome}
@@ -288,7 +288,7 @@ export default function FuncionarioCargoForm({ isOpen, onClose, funcionario, onS
                   <SelectTrigger className="mt-1.5 bg-white text-black">
                     <SelectValue placeholder="Selecione quem deve aprovar..." />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-white max-h-60 overflow-auto">
                     {aprovadores.map((aprovador) => (
                       <SelectItem key={aprovador.id} value={aprovador.id}>
                         {aprovador.full_name || aprovador.email}
@@ -304,13 +304,13 @@ export default function FuncionarioCargoForm({ isOpen, onClose, funcionario, onS
             </form>
           </div>
 
-          <div className="flex-shrink-0 flex justify-end gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 border-t bg-white">
+          <div className="flex-shrink-0 flex justify-end gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t bg-white flex-col-reverse sm:flex-row">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onClose}
               disabled={isLoading}
-              className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10"
+              className="bg-slate-600 hover:bg-slate-700 text-white border-slate-600 h-10 w-full sm:w-auto text-sm px-4"
             >
               Cancelar
             </Button>
@@ -318,7 +318,7 @@ export default function FuncionarioCargoForm({ isOpen, onClose, funcionario, onS
               type="submit" 
               form="cargo-form"
               disabled={isLoading}
-              className="bg-slate-600 hover:bg-slate-700 text-white h-10"
+              className="bg-slate-600 hover:bg-slate-700 text-white h-10 w-full sm:w-auto text-sm px-4"
             >
               {isLoading ? 'Enviando...' : 'Enviar Solicitação'}
             </Button>
