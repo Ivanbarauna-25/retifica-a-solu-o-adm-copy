@@ -237,43 +237,45 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] modern-modal bg-white" style={{ overflowY: 'auto' }}>
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white border-b border-slate-600">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <ShoppingCart className="w-5 h-5 text-white" />
+      <DialogContent className="w-[98vw] md:max-w-6xl p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[95vh] flex flex-col">
+        <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
+          <DialogTitle className="flex items-center gap-2 md:gap-3 text-white">
+            <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center">
+              <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">{cotacao ? 'Editar Cotação' : 'Nova Cotação de EPI'}</h2>
-              <p className="text-sm text-slate-300">Selecione funcionários e EPIs necessários</p>
+              <h2 className="text-sm md:text-xl font-bold">{cotacao ? 'Editar Cotação' : 'Nova Cotação'}</h2>
+              <p className="text-xs md:text-sm text-slate-300">Selecione funcionários e EPIs</p>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-6 space-y-6 text-black">
+        <div className="p-3 md:p-6 space-y-3 md:space-y-6 text-black overflow-y-auto flex-1">
           {/* Dados Gerais */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
             <div>
-              <Label className="text-slate-900">Número</Label>
+              <Label className="text-slate-900 text-xs md:text-sm">Número</Label>
               <Input
                 value={formData.numero}
                 onChange={(e) => handleChange('numero', e.target.value)}
                 placeholder="Ex: COT-001"
+                className="h-9 md:h-10 mt-1"
               />
             </div>
             <div>
-              <Label className="text-slate-900">Data *</Label>
+              <Label className="text-slate-900 text-xs md:text-sm">Data *</Label>
               <Input
                 type="date"
                 value={formData.data_cotacao}
                 onChange={(e) => handleChange('data_cotacao', e.target.value)}
+                className="h-9 md:h-10 mt-1"
               />
             </div>
             <div>
-              <Label className="text-slate-900">Fornecedor</Label>
+              <Label className="text-slate-900 text-xs md:text-sm">Fornecedor</Label>
               <Select value={formData.fornecedor_id} onValueChange={(v) => handleChange('fornecedor_id', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione (opcional)" />
+                <SelectTrigger className="h-9 md:h-10 mt-1">
+                  <SelectValue placeholder="Nenhum" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={null}>Nenhum</SelectItem>
@@ -287,31 +289,32 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
           {/* Seleção de Funcionários por Cargo */}
           <div>
-            <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-              <Users className="w-5 h-5" />
+            <h3 className="font-semibold text-slate-900 mb-2 md:mb-3 flex items-center gap-2 text-sm md:text-base">
+              <Users className="w-4 h-4 md:w-5 md:h-5" />
               Selecionar Funcionários e EPIs
             </h3>
-            <p className="text-sm text-slate-500 mb-4">
-              Selecione os funcionários e marque os EPIs necessários. Os EPIs disponíveis são baseados no cargo de cada funcionário.
+            <p className="text-xs md:text-sm text-slate-500 mb-3 md:mb-4">
+              Selecione os funcionários e marque os EPIs necessários
             </p>
 
-            <div className="space-y-4 max-h-[400px] overflow-y-auto border rounded-lg p-4 bg-slate-50">
+            <div className="space-y-3 md:space-y-4 max-h-[300px] md:max-h-[400px] overflow-y-auto border rounded-lg p-2 md:p-4 bg-slate-50">
               {Object.entries(funcionariosPorCargo).map(([cargoNome, grupo]) => {
                 const episDoCargo = getEPIsDoCargo(grupo.cargo_id);
                 
                 if (episDoCargo.length === 0) return null;
 
                 return (
-                  <div key={cargoNome} className="border rounded-lg bg-white p-4">
-                    <h4 className="font-medium text-slate-800 mb-3 flex items-center gap-2">
+                  <div key={cargoNome} className="border rounded-lg bg-white p-2 md:p-4">
+                    <h4 className="font-medium text-slate-800 mb-2 md:mb-3 flex items-center gap-2 text-xs md:text-sm">
                       <HardHat className="w-4 h-4" />
                       {cargoNome}
-                      <span className="text-xs text-slate-500 font-normal">
-                        ({episDoCargo.length} EPIs vinculados)
+                      <span className="text-[10px] md:text-xs text-slate-500 font-normal">
+                        ({episDoCargo.length} EPIs)
                       </span>
                     </h4>
 
-                    <Table>
+                    <div className="overflow-x-auto">
+                      <Table>
                       <TableHeader className="bg-slate-100">
                         <TableRow>
                           <TableHead className="w-8"></TableHead>
@@ -371,14 +374,15 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
                           );
                         })}
                       </TableBody>
-                    </Table>
+                      </Table>
+                    </div>
                   </div>
                 );
               })}
 
               {Object.keys(funcionariosPorCargo).length === 0 && (
-                <p className="text-center text-slate-500 py-8">
-                  Nenhum funcionário encontrado. Cadastre funcionários e vincule EPIs aos cargos.
+                <p className="text-center text-slate-500 py-6 md:py-8 text-xs md:text-sm">
+                  Nenhum funcionário encontrado
                 </p>
               )}
             </div>
@@ -386,12 +390,13 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
           {/* Resumo da Cotação */}
           {itensConsolidados.length > 0 && (
-            <div className="border rounded-lg p-4 bg-slate-50">
-              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <Package className="w-5 h-5" />
+            <div className="border rounded-lg p-2 md:p-4 bg-slate-50">
+              <h4 className="font-semibold text-slate-900 mb-2 md:mb-3 flex items-center gap-2 text-sm md:text-base">
+                <Package className="w-4 h-4 md:w-5 md:h-5" />
                 Resumo da Cotação
               </h4>
-              <Table>
+              <div className="overflow-x-auto">
+                <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
                     <TableHead className="text-white">EPI</TableHead>
@@ -414,9 +419,10 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
                     <TableCell className="text-right text-lg">{formatCurrency(valorTotal)}</TableCell>
                   </TableRow>
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
 
-              <div className="mt-4 text-sm text-slate-600">
+              <div className="mt-3 md:mt-4 text-xs md:text-sm text-slate-600">
                 <strong>Funcionários:</strong> {funcionariosVinculados.length} selecionados
               </div>
             </div>
@@ -424,30 +430,31 @@ export default function CotacaoEPIForm({ isOpen, onClose, cotacao, fornecedores 
 
           {/* Observações */}
           <div>
-            <Label className="text-slate-900">Observações</Label>
+            <Label className="text-slate-900 text-xs md:text-sm">Observações</Label>
             <Textarea
               value={formData.observacoes}
               onChange={(e) => handleChange('observacoes', e.target.value)}
-              placeholder="Observações sobre a cotação..."
+              placeholder="Observações..."
               rows={2}
+              className="mt-1"
             />
           </div>
         </div>
 
-        <DialogFooter className="flex justify-end gap-3 pt-4 border-t border-slate-200 px-6 pb-6">
-          <Button variant="outline" onClick={onClose} className="gap-2">
+        <div className="sticky bottom-0 bg-white border-t border-slate-200 px-3 md:px-6 py-3 md:py-4 flex flex-col sm:flex-row justify-end gap-2 flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4 gap-2 order-3 sm:order-1">
             <X className="w-4 h-4" />
             Cancelar
           </Button>
-          <Button onClick={() => handleSubmit('rascunho')} disabled={isLoading} className="bg-slate-600 hover:bg-slate-500 text-white gap-2">
+          <Button onClick={() => handleSubmit('rascunho')} disabled={isLoading} className="bg-slate-600 hover:bg-slate-500 text-white h-8 md:h-9 text-xs md:text-sm px-3 md:px-4 gap-2 order-2">
             <Save className="w-4 h-4" />
-            Salvar Rascunho
+            Rascunho
           </Button>
-          <Button onClick={() => handleSubmit('pendente')} disabled={isLoading} className="bg-green-600 hover:bg-green-700 text-white gap-2">
+          <Button onClick={() => handleSubmit('pendente')} disabled={isLoading} className="bg-green-600 hover:bg-green-700 text-white h-8 md:h-9 text-xs md:text-sm px-3 md:px-4 gap-2 order-1 sm:order-3">
             <Save className="w-4 h-4" />
-            Enviar para Aprovação
+            Enviar
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

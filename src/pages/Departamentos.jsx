@@ -17,24 +17,27 @@ const DepartamentoForm = ({ departamento, onSave, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2">
             <Card className="w-full max-w-lg">
-                <CardHeader>
-                    <CardTitle>{departamento ? 'Editar Departamento' : 'Novo Departamento'}</CardTitle>
+                <CardHeader className="bg-slate-800 text-white">
+                    <CardTitle className="text-sm md:text-lg flex items-center gap-2">
+                        <Building2 className="w-4 h-4 md:w-5 md:h-5" />
+                        {departamento ? 'Editar Departamento' : 'Novo Departamento'}
+                    </CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <CardContent className="pt-4">
+                    <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
                         <div>
-                            <label htmlFor="nome" className="block text-sm font-medium text-gray-700">Nome</label>
-                            <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
+                            <label htmlFor="nome" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">Nome</label>
+                            <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} required className="h-9 md:h-10" />
                         </div>
                         <div>
-                            <label htmlFor="descricao" className="block text-sm font-medium text-gray-700">Descrição</label>
-                            <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} rows="3" className="w-full p-2 border rounded-md" />
+                            <label htmlFor="descricao" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                            <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} rows="3" className="w-full p-2 border rounded-md text-sm" />
                         </div>
-                        <div className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-                            <Button type="submit">Salvar</Button>
+                        <div className="flex justify-end gap-2 pt-2">
+                            <Button type="button" variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Cancelar</Button>
+                            <Button type="submit" className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Salvar</Button>
                         </div>
                     </form>
                 </CardContent>

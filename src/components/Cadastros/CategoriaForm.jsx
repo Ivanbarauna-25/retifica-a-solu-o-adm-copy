@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { List } from "lucide-react";
 
 export default function CategoriaForm({ categoria, onSave, onClose, fixedTipo }) {
   const [formData, setFormData] = useState({
@@ -42,7 +43,8 @@ export default function CategoriaForm({ categoria, onSave, onClose, fixedTipo })
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="w-[95vw] md:max-w-lg p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
         <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
-          <DialogTitle className="text-sm md:text-lg text-white">
+          <DialogTitle className="text-sm md:text-lg text-white flex items-center gap-2">
+            <List className="w-4 h-4 md:w-5 md:h-5" />
             {categoria ? "Editar Categoria" : "Nova Categoria"}
           </DialogTitle>
         </DialogHeader>

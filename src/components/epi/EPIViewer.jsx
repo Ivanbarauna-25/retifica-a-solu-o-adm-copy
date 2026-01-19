@@ -115,31 +115,31 @@ export default function EPIViewer({ isOpen, onClose, epi, fornecedores = [], onE
 
           {/* Observações */}
           {epi.observacoes && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-yellow-800 mb-1">Observações</h4>
-              <p className="text-yellow-700">{epi.observacoes}</p>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 md:p-4">
+              <h4 className="text-xs md:text-sm font-medium text-yellow-800 mb-1">Observações</h4>
+              <p className="text-xs md:text-sm text-yellow-700">{epi.observacoes}</p>
             </div>
           )}
         </div>
 
-        <DialogFooter className="flex justify-end gap-3 pt-4 border-t border-slate-200 px-6 pb-6">
-          <Button variant="outline" onClick={onClose} className="bg-slate-800 hover:bg-slate-700 text-white gap-2">
+        <div className="sticky bottom-0 bg-white border-t border-slate-200 px-3 md:px-6 py-3 md:py-4 flex justify-end gap-2 flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4 gap-2">
             <X className="w-4 h-4" />
             Fechar
           </Button>
           {onEdit && (
-            <Button onClick={onEdit} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+            <Button onClick={onEdit} className="bg-blue-600 hover:bg-blue-700 text-white h-8 md:h-9 text-xs md:text-sm px-3 md:px-4 gap-2">
               <Edit className="w-4 h-4" />
               Editar
             </Button>
           )}
           {onDelete && (
-            <Button onClick={onDelete} className="bg-red-600 hover:bg-red-700 text-white gap-2">
+            <Button onClick={onDelete} className="bg-red-600 hover:bg-red-700 text-white h-8 md:h-9 text-xs md:text-sm px-3 md:px-4 gap-2">
               <Trash2 className="w-4 h-4" />
               Excluir
             </Button>
           )}
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
