@@ -38,8 +38,7 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
   };
 
   return (
-    <Card className="relative overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 group"
-      
+    <Card className="relative overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 group">
       <CardContent className="mx-auto pt-3 pr-3 pb-3 pl-3 relative md:p-5">
         <div className="mx-auto flex items-start justify-between gap-2">
           {/* Conteúdo principal */}
