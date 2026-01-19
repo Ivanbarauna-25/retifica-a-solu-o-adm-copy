@@ -34,22 +34,22 @@ export default function ResponsiveModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className={`w-[96vw] md:w-[90vw] ${maxWidth} max-h-[88vh] modern-modal`}
+        className={`w-[98vw] md:w-[90vw] ${maxWidth} max-h-[95vh] modern-modal`}
         onPointerDownOutside={onPointerDownOutside || ((e) => e.preventDefault())}
       >
         {/* HEADER */}
-        <DialogHeader className="modern-modal-header">
+        <DialogHeader className="modern-modal-header px-3 md:px-6 py-2 md:py-4">
           <DialogTitle className="flex items-center justify-between text-white gap-2">
-            <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 md:gap-3 min-w-0 flex-1">
               {Icon && (
-                <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                <div className="h-7 w-7 md:h-11 md:w-11 rounded-md md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-3.5 h-3.5 md:w-5 md:h-5 text-white" />
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <h2 className="text-sm md:text-base font-semibold text-white truncate">{title}</h2>
+                <h2 className="text-xs md:text-base font-semibold text-white truncate">{title}</h2>
                 {subtitle && (
-                  <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block truncate">{subtitle}</p>
+                  <p className="text-[9px] md:text-xs text-slate-300 mt-0 hidden sm:block truncate">{subtitle}</p>
                 )}
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function ResponsiveModal({
         </DialogHeader>
 
         {/* CONTEÚDO ROLÁVEL */}
-        <div className="modern-modal-content p-3 md:p-6 bg-slate-50">
+        <div className="modern-modal-content p-2 md:p-6 bg-slate-50">
           {children}
         </div>
 
