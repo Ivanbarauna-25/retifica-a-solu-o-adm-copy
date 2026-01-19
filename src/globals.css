@@ -171,7 +171,7 @@ body {
   
   /* Espaçamento bottom para barra inferior */
   body {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 64px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 52px);
   }
   
   /* Transições suaves em mobile */

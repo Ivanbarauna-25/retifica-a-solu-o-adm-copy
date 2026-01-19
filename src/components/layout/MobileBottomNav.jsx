@@ -148,7 +148,7 @@ export default function MobileBottomNav({ navigationGroups, user }) {
 
       {/* Barra de navegação inferior */}
       <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900 via-slate-900 to-slate-800 border-t border-slate-700/50 z-50 md:hidden no-print safe-area-bottom shadow-2xl backdrop-blur-lg">
-        <div className="flex items-center justify-around px-1.5 py-1.5">
+        <div className="flex items-center justify-around px-1 py-1">
           {visibleNavItems.slice(0, 5).map((item) => {
             const isActive = activeGroup === item.key;
             const isExpanded = expandedGroup === item.key;
@@ -159,19 +159,19 @@ export default function MobileBottomNav({ navigationGroups, user }) {
                 {item.url ? (
                   <Link
                     to={createPageUrl(item.url)}
-                    className="flex flex-col items-center py-2.5 px-1 relative group"
+                    className="flex flex-col items-center py-1.5 px-1 relative group"
                   >
                     <div className={`
-                      p-2 rounded-xl transition-all
+                      p-1.5 rounded-lg transition-all
                       ${isActive 
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 scale-110' 
+                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-md shadow-blue-500/20' 
                         : 'bg-slate-800/50 group-hover:bg-slate-700 group-active:scale-95'
                       }
                     `}>
                       <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
                     </div>
                     <span className={`
-                      text-[9px] font-semibold mt-1 tracking-tight
+                      text-[8px] font-semibold mt-0.5 tracking-tight
                       ${isActive ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'}
                     `}>
                       {item.label}
@@ -187,12 +187,12 @@ export default function MobileBottomNav({ navigationGroups, user }) {
                 ) : (
                   <button
                     onClick={() => handleNavClick(item)}
-                    className="mx-auto px-1 py-2.5 flex flex-col items-center w-full relative group"
+                    className="mx-auto px-1 py-1.5 flex flex-col items-center w-full relative group"
                   >
                     <div className={`
-                      p-2 rounded-xl transition-all relative
+                      p-1.5 rounded-lg transition-all relative
                       ${isActive || isExpanded 
-                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 scale-110' 
+                        ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-md shadow-blue-500/20' 
                         : 'bg-slate-800/50 group-hover:bg-slate-700 group-active:scale-95'
                       }
                     `}>
@@ -202,7 +202,7 @@ export default function MobileBottomNav({ navigationGroups, user }) {
                       )}
                     </div>
                     <span className={`
-                      text-[9px] font-semibold mt-1 tracking-tight
+                      text-[8px] font-semibold mt-0.5 tracking-tight
                       ${isActive || isExpanded ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'}
                     `}>
                       {item.label}
@@ -225,19 +225,19 @@ export default function MobileBottomNav({ navigationGroups, user }) {
             <div className="relative flex-1">
               <button
                 onClick={() => setExpandedGroup(expandedGroup === 'more' ? null : 'more')}
-                className="mx-auto px-1 py-2.5 flex flex-col items-center w-full group"
+                className="mx-auto px-1 py-1.5 flex flex-col items-center w-full group"
               >
                 <div className={`
-                  p-2 rounded-xl transition-all
+                  p-1.5 rounded-lg transition-all
                   ${expandedGroup === 'more' 
-                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30 scale-110' 
+                    ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-md shadow-blue-500/20' 
                     : 'bg-slate-800/50 group-hover:bg-slate-700 group-active:scale-95'
                   }
                 `}>
                   <Settings className={`w-5 h-5 ${expandedGroup === 'more' ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
                 </div>
                 <span className={`
-                  text-[9px] font-semibold mt-1 tracking-tight
+                  text-[8px] font-semibold mt-0.5 tracking-tight
                   ${expandedGroup === 'more' ? 'text-blue-400' : 'text-slate-500 group-hover:text-slate-300'}
                 `}>
                   Mais
