@@ -331,8 +331,8 @@ export default function OrdemServicoForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] md:w-[90vw] lg:max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-2xl shadow-2xl">
-        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-3 md:py-4 flex-shrink-0">
+      <DialogContent className="w-[96vw] md:w-[90vw] lg:max-w-4xl max-h-[88vh] modern-modal">
+        <DialogHeader className="modern-modal-header">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
               <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
@@ -347,9 +347,25 @@ export default function OrdemServicoForm({
                 </p>
               </div>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-lg flex-shrink-0">
-               <p className="text-[8px] md:text-[10px] text-slate-300 font-medium uppercase tracking-wider">Status</p>
-               <p className="text-[10px] md:text-xs font-semibold text-white">RASCUNHO</p>
+            
+            {/* Botões no header (mobile) */}
+            <div className="modern-modal-header-actions">
+              <Button
+                type="button"
+                onClick={onClose}
+                disabled={isSaving}
+                className="bg-transparent border border-white/30 text-white hover:bg-white/10"
+              >
+                <X className="w-3.5 h-3.5" />
+              </Button>
+              <Button
+                type="submit"
+                onClick={handleSalvar}
+                disabled={isSaving}
+                className="bg-white text-slate-800 hover:bg-slate-100"
+              >
+                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+              </Button>
             </div>
           </div>
         </DialogHeader>
@@ -363,7 +379,7 @@ export default function OrdemServicoForm({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden bg-slate-100/50">
-            <div className="flex-1 overflow-y-auto p-3 md:p-5">
+            <div className="modern-modal-content p-3 md:p-5">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg md:rounded-xl grid grid-cols-3 gap-1 mb-3 md:mb-5 sticky top-0 z-30 shadow-sm">
                   <TabsTrigger 
@@ -803,7 +819,7 @@ export default function OrdemServicoForm({
               </Tabs>
             </div>
 
-            <DialogFooter className="px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+            <DialogFooter className="modern-modal-footer px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-200 bg-slate-50 flex-shrink-0">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between w-full gap-2">
                 <div className="flex items-center gap-2 bg-slate-100 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-slate-200">
                    <p className="text-[10px] md:text-xs font-medium text-slate-500">Total</p>

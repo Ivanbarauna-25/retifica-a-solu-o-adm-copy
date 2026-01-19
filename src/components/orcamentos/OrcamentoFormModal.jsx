@@ -445,73 +445,55 @@ Extraia o máximo de informações possível. Se houver tabela de itens/produtos
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="w-[95vw] md:max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden bg-white border-0 rounded-xl md:rounded-2xl shadow-2xl"
+        className="w-[96vw] md:max-w-4xl max-h-[88vh] modern-modal"
         onPointerDownOutside={(e) => e.preventDefault()}>
 
-        <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-900 text-white px-3 md:px-6 py-2.5 md:py-4 flex-shrink-0">
+        <DialogHeader className="modern-modal-header">
           <DialogTitle className="flex items-center justify-between text-white">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
                 <FileText className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <div>
-                <h2 className="text-sm md:text-base font-semibold text-white">{orcamento ? `Editar Orçamento` : "Novo Orçamento"}</h2>
-                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block">{formData.numero_orcamento || "Gerando número..."}</p>
+              <div className="min-w-0">
+                <h2 className="text-sm md:text-base font-semibold text-white truncate">{orcamento ? `Editar Orçamento` : "Novo Orçamento"}</h2>
+                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block truncate">{formData.numero_orcamento || "Gerando número..."}</p>
               </div>
             </div>
             
-            {/* Botões de Captura/Upload */}
-            {!orcamento && (
-              <div className="flex items-center gap-1.5 md:gap-2">
-                {/* Input oculto para câmera */}
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleCameraCapture}
-                  className="hidden"
-                />
-                {/* Input oculto para upload de arquivo */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={isProcessingOCR}
-                  className="h-8 md:h-9 px-2 md:px-3 bg-white/10 hover:bg-white/20 text-white border-0"
-                  title="Fotografar orçamento"
-                >
-                  {isProcessingOCR ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Camera className="w-4 h-4" />
-                  )}
-                  <span className="hidden md:inline ml-1.5 text-xs">Câmera</span>
+            {/* Botões de ação (mobile no header) */}
+            <div className="flex items-center gap-1.5">
+              {/* Botões de Captura/Upload (apenas quando não está editando) */}
+              {!orcamento && (
+                <div className="hidden md:flex items-center gap-1.5 md:gap-2">
+                  <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleCameraCapture} className="hidden" />
+                  <input ref={fileInputRef} type="file" accept="image/*,.pdf" onChange={handleFileUpload} className="hidden" />
+                  
+                  <Button type="button" variant="ghost" size="sm" onClick={() => cameraInputRef.current?.click()} disabled={isProcessingOCR}
+                    className="h-8 md:h-9 px-2 md:px-3 bg-white/10 hover:bg-white/20 text-white border-0" title="Fotografar orçamento">
+                    {isProcessingOCR ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                    <span className="hidden md:inline ml-1.5 text-xs">Câmera</span>
+                  </Button>
+                  
+                  <Button type="button" variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isProcessingOCR}
+                    className="h-8 md:h-9 px-2 md:px-3 bg-white/10 hover:bg-white/20 text-white border-0" title="Enviar foto ou PDF">
+                    <Upload className="w-4 h-4" />
+                    <span className="hidden md:inline ml-1.5 text-xs">Upload</span>
+                  </Button>
+                </div>
+              )}
+              
+              {/* Botões salvar/cancelar (mobile) */}
+              <div className="modern-modal-header-actions">
+                <Button type="button" onClick={onClose} disabled={isSaving}
+                  className="bg-transparent border border-white/30 text-white hover:bg-white/10">
+                  <X className="w-3.5 h-3.5" />
                 </Button>
-                
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isProcessingOCR}
-                  className="h-8 md:h-9 px-2 md:px-3 bg-white/10 hover:bg-white/20 text-white border-0"
-                  title="Enviar foto ou PDF"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span className="hidden md:inline ml-1.5 text-xs">Upload</span>
+                <Button type="button" onClick={handleSave} disabled={isSaving}
+                  className="bg-white text-slate-800 hover:bg-slate-100">
+                  {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 </Button>
               </div>
-            )}
+            </div>
           </DialogTitle>
         </DialogHeader>
         
@@ -528,7 +510,7 @@ Extraia o máximo de informações possível. Se houver tabela de itens/produtos
         )}
 
         {/* CONTEÚDO COM SCROLL */}
-        <div className="flex-1 overflow-y-auto p-2.5 md:p-5 bg-slate-100/50">
+        <div className="modern-modal-content p-2.5 md:p-5 bg-slate-100/50">
           <Tabs defaultValue="geral" className="w-full">
             <TabsList className="bg-slate-200 border border-slate-300 p-0.5 md:p-1 rounded-lg md:rounded-xl grid grid-cols-4 gap-0.5 md:gap-1 mb-3 md:mb-5 sticky top-0 z-10 shadow-sm">
               <TabsTrigger
@@ -888,7 +870,7 @@ Extraia o máximo de informações possível. Se houver tabela de itens/produtos
         </div>
 
         {/* FOOTER */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-100 bg-white flex-shrink-0 sticky bottom-0">
+        <div className="modern-modal-footer flex flex-col sm:flex-row justify-between items-center gap-2 px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-100 bg-white flex-shrink-0">
           <div className="flex items-center gap-2 bg-slate-50 px-2.5 md:px-4 py-1.5 md:py-2 rounded-lg w-full sm:w-auto justify-between sm:justify-start">
             <p className="text-[10px] md:text-xs font-medium text-slate-500">Total</p>
             <p className="text-sm md:text-base font-bold text-slate-900">{formatCurrency(valorTotalOrcamento)}</p>
