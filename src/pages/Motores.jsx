@@ -125,43 +125,56 @@ export default function MotoresPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-black">Cadastro de Motores</h1>
-          <p className="text-sm text-gray-600">
-            Gerencie os motores cadastrados no sistema
-          </p>
-        </div>
-        <Button
-          onClick={handleNew}
-          className="bg-slate-800 text-white hover:bg-slate-700 flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Novo Motor
-        </Button>
-      </div>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10">
+        <div className="max-w-[1800px] mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                <Fuel className="w-5 h-5 md:w-7 md:h-7" />
+              </div>
+              <div>
+                <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Motores</h1>
+                <p className="text-slate-300 text-xs md:text-sm">Cadastro de motores do sistema</p>
+              </div>
+            </div>
 
-      {/* Barra de busca */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Buscar por fabricante, modelo, código..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <div className="text-sm text-gray-600">
-          {filteredMotores.length} motor(es) encontrado(s)
+            <Button
+              onClick={handleNew}
+              variant="outline"
+              className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Motor
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Tabela */}
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
+      <div className="max-w-[1800px] mx-auto px-2 md:px-6 space-y-3 md:space-y-4">
+        {/* Barra de busca */}
+        <div className="bg-white rounded-lg shadow-sm p-2 md:p-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 md:left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Buscar por fabricante, modelo, código..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 md:pl-10 h-9 md:h-10"
+              />
+            </div>
+            <div className="text-xs md:text-sm text-gray-600 text-center md:text-left">
+              {filteredMotores.length} motor(es)
+            </div>
+          </div>
+        </div>
+
+        {/* Tabela */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
           <TableHeader className="bg-slate-800">
             <TableRow>
               <TableHead className="text-white text-xs md:text-sm">Código</TableHead>
@@ -228,12 +241,13 @@ export default function MotoresPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-center gap-0.5 md:gap-2">
+                    <div className="flex items-center justify-center gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEdit(motor)}
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 h-7 w-7 md:h-8 md:w-8"
+                        title="Editar"
+                        className="text-amber-600 hover:bg-amber-50 h-8 w-8 md:h-9 md:w-9"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
@@ -241,7 +255,8 @@ export default function MotoresPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(motor)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 md:h-8 md:w-8 hidden sm:flex"
+                        title="Excluir"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 md:h-9 md:w-9 hidden md:flex"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -251,8 +266,11 @@ export default function MotoresPage() {
               ))
             )}
           </TableBody>
-        </Table>
+            </Table>
+          </div>
+        </div>
       </div>
+    </div>
 
       {/* Modal de Formulário */}
       <MotorForm

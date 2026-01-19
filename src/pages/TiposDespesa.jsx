@@ -148,24 +148,26 @@ export default function TiposDespesaPage() {
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Tags className="w-8 h-8" />
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10">
+          <div className="max-w-[1800px] mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Tags className="w-5 h-5 md:w-7 md:h-7" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold">Tipos de Despesas</h1>
-                  <p className="text-slate-300 mt-1">Gerencie os tipos de despesas para orçamentos</p>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Tipos de Despesas</h1>
+                  <p className="text-slate-300 text-xs md:text-sm">Categorização de despesas</p>
                 </div>
               </div>
 
               <Button
                 onClick={handleNew}
-                className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+                variant="outline"
+                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
+              >
                 <Plus className="w-4 h-4" />
                 Novo Tipo
               </Button>
@@ -174,8 +176,9 @@ export default function TiposDespesaPage() {
         </div>
 
         {/* Content */}
-        <div className="max-w-7xl mx-auto px-6">
-          <Card>
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
             {isLoading ? (
               <div className="flex items-center justify-center p-12">
                 <Loader2 className="w-8 h-8 animate-spin text-slate-600" />
@@ -220,22 +223,22 @@ export default function TiposDespesaPage() {
                             </span>
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center justify-center gap-0.5 md:gap-2">
+                            <div className="flex items-center justify-center gap-1">
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleEdit(tipo)}
                                 title="Editar"
-                                className="h-7 w-7 md:h-8 md:w-8">
-                                <Pencil className="w-4 h-4 text-blue-600" />
+                                className="h-8 w-8 md:h-9 md:w-9 hover:bg-amber-50 text-amber-600">
+                                <Pencil className="w-4 h-4" />
                               </Button>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleDelete(tipo)}
                                 title="Excluir"
-                                className="h-7 w-7 md:h-8 md:w-8 hidden sm:flex">
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                className="h-8 w-8 md:h-9 md:w-9 text-red-600 hover:bg-red-50 hidden md:flex">
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -246,7 +249,8 @@ export default function TiposDespesaPage() {
                 </TableBody>
               </Table>
             )}
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 

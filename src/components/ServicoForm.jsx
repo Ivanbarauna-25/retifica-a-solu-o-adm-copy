@@ -36,31 +36,33 @@ export default function ServicoForm({ isOpen, servico, onSave, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{servico ? 'Editar Serviço' : 'Novo Serviço'}</DialogTitle>
+      <DialogContent className="w-[95vw] md:max-w-2xl p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
+          <DialogTitle className="text-sm md:text-lg text-white">{servico ? 'Editar Serviço' : 'Novo Serviço'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="nome">Nome do Serviço</Label>
-            <Input id="nome" value={formData.nome} onChange={handleChange} required 
-              placeholder="Ex: Troca de Óleo, Alinhamento, Balanceamento..." />
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+          <div className="space-y-3 md:space-y-4 p-3 md:p-6">
+            <div>
+              <Label htmlFor="nome" className="text-xs md:text-sm">Nome do Serviço</Label>
+              <Input id="nome" value={formData.nome} onChange={handleChange} required 
+                placeholder="Ex: Troca de Óleo..." className="h-9 md:h-10 mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="descricao" className="text-xs md:text-sm">Descrição</Label>
+              <Textarea id="descricao" value={formData.descricao} onChange={handleChange} 
+                placeholder="Descrição detalhada..." 
+                className="h-20 md:h-24 mt-1" />
+            </div>
+            <div>
+              <Label htmlFor="valor_padrao" className="text-xs md:text-sm">Valor Padrão R$</Label>
+              <Input id="valor_padrao" type="number" step="0.01" value={formData.valor_padrao} onChange={handleChange} required 
+                placeholder="0,00" className="h-9 md:h-10 mt-1" />
+            </div>
           </div>
-          <div>
-            <Label htmlFor="descricao">Descrição</Label>
-            <Textarea id="descricao" value={formData.descricao} onChange={handleChange} 
-              placeholder="Descrição detalhada do que o serviço inclui..." 
-              className="h-24" />
+          <div className="sticky bottom-0 bg-white border-t border-slate-200 px-3 md:px-6 py-3 md:py-4 flex justify-end gap-2 flex-shrink-0">
+            <Button type="button" variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Cancelar</Button>
+            <Button type="submit" className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Salvar</Button>
           </div>
-          <div>
-            <Label htmlFor="valor_padrao">Valor Padrão (R$)</Label>
-            <Input id="valor_padrao" type="number" step="0.01" value={formData.valor_padrao} onChange={handleChange} required 
-              placeholder="0,00" />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Salvar</Button>
-          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

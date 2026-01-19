@@ -40,98 +40,90 @@ export default function CategoriaForm({ categoria, onSave, onClose, fixedTipo })
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg modern-modal">
-        <DialogHeader className="modern-modal-header">
-          <DialogTitle className="text-white">
+      <DialogContent className="w-[95vw] md:max-w-lg p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
+          <DialogTitle className="text-sm md:text-lg text-white">
             {categoria ? "Editar Categoria" : "Nova Categoria"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 p-6">
-          <div>
-            <Label htmlFor="nome" className="text-neutral-900 font-medium">
-              Nome *
-            </Label>
-            <Input
-              id="nome"
-              value={formData.nome}
-              onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-              required
-              placeholder="Digite o nome da categoria"
-              className="bg-white text-neutral-900 placeholder:text-neutral-500"
-            />
-          </div>
-
-          {!fixedTipo && (
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+          <div className="space-y-3 md:space-y-4 p-3 md:p-6">
             <div>
-              <Label htmlFor="tipo" className="text-neutral-900 font-medium">
-                Tipo *
+              <Label htmlFor="nome" className="text-neutral-900 font-medium text-xs md:text-sm">Nome *</Label>
+              <Input
+                id="nome"
+                value={formData.nome}
+                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                required
+                placeholder="Nome da categoria"
+                className="bg-white text-neutral-900 h-9 md:h-10 mt-1"
+              />
+            </div>
+
+            {!fixedTipo && (
+              <div>
+                <Label htmlFor="tipo" className="text-neutral-900 font-medium text-xs md:text-sm">Tipo *</Label>
+                <Select
+                  value={formData.tipo}
+                  onValueChange={(value) => setFormData({ ...formData, tipo: value })}
+                >
+                  <SelectTrigger id="tipo" className="bg-white text-neutral-900 h-9 md:h-10 mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="receita">Receita</SelectItem>
+                    <SelectItem value="despesa">Despesa</SelectItem>
+                    <SelectItem value="ativo">Ativo</SelectItem>
+                    <SelectItem value="passivo">Passivo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {fixedTipo && (
+              <div className="p-2 md:p-3 bg-slate-100 rounded-md border border-slate-300">
+                <p className="text-xs md:text-sm text-neutral-900">
+                  <strong>Tipo:</strong> {
+                    fixedTipo === 'receita' ? 'Receita' :
+                    fixedTipo === 'despesa' ? 'Despesa' :
+                    fixedTipo === 'ativo' ? 'Ativo' : 'Passivo'
+                  }
+                </p>
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="descricao" className="text-neutral-900 font-medium text-xs md:text-sm">Descrição</Label>
+              <Textarea
+                id="descricao"
+                value={formData.descricao}
+                onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                rows={3}
+                placeholder="Descrição opcional"
+                className="bg-white text-neutral-900 mt-1"
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-2 md:p-3 bg-slate-50 rounded-lg border">
+              <Label htmlFor="ativa" className="text-neutral-900 font-medium text-xs md:text-sm">
+                Categoria Ativa
               </Label>
-              <Select
-                value={formData.tipo}
-                onValueChange={(value) => setFormData({ ...formData, tipo: value })}
-              >
-                <SelectTrigger id="tipo" className="bg-white text-neutral-900">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="receita">Receita</SelectItem>
-                  <SelectItem value="despesa">Despesa</SelectItem>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="passivo">Passivo</SelectItem>
-                </SelectContent>
-              </Select>
+              <Switch
+                id="ativa"
+                checked={formData.ativa}
+                onCheckedChange={(checked) => setFormData({ ...formData, ativa: checked })}
+              />
             </div>
-          )}
-
-          {fixedTipo && (
-            <div className="p-3 bg-slate-100 rounded-md border border-slate-300">
-              <p className="text-sm text-neutral-900">
-                <strong>Tipo:</strong> {
-                  fixedTipo === 'receita' ? 'Receita' :
-                  fixedTipo === 'despesa' ? 'Despesa' :
-                  fixedTipo === 'ativo' ? 'Ativo' : 'Passivo'
-                }
-              </p>
-              <p className="text-xs text-neutral-600 mt-1">
-                Este tipo não pode ser alterado nesta tela
-              </p>
-            </div>
-          )}
-
-          <div>
-            <Label htmlFor="descricao" className="text-neutral-900 font-medium">
-              Descrição
-            </Label>
-            <Textarea
-              id="descricao"
-              value={formData.descricao}
-              onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-              rows={3}
-              placeholder="Descrição opcional"
-              className="bg-white text-neutral-900 placeholder:text-neutral-500"
-            />
           </div>
-
-          <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
-            <Label htmlFor="ativa" className="text-neutral-900 font-medium">
-              Categoria Ativa
-            </Label>
-            <Switch
-              id="ativa"
-              checked={formData.ativa}
-              onCheckedChange={(checked) => setFormData({ ...formData, ativa: checked })}
-            />
-          </div>
-
-          <DialogFooter className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose} className="text-neutral-900">
+          <div className="sticky bottom-0 bg-white border-t border-slate-200 px-3 md:px-6 py-3 md:py-4 flex justify-end gap-2 flex-shrink-0">
+            <Button type="button" variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">
               Cancelar
             </Button>
-            <Button type="submit" className="bg-slate-800 hover:bg-slate-700 text-white">
-              {categoria ? "Salvar Alterações" : "Criar Categoria"}
+            <Button type="submit" className="bg-slate-800 hover:bg-slate-700 text-white h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">
+              {categoria ? "Salvar" : "Criar"}
             </Button>
-          </DialogFooter>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

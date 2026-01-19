@@ -60,91 +60,96 @@ export default function FormaPagamentoForm({ isOpen, formaPagamento, onSave, onC
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="w-[95vw] md:max-w-lg p-0 bg-white border border-slate-200 rounded-xl overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700 flex-shrink-0">
+          <DialogTitle className="text-sm md:text-lg text-white">
             {formaPagamento ? 'Editar Forma de Pagamento' : 'Nova Forma de Pagamento'}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="nome">Nome</Label>
-            <Input
-              id="nome"
-              value={formData.nome}
-              onChange={(e) => handleChange('nome', e.target.value)}
-              placeholder="Ex: Cartão Visa, PIX, Dinheiro..."
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="tipo">Tipo</Label>
-            <Select value={formData.tipo} onValueChange={(value) => handleChange('tipo', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione o tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                {tiposOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
+          <div className="space-y-3 md:space-y-4 p-3 md:p-6">
             <div>
-              <Label htmlFor="taxa_percentual">Taxa Percentual (%)</Label>
+              <Label htmlFor="nome" className="text-xs md:text-sm">Nome</Label>
               <Input
-                id="taxa_percentual"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.taxa_percentual}
-                onChange={(e) => handleChange('taxa_percentual', parseFloat(e.target.value) || 0)}
+                id="nome"
+                value={formData.nome}
+                onChange={(e) => handleChange('nome', e.target.value)}
+                placeholder="Ex: Cartão Visa, PIX..."
+                required
+                className="h-9 md:h-10 mt-1"
               />
             </div>
+
             <div>
-              <Label htmlFor="taxa_fixa">Taxa Fixa (R$)</Label>
+              <Label htmlFor="tipo" className="text-xs md:text-sm">Tipo</Label>
+              <Select value={formData.tipo} onValueChange={(value) => handleChange('tipo', value)}>
+                <SelectTrigger className="h-9 md:h-10 mt-1">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tiposOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
+              <div>
+                <Label htmlFor="taxa_percentual" className="text-xs md:text-sm">Taxa %</Label>
+                <Input
+                  id="taxa_percentual"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.taxa_percentual}
+                  onChange={(e) => handleChange('taxa_percentual', parseFloat(e.target.value) || 0)}
+                  className="h-9 md:h-10 mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="taxa_fixa" className="text-xs md:text-sm">Taxa Fixa R$</Label>
+                <Input
+                  id="taxa_fixa"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={formData.taxa_fixa}
+                  onChange={(e) => handleChange('taxa_fixa', parseFloat(e.target.value) || 0)}
+                  className="h-9 md:h-10 mt-1"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="prazo_recebimento" className="text-xs md:text-sm">Prazo (dias)</Label>
               <Input
-                id="taxa_fixa"
+                id="prazo_recebimento"
                 type="number"
                 min="0"
-                step="0.01"
-                value={formData.taxa_fixa}
-                onChange={(e) => handleChange('taxa_fixa', parseFloat(e.target.value) || 0)}
+                value={formData.prazo_recebimento}
+                onChange={(e) => handleChange('prazo_recebimento', parseInt(e.target.value) || 0)}
+                className="h-9 md:h-10 mt-1"
               />
             </div>
-          </div>
 
-          <div>
-            <Label htmlFor="prazo_recebimento">Prazo de Recebimento (dias)</Label>
-            <Input
-              id="prazo_recebimento"
-              type="number"
-              min="0"
-              value={formData.prazo_recebimento}
-              onChange={(e) => handleChange('prazo_recebimento', parseInt(e.target.value) || 0)}
-            />
+            <div className="flex items-center space-x-2 pt-2">
+              <Switch
+                id="ativa"
+                checked={formData.ativa}
+                onCheckedChange={(checked) => handleChange('ativa', checked)}
+              />
+              <Label htmlFor="ativa" className="text-xs md:text-sm">Forma de pagamento ativa</Label>
+            </div>
           </div>
-
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="ativa"
-              checked={formData.ativa}
-              onCheckedChange={(checked) => handleChange('ativa', checked)}
-            />
-            <Label htmlFor="ativa">Forma de pagamento ativa</Label>
-          </div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="sticky bottom-0 bg-white border-t border-slate-200 px-3 md:px-6 py-3 md:py-4 flex justify-end gap-2 flex-shrink-0">
+            <Button type="button" variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">
               Cancelar
             </Button>
-            <Button type="submit">Salvar</Button>
-          </DialogFooter>
+            <Button type="submit" className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Salvar</Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

@@ -74,16 +74,16 @@ export default function ServicosPage() {
 
       <div className="min-h-screen bg-slate-50 printable-content">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl no-print">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10 no-print">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Wrench className="w-8 h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Wrench className="w-5 h-5 md:w-7 md:h-7" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Serviços</h1>
-                  <p className="text-slate-300">Catálogo de serviços oferecidos</p>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Serviços</h1>
+                  <p className="text-slate-300 text-xs md:text-sm">Catálogo de serviços oferecidos</p>
                 </div>
               </div>
 
@@ -91,16 +91,16 @@ export default function ServicosPage() {
                 <Button
                   variant="outline"
                   onClick={() => window.print()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
                   <Printer className="w-4 h-4" />
-                  Imprimir
+                  <span className="hidden sm:inline">Imprimir</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => openForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
                   <Plus className="w-4 h-4" />
                   Novo Serviço
@@ -110,43 +110,43 @@ export default function ServicosPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 no-print">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center">
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-6 no-print">
+            <Card className="border-l-4 border-l-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Total Serviços</p>
-                    <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Total Serviços</p>
+                    <div className="text-xl md:text-3xl font-bold text-slate-900">{stats.total}</div>
                   </div>
-                  <Wrench className="w-8 h-8 text-slate-300" />
+                  <Wrench className="w-6 h-6 md:w-8 md:h-8 text-slate-300" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center">
+            <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Média de Preço</p>
-                    <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.mediaPreco)}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Média Preço</p>
+                    <div className="text-xl md:text-3xl font-bold text-green-600">{formatCurrency(stats.mediaPreco)}</div>
                   </div>
-                  <DollarSign className="w-8 h-8 text-green-100" />
+                  <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-green-300" />
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Search Bar */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-4 no-print">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-3 md:mb-4 no-print">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Search className="absolute left-2.5 md:left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
               <Input
                 placeholder="Buscar por nome ou descrição..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                className="pl-10 border-slate-200"
+                className="pl-9 md:pl-10 border-slate-200 h-9 md:h-10"
               />
             </div>
           </div>
@@ -176,12 +176,12 @@ export default function ServicosPage() {
                           {formatCurrency(servico.valor_padrao)}
                         </TableCell>
                         <TableCell className="text-center no-print">
-                          <div className="flex justify-center gap-0.5 md:gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(servico)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-4 w-4" />
+                          <div className="flex justify-center gap-1">
+                            <Button variant="ghost" size="icon" onClick={() => openForm(servico)} title="Editar" className="h-8 w-8 md:h-9 md:w-9 hover:bg-amber-50 text-amber-600">
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(servico.id)} className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(servico.id)} title="Excluir" className="h-8 w-8 md:h-9 md:w-9 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex">
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>

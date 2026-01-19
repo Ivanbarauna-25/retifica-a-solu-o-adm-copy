@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Printer, X, Filter, HardHat, Calendar, User, Package } from 'lucide-react';
+import { Loader2, Printer, X, Filter, HardHat, Calendar, User, Package, DollarSign } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
 
 export default function RelatorioEntregasEPI() {
@@ -116,134 +116,138 @@ export default function RelatorioEntregasEPI() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Cabeçalho */}
-      <div className="flex justify-between items-center no-print">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <HardHat className="w-6 h-6" />
-            Relatório de Entregas de EPI
-          </h1>
-          <p className="text-slate-500 mt-1">Histórico completo de entregas de equipamentos de proteção</p>
-        </div>
-        <Button onClick={handlePrint} className="gap-2">
-          <Printer className="w-4 h-4" />
-          Imprimir
-        </Button>
-      </div>
-
-      {/* Filtros */}
-      <Card className="no-print">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Filter className="w-4 h-4" />
-            Filtros
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <Label className="text-xs">Funcionário</Label>
-              <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {funcionarios.filter(f => f.status !== 'demitido').map(func => (
-                    <SelectItem key={func.id} value={func.id}>{func.nome}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10 no-print">
+        <div className="max-w-[1800px] mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                <HardHat className="w-5 h-5 md:w-7 md:h-7" />
+              </div>
+              <div>
+                <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Relatório Entregas EPI</h1>
+                <p className="text-slate-300 text-xs md:text-sm">Histórico de entregas</p>
+              </div>
             </div>
-
-            <div>
-              <Label className="text-xs">EPI</Label>
-              <Select value={filtroEPI} onValueChange={setFiltroEPI}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {epis.map(epi => (
-                    <SelectItem key={epi.id} value={epi.id}>{epi.nome}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-xs">Data Início</Label>
-              <Input
-                type="date"
-                value={filtroDataInicio}
-                onChange={(e) => setFiltroDataInicio(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label className="text-xs">Data Fim</Label>
-              <Input
-                type="date"
-                value={filtroDataFim}
-                onChange={(e) => setFiltroDataFim(e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-end">
-              <Button variant="outline" onClick={limparFiltros} className="w-full gap-2">
-                <X className="w-4 h-4" />
-                Limpar
-              </Button>
-            </div>
+            <Button onClick={handlePrint} variant="outline" className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">
+              <Printer className="w-4 h-4" />
+              Imprimir
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 no-print">
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Package className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Total de Entregas</p>
-                <p className="text-2xl font-bold text-slate-800">{entregasFiltradas.length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <HardHat className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Total de Itens</p>
-                <p className="text-2xl font-bold text-slate-800">{totalItens}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Calendar className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Valor Total Estimado</p>
-                <p className="text-2xl font-bold text-slate-800">{formatCurrency(totalValor)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
+
+      <div className="max-w-[1800px] mx-auto px-2 md:px-6 space-y-3 md:space-y-4">
+
+        {/* Filtros */}
+        <Card className="no-print border-slate-200 shadow-sm">
+          <CardContent className="p-3 md:p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+              <div>
+                <Label className="text-xs mb-1 block">Funcionário</Label>
+                <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    {funcionarios.filter(f => f.status !== 'demitido').map(func => (
+                      <SelectItem key={func.id} value={func.id}>{func.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-xs mb-1 block">EPI</Label>
+                <Select value={filtroEPI} onValueChange={setFiltroEPI}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos</SelectItem>
+                    {epis.map(epi => (
+                      <SelectItem key={epi.id} value={epi.id}>{epi.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-xs mb-1 block">Data Início</Label>
+                <Input
+                  type="date"
+                  value={filtroDataInicio}
+                  onChange={(e) => setFiltroDataInicio(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs mb-1 block">Data Fim</Label>
+                <Input
+                  type="date"
+                  value={filtroDataFim}
+                  onChange={(e) => setFiltroDataFim(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+
+              <div className="flex items-end">
+                <Button variant="outline" onClick={limparFiltros} className="w-full gap-2 h-9">
+                  <X className="w-4 h-4" />
+                  Limpar
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Resumo */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 no-print">
+          <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-3 md:p-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-blue-100 rounded-lg">
+                  <Package className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] md:text-sm text-slate-500">Total Entregas</p>
+                  <p className="text-xl md:text-2xl font-bold text-slate-800">{entregasFiltradas.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-3 md:p-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-green-100 rounded-lg">
+                  <HardHat className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] md:text-sm text-slate-500">Total Itens</p>
+                  <p className="text-xl md:text-2xl font-bold text-slate-800">{totalItens}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-amber-500 shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-3 md:p-4">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 bg-amber-100 rounded-lg">
+                  <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] md:text-sm text-slate-500">Valor Total</p>
+                  <p className="text-xl md:text-2xl font-bold text-slate-800">{formatCurrency(totalValor)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
       {/* Cabeçalho para impressão */}
       <div className="hidden print:block mb-6">
@@ -259,10 +263,10 @@ export default function RelatorioEntregasEPI() {
         </div>
       </div>
 
-      {/* Tabela de Entregas */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
+        {/* Tabela de Entregas */}
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow className="bg-slate-800">
                 <TableHead className="text-white">Data</TableHead>
@@ -308,13 +312,14 @@ export default function RelatorioEntregasEPI() {
               )}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
 
-      {/* Rodapé para impressão */}
-      <div className="hidden print:block mt-8 pt-4 border-t">
-        <div className="flex justify-between text-sm">
-          <span>Total Geral: {formatCurrency(totalValor)}</span>
+        {/* Rodapé para impressão */}
+        <div className="hidden print:block mt-8 pt-4 border-t">
+          <div className="flex justify-between text-sm">
+            <span>Total Geral: {formatCurrency(totalValor)}</span>
+          </div>
         </div>
       </div>
 

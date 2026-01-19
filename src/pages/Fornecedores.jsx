@@ -85,16 +85,16 @@ export default function FornecedoresPage() {
     <>
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-6 py-8 mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-slate-700 p-3 rounded-lg">
-                  <Truck className="w-8 h-8" />
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <Truck className="w-5 h-5 md:w-7 md:h-7" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold mb-1">Fornecedores</h1>
-                  <p className="text-slate-300">Gestão de parceiros e fornecedores</p>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Fornecedores</h1>
+                  <p className="text-slate-300 text-xs md:text-sm">Gestão de parceiros e fornecedores</p>
                 </div>
               </div>
 
@@ -102,7 +102,7 @@ export default function FornecedoresPage() {
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
                   <Filter className="w-4 h-4" />
                   Filtros
@@ -111,7 +111,7 @@ export default function FornecedoresPage() {
                 <Button
                   variant="outline"
                   onClick={() => openForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
                   <Plus className="w-4 h-4" />
                   Novo Fornecedor
@@ -121,41 +121,41 @@ export default function FornecedoresPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-6">
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center">
+          <div className="grid grid-cols-3 gap-2 md:gap-4 mb-3 md:mb-6">
+            <Card className="border-l-4 border-l-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Total Fornecedores</p>
-                    <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Total</p>
+                    <div className="text-xl md:text-3xl font-bold text-slate-900">{stats.total}</div>
                   </div>
-                  <Truck className="w-8 h-8 text-slate-300" />
+                  <Truck className="hidden md:block w-8 h-8 text-slate-300" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-emerald-500 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center">
+            <Card className="border-l-4 border-l-emerald-500 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Ativos</p>
-                    <div className="text-2xl font-bold text-emerald-600">{stats.ativos}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Ativos</p>
+                    <div className="text-xl md:text-3xl font-bold text-emerald-600">{stats.ativos}</div>
                   </div>
-                  <CheckCircle className="w-8 h-8 text-emerald-100" />
+                  <CheckCircle className="hidden md:block w-8 h-8 text-emerald-300" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-rose-500 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center">
+            <Card className="border-l-4 border-l-rose-500 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Inativos</p>
-                    <div className="text-2xl font-bold text-rose-600">{stats.inativos}</div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Inativos</p>
+                    <div className="text-xl md:text-3xl font-bold text-rose-600">{stats.inativos}</div>
                   </div>
-                  <XCircle className="w-8 h-8 text-rose-100" />
+                  <XCircle className="hidden md:block w-8 h-8 text-rose-300" />
                 </div>
               </CardContent>
             </Card>
@@ -163,29 +163,29 @@ export default function FornecedoresPage() {
 
           {/* Filtros */}
           {showFilters && (
-            <Card className="mb-6 border-slate-200 shadow-md">
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="mb-3 md:mb-4 border-slate-200 shadow-sm">
+              <CardContent className="p-3 md:p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                   <div>
-                    <Label className="text-xs font-medium text-gray-600 mb-1">Busca Geral</Label>
+                    <Label className="text-xs font-medium text-gray-600 mb-1 block">Busca Geral</Label>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                       <Input
-                        placeholder="Buscar por nome, CNPJ ou telefone..."
+                        placeholder="Buscar..."
                         value={busca}
                         onChange={(e) => setBusca(e.target.value)}
-                        className="pl-9"
+                        className="pl-9 h-9"
                       />
                     </div>
                   </div>
                   <div>
-                    <Label className="text-xs font-medium text-gray-600 mb-1">Categoria</Label>
+                    <Label className="text-xs font-medium text-gray-600 mb-1 block">Categoria</Label>
                     <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="todos">Todas as Categorias</SelectItem>
+                        <SelectItem value="todos">Todas</SelectItem>
                         <SelectItem value="pecas">Peças</SelectItem>
                         <SelectItem value="ferramentas">Ferramentas</SelectItem>
                         <SelectItem value="servicos">Serviços</SelectItem>
@@ -201,14 +201,14 @@ export default function FornecedoresPage() {
 
           {/* Barra de Busca (se filtros ocultos) */}
           {!showFilters && (
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+            <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-3 md:mb-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+                <Search className="absolute left-2.5 md:left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
                 <Input
                   placeholder="Buscar por nome, CNPJ ou telefone..."
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
-                  className="pl-10 border-slate-200"
+                  className="pl-9 md:pl-10 border-slate-200 h-9 md:h-10"
                 />
               </div>
             </div>
@@ -251,22 +251,24 @@ export default function FornecedoresPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <div className="flex justify-center gap-0.5 md:gap-2">
+                          <div className="flex justify-center gap-1">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => openForm(fornecedor)}
-                              className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600"
+                              title="Editar"
+                              className="h-8 w-8 md:h-9 md:w-9 hover:bg-amber-50 text-amber-600"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => handleDelete(fornecedor.id)}
-                              className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex"
+                              title="Excluir"
+                              className="h-8 w-8 md:h-9 md:w-9 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>

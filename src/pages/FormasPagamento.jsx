@@ -72,25 +72,48 @@ export default function FormasPagamentoPage() {
 
   return (
     <>
-      <div className="container mx-auto">
-        <Card className="printable-content">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl card-title flex items-center gap-2">
-              <CreditCard className="w-6 h-6" />
-              Formas de Pagamento
-            </CardTitle>
-            <div className="flex items-center gap-2 no-print">
-              <Button onClick={() => openForm()}>
-                <Plus className="mr-2 h-4 w-4" /> Adicionar
-              </Button>
-              <Button variant="secondary" onClick={() => window.print()}>
-                <Printer className="mr-2 h-4 w-4" /> Imprimir
-              </Button>
+      <div className="min-h-screen bg-slate-50">
+        {/* Header */}
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10 no-print">
+          <div className="max-w-[1800px] mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <CreditCard className="w-5 h-5 md:w-7 md:h-7" />
+                </div>
+                <div>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Formas de Pagamento</h1>
+                  <p className="text-slate-300 text-xs md:text-sm">Métodos de pagamento aceitos</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  onClick={() => window.print()}
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span className="hidden sm:inline">Imprimir</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => openForm()}
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
+                >
+                  <Plus className="w-4 h-4" />
+                  Nova Forma
+                </Button>
+              </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
+          </div>
+        </div>
+
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
               <Table>
+
                 <TableHeader className="bg-slate-700">
                   <TableRow>
                     <TableHead className="text-white text-xs md:text-sm">Nome</TableHead>
@@ -121,12 +144,12 @@ export default function FormasPagamentoPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="no-print">
-                          <div className="flex gap-0.5 md:gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(forma)} className="h-7 w-7 md:h-8 md:w-8 p-0">
-                              <Edit className="h-4 w-4" />
+                          <div className="flex gap-1 justify-center">
+                            <Button variant="ghost" size="icon" onClick={() => openForm(forma)} title="Editar" className="h-8 w-8 md:h-9 md:w-9 hover:bg-amber-50 text-amber-600">
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(forma.id)} className="text-red-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(forma.id)} title="Excluir" className="text-red-600 h-8 w-8 md:h-9 md:w-9 hover:bg-red-50 hidden md:flex">
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -136,8 +159,8 @@ export default function FormasPagamentoPage() {
                 </TableBody>
               </Table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       <FormaPagamentoForm

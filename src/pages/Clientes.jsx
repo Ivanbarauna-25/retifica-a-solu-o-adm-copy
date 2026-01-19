@@ -155,45 +155,45 @@ export default function ClientesPage() {
     <>
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-4 md:px-6 py-5 md:py-8 mb-4 md:mb-6 shadow-xl">
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
-                  <Users className="w-6 h-6 md:w-8 md:h-8" />
+                  <Users className="w-5 h-5 md:w-7 md:h-7" />
                 </div>
                 <div>
-                  <h1 className="text-xl md:text-3xl font-bold mb-0.5 md:mb-1">Clientes e Veículos</h1>
-                  <p className="text-slate-300 text-xs md:text-base">Gestão de clientes e frota</p>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Clientes e Veículos</h1>
+                  <p className="text-slate-300 text-xs md:text-sm">Gestão de clientes e frota</p>
                 </div>
               </div>
 
-              <div className="flex gap-1.5 md:gap-2 flex-wrap">
+              <div className="flex gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   onClick={() => setIsImportModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 hidden sm:flex"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
-                  <UploadCloud className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Importar
+                  <UploadCloud className="w-4 h-4" />
+                  <span className="hidden sm:inline">Importar</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => window.print()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
-                  <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <Printer className="w-4 h-4" />
                   <span className="hidden sm:inline">Imprimir</span>
                 </Button>
 
                 <Button
                   variant="outline"
                   onClick={() => openClienteForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
+                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
                 >
-                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  <span className="hidden sm:inline">Novo</span>
+                  <Plus className="w-4 h-4" />
+                  Novo Cliente
                 </Button>
               </div>
             </div>
@@ -202,28 +202,34 @@ export default function ClientesPage() {
 
         <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-4 md:mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Clientes</p>
-                  <div className="text-lg md:text-2xl font-bold text-slate-900">{clientes.length}</div>
+          <div className="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-6">
+            <Card className="border-l-4 border-l-slate-600 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Total Clientes</p>
+                    <div className="text-xl md:text-3xl font-bold text-slate-900">{clientes.length}</div>
+                  </div>
+                  <Users className="w-6 h-6 md:w-8 md:h-8 text-slate-300" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Total Veículos</p>
-                  <div className="text-lg md:text-2xl font-bold text-blue-600">{totalVeiculos}</div>
+            <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 md:p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Total Veículos</p>
+                    <div className="text-xl md:text-3xl font-bold text-blue-600">{totalVeiculos}</div>
+                  </div>
+                  <Car className="w-6 h-6 md:w-8 md:h-8 text-blue-300" />
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-3 md:mb-4">
             <AdvancedSearchFilters
               entityName="clientes"
               searchFields={clienteSearchFields}
@@ -303,28 +309,30 @@ export default function ClientesPage() {
                           </div>
                         </TableCell>
                         <TableCell className="no-print text-center">
-                          <div className="flex items-center justify-center gap-0.5 md:gap-1">
+                          <div className="flex items-center justify-center gap-1">
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => openVeiculoForm(null, cliente)}
                               title="Adicionar Veículo"
-                              className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-blue-50 text-blue-600">
-                              <Car className="w-4 h-4 md:w-[18px] md:h-[18px]" />
+                              className="h-8 w-8 md:h-9 md:w-9 hover:bg-blue-50 text-blue-600">
+                              <Car className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => openClienteForm(cliente)}
-                              className="h-8 w-8 md:h-9 md:w-9 p-0 hover:bg-slate-100 text-slate-600 hidden sm:flex">
-                              <Edit className="w-4 h-4 md:w-[18px] md:h-[18px]" />
+                              title="Editar"
+                              className="h-8 w-8 md:h-9 md:w-9 hover:bg-amber-50 text-amber-600">
+                              <Edit className="w-4 h-4" />
                             </Button>
                             <Button
                               variant="ghost"
-                              size="sm"
+                              size="icon"
                               onClick={() => handleDeleteCliente(cliente.id)}
-                              className="h-8 w-8 md:h-9 md:w-9 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex">
-                              <Trash2 className="w-4 h-4 md:w-[18px] md:h-[18px]" />
+                              title="Excluir"
+                              className="h-8 w-8 md:h-9 md:w-9 text-red-600 hover:text-red-700 hover:bg-red-50 hidden md:flex">
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>

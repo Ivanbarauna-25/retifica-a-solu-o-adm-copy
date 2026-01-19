@@ -132,24 +132,48 @@ export default function CondicoesPagamentoPage() {
 
   return (
     <>
-      <div className="container mx-auto p-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl">Condições de Pagamento</CardTitle>
-            <Button onClick={() => openForm()}>
-              <Plus className="mr-2 h-4 w-4" /> Nova Condição
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-6">
+      <div className="min-h-screen bg-slate-50">
+        {/* Header */}
+        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10">
+          <div className="max-w-[1800px] mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="bg-slate-700 p-2 md:p-3 rounded-lg">
+                  <CreditCard className="w-5 h-5 md:w-7 md:h-7" />
+                </div>
+                <div>
+                  <h1 className="text-lg md:text-2xl lg:text-3xl font-bold">Condições de Pagamento</h1>
+                  <p className="text-slate-300 text-xs md:text-sm">Formas de parcelamento e prazos</p>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={() => openForm()}
+                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
+              >
+                <Plus className="w-4 h-4" />
+                Nova Condição
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-[1800px] mx-auto px-2 md:px-6">
+          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-3 md:mb-4">
+            <div className="relative">
+              <Search className="absolute left-2.5 md:left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
                 placeholder="Buscar por nome..."
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
+                className="pl-9 h-9 md:h-10"
               />
             </div>
+          </div>
 
-            <div className="rounded-md border">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
               <Table>
                 <TableHeader className="bg-slate-700">
                   <TableRow>
@@ -181,12 +205,12 @@ export default function CondicoesPagamentoPage() {
                         <TableCell className="text-xs md:text-sm hidden xl:table-cell">{formatPercentual(condicao.desconto_percentual)}</TableCell>
                         <TableCell className="text-xs md:text-sm hidden xl:table-cell">{formatPercentual(condicao.juros_percentual)}</TableCell>
                         <TableCell>
-                          <div className="flex gap-0.5 md:gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(condicao)} className="h-7 w-7 md:h-8 md:w-8 p-0">
-                              <Edit className="h-4 w-4" />
+                          <div className="flex gap-1 justify-center">
+                            <Button variant="ghost" size="icon" onClick={() => openForm(condicao)} title="Editar" className="h-8 w-8 md:h-9 md:w-9 hover:bg-amber-50 text-amber-600">
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(condicao.id)} className="text-red-600 h-7 w-7 md:h-8 md:w-8 p-0 hidden sm:flex">
-                              <Trash2 className="h-4 w-4" />
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(condicao.id)} title="Excluir" className="text-red-600 h-8 w-8 md:h-9 md:w-9 hover:bg-red-50 hidden md:flex">
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -196,8 +220,8 @@ export default function CondicoesPagamentoPage() {
                 </TableBody>
               </Table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {isFormOpen && (
