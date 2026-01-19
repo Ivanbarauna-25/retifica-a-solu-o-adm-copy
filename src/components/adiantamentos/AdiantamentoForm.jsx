@@ -112,13 +112,34 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
         `}</style>
 
         <DialogHeader className="sticky top-0 z-10 px-3 md:px-6 py-3 md:py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white no-print border-b border-slate-600">
-          <DialogTitle className="flex items-center gap-2 md:gap-3 text-white">
-            <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm flex-shrink-0">
-              <Wallet className="w-4 h-4 md:w-5 md:h-5 text-white" />
+          <DialogTitle className="flex items-center justify-between gap-2 text-white">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                <Wallet className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-sm md:text-xl font-bold truncate">{adiantamento ? "Editar Adiantamento" : "Novo Adiantamento"}</h2>
+                <p className="text-[10px] md:text-sm text-slate-300 hidden sm:block">Preencha os dados do adiantamento</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h2 className="text-sm md:text-xl font-bold truncate">{adiantamento ? "Editar Adiantamento" : "Novo Adiantamento"}</h2>
-              <p className="text-[10px] md:text-sm text-slate-300 hidden sm:block">Preencha os dados do adiantamento</p>
+            
+            {/* Botões no header mobile */}
+            <div className="flex gap-1.5 md:hidden">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                className="bg-transparent border-slate-500 text-white hover:bg-slate-700 px-2 h-7 text-xs"
+              >
+                <X className="w-3.5 h-3.5" />
+              </Button>
+              <Button
+                type="submit"
+                onClick={handleSubmit}
+                className="bg-white text-slate-800 hover:bg-slate-100 px-2 h-7 text-xs"
+              >
+                <Save className="w-3.5 h-3.5" />
+              </Button>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -201,14 +222,14 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
           </div>
           </div>
 
-          <DialogFooter className="flex items-center justify-end gap-2 md:gap-3 pt-3 md:pt-4 border-t border-slate-200 bg-white px-3 md:px-6 pb-3 md:pb-6">
+          <DialogFooter className="hidden md:flex items-center justify-end gap-2 md:gap-3 pt-3 md:pt-4 border-t border-slate-200 bg-white px-3 md:px-6 pb-3 md:pb-6">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
               className="bg-slate-800 text-gray-50 px-3 md:px-4 py-2 text-xs md:text-sm font-bold rounded-md h-8 md:h-10 border-2 border-slate-800 hover:bg-slate-50 gap-1 md:gap-2"
             >
-              <X className="w-3.5 h-3.5 md:w-4 md:h-4" /> <span className="hidden sm:inline">Cancelar</span>
+              <X className="w-3.5 h-3.5 md:w-4 md:h-4" /> Cancelar
             </Button>
             <Button
               type="submit"

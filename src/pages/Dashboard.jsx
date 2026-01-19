@@ -27,40 +27,24 @@ import {
 'lucide-react';
 
 const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
-  // Mapeamento de cores para gradientes
-  const gradientMap = {
-    'bg-blue-500': 'from-blue-500 to-blue-600',
-    'bg-green-500': 'from-green-500 to-emerald-600',
-    'bg-purple-500': 'from-purple-500 to-violet-600',
-    'bg-orange-500': 'from-orange-500 to-amber-600',
-    'bg-emerald-500': 'from-emerald-500 to-teal-600',
-    'bg-red-500': 'from-red-500 to-rose-600',
-    'bg-amber-500': 'from-amber-500 to-yellow-600'
-  };
-
-  const bgLightMap = {
-    'bg-blue-500': 'bg-blue-50',
-    'bg-green-500': 'bg-green-50',
-    'bg-purple-500': 'bg-purple-50',
-    'bg-orange-500': 'bg-orange-50',
-    'bg-emerald-500': 'bg-emerald-50',
-    'bg-red-500': 'bg-red-50',
-    'bg-amber-500': 'bg-amber-50'
+  const iconColorMap = {
+    'bg-blue-500': 'text-blue-600',
+    'bg-green-500': 'text-green-600',
+    'bg-purple-500': 'text-purple-600',
+    'bg-orange-500': 'text-orange-600',
+    'bg-emerald-500': 'text-emerald-600',
+    'bg-red-500': 'text-red-600',
+    'bg-amber-500': 'text-amber-600'
   };
 
   return (
-    <Card className={`relative overflow-hidden border-0 shadow-md hover:shadow-lg transition-all duration-300 group ${bgLightMap[color] || 'bg-white'}`}>
-      {/* Gradiente decorativo superior */}
-      <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${gradientMap[color] || color}`} />
-      
-      {/* Círculo decorativo de fundo */}
-      <div className="bg-green-500 mx-auto opacity-10 rounded-full absolute -right-4 -bottom-4 w-20 h-20 md:w-24 md:h-24 group-hover:scale-125 transition-transform duration-500" />
+    <Card className="relative overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 group"
       
       <CardContent className="mx-auto pt-3 pr-3 pb-3 pl-3 relative md:p-5">
         <div className="mx-auto flex items-start justify-between gap-2">
           {/* Conteúdo principal */}
           <div className="flex-1 min-w-0 space-y-1">
-            <p className="text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider truncate">
+            <p className="text-[10px] md:text-xs font-medium text-slate-500 truncate">
               {title}
             </p>
             
@@ -75,15 +59,15 @@ const StatsCard = ({ title, value, icon: Icon, color, subtitle, loading }) => {
             }
             
             {subtitle && !loading &&
-            <span className="text-[10px] md:text-xs text-slate-500 font-medium block truncate">
+            <span className="text-[10px] md:text-xs text-slate-500 font-normal block truncate">
                 {subtitle}
               </span>
             }
           </div>
           
-          {/* Ícone com fundo gradiente */}
-          <div className={`p-2.5 md:p-3.5 rounded-xl bg-gradient-to-br ${gradientMap[color] || color} shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 flex-shrink-0`}>
-            <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+          {/* Ícone neutro */}
+          <div className={`p-2.5 md:p-3 rounded-lg bg-slate-100 group-hover:bg-slate-200 transition-all duration-200 flex-shrink-0`}>
+            <Icon className={`w-5 h-5 md:w-6 md:h-6 ${iconColorMap[color] || 'text-slate-600'}`} />
           </div>
         </div>
       </CardContent>
