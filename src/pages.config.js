@@ -29,6 +29,7 @@ import GerenciarErros from './pages/GerenciarErros';
 import GestaoRH from './pages/GestaoRH';
 import GestaoUsuarios from './pages/GestaoUsuarios';
 import Home from './pages/Home';
+import ImportarPonto from './pages/ImportarPonto';
 import ImprimirOS from './pages/ImprimirOS';
 import MatrizPermissoes from './pages/MatrizPermissoes';
 import MeuPerfil from './pages/MeuPerfil';
@@ -60,7 +61,6 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
-import ImportarPonto from './pages/ImportarPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -96,6 +96,7 @@ export const PAGES = {
     "GestaoRH": GestaoRH,
     "GestaoUsuarios": GestaoUsuarios,
     "Home": Home,
+    "ImportarPonto": ImportarPonto,
     "ImprimirOS": ImprimirOS,
     "MatrizPermissoes": MatrizPermissoes,
     "MeuPerfil": MeuPerfil,
@@ -127,7 +128,6 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
-    "ImportarPonto": ImportarPonto,
 }
 
 export const pagesConfig = {
