@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableHeader, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, FileText, Clock, Filter, Loader2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Upload, FileText, Clock, Filter, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { formatDate } from "@/components/formatters";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
@@ -20,7 +20,7 @@ export default function ImportarPontoPage() {
   const [registros, setRegistros] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
   const [filtroDataFim, setFiltroDataFim] = useState("");
@@ -28,6 +28,7 @@ export default function ImportarPontoPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { toast } = useToast();
+  const fileInputRef = useRef(null);
 
   const carregar = async () => {
     setIsLoading(true);
@@ -37,12 +38,14 @@ export default function ImportarPontoPage() {
         base44.entities.PontoRegistro.list("-created_date", 500),
         base44.entities.Funcionario.list()
       ]);
+
       setImportacoes(imps || []);
       setRegistros(regs || []);
-      setFuncionarios((funcs || []).sort((a, b) => (a?.nome || '').localeCompare(b?.nome || '')));
+      setFuncionarios((funcs || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
     } catch (error) {
+      console.error("Erro ao carregar dados:", error);
       toast({
-        title: "❌ Erro",
+        title: "Erro",
         description: "Não foi possível carregar os dados.",
         variant: "destructive"
       });
@@ -56,109 +59,260 @@ export default function ImportarPontoPage() {
   }, []);
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0] || null;
     if (file) {
       setArquivo(file);
-      setConteudoColado(""); // Limpa o campo de texto se arquivo for selecionado
+      setConteudoColado("");
     }
   };
 
-  const calcularHash = (conteudo) => {
-    // Hash MD5 simples (você pode usar uma lib mais robusta se necessário)
+  // =========================
+  // Helpers robustos
+  // =========================
+
+  const normalizeLine = (s) => (s || "").replace(/\r/g, "").trim();
+
+  const parseDateTimeToISO = (raw) => {
+    // Aceita:
+    // - "YYYY-MM-DD HH:mm:ss"
+    // - "YYYY/MM/DD HH:mm:ss"
+    // - "YYYY-MM-DDTHH:mm:ss"
+    // Retorna ISO "YYYY-MM-DDTHH:mm:ss" (sem timezone) ou null
+    const v = (raw || "").trim();
+    if (!v) return null;
+
+    // Já está em ISO (sem timezone)
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?/.test(v)) {
+      const [datePart, timePart] = v.split("T");
+      const time = (timePart || "").length === 5 ? `${timePart}:00` : timePart;
+      return `${datePart}T${time}`;
+    }
+
+    const parts = v.split(/\s+/);
+    if (parts.length < 2) return null;
+
+    let datePart = parts[0].replace(/\//g, "-");
+    let timePart = parts[1];
+
+    // Normaliza hora
+    if (/^\d{2}:\d{2}$/.test(timePart)) timePart = `${timePart}:00`;
+    if (!/^\d{2}:\d{2}:\d{2}$/.test(timePart)) return null;
+
+    // Normaliza data
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(datePart)) return null;
+
+    return `${datePart}T${timePart}`;
+  };
+
+  const getDateFromISO = (isoNoTz) => {
+    // isoNoTz "YYYY-MM-DDTHH:mm:ss"
+    if (!isoNoTz) return null;
+    const d = isoNoTz.split("T")[0];
+    return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : null;
+  };
+
+  const getTimeFromISO = (isoNoTz) => {
+    if (!isoNoTz) return null;
+    const t = isoNoTz.split("T")[1] || "";
+    return /^\d{2}:\d{2}:\d{2}$/.test(t) ? t : null;
+  };
+
+  const safeTextFromFile = async (file) => {
+    // Alguns TXT vêm com encoding estranho; aqui fica simples.
+    // Se precisar, dá pra evoluir depois.
+    return await file.text();
+  };
+
+  const sha256Hex = async (text) => {
+    try {
+      if (window?.crypto?.subtle) {
+        const enc = new TextEncoder();
+        const data = enc.encode(text);
+        const digest = await window.crypto.subtle.digest("SHA-256", data);
+        const bytes = Array.from(new Uint8Array(digest));
+        return bytes.map((b) => b.toString(16).padStart(2, "0")).join("");
+      }
+    } catch (e) {
+      // fallback abaixo
+    }
+
+    // Fallback determinístico (não criptográfico, mas estável)
     let hash = 0;
-    for (let i = 0; i < conteudo.length; i++) {
-      const char = conteudo.charCodeAt(i);
+    for (let i = 0; i < text.length; i++) {
+      const char = text.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
+      hash |= 0;
     }
-    return Math.abs(hash).toString(16);
+    return `fallback_${Math.abs(hash).toString(16)}`;
   };
 
-  const processarConteudo = (conteudo, nomeArquivo) => {
-    const linhas = conteudo.split('\n');
+  const findFuncionarioIdByRelogio = (enNoRaw) => {
+    const enNo = (enNoRaw || "").trim();
+    if (!enNo) return null;
+
+    // Estratégia sem depender de schema:
+    // tenta achar um campo “provável” no funcionário que guarde o EnNo/código do relógio.
+    const candidateKeys = [
+      "user_id_relogio",
+      "codigo_relogio",
+      "codigo_ponto",
+      "enno",
+      "id_relogio",
+      "ponto_id",
+      "matricula",
+      "registro",
+      "codigo"
+    ];
+
+    // Primeiro: match exato por campos prováveis
+    for (const f of funcionarios || []) {
+      for (const key of candidateKeys) {
+        if (f && f[key] != null && String(f[key]).trim() === enNo) return f.id;
+      }
+    }
+
+    // Segundo: se alguém usa EnNo como “id interno” (raro, mas acontece)
+    for (const f of funcionarios || []) {
+      if (f?.id && String(f.id).trim() === enNo) return f.id;
+    }
+
+    return null;
+  };
+
+  // =========================
+  // Parser do AttendLog
+  // =========================
+  const processarConteudo = (conteudo) => {
+    const linhas = (conteudo || "").split("\n");
+
     const registrosProcessados = [];
     const erros = [];
-    let totalLinhas = 0;
+
+    let totalIgnorados = 0;          // linhas vazias / metadados (#)
+    let totalProcessadas = 0;        // linhas que eram “dados” (não #, não vazia)
     let totalValidos = 0;
-    let totalIgnorados = 0;
+    let totalInvalidos = 0;
+
     let dataInicio = null;
     let dataFim = null;
 
     for (let i = 0; i < linhas.length; i++) {
-      const linha = linhas[i].trim();
-      
-      // Ignorar linhas vazias ou que começam com #
-      if (!linha || linha.startsWith('#')) {
+      const linhaOriginal = linhas[i];
+      const linha = normalizeLine(linhaOriginal);
+
+      if (!linha || linha.startsWith("#")) {
         totalIgnorados++;
         continue;
       }
 
-      totalLinhas++;
-      const campos = linha.split('\t');
+      totalProcessadas++;
 
-      // Mapear campos (assumindo ordem: No, TMNo, EnNo, Mode, IN/OUT, DateTime, TR)
-      const enNo = campos[2]?.trim(); // user_id_relogio
-      const dateTime = campos[5]?.trim(); // data_hora
-      const mode = campos[3]?.trim(); // metodo
-      const tmNo = campos[1]?.trim(); // dispositivo_id
+      // Separador esperado: TAB. Se vier com múltiplos espaços, ainda tentamos.
+      let campos = linha.split("\t").map((c) => (c ?? "").trim());
+      if (campos.length < 6) {
+        // fallback por múltiplos espaços
+        campos = linha.split(/\s+/).map((c) => (c ?? "").trim());
+      }
 
-      if (!enNo || !dateTime) {
+      // Formato esperado (comumente):
+      // 0 No | 1 TMNo | 2 EnNo | 3 Mode | 4 IN/OUT | 5 DateTime | 6 TR
+      const tmNo = (campos[1] || "").trim();
+      const enNo = (campos[2] || "").trim();
+      const mode = (campos[3] || "").trim();
+      const dtRaw = (campos[5] || "").trim();
+
+      const iso = parseDateTimeToISO(dtRaw);
+      const data = getDateFromISO(iso);
+      const hora = getTimeFromISO(iso);
+
+      const funcionarioId = findFuncionarioIdByRelogio(enNo);
+
+      // Validação mínima
+      if (!enNo || !iso || !data || !hora) {
+        totalInvalidos++;
+        const motivo = !enNo
+          ? "EnNo ausente"
+          : !iso ? "DateTime inválido/ausente"
+          : "Data/Hora inválida";
+
         registrosProcessados.push({
-          user_id_relogio: enNo || 'DESCONHECIDO',
-          data_hora: dateTime || new Date().toISOString(),
-          data: dateTime ? dateTime.split(' ')[0] : new Date().toISOString().split('T')[0],
-          hora: dateTime ? dateTime.split(' ')[1] : '00:00:00',
-          origem: 'relogio',
-          metodo: mode || '',
-          dispositivo_id: tmNo || '',
+          funcionario_id: funcionarioId || null,
+          user_id_relogio: enNo || "DESCONHECIDO",
+          data: data || null,
+          hora: hora || null,
+          data_hora: iso || new Date().toISOString(), // fallback para satisfazer required
+          origem: "relogio",
+          metodo: mode || "",
+          dispositivo_id: tmNo || "",
           raw_linha: linha,
           valido: false,
-          motivo_invalido: 'EnNo ou DateTime ausente'
+          motivo_invalido: motivo
         });
-        totalIgnorados++;
-        erros.push(`Linha ${i + 1}: EnNo ou DateTime ausente`);
+
+        erros.push(`Linha ${i + 1}: ${motivo} | "${linha.substring(0, 160)}"`);
         continue;
       }
 
-      // Parsear data_hora para obter data e hora separadamente
-      const [dataParte, horaParte] = dateTime.split(' ');
-      const dataISO = dataParte; // Assumindo formato YYYY-MM-DD
-      const hora = horaParte || '00:00:00';
-
       // Atualizar período
-      if (!dataInicio || dataISO < dataInicio) dataInicio = dataISO;
-      if (!dataFim || dataISO > dataFim) dataFim = dataISO;
+      if (!dataInicio || data < dataInicio) dataInicio = data;
+      if (!dataFim || data > dataFim) dataFim = data;
 
       registrosProcessados.push({
+        funcionario_id: funcionarioId || null,
         user_id_relogio: enNo,
-        data_hora: dateTime,
-        data: dataISO,
-        hora: hora,
-        origem: 'relogio',
-        metodo: mode || '',
-        dispositivo_id: tmNo || '',
+        data,
+        hora,
+        data_hora: iso,
+        origem: "relogio",
+        metodo: mode || "",
+        dispositivo_id: tmNo || "",
         raw_linha: linha,
         valido: true,
         motivo_invalido: null
       });
+
       totalValidos++;
     }
 
     return {
       registros: registrosProcessados,
-      totalLinhas,
-      totalValidos,
-      totalIgnorados,
-      dataInicio,
-      dataFim,
+      total_ignorados: totalIgnorados,
+      total_processadas: totalProcessadas,
+      total_validos: totalValidos,
+      total_invalidos: totalInvalidos,
+      periodo_inicio: dataInicio,
+      periodo_fim: dataFim,
       erros
     };
+  };
+
+  const bulkCreateSafe = async (rows) => {
+    if (!rows || rows.length === 0) return;
+
+    // Tenta bulkCreate (se existir), com fallback em lotes
+    const entity = base44.entities.PontoRegistro;
+    const hasBulk = entity && typeof entity.bulkCreate === "function";
+
+    const BATCH = 250;
+
+    if (hasBulk) {
+      for (let i = 0; i < rows.length; i += BATCH) {
+        const chunk = rows.slice(i, i + BATCH);
+        await entity.bulkCreate(chunk);
+      }
+      return;
+    }
+
+    // Fallback: create sequencial (mais lento, mas robusto)
+    for (let i = 0; i < rows.length; i++) {
+      await entity.create(rows[i]);
+    }
   };
 
   const processarImportacao = async () => {
     if (!arquivo && !conteudoColado) {
       toast({
-        title: "⚠️ Atenção",
+        title: "Atenção",
         description: "Selecione um arquivo ou cole o conteúdo do TXT.",
         variant: "destructive"
       });
@@ -166,78 +320,109 @@ export default function ImportarPontoPage() {
     }
 
     setProcessando(true);
+
+    let importacaoId = null;
+
     try {
-      let conteudo = conteudoColado;
+      let conteudo = (conteudoColado || "").trim();
       let nomeArquivo = "Conteúdo Colado";
 
-      if (!conteudoColado && arquivo) {
+      if (!conteudo) {
         // Ler arquivo
-        const text = await arquivo.text();
-        conteudo = text;
-        nomeArquivo = arquivo.name;
+        const text = await safeTextFromFile(arquivo);
+        conteudo = (text || "").trim();
+        nomeArquivo = arquivo?.name || "Arquivo TXT";
       }
 
-      const hash = calcularHash(conteudo);
-
-      // Verificar se já foi importado
-      const importacoesExistentes = await base44.entities.ImportacaoPonto.filter({ arquivo_hash: hash });
-      if (importacoesExistentes && importacoesExistentes.length > 0) {
+      if (!conteudo) {
         toast({
-          title: "⚠️ Arquivo duplicado",
-          description: "Este arquivo já foi importado anteriormente.",
+          title: "Atenção",
+          description: "O conteúdo do arquivo está vazio.",
           variant: "destructive"
         });
-        setProcessando(false);
         return;
       }
 
-      // Processar conteúdo
-      const resultado = processarConteudo(conteudo, nomeArquivo);
+      const hash = await sha256Hex(conteudo);
 
-      // Criar registro de importação
+      // Verificar duplicidade
+      let importacoesExistentes = [];
+      try {
+        importacoesExistentes = await base44.entities.ImportacaoPonto.filter({ arquivo_hash: hash });
+      } catch (e) {
+        // Alguns ambientes não suportam filter do jeito esperado; fallback via list
+        const all = await base44.entities.ImportacaoPonto.list("-created_date", 50);
+        importacoesExistentes = (all || []).filter((x) => x?.arquivo_hash === hash);
+      }
+
+      if (importacoesExistentes && importacoesExistentes.length > 0) {
+        toast({
+          title: "Arquivo duplicado",
+          description: "Este conteúdo já foi importado anteriormente.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const resultado = processarConteudo(conteudo);
+
+      // Criar importação (status processando)
       const importacao = await base44.entities.ImportacaoPonto.create({
         data_importacao: new Date().toISOString(),
         arquivo_nome: nomeArquivo,
         arquivo_hash: hash,
         conteudo_txt: conteudoColado ? conteudo : null,
-        periodo_inicio: resultado.dataInicio,
-        periodo_fim: resultado.dataFim,
-        total_linhas: resultado.totalLinhas,
-        total_registros_validos: resultado.totalValidos,
-        total_ignorados: resultado.totalIgnorados,
-        status: 'processando',
-        log_erros: resultado.erros.length > 0 ? resultado.erros.join('\n') : null
+        periodo_inicio: resultado.periodo_inicio,
+        periodo_fim: resultado.periodo_fim,
+        total_linhas: resultado.total_processadas,               // apenas linhas de “dados”
+        total_registros_validos: resultado.total_validos,
+        total_ignorados: resultado.total_ignorados + resultado.total_invalidos, // ignorados + inválidos (para bater com sua entidade)
+        status: "processando",
+        log_erros: resultado.erros.length > 0 ? resultado.erros.join("\n") : null
       });
 
-      // Criar registros de ponto
-      const registrosComImportacao = resultado.registros.map(r => ({
+      importacaoId = importacao?.id;
+
+      // Vincular importacao_id nos registros
+      const rows = (resultado.registros || []).map((r) => ({
         ...r,
-        importacao_id: importacao.id
+        importacao_id: importacaoId
       }));
 
-      await base44.entities.PontoRegistro.bulkCreate(registrosComImportacao);
+      await bulkCreateSafe(rows);
 
-      // Atualizar status da importação
-      await base44.entities.ImportacaoPonto.update(importacao.id, { status: 'concluida' });
+      // Finalizar importação
+      await base44.entities.ImportacaoPonto.update(importacaoId, { status: "concluida" });
 
       toast({
-        title: "✅ Importação concluída",
-        description: `${resultado.totalValidos} registros importados com sucesso.`
+        title: "Importação concluída",
+        description: `${resultado.total_validos} registros válidos importados. ${resultado.total_invalidos} inválidos.`
       });
 
       // Limpar form
       setArquivo(null);
       setConteudoColado("");
-      if (document.getElementById('file-upload')) {
-        document.getElementById('file-upload').value = '';
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
 
-      // Recarregar dados
       await carregar();
     } catch (error) {
+      console.error("Erro na importação:", error);
+
+      // Tentar marcar importação como erro (se já criou)
+      if (importacaoId) {
+        try {
+          await base44.entities.ImportacaoPonto.update(importacaoId, {
+            status: "erro",
+            log_erros: (error?.message || String(error)).slice(0, 5000)
+          });
+        } catch (e) {
+          // ignora
+        }
+      }
+
       toast({
-        title: "❌ Erro na importação",
-        description: error.message,
+        title: "Erro na importação",
+        description: error?.message || "Falha ao importar.",
         variant: "destructive"
       });
     } finally {
@@ -245,28 +430,62 @@ export default function ImportarPontoPage() {
     }
   };
 
-  const getFuncionarioNome = (id) => {
-    if (!id) return '-';
-    const func = funcionarios.find(f => f.id === id);
-    return func?.nome || '-';
+  const getFuncionarioNome = (id, userIdRelogio) => {
+    // 1) Se veio funcionario_id gravado, usa ele
+    if (id) {
+      const func = (funcionarios || []).find((f) => f.id === id);
+      if (func?.nome) return func.nome;
+    }
+
+    // 2) Se não veio, tenta resolver pelo EnNo dinamicamente (sem gravar)
+    const enNo = (userIdRelogio || "").trim();
+    if (enNo) {
+      const candidateKeys = [
+        "user_id_relogio",
+        "codigo_relogio",
+        "codigo_ponto",
+        "enno",
+        "id_relogio",
+        "ponto_id",
+        "matricula",
+        "registro",
+        "codigo"
+      ];
+
+      for (const f of funcionarios || []) {
+        for (const key of candidateKeys) {
+          if (f && f[key] != null && String(f[key]).trim() === enNo) {
+            return f?.nome || "-";
+          }
+        }
+      }
+    }
+
+    return "-";
   };
 
   const registrosFiltrados = useMemo(() => {
-    return registros.filter(r => {
-      const byFunc = filtroFuncionario === "todos" || r.funcionario_id === filtroFuncionario;
-      const byDataInicio = !filtroDataInicio || r.data >= filtroDataInicio;
-      const byDataFim = !filtroDataFim || r.data <= filtroDataFim;
-      const byValido = filtroValido === "todos" || 
-        (filtroValido === "validos" && r.valido) || 
+    return (registros || []).filter((r) => {
+      const byFunc =
+        filtroFuncionario === "todos" ||
+        r.funcionario_id === filtroFuncionario;
+
+      const byDataInicio = !filtroDataInicio || (r.data && r.data >= filtroDataInicio);
+      const byDataFim = !filtroDataFim || (r.data && r.data <= filtroDataFim);
+
+      const byValido =
+        filtroValido === "todos" ||
+        (filtroValido === "validos" && !!r.valido) ||
         (filtroValido === "invalidos" && !r.valido);
+
       return byFunc && byDataInicio && byDataFim && byValido;
     });
   }, [registros, filtroFuncionario, filtroDataInicio, filtroDataFim, filtroValido]);
 
   const statusColors = {
-    'processando': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    'concluida': 'bg-green-100 text-green-800 border-green-200',
-    'erro': 'bg-red-100 text-red-800 border-red-200'
+    processando: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    concluida: "bg-green-100 text-green-800 border-green-200",
+    erro: "bg-red-100 text-red-800 border-red-200"
   };
 
   return (
@@ -279,7 +498,7 @@ export default function ImportarPontoPage() {
             </div>
             <div>
               <h1 className="text-sm md:text-xl font-bold">Importar Registros de Ponto</h1>
-              <p className="text-slate-400 text-[9px] md:text-xs">Importação de batidas de relógio de ponto</p>
+              <p className="text-slate-400 text-[9px] md:text-xs">Importação de batidas do relógio de ponto (TXT AttendLog)</p>
             </div>
           </div>
         </div>
@@ -295,6 +514,7 @@ export default function ImportarPontoPage() {
                 <Label className="text-xs md:text-sm font-semibold text-slate-900">Upload de Arquivo TXT</Label>
                 <div className="relative">
                   <Input
+                    ref={fileInputRef}
                     id="file-upload"
                     type="file"
                     accept=".txt"
@@ -317,12 +537,16 @@ export default function ImportarPontoPage() {
                   placeholder="Cole aqui o conteúdo do arquivo de ponto..."
                   value={conteudoColado}
                   onChange={(e) => {
-                    setConteudoColado(e.target.value);
-                    if (e.target.value) setArquivo(null); // Limpa arquivo se texto for colado
+                    const v = e.target.value;
+                    setConteudoColado(v);
+                    if (v && v.trim()) setArquivo(null);
                   }}
                   rows={4}
                   className="text-xs md:text-sm font-mono"
                 />
+                <p className="text-[10px] md:text-xs text-slate-500">
+                  Dica: se o relógio exportar com linhas iniciadas por “#”, elas serão ignoradas automaticamente.
+                </p>
               </div>
             </div>
 
@@ -357,7 +581,7 @@ export default function ImportarPontoPage() {
                     <TableHead className="text-white font-semibold text-xs md:text-sm">Data</TableHead>
                     <TableHead className="text-white font-semibold text-xs md:text-sm">Arquivo</TableHead>
                     <TableHead className="text-white font-semibold text-xs md:text-sm">Período</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Total</TableHead>
+                    <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Processadas</TableHead>
                     <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Válidos</TableHead>
                     <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Ignorados</TableHead>
                     <TableHead className="text-white font-semibold text-xs md:text-sm">Status</TableHead>
@@ -382,15 +606,15 @@ export default function ImportarPontoPage() {
                         <TableCell className="text-xs md:text-sm">{formatDate(imp.data_importacao)}</TableCell>
                         <TableCell className="text-xs md:text-sm font-medium">{imp.arquivo_nome}</TableCell>
                         <TableCell className="text-xs md:text-sm">
-                          {imp.periodo_inicio && imp.periodo_fim 
+                          {imp.periodo_inicio && imp.periodo_fim
                             ? `${formatDate(imp.periodo_inicio)} - ${formatDate(imp.periodo_fim)}`
-                            : '-'}
+                            : "-"}
                         </TableCell>
                         <TableCell className="text-center text-xs md:text-sm font-semibold">{imp.total_linhas}</TableCell>
                         <TableCell className="text-center text-xs md:text-sm font-semibold text-green-600">{imp.total_registros_validos}</TableCell>
                         <TableCell className="text-center text-xs md:text-sm font-semibold text-red-600">{imp.total_ignorados}</TableCell>
                         <TableCell>
-                          <Badge className={`${statusColors[imp.status]} text-[8px] md:text-xs`}>
+                          <Badge className={`${statusColors[imp.status] || "bg-slate-100 text-slate-800"} text-[8px] md:text-xs`}>
                             {imp.status}
                           </Badge>
                         </TableCell>
@@ -428,12 +652,13 @@ export default function ImportarPontoPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="todos">Todos</SelectItem>
-                      {funcionarios.map(f => (
+                      {funcionarios.map((f) => (
                         <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
+
                 <div>
                   <Label className="text-xs font-medium">Data Início</Label>
                   <Input
@@ -443,6 +668,7 @@ export default function ImportarPontoPage() {
                     className="text-xs md:text-sm"
                   />
                 </div>
+
                 <div>
                   <Label className="text-xs font-medium">Data Fim</Label>
                   <Input
@@ -452,6 +678,7 @@ export default function ImportarPontoPage() {
                     className="text-xs md:text-sm"
                   />
                 </div>
+
                 <div>
                   <Label className="text-xs font-medium">Validação</Label>
                   <Select value={filtroValido} onValueChange={setFiltroValido}>
@@ -496,16 +723,18 @@ export default function ImportarPontoPage() {
                   ) : (
                     registrosFiltrados.map((reg) => (
                       <TableRow key={reg.id} className="hover:bg-slate-50">
-                        <TableCell className="text-xs md:text-sm">{formatDate(reg.data)}</TableCell>
-                        <TableCell className="text-xs md:text-sm font-mono">{reg.hora}</TableCell>
-                        <TableCell className="text-xs md:text-sm font-semibold">{reg.user_id_relogio}</TableCell>
-                        <TableCell className="text-xs md:text-sm">{getFuncionarioNome(reg.funcionario_id)}</TableCell>
-                        <TableCell className="text-xs md:text-sm">{reg.metodo || '-'}</TableCell>
+                        <TableCell className="text-xs md:text-sm">{reg.data ? formatDate(reg.data) : "-"}</TableCell>
+                        <TableCell className="text-xs md:text-sm font-mono">{reg.hora || "-"}</TableCell>
+                        <TableCell className="text-xs md:text-sm font-semibold">{reg.user_id_relogio || "-"}</TableCell>
+                        <TableCell className="text-xs md:text-sm">
+                          {getFuncionarioNome(reg.funcionario_id, reg.user_id_relogio)}
+                        </TableCell>
+                        <TableCell className="text-xs md:text-sm">{reg.metodo || "-"}</TableCell>
                         <TableCell className="text-center">
                           {reg.valido ? (
                             <CheckCircle2 className="w-4 h-4 text-green-600 mx-auto" />
                           ) : (
-                            <XCircle className="w-4 h-4 text-red-600 mx-auto" title={reg.motivo_invalido} />
+                            <XCircle className="w-4 h-4 text-red-600 mx-auto" title={reg.motivo_invalido || "Inválido"} />
                           )}
                         </TableCell>
                       </TableRow>
