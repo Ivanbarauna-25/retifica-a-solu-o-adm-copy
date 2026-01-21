@@ -200,7 +200,13 @@ export default function ImportarPontoPage() {
       const linhaOriginal = linhas[i];
       const linha = normalizeLine(linhaOriginal);
 
-      if (!linha || linha.startsWith("#")) {
+      // Ignorar linhas vazias, comentários (#) e cabeçalhos comuns
+      if (!linha || 
+          linha.startsWith("#") || 
+          linha.toLowerCase().includes("enno") || 
+          linha.toLowerCase().includes("name") ||
+          linha.toLowerCase().includes("tmno") ||
+          linha.toLowerCase().includes("datetime")) {
         totalIgnorados++;
         continue;
       }
@@ -257,6 +263,10 @@ export default function ImportarPontoPage() {
       if (!dataInicio || data < dataInicio) dataInicio = data;
       if (!dataFim || data > dataFim) dataFim = data;
 
+      // Marcar como inválido se não houver funcionário vinculado
+      const valido = !!funcionarioId;
+      const motivoInvalido = !funcionarioId ? "Funcionário não vinculado ao ID do relógio" : null;
+
       registrosProcessados.push({
         funcionario_id: funcionarioId || null,
         user_id_relogio: enNo,
@@ -267,11 +277,16 @@ export default function ImportarPontoPage() {
         metodo: mode || "",
         dispositivo_id: tmNo || "",
         raw_linha: linha,
-        valido: true,
-        motivo_invalido: null
+        valido: valido,
+        motivo_invalido: motivoInvalido
       });
 
-      totalValidos++;
+      if (valido) {
+        totalValidos++;
+      } else {
+        totalInvalidos++;
+        erros.push(`Linha ${i + 1}: Funcionário não vinculado (ID Relógio: ${enNo})`);
+      }
     }
 
     return {
