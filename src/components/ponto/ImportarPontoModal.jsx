@@ -80,39 +80,46 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       // Ignorar linhas vazias, comentários (#) e cabeçalhos
       if (!linha || 
           linha.startsWith("#") || 
-          linha.toLowerCase().includes("enno") || 
-          linha.toLowerCase().includes("tmno") ||
-          linha.toLowerCase().includes("datetime")) {
+          linha.toLowerCase().includes("no\t") ||
+          linha.toLowerCase().includes("enno")) {
         totalIgnorados++;
         continue;
       }
 
-      // Separar por TAB ou múltiplos espaços
-      let campos = linha.split("\t").map(c => (c || "").trim());
-      if (campos.length < 6) {
-        campos = linha.split(/\s+/).map(c => (c || "").trim());
+      // Separar por TAB (padrão AttendLog)
+      const campos = linha.split("\t").map(c => (c || "").trim());
+      
+      // Precisa ter pelo menos 11 campos (No até TR)
+      if (campos.length < 10) {
+        totalIgnorados++;
+        continue;
       }
 
-      // Formato: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
-      const tmNo = campos[1] || "";
-      const enNo = campos[2] || "";
-      const mode = campos[5] || "";
-      const dateTimeRaw = campos[9] || "";
+      // Formato AttendLog: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
+      // Índices:              0    1      2      3      4      5      6        7          8         9          10
+      const enNo = String(campos[2] || "").trim();
+      const tmNo = String(campos[1] || "").trim();
+      const mode = String(campos[5] || "").trim();
+      const dateTimeRaw = String(campos[9] || "").trim();
 
       if (!enNo || !dateTimeRaw) {
         totalIgnorados++;
         continue;
       }
 
-      // Parse datetime: "2026-01-20 01:02:23"
+      // Parse datetime: "2026-01-20 01:02:23" ou "2026-01-20	01:02:23"
       let dataHora;
       try {
-        const parts = dateTimeRaw.split(/\s+/);
+        // Separar data e hora (pode ter tab ou espaço)
+        const parts = dateTimeRaw.split(/[\s\t]+/);
         if (parts.length >= 2) {
           const datePart = parts[0].replace(/\//g, "-");
           let timePart = parts[1];
           if (/^\d{2}:\d{2}$/.test(timePart)) timePart = `${timePart}:00`;
           dataHora = new Date(`${datePart}T${timePart}`);
+        } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateTimeRaw)) {
+          // Só tem data, sem hora
+          dataHora = new Date(`${dateTimeRaw}T00:00:00`);
         }
       } catch (e) {
         totalIgnorados++;
@@ -130,7 +137,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       if (!dataInicio || data < dataInicio) dataInicio = data;
       if (!dataFim || data > dataFim) dataFim = data;
 
-      const funcionario = funcionarios.find(f => f.user_id_relogio === enNo);
+      const funcionario = funcionarios.find(f => String(f.user_id_relogio).trim() === enNo);
       const valido = !!funcionario;
 
       registrosProcessados.push({
@@ -142,7 +149,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         origem: 'relogio',
         metodo: mode,
         dispositivo_id: tmNo,
-        raw_linha: linha,
+        raw_linha: linha.substring(0, 500),
         valido,
         motivo_invalido: valido ? null : 'Funcionário não vinculado ao ID do relógio'
       });
@@ -429,27 +436,33 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
             </TabsContent>
 
             <TabsContent value="colar" className="space-y-3 mt-3">
-              <Textarea
-                placeholder="Cole aqui o conteúdo do arquivo TXT (AttendLog)..."
-                value={conteudoColado}
-                onChange={async (e) => {
-                  const v = e.target.value;
-                  setConteudoColado(v);
-                  if (v && v.trim()) {
+              <div className="border-2 border-slate-200 rounded-lg overflow-hidden focus-within:border-slate-400 transition-colors bg-white">
+                <Textarea
+                  placeholder="Cole aqui o conteúdo do arquivo TXT (AttendLog)...&#10;&#10;Exemplo:&#10;# DeviceModel = S362E Excel&#10;No	TMNo	EnNo	Name	DateTime&#10;1	1	1	IVAN DOS SANTOS	2026-01-20 01:02:23"
+                  value={conteudoColado}
+                  onChange={async (e) => {
+                    const v = e.target.value;
+                    setConteudoColado(v);
                     setArquivo(null);
-                    try {
-                      const resultado = await processarConteudoTXT(v, "Conteúdo Colado");
-                      setPreview(resultado);
-                    } catch (error) {
-                      console.error("Erro ao processar:", error);
+                    if (v && v.trim()) {
+                      try {
+                        const resultado = await processarConteudoTXT(v, "Conteúdo Colado");
+                        setPreview(resultado);
+                      } catch (error) {
+                        console.error("Erro ao processar:", error);
+                        setPreview(null);
+                      }
+                    } else {
+                      setPreview(null);
                     }
-                  } else {
-                    setPreview(null);
-                  }
-                }}
-                rows={6}
-                className="text-xs sm:text-sm font-mono"
-              />
+                  }}
+                  rows={8}
+                  className="text-[11px] sm:text-xs font-mono border-0 focus-visible:ring-0 resize-none"
+                />
+              </div>
+              <p className="text-[10px] sm:text-xs text-slate-500">
+                💡 Cole o conteúdo completo do arquivo TXT exportado pelo relógio (incluindo linhas com #)
+              </p>
             </TabsContent>
           </Tabs>
 
@@ -458,34 +471,54 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               <Label className="text-xs sm:text-sm font-semibold text-slate-700">
                 Preview da Importação
               </Label>
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 sm:p-4 space-y-2">
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="bg-white p-2 rounded border">
-                    <div className="text-slate-500 text-[10px] mb-1">Total Processados</div>
-                    <div className="text-lg font-bold text-slate-900">{preview.total_processados}</div>
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-300 rounded-lg p-3 sm:p-4 space-y-3 shadow-sm">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  <div className="bg-white p-2.5 sm:p-3 rounded-lg border-2 border-slate-200 shadow-sm">
+                    <div className="text-slate-600 text-[10px] sm:text-xs font-medium mb-1">Total Processados</div>
+                    <div className="text-xl sm:text-2xl font-bold text-slate-900">{preview.total_processados}</div>
                   </div>
-                  <div className="bg-white p-2 rounded border">
-                    <div className="text-slate-500 text-[10px] mb-1">Válidos</div>
-                    <div className="text-lg font-bold text-green-600">{preview.total_validos}</div>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-2.5 sm:p-3 rounded-lg border-2 border-green-300 shadow-sm">
+                    <div className="text-green-700 text-[10px] sm:text-xs font-medium mb-1">✓ Válidos</div>
+                    <div className="text-xl sm:text-2xl font-bold text-green-700">{preview.total_validos}</div>
                   </div>
-                  <div className="bg-white p-2 rounded border">
-                    <div className="text-slate-500 text-[10px] mb-1">Inválidos</div>
-                    <div className="text-lg font-bold text-red-600">{preview.total_invalidos}</div>
+                  <div className="bg-gradient-to-br from-red-50 to-rose-50 p-2.5 sm:p-3 rounded-lg border-2 border-red-300 shadow-sm">
+                    <div className="text-red-700 text-[10px] sm:text-xs font-medium mb-1">✗ Inválidos</div>
+                    <div className="text-xl sm:text-2xl font-bold text-red-700">{preview.total_invalidos}</div>
                   </div>
-                  <div className="bg-white p-2 rounded border">
-                    <div className="text-slate-500 text-[10px] mb-1">Período</div>
-                    <div className="text-xs font-semibold text-slate-900">
-                      {preview.periodo_inicio} a {preview.periodo_fim}
+                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-2.5 sm:p-3 rounded-lg border-2 border-blue-300 shadow-sm">
+                    <div className="text-blue-700 text-[10px] sm:text-xs font-medium mb-1">📅 Período</div>
+                    <div className="text-xs sm:text-sm font-bold text-blue-900 break-words">
+                      {preview.periodo_inicio || "N/A"}<br/>a {preview.periodo_fim || "N/A"}
                     </div>
                   </div>
                 </div>
                 
                 {preview.total_invalidos > 0 && (
-                  <div className="flex items-start gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
-                    <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-[10px] sm:text-xs text-yellow-800">
-                      {preview.total_invalidos} registros sem funcionário vinculado. Use "Mapear IDs" após importar.
-                    </p>
+                  <div className="flex items-start gap-2 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-400 rounded-lg shadow-sm">
+                    <AlertCircle className="w-5 h-5 text-yellow-700 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs sm:text-sm font-semibold text-yellow-900 mb-1">
+                        ⚠️ Atenção: IDs não vinculados
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-yellow-800">
+                        {preview.total_invalidos} registros não possuem funcionário vinculado ao ID do relógio. 
+                        Após importar, use o botão <strong>"Mapear IDs"</strong> na página de Controle de Ponto para vincular.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {preview.total_validos > 0 && (
+                  <div className="flex items-start gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-lg shadow-sm">
+                    <CheckCircle2 className="w-5 h-5 text-green-700 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs sm:text-sm font-semibold text-green-900">
+                        ✅ Pronto para importar
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-green-800">
+                        {preview.total_validos} registros serão importados com sucesso.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
