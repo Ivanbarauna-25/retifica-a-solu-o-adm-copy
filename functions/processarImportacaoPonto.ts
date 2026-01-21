@@ -24,7 +24,7 @@ function detectarFormato(conteudo) {
   return 'desconhecido';
 }
 
-// Parser TXT AttendLog (alinhado por espaços)
+// Parser TXT AttendLog (TSV - Tab Separated Values)
 function parseTXTAttendLog(conteudo) {
   const linhas = conteudo.split('\n');
   const registros = [];
@@ -32,9 +32,9 @@ function parseTXTAttendLog(conteudo) {
   let headerDetected = false;
   
   for (const linha of linhas) {
-    const limpa = linha.replace(/\r/g, '').trimEnd();
+    const limpa = linha.replace(/\r/g, '');
     
-    if (!limpa) continue;
+    if (!limpa.trim()) continue;
     
     // Metadados (#)
     if (limpa.startsWith('#')) {
@@ -42,59 +42,55 @@ function parseTXTAttendLog(conteudo) {
       continue;
     }
     
-    // Header (No TMNo EnNo...)
-    if (limpa.includes('No') && limpa.includes('EnNo') && limpa.includes('DateTime')) {
+    // Header (No	TMNo	EnNo	Name...)
+    if (limpa.includes('No\t') && limpa.includes('EnNo') && limpa.includes('DateTime')) {
       headerDetected = true;
       continue;
     }
     
     if (!headerDetected) continue;
     
-    // Parsing de linha alinhada por espaços
-    // Formato: No  TMNo  EnNo  Name  GMNo  Mode  IN/OUT  Antipass  DaiGong  DateTime  TR
-    // Estratégia: capturar campos numéricos primeiro, depois texto (Name e TR que podem ter espaços)
+    // Parsing TSV: split por TAB, preservando campos vazios
+    // Formato: No	TMNo	EnNo	Name	GMNo	Mode	IN/OUT	Antipass	DaiGong	DateTime	TR
+    // Índices:   0    1     2     3     4     5      6        7         8        9        10
     
     try {
-      // Regex para capturar: No(num) TMNo(num) EnNo(num) Name(texto até GMNo) GMNo(num) Mode(num) IN/OUT(num) Antipass(num) DaiGong(num) DateTime(YYYY-MM-DD HH:mm:ss) TR(resto)
-      const match = limpa.match(/^(\d+)\s+(\d+)\s+(\d+)\s+(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([\d-]+\s+[\d:]+)(.*)$/);
+      const campos = limpa.split('\t');
       
-      if (match) {
-        const [, no, tmNo, enNo, name, gmNo, mode, inOut, antipass, daiGong, dateTime, tr] = match;
-        
-        registros.push({
-          no: no.trim(),
-          tmNo: tmNo.trim(),
-          enNo: enNo.trim(),
-          name: name.trim(),
-          gmNo: gmNo.trim(),
-          mode: mode.trim(),
-          inOut: inOut.trim(),
-          antipass: antipass.trim(),
-          daiGong: daiGong.trim(),
-          dateTime: dateTime.trim(),
-          tr: tr.trim(),
-          raw: limpa
-        });
-      } else {
-        // Fallback: tentar parsing por tabs
-        const campos = limpa.split('\t').filter(Boolean);
-        if (campos.length >= 10) {
-          registros.push({
-            no: campos[0],
-            tmNo: campos[1],
-            enNo: campos[2],
-            name: campos[3],
-            gmNo: campos[4] || '',
-            mode: campos[5] || '',
-            inOut: campos[6] || '',
-            antipass: campos[7] || '',
-            daiGong: campos[8] || '',
-            dateTime: campos[9],
-            tr: campos[10] || '',
-            raw: limpa
-          });
-        }
-      }
+      // Mínimo: precisa ter EnNo (índice 2) e DateTime (índice 9)
+      if (campos.length < 10) continue;
+      
+      const no = (campos[0] || '').trim();
+      const tmNo = (campos[1] || '').trim();
+      const enNo = (campos[2] || '').trim();
+      const name = (campos[3] || '').trim();
+      const gmNo = (campos[4] || '').trim();
+      const mode = (campos[5] || '').trim();
+      const inOut = (campos[6] || '').trim();
+      const antipass = (campos[7] || '').trim();
+      const daiGong = (campos[8] || '').trim();
+      const dateTime = (campos[9] || '').trim();
+      const tr = (campos[10] || '').trim();
+      
+      // Normalizar DateTime: pode ter múltiplos espaços entre data e hora
+      const dateTimeNormalizado = dateTime.replace(/\s+/g, ' ').trim();
+      
+      if (!enNo || !dateTimeNormalizado) continue;
+      
+      registros.push({
+        no,
+        tmNo,
+        enNo,
+        name,
+        gmNo,
+        mode,
+        inOut,
+        antipass,
+        daiGong,
+        dateTime: dateTimeNormalizado,
+        tr,
+        raw: limpa
+      });
     } catch (e) {
       // Ignorar linha com erro
     }
