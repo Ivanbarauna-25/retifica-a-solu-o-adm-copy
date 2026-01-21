@@ -8,9 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableHeader, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, FileText, Clock, Filter, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Upload, FileText, Clock, Filter, Loader2, CheckCircle2, XCircle, Link as LinkIcon } from "lucide-react";
 import { formatDate } from "@/components/formatters";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import MapearFuncionariosModal from "@/components/ponto/MapearFuncionariosModal";
 
 export default function ImportarPontoPage() {
   const [arquivo, setArquivo] = useState(null);
@@ -26,6 +27,7 @@ export default function ImportarPontoPage() {
   const [filtroDataFim, setFiltroDataFim] = useState("");
   const [filtroValido, setFiltroValido] = useState("todos");
   const [showFilters, setShowFilters] = useState(false);
+  const [showMapearModal, setShowMapearModal] = useState(false);
 
   const { toast } = useToast();
   const fileInputRef = useRef(null);
@@ -503,18 +505,41 @@ export default function ImportarPontoPage() {
     erro: "bg-red-100 text-red-800 border-red-200"
   };
 
+  // Contar IDs não vinculados
+  const idsNaoVinculados = useMemo(() => {
+    const set = new Set();
+    for (const r of registros) {
+      if (!r.funcionario_id && r.user_id_relogio) {
+        set.add(r.user_id_relogio);
+      }
+    }
+    return set.size;
+  }, [registros]);
+
   return (
     <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
       <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
         <div className="max-w-[1800px] mx-auto">
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
-              <Clock className="w-4 h-4 md:w-6 md:h-6" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
+                <Clock className="w-4 h-4 md:w-6 md:h-6" />
+              </div>
+              <div>
+                <h1 className="text-sm md:text-xl font-bold">Importar Registros de Ponto</h1>
+                <p className="text-slate-400 text-[9px] md:text-xs">Importação de batidas do relógio de ponto (TXT AttendLog)</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-sm md:text-xl font-bold">Importar Registros de Ponto</h1>
-              <p className="text-slate-400 text-[9px] md:text-xs">Importação de batidas do relógio de ponto (TXT AttendLog)</p>
-            </div>
+            {idsNaoVinculados > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => setShowMapearModal(true)}
+                className="gap-2 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300 text-xs md:text-sm h-8 md:h-10"
+              >
+                <LinkIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                Mapear IDs ({idsNaoVinculados})
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -765,6 +790,13 @@ export default function ImportarPontoPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal: Mapear Funcionários */}
+      <MapearFuncionariosModal
+        isOpen={showMapearModal}
+        onClose={() => setShowMapearModal(false)}
+        onMapeamentoFeito={carregar}
+      />
     </div>
   );
 }
