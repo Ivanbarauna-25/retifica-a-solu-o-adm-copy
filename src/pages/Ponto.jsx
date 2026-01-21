@@ -3,13 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Edit, Trash2, Eye, Upload, X, Loader2 } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Upload, X, Loader2, BarChart3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import ControlePontoForm from "@/components/ControlePontoForm";
-import EspelhoPonto from "@/components/EspelhoPonto";
+import EspelhoPontoCompleto from "@/components/ponto/EspelhoPontoCompleto";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 
@@ -22,6 +22,7 @@ export default function PontoPage() {
   const [selectedPonto, setSelectedPonto] = useState(null);
   const [funcionarioEspelho, setFuncionarioEspelho] = useState(null);
   const [mesEspelho, setMesEspelho] = useState("");
+  const [apurando, setApurando] = useState(false);
   
   const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
   const [filtroMes, setFiltroMes] = useState("");
@@ -151,6 +152,48 @@ export default function PontoPage() {
     setFiltroMes("");
   };
 
+  const handleApurarMes = async () => {
+    if (!filtroFuncionario || filtroFuncionario === "todos" || !filtroMes) {
+      toast({
+        title: "Atenção",
+        description: "Selecione um funcionário e um mês para apurar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!window.confirm("Deseja apurar/recalcular o ponto deste funcionário no mês selecionado?")) {
+      return;
+    }
+
+    setApurando(true);
+    try {
+      const response = await base44.functions.invoke("apurarPonto", {
+        funcionario_id: filtroFuncionario,
+        mes_referencia: filtroMes
+      });
+
+      if (response?.data?.success) {
+        toast({
+          title: "✅ Apuração concluída",
+          description: response.data.message || "Ponto apurado com sucesso."
+        });
+        await fetchData();
+      } else {
+        throw new Error(response?.data?.error || "Erro desconhecido");
+      }
+    } catch (error) {
+      console.error("Erro ao apurar:", error);
+      toast({
+        title: "Erro",
+        description: error?.message || "Não foi possível apurar o ponto.",
+        variant: "destructive"
+      });
+    } finally {
+      setApurando(false);
+    }
+  };
+
   return (
     <>
       <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
@@ -169,6 +212,23 @@ export default function PontoPage() {
                     Importar Batidas
                   </Button>
                 </Link>
+                <Button
+                  onClick={handleApurarMes}
+                  disabled={apurando || !filtroFuncionario || filtroFuncionario === "todos" || !filtroMes}
+                  className="gap-2 bg-blue-600 hover:bg-blue-700 text-xs md:text-sm h-8 md:h-10"
+                >
+                  {apurando ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" />
+                      Apurando...
+                    </>
+                  ) : (
+                    <>
+                      <BarChart3 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                      Apurar Mês
+                    </>
+                  )}
+                </Button>
                 <Button onClick={() => openForm()} className="gap-2 bg-slate-700 hover:bg-slate-600 text-xs md:text-sm h-8 md:h-10">
                   <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   Novo
@@ -333,8 +393,8 @@ export default function PontoPage() {
         }}
       />
 
-      {/* Modal: Espelho de Ponto */}
-      <EspelhoPonto
+      {/* Modal: Espelho de Ponto Completo */}
+      <EspelhoPontoCompleto
         isOpen={isEspelhoOpen}
         funcionario={funcionarioEspelho}
         mesReferencia={mesEspelho}
