@@ -194,12 +194,15 @@ export default function PontoPage() {
     setIsEspelhoOpen(true);
   };
 
-  // Contar IDs não vinculados
+  // Contar IDs não vinculados (apenas numéricos)
   const idsNaoVinculados = useMemo(() => {
     const set = new Set();
     for (const r of registros) {
       if (!r.funcionario_id && r.user_id_relogio) {
-        set.add(r.user_id_relogio);
+        const userId = String(r.user_id_relogio).trim();
+        if (/^\d+$/.test(userId)) {
+          set.add(userId);
+        }
       }
     }
     return set.size;

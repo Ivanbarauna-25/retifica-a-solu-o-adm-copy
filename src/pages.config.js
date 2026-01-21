@@ -1,4 +1,5 @@
 import Adiantamentos from './pages/Adiantamentos';
+import BancoHoras from './pages/BancoHoras';
 import Cargos from './pages/Cargos';
 import Categorias from './pages/Categorias';
 import Clientes from './pages/Clientes';
@@ -14,6 +15,7 @@ import DRE from './pages/DRE';
 import Dashboard from './pages/Dashboard';
 import Departamentos from './pages/Departamentos';
 import EPIs from './pages/EPIs';
+import EscalasTrabalho from './pages/EscalasTrabalho';
 import Estoque from './pages/Estoque';
 import FichaCandidato from './pages/FichaCandidato';
 import FichaFuncionario from './pages/FichaFuncionario';
@@ -60,13 +62,12 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
-import EscalasTrabalho from './pages/EscalasTrabalho';
-import BancoHoras from './pages/BancoHoras';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Adiantamentos": Adiantamentos,
+    "BancoHoras": BancoHoras,
     "Cargos": Cargos,
     "Categorias": Categorias,
     "Clientes": Clientes,
@@ -82,6 +83,7 @@ export const PAGES = {
     "Dashboard": Dashboard,
     "Departamentos": Departamentos,
     "EPIs": EPIs,
+    "EscalasTrabalho": EscalasTrabalho,
     "Estoque": Estoque,
     "FichaCandidato": FichaCandidato,
     "FichaFuncionario": FichaFuncionario,
@@ -128,8 +130,6 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
-    "EscalasTrabalho": EscalasTrabalho,
-    "BancoHoras": BancoHoras,
 }
 
 export const pagesConfig = {
