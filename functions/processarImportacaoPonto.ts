@@ -215,7 +215,10 @@ async function normalizar(registros, base44) {
       const hora = dataHora.toISOString().split('T')[1].split('.')[0];
       
       // Buscar funcionário
-      const funcionario = funcionarios.find(f => String(f.user_id_relogio).trim() === enNo);
+      const funcionario = funcionarios.find(f => {
+        if (!f || !f.user_id_relogio) return false;
+        return String(f.user_id_relogio).trim() === enNo;
+      });
       
       normalizados.push({
         funcionario_id: funcionario?.id || null,
@@ -331,9 +334,11 @@ Deno.serve(async (req) => {
     
   } catch (error) {
     console.error('Erro no processamento:', error);
+    console.error('Stack:', error.stack);
     return Response.json({
       success: false,
-      error: error.message || 'Erro ao processar importação'
+      error: error.message || 'Erro ao processar importação',
+      stack: error.stack
     }, { status: 500 });
   }
 });
