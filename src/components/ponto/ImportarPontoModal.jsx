@@ -1,19 +1,19 @@
 import React, { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Upload, FileText, X, CheckCircle2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { Upload, FileText, CheckCircle2, X, Loader2, AlertCircle } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
-  const [arquivo, setArquivo] = useState(null);
-  const [conteudoColado, setConteudoColado] = useState("");
+  const [arquivos, setArquivos] = useState([]);
   const [processando, setProcessando] = useState(false);
-  const fileInputRef = useRef(null);
+  const [preview, setPreview] = useState(null);
   const { toast } = useToast();
+  const fileInputRef = useRef(null);
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -32,7 +32,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
 
       const data = await readExcelFile(principalFile);
       if (data && data.length > 0) {
-        const resultado = await processarDadosExcel(data, files[0].name);
+        const resultado = await processarDadosExcel(data, principalFile.name);
         setPreview(resultado);
       }
     } catch (error) {
@@ -59,30 +59,98 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     });
   };
 
-  const sha256Hex = async (text) => {
-    try {
-      if (window?.crypto?.subtle) {
-        const enc = new TextEncoder();
-        const data = enc.encode(text);
-        const digest = await window.crypto.subtle.digest("SHA-256", data);
-        const bytes = Array.from(new Uint8Array(digest));
-        return bytes.map((b) => b.toString(16).padStart(2, "0")).join("");
+  const processarDadosExcel = async (rows, nomeArquivo) => {
+    const funcionarios = await base44.entities.Funcionario.list();
+    
+    // Encontrar linha de cabeçalho
+    let headerRow = -1;
+    for (let i = 0; i < Math.min(rows.length, 20); i++) {
+      const row = rows[i];
+      const rowStr = row.join('|').toLowerCase();
+      if (rowStr.includes('enno') || rowStr.includes('datetime') || rowStr.includes('name')) {
+        headerRow = i;
+        break;
       }
-    } catch (e) {}
-    let hash = 0;
-    for (let i = 0; i < text.length; i++) {
-      const char = text.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash |= 0;
     }
-    return `fallback_${Math.abs(hash).toString(16)}`;
+
+    const dataRows = rows.slice(headerRow + 1).filter(row => 
+      row && row.length > 0 && row.some(cell => cell !== null && cell !== '')
+    );
+
+    const registrosProcessados = [];
+    let totalValidos = 0;
+    let totalInvalidos = 0;
+    let dataInicio = null;
+    let dataFim = null;
+
+    for (const row of dataRows) {
+      if (row.length < 3) continue;
+
+      // Detectar colunas dinamicamente (formato comum do relógio)
+      // Colunas: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
+      const enNo = String(row[2] || '').trim();
+      const dateTimeRaw = row[9] || row[5] || '';
+      const mode = String(row[5] || row[3] || '').trim();
+      const tmNo = String(row[1] || '').trim();
+
+      if (!enNo || !dateTimeRaw) continue;
+
+      // Parse datetime (Excel pode vir como serial date number)
+      let dataHora;
+      if (typeof dateTimeRaw === 'number') {
+        // Excel serial date
+        const excelEpoch = new Date(1900, 0, 1);
+        const days = Math.floor(dateTimeRaw);
+        const time = dateTimeRaw - days;
+        dataHora = new Date(excelEpoch.getTime() + (days - 2) * 86400000 + time * 86400000);
+      } else {
+        dataHora = new Date(dateTimeRaw);
+      }
+
+      if (isNaN(dataHora.getTime())) continue;
+
+      const data = dataHora.toISOString().split('T')[0];
+      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
+
+      if (!dataInicio || data < dataInicio) dataInicio = data;
+      if (!dataFim || data > dataFim) dataFim = data;
+
+      const funcionario = funcionarios.find(f => f.user_id_relogio === enNo);
+      const valido = !!funcionario;
+
+      registrosProcessados.push({
+        funcionario_id: funcionario?.id || null,
+        user_id_relogio: enNo,
+        data,
+        hora,
+        data_hora: dataHora.toISOString(),
+        origem: 'relogio',
+        metodo: mode,
+        dispositivo_id: tmNo,
+        valido,
+        motivo_invalido: valido ? null : 'Funcionário não vinculado ao ID do relógio'
+      });
+
+      if (valido) totalValidos++;
+      else totalInvalidos++;
+    }
+
+    return {
+      registros: registrosProcessados,
+      total_validos: totalValidos,
+      total_invalidos: totalInvalidos,
+      total_processados: registrosProcessados.length,
+      periodo_inicio: dataInicio,
+      periodo_fim: dataFim,
+      arquivo_nome: nomeArquivo
+    };
   };
 
   const processarImportacao = async () => {
-    if (!arquivo && !conteudoColado) {
+    if (arquivos.length === 0) {
       toast({
         title: "Atenção",
-        description: "Selecione um arquivo ou cole o conteúdo do TXT.",
+        description: "Selecione pelo menos um arquivo Excel.",
         variant: "destructive"
       });
       return;
@@ -91,82 +159,90 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setProcessando(true);
 
     try {
-      let conteudo = (conteudoColado || "").trim();
-      let nomeArquivo = "Conteúdo Colado";
+      // Processar arquivo principal
+      const principalFile = arquivos.find(f => 
+        f.name.toLowerCase().includes('registropresença') || 
+        f.name.toLowerCase().includes('registropresenca') ||
+        f.name.toLowerCase().includes('attendlog')
+      ) || arquivos[0];
 
-      if (!conteudo && arquivo) {
-        const text = await arquivo.text();
-        conteudo = (text || "").trim();
-        nomeArquivo = arquivo?.name || "Arquivo TXT";
-      }
+      const data = await readExcelFile(principalFile);
+      const resultado = await processarDadosExcel(data, principalFile.name);
 
-      if (!conteudo) {
+      if (resultado.registros.length === 0) {
         toast({
-          title: "Atenção",
-          description: "O conteúdo do arquivo está vazio.",
+          title: "Arquivo vazio",
+          description: "Nenhum registro válido encontrado no arquivo.",
           variant: "destructive"
         });
+        setProcessando(false);
         return;
       }
 
-      const hash = await sha256Hex(conteudo);
+      // Gerar hash do conteúdo
+      const conteudoStr = JSON.stringify(data);
+      const encoder = new TextEncoder();
+      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(conteudoStr));
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
       // Verificar duplicidade
-      const importacoesExistentes = await base44.entities.ImportacaoPonto.list("-created_date", 50);
-      const duplicada = (importacoesExistentes || []).find((x) => x?.arquivo_hash === hash);
-
-      if (duplicada) {
+      const importacoesExistentes = await base44.entities.ImportacaoPonto.filter({ arquivo_hash: hash });
+      if (importacoesExistentes && importacoesExistentes.length > 0) {
         toast({
           title: "Arquivo duplicado",
-          description: "Este conteúdo já foi importado anteriormente.",
+          description: "Este arquivo já foi importado anteriormente.",
           variant: "destructive"
         });
+        setProcessando(false);
         return;
       }
 
-      // Processar conteúdo (lógica simplificada - apenas criar importação)
-      const linhas = conteudo.split("\n");
-      let totalLinhas = 0;
-      let totalValidos = 0;
-
-      for (const linha of linhas) {
-        const l = linha.trim();
-        if (l && !l.startsWith("#") && !l.toLowerCase().includes("enno")) {
-          totalLinhas++;
-        }
-      }
-
+      // Criar registro de importação
       const importacao = await base44.entities.ImportacaoPonto.create({
         data_importacao: new Date().toISOString(),
-        arquivo_nome: nomeArquivo,
+        arquivo_nome: resultado.arquivo_nome,
         arquivo_hash: hash,
-        conteudo_txt: conteudoColado ? conteudo : null,
-        total_linhas: totalLinhas,
-        total_registros_validos: 0,
-        total_ignorados: 0,
-        status: "processando"
+        periodo_inicio: resultado.periodo_inicio,
+        periodo_fim: resultado.periodo_fim,
+        total_linhas: resultado.total_processados,
+        total_registros_validos: resultado.total_validos,
+        total_ignorados: resultado.total_invalidos,
+        status: 'processando'
       });
 
-      // Aqui deveria processar as batidas (simplificado por tempo)
-      await base44.entities.ImportacaoPonto.update(importacao.id, { status: "concluida" });
+      // Criar registros em lote
+      const registrosComImportacao = resultado.registros.map(r => ({
+        ...r,
+        importacao_id: importacao.id
+      }));
+
+      // Bulk create em chunks de 100
+      const CHUNK_SIZE = 100;
+      for (let i = 0; i < registrosComImportacao.length; i += CHUNK_SIZE) {
+        const chunk = registrosComImportacao.slice(i, i + CHUNK_SIZE);
+        await Promise.all(chunk.map(reg => base44.entities.PontoRegistro.create(reg)));
+      }
+
+      // Atualizar status da importação
+      await base44.entities.ImportacaoPonto.update(importacao.id, { status: 'concluida' });
 
       toast({
-        title: "✅ Importação iniciada",
-        description: `${totalLinhas} linhas detectadas. Processamento em segundo plano.`
+        title: "Importação concluída",
+        description: `${resultado.total_validos} registros válidos importados. ${resultado.total_invalidos} inválidos.`
       });
 
-      setArquivo(null);
-      setConteudoColado("");
+      setArquivos([]);
+      setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       
       if (onImportado) onImportado();
       onClose();
-
     } catch (error) {
       console.error("Erro na importação:", error);
       toast({
         title: "Erro na importação",
-        description: error?.message || "Falha ao importar.",
+        description: error.message || "Falha ao processar o arquivo.",
         variant: "destructive"
       });
     } finally {
@@ -208,7 +284,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   Formato esperado
                 </p>
                 <p className="text-[10px] sm:text-xs text-blue-800">
-                  Arquivo Excel (.xls) exportado do relógio de ponto. Arquivos suportados: RegistroPresença.xls, AttendLog.xls ou similar.
+                  Arquivo Excel (.xls ou .xlsx) exportado do relógio de ponto. Arquivos suportados: RegistroPresença.xls, AttendLog.xls ou similar.
                 </p>
               </div>
             </div>
