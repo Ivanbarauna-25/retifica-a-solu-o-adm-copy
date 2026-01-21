@@ -3,36 +3,39 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Upload, FileText, CheckCircle2, X, Loader2, AlertCircle } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import * as XLSX from 'xlsx';
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
-  const [arquivos, setArquivos] = useState([]);
+  const [arquivo, setArquivo] = useState(null);
+  const [conteudoColado, setConteudoColado] = useState("");
   const [processando, setProcessando] = useState(false);
   const [preview, setPreview] = useState(null);
   const { toast } = useToast();
   const fileInputRef = useRef(null);
 
   const handleFileChange = async (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setArquivos(files);
+    setArquivo(file);
+    setConteudoColado("");
     setPreview(null);
 
     // Gerar preview automático
     try {
-      const principalFile = files.find(f => 
-        f.name.toLowerCase().includes('registropresença') || 
-        f.name.toLowerCase().includes('registropresenca') ||
-        f.name.toLowerCase().includes('attendlog')
-      ) || files[0];
-
-      const data = await readExcelFile(principalFile);
-      if (data && data.length > 0) {
-        const resultado = await processarDadosExcel(data, principalFile.name);
+      const isTxt = file.name.toLowerCase().endsWith('.txt');
+      if (isTxt) {
+        const texto = await file.text();
+        const resultado = await processarConteudoTXT(texto, file.name);
+        setPreview(resultado);
+      } else {
+        const data = await readExcelFile(file);
+        const resultado = await processarDadosExcel(data, file.name);
         setPreview(resultado);
       }
     } catch (error) {
@@ -59,10 +62,111 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     });
   };
 
+  // Parser para arquivo TXT (AttendLog format)
+  const processarConteudoTXT = async (conteudo, nomeArquivo) => {
+    const funcionarios = await base44.entities.Funcionario.list();
+    const linhas = conteudo.split("\n");
+
+    const registrosProcessados = [];
+    let totalValidos = 0;
+    let totalInvalidos = 0;
+    let totalIgnorados = 0;
+    let dataInicio = null;
+    let dataFim = null;
+
+    for (let i = 0; i < linhas.length; i++) {
+      const linha = linhas[i].replace(/\r/g, "").trim();
+
+      // Ignorar linhas vazias, comentários (#) e cabeçalhos
+      if (!linha || 
+          linha.startsWith("#") || 
+          linha.toLowerCase().includes("enno") || 
+          linha.toLowerCase().includes("tmno") ||
+          linha.toLowerCase().includes("datetime")) {
+        totalIgnorados++;
+        continue;
+      }
+
+      // Separar por TAB ou múltiplos espaços
+      let campos = linha.split("\t").map(c => (c || "").trim());
+      if (campos.length < 6) {
+        campos = linha.split(/\s+/).map(c => (c || "").trim());
+      }
+
+      // Formato: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
+      const tmNo = campos[1] || "";
+      const enNo = campos[2] || "";
+      const mode = campos[5] || "";
+      const dateTimeRaw = campos[9] || "";
+
+      if (!enNo || !dateTimeRaw) {
+        totalIgnorados++;
+        continue;
+      }
+
+      // Parse datetime: "2026-01-20 01:02:23"
+      let dataHora;
+      try {
+        const parts = dateTimeRaw.split(/\s+/);
+        if (parts.length >= 2) {
+          const datePart = parts[0].replace(/\//g, "-");
+          let timePart = parts[1];
+          if (/^\d{2}:\d{2}$/.test(timePart)) timePart = `${timePart}:00`;
+          dataHora = new Date(`${datePart}T${timePart}`);
+        }
+      } catch (e) {
+        totalIgnorados++;
+        continue;
+      }
+
+      if (!dataHora || isNaN(dataHora.getTime())) {
+        totalIgnorados++;
+        continue;
+      }
+
+      const data = dataHora.toISOString().split('T')[0];
+      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
+
+      if (!dataInicio || data < dataInicio) dataInicio = data;
+      if (!dataFim || data > dataFim) dataFim = data;
+
+      const funcionario = funcionarios.find(f => f.user_id_relogio === enNo);
+      const valido = !!funcionario;
+
+      registrosProcessados.push({
+        funcionario_id: funcionario?.id || null,
+        user_id_relogio: enNo,
+        data,
+        hora,
+        data_hora: dataHora.toISOString(),
+        origem: 'relogio',
+        metodo: mode,
+        dispositivo_id: tmNo,
+        raw_linha: linha,
+        valido,
+        motivo_invalido: valido ? null : 'Funcionário não vinculado ao ID do relógio'
+      });
+
+      if (valido) totalValidos++;
+      else totalInvalidos++;
+    }
+
+    return {
+      registros: registrosProcessados,
+      total_validos: totalValidos,
+      total_invalidos: totalInvalidos,
+      total_ignorados: totalIgnorados,
+      total_processados: registrosProcessados.length,
+      periodo_inicio: dataInicio,
+      periodo_fim: dataFim,
+      arquivo_nome: nomeArquivo
+    };
+  };
+
+  // Parser para Excel
   const processarDadosExcel = async (rows, nomeArquivo) => {
     const funcionarios = await base44.entities.Funcionario.list();
     
-    // Encontrar linha de cabeçalho
     let headerRow = -1;
     for (let i = 0; i < Math.min(rows.length, 20); i++) {
       const row = rows[i];
@@ -86,16 +190,15 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     for (const row of dataRows) {
       if (row.length < 3) continue;
 
-      // Detectar colunas dinamicamente (formato comum do relógio)
       // Colunas: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
       const enNo = String(row[2] || '').trim();
-      const dateTimeRaw = row[9] || row[5] || '';
-      const mode = String(row[5] || row[3] || '').trim();
+      const dateTimeRaw = row[9] || '';
+      const mode = String(row[5] || '').trim();
       const tmNo = String(row[1] || '').trim();
 
       if (!enNo || !dateTimeRaw) continue;
 
-      // Parse datetime (Excel pode vir como serial date number)
+      // Parse datetime
       let dataHora;
       if (typeof dateTimeRaw === 'number') {
         // Excel serial date
@@ -139,6 +242,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       registros: registrosProcessados,
       total_validos: totalValidos,
       total_invalidos: totalInvalidos,
+      total_ignorados: 0,
       total_processados: registrosProcessados.length,
       periodo_inicio: dataInicio,
       periodo_fim: dataFim,
@@ -147,10 +251,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   };
 
   const processarImportacao = async () => {
-    if (arquivos.length === 0) {
+    if (!arquivo && !conteudoColado) {
       toast({
         title: "Atenção",
-        description: "Selecione pelo menos um arquivo Excel.",
+        description: "Selecione um arquivo ou cole o conteúdo.",
         variant: "destructive"
       });
       return;
@@ -159,30 +263,41 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setProcessando(true);
 
     try {
-      // Processar arquivo principal
-      const principalFile = arquivos.find(f => 
-        f.name.toLowerCase().includes('registropresença') || 
-        f.name.toLowerCase().includes('registropresenca') ||
-        f.name.toLowerCase().includes('attendlog')
-      ) || arquivos[0];
+      let resultado;
+      let conteudoHash;
 
-      const data = await readExcelFile(principalFile);
-      const resultado = await processarDadosExcel(data, principalFile.name);
+      if (conteudoColado) {
+        // Processar conteúdo colado (TXT)
+        resultado = await processarConteudoTXT(conteudoColado, "Conteúdo Colado");
+        conteudoHash = conteudoColado;
+      } else {
+        // Processar arquivo
+        const isTxt = arquivo.name.toLowerCase().endsWith('.txt');
+        
+        if (isTxt) {
+          const texto = await arquivo.text();
+          resultado = await processarConteudoTXT(texto, arquivo.name);
+          conteudoHash = texto;
+        } else {
+          const data = await readExcelFile(arquivo);
+          resultado = await processarDadosExcel(data, arquivo.name);
+          conteudoHash = JSON.stringify(data);
+        }
+      }
 
       if (resultado.registros.length === 0) {
         toast({
           title: "Arquivo vazio",
-          description: "Nenhum registro válido encontrado no arquivo.",
+          description: "Nenhum registro válido encontrado.",
           variant: "destructive"
         });
         setProcessando(false);
         return;
       }
 
-      // Gerar hash do conteúdo
-      const conteudoStr = JSON.stringify(data);
+      // Gerar hash
       const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(conteudoStr));
+      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(conteudoHash));
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
@@ -207,7 +322,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         periodo_fim: resultado.periodo_fim,
         total_linhas: resultado.total_processados,
         total_registros_validos: resultado.total_validos,
-        total_ignorados: resultado.total_invalidos,
+        total_ignorados: resultado.total_invalidos + resultado.total_ignorados,
         status: 'processando'
       });
 
@@ -217,14 +332,12 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         importacao_id: importacao.id
       }));
 
-      // Bulk create em chunks de 100
       const CHUNK_SIZE = 100;
       for (let i = 0; i < registrosComImportacao.length; i += CHUNK_SIZE) {
         const chunk = registrosComImportacao.slice(i, i + CHUNK_SIZE);
         await Promise.all(chunk.map(reg => base44.entities.PontoRegistro.create(reg)));
       }
 
-      // Atualizar status da importação
       await base44.entities.ImportacaoPonto.update(importacao.id, { status: 'concluida' });
 
       toast({
@@ -232,7 +345,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         description: `${resultado.total_validos} registros válidos importados. ${resultado.total_invalidos} inválidos.`
       });
 
-      setArquivos([]);
+      setArquivo(null);
+      setConteudoColado("");
       setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       
@@ -253,7 +367,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="max-w-2xl w-[96vw] sm:w-[90vw] md:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 gap-0">
-        {/* Header fixo */}
         <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 sm:px-5 sm:py-4 rounded-t-lg sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2">
@@ -273,53 +386,73 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           </div>
         </DialogHeader>
 
-        {/* Conteúdo scrollável */}
         <div className="flex-1 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4 space-y-4">
-          {/* Info box */}
           <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500 rounded-lg p-3 sm:p-4">
             <div className="flex items-start gap-2">
               <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-xs sm:text-sm text-blue-900 font-semibold mb-1">
-                  Formato esperado
+                  Formatos suportados
                 </p>
                 <p className="text-[10px] sm:text-xs text-blue-800">
-                  Arquivo Excel (.xls ou .xlsx) exportado do relógio de ponto. Arquivos suportados: RegistroPresença.xls, AttendLog.xls ou similar.
+                  <strong>TXT:</strong> ACL.001.TXT (AttendLog) com batidas individuais<br/>
+                  <strong>Excel:</strong> RegistroPresença.xls ou similar
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Upload de arquivo */}
-          <div className="space-y-2">
-            <Label className="text-xs sm:text-sm font-semibold text-slate-700">
-              Selecione Arquivo(s) Excel
-            </Label>
-            <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-slate-400 transition-colors bg-slate-50">
-              <Input
-                ref={fileInputRef}
-                type="file"
-                accept=".xls,.xlsx"
-                multiple
-                onChange={handleFileChange}
-                className="text-xs sm:text-sm cursor-pointer file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700"
-              />
-              {arquivos.length > 0 && (
-                <div className="mt-3 space-y-2">
-                  {arquivos.map((file, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md">
-                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <p className="text-xs sm:text-sm text-green-700 font-medium truncate">
-                        {file.name}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
+          <Tabs defaultValue="arquivo" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="arquivo" className="text-xs">Upload de Arquivo</TabsTrigger>
+              <TabsTrigger value="colar" className="text-xs">Colar Conteúdo</TabsTrigger>
+            </TabsList>
 
-          {/* Preview dos dados */}
+            <TabsContent value="arquivo" className="space-y-3 mt-3">
+              <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-slate-400 transition-colors bg-slate-50">
+                <Input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".txt,.xls,.xlsx"
+                  onChange={handleFileChange}
+                  className="text-xs sm:text-sm cursor-pointer file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700"
+                />
+                {arquivo && (
+                  <div className="mt-3 flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                    <p className="text-xs sm:text-sm text-green-700 font-medium truncate">
+                      {arquivo.name}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="colar" className="space-y-3 mt-3">
+              <Textarea
+                placeholder="Cole aqui o conteúdo do arquivo TXT (AttendLog)..."
+                value={conteudoColado}
+                onChange={async (e) => {
+                  const v = e.target.value;
+                  setConteudoColado(v);
+                  if (v && v.trim()) {
+                    setArquivo(null);
+                    try {
+                      const resultado = await processarConteudoTXT(v, "Conteúdo Colado");
+                      setPreview(resultado);
+                    } catch (error) {
+                      console.error("Erro ao processar:", error);
+                    }
+                  } else {
+                    setPreview(null);
+                  }
+                }}
+                rows={6}
+                className="text-xs sm:text-sm font-mono"
+              />
+            </TabsContent>
+          </Tabs>
+
           {preview && (
             <div className="space-y-2">
               <Label className="text-xs sm:text-sm font-semibold text-slate-700">
@@ -360,7 +493,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           )}
         </div>
 
-        {/* Footer fixo com botões */}
         <div className="flex-shrink-0 border-t bg-slate-50 px-4 py-3 sm:px-5 sm:py-4 rounded-b-lg sticky bottom-0">
           <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end">
             <Button
@@ -373,7 +505,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
             </Button>
             <Button
               onClick={processarImportacao}
-              disabled={processando || arquivos.length === 0}
+              disabled={processando || (!arquivo && !conteudoColado)}
               className="w-full sm:w-auto gap-2 bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
             >
               {processando ? (
