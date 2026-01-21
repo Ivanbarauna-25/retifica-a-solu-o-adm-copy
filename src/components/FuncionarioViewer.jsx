@@ -22,10 +22,12 @@ import {
   Printer,
   HardHat,
   Plus,
-  History } from
+  History,
+  Clock } from
 'lucide-react';
 import EntregaEPIModal from '@/components/epi/EntregaEPIModal';
 import HistoricoEPIModal from '@/components/epi/HistoricoEPIModal';
+import VincularEscalaFuncionarioModal from '@/components/ponto/VincularEscalaFuncionarioModal';
 import { formatCurrency, formatDate } from '@/components/formatters';
 
 export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit, onUpdated }) {
@@ -34,6 +36,7 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
   const [isLoading, setIsLoading] = useState(true);
   const [showEntregaEPI, setShowEntregaEPI] = useState(false);
   const [showHistoricoEPI, setShowHistoricoEPI] = useState(false);
+  const [showVincularEscala, setShowVincularEscala] = useState(false);
 
   useEffect(() => {
     const fetchRelatedData = async () => {
@@ -166,6 +169,14 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
             </div>
             {/* Action buttons */}
             <div className="flex gap-1.5 md:gap-2 flex-wrap">
+              <Button
+                onClick={() => setShowVincularEscala(true)}
+                variant="outline"
+                size="sm"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9">
+                <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                Escalas
+              </Button>
               <Button
                 onClick={() => setShowEntregaEPI(true)}
                 variant="outline"
@@ -385,6 +396,16 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
           isOpen={showHistoricoEPI}
           onClose={() => setShowHistoricoEPI(false)}
           funcionario={funcionario} />
+
+        {/* Modal de Vincular Escala */}
+        <VincularEscalaFuncionarioModal
+          isOpen={showVincularEscala}
+          onClose={() => setShowVincularEscala(false)}
+          funcionario={funcionario}
+          onVinculoFeito={() => {
+            setShowVincularEscala(false);
+            if (onUpdated) onUpdated();
+          }} />
 
       </DialogContent>
     </Dialog>);
