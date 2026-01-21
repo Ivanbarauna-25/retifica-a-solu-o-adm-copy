@@ -60,6 +60,8 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
+import EscalasTrabalho from './pages/EscalasTrabalho';
+import BancoHoras from './pages/BancoHoras';
 import __Layout from './Layout.jsx';
 
 
@@ -126,6 +128,8 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
+    "EscalasTrabalho": EscalasTrabalho,
+    "BancoHoras": BancoHoras,
 }
 
 export const pagesConfig = {
