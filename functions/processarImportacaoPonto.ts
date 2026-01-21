@@ -163,90 +163,98 @@ function parseXML(conteudo) {
 
 // Normalizar para PontoRegistro
 async function normalizar(registros, base44) {
-  const funcionarios = await base44.entities.Funcionario.list();
-  const normalizados = [];
-  
-  for (const reg of registros) {
-    try {
-      const enNo = String(reg.enNo || '').trim();
-      
-      if (!enNo) {
-        normalizados.push({
-          valido: false,
-          motivo_invalido: 'EnNo vazio',
-          raw: reg.raw
-        });
-        continue;
-      }
-      
-      // Validar que EnNo é numérico
-      if (!/^\d+$/.test(enNo)) {
-        normalizados.push({
-          valido: false,
-          motivo_invalido: `EnNo não numérico: "${enNo}"`,
-          user_id_relogio: enNo,
-          raw: reg.raw
-        });
-        continue;
-      }
-      
-      // Parse datetime
-      let dataHora;
+  try {
+    const funcionarios = await base44.entities.Funcionario.list();
+    const normalizados = [];
+    
+    for (const reg of registros) {
       try {
-        const dt = reg.dateTime.trim();
-        // Formatos: YYYY-MM-DD HH:mm:ss, YYYY/MM/DD HH:mm:ss, ISO
-        const normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
-        dataHora = new Date(normalizado);
+        const enNo = String(reg.enNo || '').trim();
         
-        if (isNaN(dataHora.getTime())) {
-          throw new Error('Data inválida');
+        if (!enNo) {
+          normalizados.push({
+            valido: false,
+            motivo_invalido: 'EnNo vazio',
+            raw: reg.raw || ''
+          });
+          continue;
         }
+        
+        // Validar que EnNo é numérico
+        if (!/^\d+$/.test(enNo)) {
+          normalizados.push({
+            valido: false,
+            motivo_invalido: `EnNo não numérico: "${enNo}"`,
+            user_id_relogio: enNo,
+            raw: reg.raw || ''
+          });
+          continue;
+        }
+        
+        // Parse datetime
+        let dataHora;
+        try {
+          const dt = String(reg.dateTime || '').trim();
+          if (!dt) throw new Error('DateTime vazio');
+          
+          // Formatos: YYYY-MM-DD HH:mm:ss, YYYY/MM/DD HH:mm:ss, ISO
+          const normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
+          dataHora = new Date(normalizado);
+          
+          if (isNaN(dataHora.getTime())) {
+            throw new Error('Data inválida');
+          }
+        } catch (e) {
+          normalizados.push({
+            valido: false,
+            motivo_invalido: `DateTime inválido: "${reg.dateTime}" - ${e.message}`,
+            user_id_relogio: enNo,
+            raw: reg.raw || ''
+          });
+          continue;
+        }
+        
+        const data = dataHora.toISOString().split('T')[0];
+        const hora = dataHora.toISOString().split('T')[1].split('.')[0];
+        
+        // Buscar funcionário
+        const funcionario = funcionarios.find(f => {
+          if (!f || !f.user_id_relogio) return false;
+          return String(f.user_id_relogio).trim() === enNo;
+        });
+        
+        normalizados.push({
+          funcionario_id: funcionario?.id || null,
+          user_id_relogio: enNo,
+          nome_detectado: reg.name || '',
+          data,
+          hora,
+          data_hora: dataHora.toISOString(),
+          origem: 'relogio',
+          metodo: reg.mode || '',
+          dispositivo_id: reg.tmNo || '',
+          raw_linha: (reg.raw || '').substring(0, 500),
+          valido: !!funcionario,
+          motivo_invalido: funcionario ? null : 'Funcionário não vinculado ao ID do relógio',
+          // Campos extras para preview
+          _tr: reg.tr || '',
+          _inOut: reg.inOut || ''
+        });
       } catch (e) {
+        console.error('Erro ao normalizar registro individual:', e);
         normalizados.push({
           valido: false,
-          motivo_invalido: `DateTime inválido: "${reg.dateTime}"`,
-          user_id_relogio: enNo,
-          raw: reg.raw
+          motivo_invalido: `Erro ao normalizar: ${e.message}`,
+          raw: reg.raw || ''
         });
-        continue;
       }
-      
-      const data = dataHora.toISOString().split('T')[0];
-      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
-      
-      // Buscar funcionário
-      const funcionario = funcionarios.find(f => {
-        if (!f || !f.user_id_relogio) return false;
-        return String(f.user_id_relogio).trim() === enNo;
-      });
-      
-      normalizados.push({
-        funcionario_id: funcionario?.id || null,
-        user_id_relogio: enNo,
-        nome_detectado: reg.name || '',
-        data,
-        hora,
-        data_hora: dataHora.toISOString(),
-        origem: 'relogio',
-        metodo: reg.mode || '',
-        dispositivo_id: reg.tmNo || '',
-        raw_linha: (reg.raw || '').substring(0, 500),
-        valido: !!funcionario,
-        motivo_invalido: funcionario ? null : 'Funcionário não vinculado ao ID do relógio',
-        // Campos extras para preview
-        _tr: reg.tr || '',
-        _inOut: reg.inOut || ''
-      });
-    } catch (e) {
-      normalizados.push({
-        valido: false,
-        motivo_invalido: `Erro ao normalizar: ${e.message}`,
-        raw: reg.raw
-      });
     }
+    
+    return normalizados;
+  } catch (e) {
+    console.error('Erro fatal na normalização:', e);
+    throw new Error(`Falha ao normalizar registros: ${e.message}`);
   }
-  
-  return normalizados;
 }
 
 Deno.serve(async (req) => {
@@ -262,11 +270,16 @@ Deno.serve(async (req) => {
     const { conteudo, nome_arquivo } = body;
     
     if (!conteudo) {
-      return Response.json({ error: 'Conteúdo obrigatório' }, { status: 400 });
+      return Response.json({ 
+        success: false,
+        error: 'Conteúdo obrigatório' 
+      }, { status: 400 });
     }
     
     // 1. Detectar formato
+    console.log('Detectando formato...');
     const formato = detectarFormato(conteudo);
+    console.log('Formato detectado:', formato);
     
     if (formato === 'desconhecido') {
       return Response.json({
@@ -278,15 +291,27 @@ Deno.serve(async (req) => {
     }
     
     // 2. Parsear
+    console.log('Parseando conteúdo...');
     let resultado;
     if (formato === 'txt_attendlog' || formato === 'txt_tabulado') {
       resultado = parseTXTAttendLog(conteudo);
     } else if (formato === 'xml') {
       resultado = parseXML(conteudo);
     }
+    console.log('Registros parseados:', resultado.registros.length);
+    
+    if (resultado.registros.length === 0) {
+      return Response.json({
+        success: false,
+        error: 'Nenhum registro válido encontrado no arquivo',
+        formato_detectado: formato
+      });
+    }
     
     // 3. Normalizar
+    console.log('Normalizando registros...');
     const normalizados = await normalizar(resultado.registros, base44);
+    console.log('Registros normalizados:', normalizados.length);
     
     // 4. Estatísticas
     const validos = normalizados.filter(r => r.valido).length;
