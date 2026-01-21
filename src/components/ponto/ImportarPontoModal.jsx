@@ -140,51 +140,86 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="max-w-3xl w-[95vw] sm:w-full modern-modal">
-        <DialogHeader className="modern-modal-header">
-          <DialogTitle className="text-sm md:text-lg flex items-center gap-2">
-            <Upload className="w-4 h-4 md:w-5 md:h-5" />
-            Importar Batidas do Relógio
-          </DialogTitle>
+      <DialogContent className="max-w-2xl w-[96vw] sm:w-[90vw] md:w-full max-h-[92vh] sm:max-h-[90vh] flex flex-col p-0 gap-0">
+        {/* Header fixo */}
+        <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-4 py-3 sm:px-5 sm:py-4 rounded-t-lg sticky top-0 z-10">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-sm sm:text-base md:text-lg font-bold flex items-center gap-2">
+              <div className="bg-slate-600 p-1.5 sm:p-2 rounded-lg">
+                <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <span>Importar Batidas do Relógio</span>
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-white hover:bg-slate-600 h-7 w-7 sm:h-8 sm:w-8 p-0 md:hidden"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
         </DialogHeader>
 
-        <div className="modern-modal-content space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-            <p className="text-xs md:text-sm text-blue-900">
-              <strong>Formato esperado:</strong> arquivo TXT do relógio de ponto (AttendLog).
-              Cada linha representa uma batida com campos separados por TAB.
-            </p>
+        {/* Conteúdo scrollável */}
+        <div className="flex-1 overflow-y-auto px-4 py-3 sm:px-5 sm:py-4 space-y-4">
+          {/* Info box */}
+          <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-l-4 border-blue-500 rounded-lg p-3 sm:p-4">
+            <div className="flex items-start gap-2">
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs sm:text-sm text-blue-900 font-semibold mb-1">
+                  Formato esperado
+                </p>
+                <p className="text-[10px] sm:text-xs text-blue-800">
+                  Arquivo TXT do relógio de ponto (AttendLog). Cada linha representa uma batida com campos separados por TAB.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-xs md:text-sm font-semibold">Upload de Arquivo TXT</Label>
+          {/* Upload de arquivo */}
+          <div className="space-y-2">
+            <Label className="text-xs sm:text-sm font-semibold text-slate-700">
+              Upload de Arquivo TXT
+            </Label>
+            <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-slate-400 transition-colors bg-slate-50">
               <Input
                 ref={fileInputRef}
                 type="file"
                 accept=".txt"
                 onChange={handleFileChange}
-                className="text-xs md:text-sm"
+                className="text-xs sm:text-sm cursor-pointer file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700"
               />
               {arquivo && (
-                <p className="text-xs text-green-600 flex items-center gap-1">
-                  <FileText className="w-3 h-3" />
-                  {arquivo.name}
-                </p>
+                <div className="mt-3 flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                  <p className="text-xs sm:text-sm text-green-700 font-medium truncate">
+                    {arquivo.name}
+                  </p>
+                </div>
               )}
             </div>
+          </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-500">Ou</span>
-              </div>
+          {/* Divisor */}
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t-2 border-slate-200" />
             </div>
+            <div className="relative flex justify-center">
+              <span className="bg-white px-3 text-xs sm:text-sm font-medium text-slate-500 uppercase tracking-wide">
+                Ou
+              </span>
+            </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label className="text-xs md:text-sm font-semibold">Cole o Conteúdo do TXT</Label>
+          {/* Cole o conteúdo */}
+          <div className="space-y-2">
+            <Label className="text-xs sm:text-sm font-semibold text-slate-700">
+              Cole o Conteúdo do TXT
+            </Label>
+            <div className="border-2 border-slate-200 rounded-lg overflow-hidden focus-within:border-slate-400 transition-colors bg-white">
               <Textarea
                 placeholder="Cole aqui o conteúdo do arquivo de ponto..."
                 value={conteudoColado}
@@ -193,35 +228,45 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   setConteudoColado(v);
                   if (v && v.trim()) setArquivo(null);
                 }}
-                rows={6}
-                className="text-xs md:text-sm font-mono"
+                rows={5}
+                className="text-xs sm:text-sm font-mono border-0 focus-visible:ring-0 resize-none"
               />
             </div>
+            <p className="text-[10px] sm:text-xs text-slate-500">
+              Dica: cole o conteúdo diretamente do arquivo TXT exportado pelo relógio
+            </p>
           </div>
         </div>
 
-        <div className="modern-modal-footer gap-2">
-          <Button variant="outline" onClick={onClose} className="gap-2 text-xs md:text-sm">
-            <X className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            Cancelar
-          </Button>
-          <Button
-            onClick={processarImportacao}
-            disabled={processando || (!arquivo && !conteudoColado)}
-            className="gap-2 bg-slate-800 hover:bg-slate-700 text-xs md:text-sm"
-          >
-            {processando ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" />
-                Processando...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                Processar Importação
-              </>
-            )}
-          </Button>
+        {/* Footer fixo com botões */}
+        <div className="flex-shrink-0 border-t bg-slate-50 px-4 py-3 sm:px-5 sm:py-4 rounded-b-lg sticky bottom-0">
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="w-full sm:w-auto gap-2 text-xs sm:text-sm h-9 sm:h-10 border-slate-300 hover:bg-slate-100"
+            >
+              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              Cancelar
+            </Button>
+            <Button
+              onClick={processarImportacao}
+              disabled={processando || (!arquivo && !conteudoColado)}
+              className="w-full sm:w-auto gap-2 bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
+            >
+              {processando ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  Processar Importação
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
