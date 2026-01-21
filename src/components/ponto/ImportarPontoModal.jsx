@@ -222,42 +222,46 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 <Textarea
                   placeholder="Cole aqui o conteúdo do arquivo TXT (AttendLog)...&#10;&#10;Exemplo:&#10;# DeviceModel = S362E Excel&#10;No	TMNo	EnNo	Name	DateTime&#10;1	1	1	IVAN DOS SANTOS	2026-01-20 01:02:23"
                   value={conteudoColado}
-                  onChange={async (e) => {
-                    const v = e.target.value;
-                    setConteudoColado(v);
+                  onChange={(e) => {
+                    setConteudoColado(e.target.value);
                     setArquivo(null);
-                    if (v && v.trim()) {
-                      try {
-                        const resultado = await processarConteudoTXT(v, "Conteúdo Colado");
-                        setPreview(resultado);
-                      } catch (error) {
-                        console.error("Erro ao processar:", error);
-                        setPreview(null);
-                      }
-                    } else {
-                      setPreview(null);
-                    }
+                    setPreview(null);
+                    setPreviewGerado(false);
                   }}
                   rows={8}
                   className="text-[11px] sm:text-xs font-mono border-0 focus-visible:ring-0 resize-none"
                 />
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500">
-                💡 Cole o conteúdo completo do arquivo TXT exportado pelo relógio (incluindo linhas com #)
+                💡 Cole o conteúdo completo do arquivo TXT/XML exportado pelo relógio
               </p>
             </TabsContent>
           </Tabs>
 
           {preview && (
-            <div className="space-y-2">
-              <Label className="text-xs sm:text-sm font-semibold text-slate-700">
-                Preview da Importação
-              </Label>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs sm:text-sm font-semibold text-slate-700">
+                  Preview da Importação ({preview.formato_detectado})
+                </Label>
+                {preview.log_erros && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={baixarLog}
+                    className="gap-1 h-7 text-xs"
+                  >
+                    <Download className="w-3 h-3" />
+                    Log de Erros
+                  </Button>
+                )}
+              </div>
+              
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-300 rounded-lg p-3 sm:p-4 space-y-3 shadow-sm">
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <div className="bg-white p-2.5 sm:p-3 rounded-lg border-2 border-slate-200 shadow-sm">
-                    <div className="text-slate-600 text-[10px] sm:text-xs font-medium mb-1">Total Processados</div>
-                    <div className="text-xl sm:text-2xl font-bold text-slate-900">{preview.total_processados}</div>
+                    <div className="text-slate-600 text-[10px] sm:text-xs font-medium mb-1">Total Lidos</div>
+                    <div className="text-xl sm:text-2xl font-bold text-slate-900">{preview.total_lidos}</div>
                   </div>
                   <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-2.5 sm:p-3 rounded-lg border-2 border-green-300 shadow-sm">
                     <div className="text-green-700 text-[10px] sm:text-xs font-medium mb-1">✓ Válidos</div>
@@ -275,17 +279,28 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   </div>
                 </div>
                 
-                {preview.total_invalidos > 0 && (
+                {preview.total_sem_mapeamento > 0 && preview.ids_sem_mapeamento && (
                   <div className="flex items-start gap-2 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-400 rounded-lg shadow-sm">
                     <AlertCircle className="w-5 h-5 text-yellow-700 flex-shrink-0 mt-0.5" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-xs sm:text-sm font-semibold text-yellow-900 mb-1">
-                        ⚠️ Atenção: IDs não vinculados
+                        ⚠️ IDs sem mapeamento ({preview.ids_sem_mapeamento.length})
                       </p>
-                      <p className="text-[10px] sm:text-xs text-yellow-800">
-                        {preview.total_invalidos} registros não possuem funcionário vinculado ao ID do relógio. 
-                        Após importar, use o botão <strong>"Mapear IDs"</strong> na página de Controle de Ponto para vincular.
+                      <p className="text-[10px] sm:text-xs text-yellow-800 mb-2">
+                        Após importar, use <strong>"Mapear IDs"</strong> para vincular:
                       </p>
+                      <div className="flex flex-wrap gap-1">
+                        {preview.ids_sem_mapeamento.slice(0, 10).map(id => (
+                          <span key={id} className="inline-block px-2 py-0.5 bg-yellow-200 text-yellow-900 text-[10px] font-mono rounded">
+                            ID {id}
+                          </span>
+                        ))}
+                        {preview.ids_sem_mapeamento.length > 10 && (
+                          <span className="text-[10px] text-yellow-700">
+                            +{preview.ids_sem_mapeamento.length - 10} mais
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -303,6 +318,46 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                     </div>
                   </div>
                 )}
+
+                {/* Preview das primeiras batidas */}
+                {preview.preview && preview.preview.length > 0 && (
+                  <div className="mt-3">
+                    <details className="group">
+                      <summary className="cursor-pointer flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-slate-900">
+                        <Eye className="w-4 h-4" />
+                        Ver primeiras {preview.preview.length} batidas
+                      </summary>
+                      <div className="mt-2 overflow-x-auto">
+                        <table className="w-full text-[10px] border-collapse">
+                          <thead>
+                            <tr className="bg-slate-700 text-white">
+                              <th className="p-1 border">ID</th>
+                              <th className="p-1 border">Nome</th>
+                              <th className="p-1 border">Data/Hora</th>
+                              <th className="p-1 border">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {preview.preview.map((r, i) => (
+                              <tr key={i} className={r.valido ? 'bg-green-50' : 'bg-red-50'}>
+                                <td className="p-1 border font-mono">{r.user_id_relogio}</td>
+                                <td className="p-1 border">{r.nome_detectado || '-'}</td>
+                                <td className="p-1 border font-mono">{r.data} {r.hora}</td>
+                                <td className="p-1 border text-[9px]">
+                                  {r.valido ? (
+                                    <span className="text-green-700">✓ OK</span>
+                                  ) : (
+                                    <span className="text-red-700" title={r.motivo_invalido}>✗ {r.motivo_invalido}</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </details>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -318,23 +373,46 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Cancelar
             </Button>
-            <Button
-              onClick={processarImportacao}
-              disabled={processando || (!arquivo && !conteudoColado)}
-              className="w-full sm:w-auto gap-2 bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
-            >
-              {processando ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                  Processando...
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  Confirmar Importação
-                </>
-              )}
-            </Button>
+            
+            {!previewGerado && (
+              <Button
+                onClick={gerarPreview}
+                disabled={gerandoPreview || (!arquivo && !conteudoColado)}
+                className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
+              >
+                {gerandoPreview ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    Gerar Preview
+                  </>
+                )}
+              </Button>
+            )}
+            
+            {previewGerado && (
+              <Button
+                onClick={confirmarImportacao}
+                disabled={processando}
+                className="w-full sm:w-auto gap-2 bg-green-600 hover:bg-green-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
+              >
+                {processando ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                    Importando...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    Confirmar e Salvar ({preview?.total_validos || 0})
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
