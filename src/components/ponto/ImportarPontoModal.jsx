@@ -6,15 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, FileText, CheckCircle2, X, Loader2, AlertCircle } from "lucide-react";
+import { Upload, FileText, CheckCircle2, X, Loader2, AlertCircle, Download, Eye } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import * as XLSX from 'xlsx';
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const [arquivo, setArquivo] = useState(null);
   const [conteudoColado, setConteudoColado] = useState("");
   const [processando, setProcessando] = useState(false);
+  const [gerandoPreview, setGerandoPreview] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [previewGerado, setPreviewGerado] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef(null);
 
@@ -25,239 +26,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setArquivo(file);
     setConteudoColado("");
     setPreview(null);
-
-    // Gerar preview automático
-    try {
-      const isTxt = file.name.toLowerCase().endsWith('.txt');
-      if (isTxt) {
-        const texto = await file.text();
-        const resultado = await processarConteudoTXT(texto, file.name);
-        setPreview(resultado);
-      } else {
-        const data = await readExcelFile(file);
-        const resultado = await processarDadosExcel(data, file.name);
-        setPreview(resultado);
-      }
-    } catch (error) {
-      console.error("Erro ao gerar preview:", error);
-    }
+    setPreviewGerado(false);
   };
 
-  const readExcelFile = async (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
-          resolve(jsonData);
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    });
-  };
-
-  // Parser para arquivo TXT (AttendLog format)
-  const processarConteudoTXT = async (conteudo, nomeArquivo) => {
-    const funcionarios = await base44.entities.Funcionario.list();
-    const linhas = conteudo.split("\n");
-
-    const registrosProcessados = [];
-    let totalValidos = 0;
-    let totalInvalidos = 0;
-    let totalIgnorados = 0;
-    let dataInicio = null;
-    let dataFim = null;
-
-    for (let i = 0; i < linhas.length; i++) {
-      const linha = linhas[i].replace(/\r/g, "").trim();
-
-      // Ignorar linhas vazias, comentários (#) e cabeçalhos
-      if (!linha || 
-          linha.startsWith("#") || 
-          linha.toLowerCase().includes("no\t") ||
-          linha.toLowerCase().includes("enno")) {
-        totalIgnorados++;
-        continue;
-      }
-
-      // Separar por TAB (padrão AttendLog)
-      const campos = linha.split("\t").map(c => (c || "").trim());
-      
-      // Precisa ter pelo menos 11 campos (No até TR)
-      if (campos.length < 10) {
-        totalIgnorados++;
-        continue;
-      }
-
-      // Formato AttendLog: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
-      // Índices:              0    1      2      3      4      5      6        7          8         9          10
-      const enNo = String(campos[2] || "").trim();
-      const tmNo = String(campos[1] || "").trim();
-      const mode = String(campos[5] || "").trim();
-      const dateTimeRaw = String(campos[9] || "").trim();
-
-      if (!enNo || !dateTimeRaw) {
-        totalIgnorados++;
-        continue;
-      }
-
-      // Parse datetime: "2026-01-20 01:02:23" ou "2026-01-20	01:02:23"
-      let dataHora;
-      try {
-        // Separar data e hora (pode ter tab ou espaço)
-        const parts = dateTimeRaw.split(/[\s\t]+/);
-        if (parts.length >= 2) {
-          const datePart = parts[0].replace(/\//g, "-");
-          let timePart = parts[1];
-          if (/^\d{2}:\d{2}$/.test(timePart)) timePart = `${timePart}:00`;
-          dataHora = new Date(`${datePart}T${timePart}`);
-        } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateTimeRaw)) {
-          // Só tem data, sem hora
-          dataHora = new Date(`${dateTimeRaw}T00:00:00`);
-        }
-      } catch (e) {
-        totalIgnorados++;
-        continue;
-      }
-
-      if (!dataHora || isNaN(dataHora.getTime())) {
-        totalIgnorados++;
-        continue;
-      }
-
-      const data = dataHora.toISOString().split('T')[0];
-      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
-
-      if (!dataInicio || data < dataInicio) dataInicio = data;
-      if (!dataFim || data > dataFim) dataFim = data;
-
-      const funcionario = funcionarios.find(f => String(f.user_id_relogio).trim() === enNo);
-      const valido = !!funcionario;
-
-      registrosProcessados.push({
-        funcionario_id: funcionario?.id || null,
-        user_id_relogio: enNo,
-        data,
-        hora,
-        data_hora: dataHora.toISOString(),
-        origem: 'relogio',
-        metodo: mode,
-        dispositivo_id: tmNo,
-        raw_linha: linha.substring(0, 500),
-        valido,
-        motivo_invalido: valido ? null : 'Funcionário não vinculado ao ID do relógio'
-      });
-
-      if (valido) totalValidos++;
-      else totalInvalidos++;
-    }
-
-    return {
-      registros: registrosProcessados,
-      total_validos: totalValidos,
-      total_invalidos: totalInvalidos,
-      total_ignorados: totalIgnorados,
-      total_processados: registrosProcessados.length,
-      periodo_inicio: dataInicio,
-      periodo_fim: dataFim,
-      arquivo_nome: nomeArquivo
-    };
-  };
-
-  // Parser para Excel
-  const processarDadosExcel = async (rows, nomeArquivo) => {
-    const funcionarios = await base44.entities.Funcionario.list();
-    
-    let headerRow = -1;
-    for (let i = 0; i < Math.min(rows.length, 20); i++) {
-      const row = rows[i];
-      const rowStr = row.join('|').toLowerCase();
-      if (rowStr.includes('enno') || rowStr.includes('datetime') || rowStr.includes('name')) {
-        headerRow = i;
-        break;
-      }
-    }
-
-    const dataRows = rows.slice(headerRow + 1).filter(row => 
-      row && row.length > 0 && row.some(cell => cell !== null && cell !== '')
-    );
-
-    const registrosProcessados = [];
-    let totalValidos = 0;
-    let totalInvalidos = 0;
-    let dataInicio = null;
-    let dataFim = null;
-
-    for (const row of dataRows) {
-      if (row.length < 3) continue;
-
-      // Colunas: No | TMNo | EnNo | Name | GMNo | Mode | IN/OUT | Antipass | DaiGong | DateTime | TR
-      const enNo = String(row[2] || '').trim();
-      const dateTimeRaw = row[9] || '';
-      const mode = String(row[5] || '').trim();
-      const tmNo = String(row[1] || '').trim();
-
-      if (!enNo || !dateTimeRaw) continue;
-
-      // Parse datetime
-      let dataHora;
-      if (typeof dateTimeRaw === 'number') {
-        // Excel serial date
-        const excelEpoch = new Date(1900, 0, 1);
-        const days = Math.floor(dateTimeRaw);
-        const time = dateTimeRaw - days;
-        dataHora = new Date(excelEpoch.getTime() + (days - 2) * 86400000 + time * 86400000);
-      } else {
-        dataHora = new Date(dateTimeRaw);
-      }
-
-      if (isNaN(dataHora.getTime())) continue;
-
-      const data = dataHora.toISOString().split('T')[0];
-      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
-
-      if (!dataInicio || data < dataInicio) dataInicio = data;
-      if (!dataFim || data > dataFim) dataFim = data;
-
-      const funcionario = funcionarios.find(f => f.user_id_relogio === enNo);
-      const valido = !!funcionario;
-
-      registrosProcessados.push({
-        funcionario_id: funcionario?.id || null,
-        user_id_relogio: enNo,
-        data,
-        hora,
-        data_hora: dataHora.toISOString(),
-        origem: 'relogio',
-        metodo: mode,
-        dispositivo_id: tmNo,
-        valido,
-        motivo_invalido: valido ? null : 'Funcionário não vinculado ao ID do relógio'
-      });
-
-      if (valido) totalValidos++;
-      else totalInvalidos++;
-    }
-
-    return {
-      registros: registrosProcessados,
-      total_validos: totalValidos,
-      total_invalidos: totalInvalidos,
-      total_ignorados: 0,
-      total_processados: registrosProcessados.length,
-      periodo_inicio: dataInicio,
-      periodo_fim: dataFim,
-      arquivo_nome: nomeArquivo
-    };
-  };
-
-  const processarImportacao = async () => {
+  const gerarPreview = async () => {
     if (!arquivo && !conteudoColado) {
       toast({
         title: "Atenção",
@@ -267,94 +39,92 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       return;
     }
 
+    setGerandoPreview(true);
+    setPreview(null);
+
+    try {
+      let conteudo;
+      if (conteudoColado) {
+        conteudo = conteudoColado;
+      } else {
+        conteudo = await arquivo.text();
+      }
+
+      const { data } = await base44.functions.invoke('processarImportacaoPonto', {
+        conteudo,
+        nome_arquivo: arquivo?.name || 'Conteúdo Colado'
+      });
+
+      if (!data.success) {
+        toast({
+          title: "Erro no processamento",
+          description: data.error || "Formato não reconhecido",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setPreview(data);
+      setPreviewGerado(true);
+      
+      toast({
+        title: "Preview gerado",
+        description: `${data.total_lidos} registros processados. Formato: ${data.formato_detectado}`
+      });
+    } catch (error) {
+      console.error("Erro ao gerar preview:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Falha ao processar arquivo",
+        variant: "destructive"
+      });
+    } finally {
+      setGerandoPreview(false);
+    }
+  };
+
+  const confirmarImportacao = async () => {
+    if (!previewGerado || !preview) {
+      toast({
+        title: "Preview necessário",
+        description: "Clique em 'Gerar Preview' antes de confirmar",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setProcessando(true);
 
     try {
-      let resultado;
-      let conteudoHash;
-
-      if (conteudoColado) {
-        // Processar conteúdo colado (TXT)
-        resultado = await processarConteudoTXT(conteudoColado, "Conteúdo Colado");
-        conteudoHash = conteudoColado;
-      } else {
-        // Processar arquivo
-        const isTxt = arquivo.name.toLowerCase().endsWith('.txt');
-        
-        if (isTxt) {
-          const texto = await arquivo.text();
-          resultado = await processarConteudoTXT(texto, arquivo.name);
-          conteudoHash = texto;
-        } else {
-          const data = await readExcelFile(arquivo);
-          resultado = await processarDadosExcel(data, arquivo.name);
-          conteudoHash = JSON.stringify(data);
-        }
-      }
-
-      if (resultado.registros.length === 0) {
-        toast({
-          title: "Arquivo vazio",
-          description: "Nenhum registro válido encontrado.",
-          variant: "destructive"
-        });
-        setProcessando(false);
-        return;
-      }
-
-      // Gerar hash
-      const encoder = new TextEncoder();
-      const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(conteudoHash));
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-      // Verificar duplicidade
-      const importacoesExistentes = await base44.entities.ImportacaoPonto.filter({ arquivo_hash: hash });
-      if (importacoesExistentes && importacoesExistentes.length > 0) {
-        toast({
-          title: "Arquivo duplicado",
-          description: "Este arquivo já foi importado anteriormente.",
-          variant: "destructive"
-        });
-        setProcessando(false);
-        return;
-      }
-
-      // Criar registro de importação
-      const importacao = await base44.entities.ImportacaoPonto.create({
-        data_importacao: new Date().toISOString(),
-        arquivo_nome: resultado.arquivo_nome,
-        arquivo_hash: hash,
-        periodo_inicio: resultado.periodo_inicio,
-        periodo_fim: resultado.periodo_fim,
-        total_linhas: resultado.total_processados,
-        total_registros_validos: resultado.total_validos,
-        total_ignorados: resultado.total_invalidos + resultado.total_ignorados,
-        status: 'processando'
+      const { data } = await base44.functions.invoke('confirmarImportacaoPonto', {
+        registros_normalizados: preview.registros_completos,
+        arquivo_nome: preview.arquivo_nome,
+        metadados: preview.metadados,
+        log_erros: preview.log_erros,
+        total_validos: preview.total_validos,
+        total_invalidos: preview.total_invalidos,
+        periodo_inicio: preview.periodo_inicio,
+        periodo_fim: preview.periodo_fim
       });
 
-      // Criar registros em lote
-      const registrosComImportacao = resultado.registros.map(r => ({
-        ...r,
-        importacao_id: importacao.id
-      }));
-
-      const CHUNK_SIZE = 100;
-      for (let i = 0; i < registrosComImportacao.length; i += CHUNK_SIZE) {
-        const chunk = registrosComImportacao.slice(i, i + CHUNK_SIZE);
-        await Promise.all(chunk.map(reg => base44.entities.PontoRegistro.create(reg)));
+      if (!data.success) {
+        toast({
+          title: "Erro na importação",
+          description: data.error || data.mensagem || "Falha ao salvar registros",
+          variant: "destructive"
+        });
+        return;
       }
-
-      await base44.entities.ImportacaoPonto.update(importacao.id, { status: 'concluida' });
 
       toast({
         title: "Importação concluída",
-        description: `${resultado.total_validos} registros válidos importados. ${resultado.total_invalidos} inválidos.`
+        description: data.message
       });
 
       setArquivo(null);
       setConteudoColado("");
       setPreview(null);
+      setPreviewGerado(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
       
       if (onImportado) onImportado();
@@ -363,12 +133,24 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       console.error("Erro na importação:", error);
       toast({
         title: "Erro na importação",
-        description: error.message || "Falha ao processar o arquivo.",
+        description: error.message || "Falha ao processar",
         variant: "destructive"
       });
     } finally {
       setProcessando(false);
     }
+  };
+
+  const baixarLog = () => {
+    if (!preview?.log_erros) return;
+    
+    const blob = new Blob([preview.log_erros], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `log_erros_${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
