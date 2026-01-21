@@ -269,7 +269,7 @@ export default function PontoPage() {
                               {ponto?.faltas_dias || 0}d / {ponto?.faltas_horas || 0}h
                             </TableCell>
                             <TableCell className="text-xs md:text-sm text-center hidden lg:table-cell">
-                              {ponto?.horas_extras_semana || 0}h / {ponto?.horas_extras_fds || 0}h
+                              {ponto?.horas_extras_semana || 0}h Sem / {ponto?.horas_extras_fds || 0}h FDS
                             </TableCell>
                             <TableCell className="text-xs md:text-sm hidden xl:table-cell max-w-[200px] truncate">
                               {ponto?.observacoes || "-"}

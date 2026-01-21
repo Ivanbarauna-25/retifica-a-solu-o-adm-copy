@@ -84,15 +84,21 @@ export default function EspelhoPonto({ isOpen, funcionario, mesReferencia, onClo
       if (!data) continue;
 
       if (!map.has(data)) map.set(data, []);
-      if (hora) map.get(data).push(hora);
+      if (hora) {
+        map.get(data).push({
+          hora,
+          origem: r.origem || "relógio",
+          metodo: r.metodo || "-"
+        });
+      }
     }
 
     const dias = Array.from(map.keys()).sort((a, b) => a.localeCompare(b));
     return dias.map((data) => {
-      const horas = map.get(data).sort(sortByHora);
-      const entrada = horas[0] || "-";
-      const saida = horas.length > 1 ? horas[horas.length - 1] : "-";
-      return { data, horas, entrada, saida };
+      const registros = map.get(data).sort((a, b) => sortByHora(a.hora, b.hora));
+      const entrada = registros[0]?.hora || "-";
+      const saida = registros.length > 1 ? registros[registros.length - 1].hora : "-";
+      return { data, registros, entrada, saida };
     });
   }, [batidas]);
 
@@ -185,9 +191,14 @@ export default function EspelhoPonto({ isOpen, funcionario, mesReferencia, onClo
                             </TableCell>
                             <TableCell className="text-xs md:text-sm">
                               <div className="flex flex-wrap gap-1">
-                                {dia.horas.map((h, idx) => (
-                                  <Badge key={`${dia.data}-${idx}`} variant="secondary" className="font-mono text-[10px] md:text-xs">
-                                    {h}
+                                {dia.registros.map((r, idx) => (
+                                  <Badge 
+                                    key={`${dia.data}-${idx}`} 
+                                    variant="secondary" 
+                                    className="font-mono text-[10px] md:text-xs"
+                                    title={`Origem: ${r.origem} | Método: ${r.metodo}`}
+                                  >
+                                    {r.hora}
                                   </Badge>
                                 ))}
                               </div>
