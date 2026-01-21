@@ -1,25 +1,36 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Edit, Trash2, Eye, Upload, X, Loader2, BarChart3 } from "lucide-react";
+import { Upload, Eye, X, Loader2, BarChart3, FileText, Link as LinkIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import ControlePontoForm from "@/components/ControlePontoForm";
+import { Badge } from "@/components/ui/badge";
+import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
+import MapearFuncionariosModal from "@/components/ponto/MapearFuncionariosModal";
 import EspelhoPontoCompleto from "@/components/ponto/EspelhoPontoCompleto";
-import { createPageUrl } from "@/utils";
-import { Link } from "react-router-dom";
+
+function minToHHmm(min) {
+  if (!min || min === 0) return "00:00";
+  const h = Math.floor(Math.abs(min) / 60);
+  const m = Math.abs(min) % 60;
+  const sinal = min < 0 ? "-" : "";
+  return `${sinal}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
 
 export default function PontoPage() {
-  const [pontos, setPontos] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
+  const [apuracoes, setApuracoes] = useState([]);
+  const [registros, setRegistros] = useState([]);
+  const [bancoHoras, setBancoHoras] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  
+  const [isImportarOpen, setIsImportarOpen] = useState(false);
+  const [isMapearOpen, setIsMapearOpen] = useState(false);
   const [isEspelhoOpen, setIsEspelhoOpen] = useState(false);
-  const [selectedPonto, setSelectedPonto] = useState(null);
   const [funcionarioEspelho, setFuncionarioEspelho] = useState(null);
   const [mesEspelho, setMesEspelho] = useState("");
   const [apurando, setApurando] = useState(false);
@@ -32,19 +43,22 @@ export default function PontoPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [pontosData, funcionariosData] = await Promise.all([
-        base44.entities.ControlePonto.list("-created_date"),
-        base44.entities.Funcionario.list()
+      const [funcsData, apuracoesData, registrosData, bancoData] = await Promise.all([
+        base44.entities.Funcionario.list(),
+        base44.entities.ApuracaoDiariaPonto.list("-data", 1000),
+        base44.entities.PontoRegistro.list("-created_date", 500),
+        base44.entities.BancoHoras.list("-created_date", 500)
       ]);
-      setPontos((pontosData || []).filter(Boolean));
-      setFuncionarios((funcionariosData || []).filter(Boolean).sort((a, b) => 
-        (a?.nome || "").localeCompare(b?.nome || "")
-      ));
+
+      setFuncionarios((funcsData || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
+      setApuracoes(apuracoesData || []);
+      setRegistros(registrosData || []);
+      setBancoHoras(bancoData || []);
     } catch (err) {
       console.error("Erro ao carregar dados:", err);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar os dados do controle de ponto.",
+        description: "Não foi possível carregar os dados.",
         variant: "destructive"
       });
     } finally {
@@ -55,76 +69,6 @@ export default function PontoPage() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const handleSave = async (data) => {
-    try {
-      const payload = {
-        ...data,
-        dias_trabalhados: Number(data.dias_trabalhados) || 0,
-        faltas_dias: Number(data.faltas_dias) || 0,
-        faltas_horas: Number(data.faltas_horas) || 0,
-        horas_extras_semana: Number(data.horas_extras_semana) || 0,
-        horas_extras_fds: Number(data.horas_extras_fds) || 0
-      };
-
-      if (selectedPonto) {
-        await base44.entities.ControlePonto.update(selectedPonto.id, payload);
-        toast({
-          title: "✅ Atualizado",
-          description: "Registro atualizado com sucesso."
-        });
-      } else {
-        await base44.entities.ControlePonto.create(payload);
-        toast({
-          title: "✅ Criado",
-          description: "Registro criado com sucesso."
-        });
-      }
-      
-      setIsFormOpen(false);
-      setSelectedPonto(null);
-      await fetchData();
-    } catch (err) {
-      console.error("Erro ao salvar:", err);
-      toast({
-        title: "Erro",
-        description: "Não foi possível salvar o registro.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm("Tem certeza que deseja excluir este registro?")) return;
-
-    try {
-      await base44.entities.ControlePonto.delete(id);
-      toast({
-        title: "✅ Excluído",
-        description: "Registro excluído com sucesso."
-      });
-      await fetchData();
-    } catch (err) {
-      console.error("Erro ao excluir:", err);
-      toast({
-        title: "Erro",
-        description: "Não foi possível excluir o registro.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const openForm = (ponto = null) => {
-    setSelectedPonto(ponto);
-    setIsFormOpen(true);
-  };
-
-  const openEspelho = (ponto) => {
-    const func = getFuncionario(ponto?.funcionario_id);
-    setFuncionarioEspelho(func);
-    setMesEspelho(ponto?.mes_referencia || "");
-    setIsEspelhoOpen(true);
-  };
 
   const getFuncionario = (funcionarioId) => {
     return funcionarios.find((f) => f?.id === funcionarioId) || null;
@@ -137,15 +81,61 @@ export default function PontoPage() {
     return `${meses[parseInt(mes) - 1]}/${ano}`;
   };
 
-  const pontosFiltrados = useMemo(() => {
-    return pontos.filter((ponto) => {
-      if (!ponto) return false;
-      const passaFuncionario =
-        filtroFuncionario === "todos" || String(ponto.funcionario_id) === String(filtroFuncionario);
-      const passaMes = filtroMes === "" || ponto.mes_referencia === filtroMes;
-      return passaFuncionario && passaMes;
+  // Calcular resumo mensal por funcionário
+  const resumosMensais = useMemo(() => {
+    const map = new Map();
+
+    for (const apu of apuracoes) {
+      const funcId = apu.funcionario_id;
+      const data = apu.data || "";
+      const mesKey = data.slice(0, 7); // "YYYY-MM"
+
+      if (!funcId || !mesKey) continue;
+
+      const key = `${funcId}_${mesKey}`;
+      if (!map.has(key)) {
+        map.set(key, {
+          funcionario_id: funcId,
+          mes_referencia: mesKey,
+          dias_trabalhados: 0,
+          total_trabalhado_min: 0,
+          total_atraso_min: 0,
+          total_falta_min: 0,
+          total_hora_extra_min: 0
+        });
+      }
+
+      const resumo = map.get(key);
+      if (apu.status !== "falta") resumo.dias_trabalhados++;
+      resumo.total_trabalhado_min += apu.total_trabalhado_min || 0;
+      resumo.total_atraso_min += apu.atraso_min || 0;
+      resumo.total_falta_min += apu.falta_min || 0;
+      resumo.total_hora_extra_min += apu.hora_extra_min || 0;
+    }
+
+    // Adicionar saldo banco de horas
+    for (const [key, resumo] of map.entries()) {
+      const funcId = resumo.funcionario_id;
+      const mesKey = resumo.mes_referencia;
+      const lancamentos = bancoHoras.filter((b) => {
+        const dataLanc = b.data || "";
+        return b.funcionario_id === funcId && dataLanc.startsWith(mesKey);
+      });
+      resumo.saldo_banco_horas = lancamentos.reduce((acc, l) => {
+        return acc + (l.tipo === "credito" ? l.minutos : -l.minutos);
+      }, 0);
+    }
+
+    return Array.from(map.values());
+  }, [apuracoes, bancoHoras]);
+
+  const resumosFiltrados = useMemo(() => {
+    return resumosMensais.filter((resumo) => {
+      const passaFunc = filtroFuncionario === "todos" || resumo.funcionario_id === filtroFuncionario;
+      const passaMes = !filtroMes || resumo.mes_referencia === filtroMes;
+      return passaFunc && passaMes;
     });
-  }, [pontos, filtroFuncionario, filtroMes]);
+  }, [resumosMensais, filtroFuncionario, filtroMes]);
 
   const limparFiltros = () => {
     setFiltroFuncionario("todos");
@@ -194,24 +184,54 @@ export default function PontoPage() {
     }
   };
 
+  const openEspelho = (resumo) => {
+    const func = getFuncionario(resumo.funcionario_id);
+    setFuncionarioEspelho(func);
+    setMesEspelho(resumo.mes_referencia);
+    setIsEspelhoOpen(true);
+  };
+
+  // Contar IDs não vinculados
+  const idsNaoVinculados = useMemo(() => {
+    const set = new Set();
+    for (const r of registros) {
+      if (!r.funcionario_id && r.user_id_relogio) {
+        set.add(r.user_id_relogio);
+      }
+    }
+    return set.size;
+  }, [registros]);
+
   return (
     <>
       <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
         {/* Header */}
         <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
                 <h1 className="text-sm md:text-xl font-bold">Controle de Ponto</h1>
-                <p className="text-slate-400 text-[9px] md:text-xs">Gestão de registros mensais de ponto</p>
+                <p className="text-slate-400 text-[9px] md:text-xs">Gestão mensal de jornada e banco de horas</p>
               </div>
-              <div className="flex gap-2">
-                <Link to={createPageUrl("ImportarPonto")}>
-                  <Button variant="outline" className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10">
-                    <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    Importar Batidas
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsImportarOpen(true)}
+                  className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
+                >
+                  <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  Importar Batidas
+                </Button>
+                {idsNaoVinculados > 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsMapearOpen(true)}
+                    className="gap-2 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300 text-xs md:text-sm h-8 md:h-10"
+                  >
+                    <LinkIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    Mapear IDs ({idsNaoVinculados})
                   </Button>
-                </Link>
+                )}
                 <Button
                   onClick={handleApurarMes}
                   disabled={apurando || !filtroFuncionario || filtroFuncionario === "todos" || !filtroMes}
@@ -228,10 +248,6 @@ export default function PontoPage() {
                       Apurar Mês
                     </>
                   )}
-                </Button>
-                <Button onClick={() => openForm()} className="gap-2 bg-slate-700 hover:bg-slate-600 text-xs md:text-sm h-8 md:h-10">
-                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Novo
                 </Button>
               </div>
             </div>
@@ -287,81 +303,82 @@ export default function PontoPage() {
               {/* Tabela */}
               <div className="rounded-md border overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-slate-700">
+                  <TableHeader className="bg-slate-800">
                     <TableRow>
                       <TableHead className="text-white font-semibold text-xs md:text-sm">Funcionário</TableHead>
                       <TableHead className="text-white font-semibold text-xs md:text-sm">Mês</TableHead>
-                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden sm:table-cell">Dias Trab.</TableHead>
-                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden md:table-cell">Faltas</TableHead>
-                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden lg:table-cell">H. Extras</TableHead>
-                      <TableHead className="text-white font-semibold text-xs md:text-sm hidden xl:table-cell">Observações</TableHead>
-                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center w-[100px] md:w-[140px]">Ações</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Dias Trab.</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden md:table-cell">Total Trab.</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden lg:table-cell">Atrasos</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden lg:table-cell">Faltas</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center">H. Extras</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center hidden xl:table-cell">Banco Horas</TableHead>
+                      <TableHead className="text-white font-semibold text-xs md:text-sm text-center">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8">
+                        <TableCell colSpan={9} className="text-center py-8">
                           <Loader2 className="w-6 h-6 animate-spin text-slate-600 mx-auto" />
                         </TableCell>
                       </TableRow>
-                    ) : pontosFiltrados.length === 0 ? (
+                    ) : resumosFiltrados.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-slate-500 text-xs md:text-sm">
-                          Nenhum registro encontrado.
+                        <TableCell colSpan={9} className="text-center py-8">
+                          <div className="flex flex-col items-center gap-2">
+                            <FileText className="w-12 h-12 text-slate-300" />
+                            <p className="text-slate-500 text-xs md:text-sm">
+                              Nenhum registro encontrado.
+                            </p>
+                            <p className="text-slate-400 text-[10px] md:text-xs">
+                              Importe batidas e execute a apuração para visualizar os dados.
+                            </p>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      pontosFiltrados.map((ponto) => {
-                        const funcionario = getFuncionario(ponto?.funcionario_id);
+                      resumosFiltrados.map((resumo, idx) => {
+                        const funcionario = getFuncionario(resumo.funcionario_id);
+                        const saldoBanco = resumo.saldo_banco_horas || 0;
                         return (
-                          <TableRow key={ponto?.id} className="hover:bg-slate-50">
+                          <TableRow key={`${resumo.funcionario_id}_${resumo.mes_referencia}_${idx}`} className="hover:bg-slate-50">
                             <TableCell className="font-medium text-xs md:text-sm">
                               {funcionario?.nome || "N/A"}
                             </TableCell>
                             <TableCell className="text-xs md:text-sm">
-                              {formatMes(ponto?.mes_referencia)}
+                              {formatMes(resumo.mes_referencia)}
                             </TableCell>
-                            <TableCell className="text-xs md:text-sm text-center hidden sm:table-cell">
-                              {ponto?.dias_trabalhados || 0}
+                            <TableCell className="text-xs md:text-sm text-center font-semibold">
+                              {resumo.dias_trabalhados}
                             </TableCell>
                             <TableCell className="text-xs md:text-sm text-center hidden md:table-cell">
-                              {ponto?.faltas_dias || 0}d / {ponto?.faltas_horas || 0}h
+                              {minToHHmm(resumo.total_trabalhado_min)}
                             </TableCell>
-                            <TableCell className="text-xs md:text-sm text-center hidden lg:table-cell">
-                              {ponto?.horas_extras_semana || 0}h Sem / {ponto?.horas_extras_fds || 0}h FDS
+                            <TableCell className="text-xs md:text-sm text-center text-red-600 hidden lg:table-cell">
+                              {minToHHmm(resumo.total_atraso_min)}
                             </TableCell>
-                            <TableCell className="text-xs md:text-sm hidden xl:table-cell max-w-[200px] truncate">
-                              {ponto?.observacoes || "-"}
+                            <TableCell className="text-xs md:text-sm text-center text-red-600 hidden lg:table-cell">
+                              {minToHHmm(resumo.total_falta_min)}
+                            </TableCell>
+                            <TableCell className="text-xs md:text-sm text-center text-green-600">
+                              {minToHHmm(resumo.total_hora_extra_min)}
+                            </TableCell>
+                            <TableCell className="text-xs md:text-sm text-center hidden xl:table-cell">
+                              <Badge className={saldoBanco >= 0 ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}>
+                                {minToHHmm(saldoBanco)}
+                              </Badge>
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-1 justify-center">
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => openEspelho(ponto)}
+                                  onClick={() => openEspelho(resumo)}
                                   title="Ver Espelho de Ponto"
                                   className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-blue-100 hover:text-blue-600"
                                 >
                                   <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => openForm(ponto)}
-                                  title="Editar"
-                                  className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-slate-100"
-                                >
-                                  <Edit className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDelete(ponto?.id)}
-                                  title="Excluir"
-                                  className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:bg-red-50"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
                                 </Button>
                               </div>
                             </TableCell>
@@ -374,26 +391,28 @@ export default function PontoPage() {
               </div>
 
               <div className="mt-3 text-xs text-slate-500">
-                <strong>{pontosFiltrados.length}</strong> registro(s) encontrado(s)
+                <strong>{resumosFiltrados.length}</strong> registro(s) mensal(is)
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Modal: Formulário */}
-      <ControlePontoForm
-        isOpen={isFormOpen}
-        ponto={selectedPonto}
-        funcionarios={funcionarios}
-        onSave={handleSave}
-        onClose={() => {
-          setIsFormOpen(false);
-          setSelectedPonto(null);
-        }}
+      {/* Modal: Importar Ponto */}
+      <ImportarPontoModal
+        isOpen={isImportarOpen}
+        onClose={() => setIsImportarOpen(false)}
+        onImportado={fetchData}
       />
 
-      {/* Modal: Espelho de Ponto Completo */}
+      {/* Modal: Mapear Funcionários */}
+      <MapearFuncionariosModal
+        isOpen={isMapearOpen}
+        onClose={() => setIsMapearOpen(false)}
+        onMapeamentoFeito={fetchData}
+      />
+
+      {/* Modal: Espelho de Ponto */}
       <EspelhoPontoCompleto
         isOpen={isEspelhoOpen}
         funcionario={funcionarioEspelho}
