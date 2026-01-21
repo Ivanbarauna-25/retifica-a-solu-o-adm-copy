@@ -49,18 +49,22 @@ export default function MapearFuncionariosModal({ isOpen, onClose, onMapeamentoF
     return () => { mounted = false; };
   }, [isOpen]);
 
-  // Agrupar registros por user_id_relogio
+  // Agrupar registros por user_id_relogio (apenas IDs numéricos)
   const idsPendentes = useMemo(() => {
     const map = new Map();
     for (const r of registros) {
-      const id = r.user_id_relogio;
+      const id = String(r.user_id_relogio || '').trim();
+      
+      // Filtrar apenas IDs numéricos
+      if (!id || !/^\d+$/.test(id)) continue;
+      
       if (!map.has(id)) {
         map.set(id, { user_id_relogio: id, count: 0, registros: [] });
       }
       map.get(id).count++;
       map.get(id).registros.push(r);
     }
-    return Array.from(map.values()).sort((a, b) => b.count - a.count);
+    return Array.from(map.values()).sort((a, b) => parseInt(a.user_id_relogio) - parseInt(b.user_id_relogio));
   }, [registros]);
 
   const handleVincular = (userIdRelogio, funcionarioId) => {
