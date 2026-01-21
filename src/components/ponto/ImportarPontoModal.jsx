@@ -15,12 +15,48 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const fileInputRef = useRef(null);
   const { toast } = useToast();
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
-      setArquivo(file);
-      setConteudoColado("");
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setArquivos(files);
+    setPreview(null);
+
+    // Gerar preview automático
+    try {
+      const principalFile = files.find(f => 
+        f.name.toLowerCase().includes('registropresença') || 
+        f.name.toLowerCase().includes('registropresenca') ||
+        f.name.toLowerCase().includes('attendlog')
+      ) || files[0];
+
+      const data = await readExcelFile(principalFile);
+      if (data && data.length > 0) {
+        const resultado = await processarDadosExcel(data, files[0].name);
+        setPreview(resultado);
+      }
+    } catch (error) {
+      console.error("Erro ao gerar preview:", error);
     }
+  };
+
+  const readExcelFile = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' });
+          resolve(jsonData);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
   };
 
   const sha256Hex = async (text) => {
@@ -172,7 +208,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   Formato esperado
                 </p>
                 <p className="text-[10px] sm:text-xs text-blue-800">
-                  Arquivo TXT do relógio de ponto (AttendLog). Cada linha representa uma batida com campos separados por TAB.
+                  Arquivo Excel (.xls) exportado do relógio de ponto. Arquivos suportados: RegistroPresença.xls, AttendLog.xls ou similar.
                 </p>
               </div>
             </div>
@@ -181,61 +217,71 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           {/* Upload de arquivo */}
           <div className="space-y-2">
             <Label className="text-xs sm:text-sm font-semibold text-slate-700">
-              Upload de Arquivo TXT
+              Selecione Arquivo(s) Excel
             </Label>
             <div className="border-2 border-dashed border-slate-300 rounded-lg p-4 hover:border-slate-400 transition-colors bg-slate-50">
               <Input
                 ref={fileInputRef}
                 type="file"
-                accept=".txt"
+                accept=".xls,.xlsx"
+                multiple
                 onChange={handleFileChange}
                 className="text-xs sm:text-sm cursor-pointer file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700"
               />
-              {arquivo && (
-                <div className="mt-3 flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md">
-                  <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-                  <p className="text-xs sm:text-sm text-green-700 font-medium truncate">
-                    {arquivo.name}
-                  </p>
+              {arquivos.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {arquivos.map((file, idx) => (
+                    <div key={idx} className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                      <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <p className="text-xs sm:text-sm text-green-700 font-medium truncate">
+                        {file.name}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Divisor */}
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t-2 border-slate-200" />
+          {/* Preview dos dados */}
+          {preview && (
+            <div className="space-y-2">
+              <Label className="text-xs sm:text-sm font-semibold text-slate-700">
+                Preview da Importação
+              </Label>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 sm:p-4 space-y-2">
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="bg-white p-2 rounded border">
+                    <div className="text-slate-500 text-[10px] mb-1">Total Processados</div>
+                    <div className="text-lg font-bold text-slate-900">{preview.total_processados}</div>
+                  </div>
+                  <div className="bg-white p-2 rounded border">
+                    <div className="text-slate-500 text-[10px] mb-1">Válidos</div>
+                    <div className="text-lg font-bold text-green-600">{preview.total_validos}</div>
+                  </div>
+                  <div className="bg-white p-2 rounded border">
+                    <div className="text-slate-500 text-[10px] mb-1">Inválidos</div>
+                    <div className="text-lg font-bold text-red-600">{preview.total_invalidos}</div>
+                  </div>
+                  <div className="bg-white p-2 rounded border">
+                    <div className="text-slate-500 text-[10px] mb-1">Período</div>
+                    <div className="text-xs font-semibold text-slate-900">
+                      {preview.periodo_inicio} a {preview.periodo_fim}
+                    </div>
+                  </div>
+                </div>
+                
+                {preview.total_invalidos > 0 && (
+                  <div className="flex items-start gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                    <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-[10px] sm:text-xs text-yellow-800">
+                      {preview.total_invalidos} registros sem funcionário vinculado. Use "Mapear IDs" após importar.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="relative flex justify-center">
-              <span className="bg-white px-3 text-xs sm:text-sm font-medium text-slate-500 uppercase tracking-wide">
-                Ou
-              </span>
-            </div>
-          </div>
-
-          {/* Cole o conteúdo */}
-          <div className="space-y-2">
-            <Label className="text-xs sm:text-sm font-semibold text-slate-700">
-              Cole o Conteúdo do TXT
-            </Label>
-            <div className="border-2 border-slate-200 rounded-lg overflow-hidden focus-within:border-slate-400 transition-colors bg-white">
-              <Textarea
-                placeholder="Cole aqui o conteúdo do arquivo de ponto..."
-                value={conteudoColado}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setConteudoColado(v);
-                  if (v && v.trim()) setArquivo(null);
-                }}
-                rows={5}
-                className="text-xs sm:text-sm font-mono border-0 focus-visible:ring-0 resize-none"
-              />
-            </div>
-            <p className="text-[10px] sm:text-xs text-slate-500">
-              Dica: cole o conteúdo diretamente do arquivo TXT exportado pelo relógio
-            </p>
-          </div>
+          )}
         </div>
 
         {/* Footer fixo com botões */}
@@ -251,7 +297,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
             </Button>
             <Button
               onClick={processarImportacao}
-              disabled={processando || (!arquivo && !conteudoColado)}
+              disabled={processando || arquivos.length === 0}
               className="w-full sm:w-auto gap-2 bg-slate-800 hover:bg-slate-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
             >
               {processando ? (
@@ -262,7 +308,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               ) : (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  Processar Importação
+                  Confirmar Importação
                 </>
               )}
             </Button>

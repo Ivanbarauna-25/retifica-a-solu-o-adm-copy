@@ -29,7 +29,6 @@ import GerenciarErros from './pages/GerenciarErros';
 import GestaoRH from './pages/GestaoRH';
 import GestaoUsuarios from './pages/GestaoUsuarios';
 import Home from './pages/Home';
-import ImportarPonto from './pages/ImportarPonto';
 import ImprimirOS from './pages/ImprimirOS';
 import MatrizPermissoes from './pages/MatrizPermissoes';
 import MeuPerfil from './pages/MeuPerfil';
@@ -96,7 +95,6 @@ export const PAGES = {
     "GestaoRH": GestaoRH,
     "GestaoUsuarios": GestaoUsuarios,
     "Home": Home,
-    "ImportarPonto": ImportarPonto,
     "ImprimirOS": ImprimirOS,
     "MatrizPermissoes": MatrizPermissoes,
     "MeuPerfil": MeuPerfil,
