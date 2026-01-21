@@ -195,6 +195,9 @@ async function processarDia(base44, apuId, funcionario_id, data, batidasDia, bat
     total_trabalhado_min = calcularDiferencaMin(entrada_1, saida_1);
   }
 
+  // Calcular saldo banco de horas
+  const banco_horas_min = hora_extra_min - falta_min - atraso_min;
+
   const payload = {
     funcionario_id,
     data,
@@ -208,16 +211,38 @@ async function processarDia(base44, apuId, funcionario_id, data, batidasDia, bat
     atraso_min,
     falta_min,
     hora_extra_min,
-    banco_horas_min: 0, // Será implementado em fase 2
+    banco_horas_min,
     status,
     observacoes: null,
     gerado_em: new Date().toISOString()
   };
 
+  let apuracaoId = apuId;
   if (isUpdate) {
     await base44.entities.ApuracaoDiariaPonto.update(apuId, payload);
   } else {
-    await base44.entities.ApuracaoDiariaPonto.create(payload);
+    const criada = await base44.entities.ApuracaoDiariaPonto.create(payload);
+    apuracaoId = criada.id;
+  }
+
+  // GERAR LANÇAMENTO NO BANCO DE HORAS (evitar duplicatas)
+  if (banco_horas_min !== 0) {
+    const existentes = await base44.entities.BancoHoras.filter({
+      referencia_id: apuracaoId,
+      origem: 'apuracao'
+    });
+
+    if (!existentes || existentes.length === 0) {
+      await base44.entities.BancoHoras.create({
+        funcionario_id,
+        data,
+        tipo: banco_horas_min > 0 ? 'credito' : 'debito',
+        origem: 'apuracao',
+        minutos: Math.abs(banco_horas_min),
+        observacao: `Apuração automática - ${data}`,
+        referencia_id: apuracaoId
+      });
+    }
   }
 }
 
