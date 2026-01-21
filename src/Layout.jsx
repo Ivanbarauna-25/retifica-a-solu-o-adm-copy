@@ -139,6 +139,8 @@ const navigationGroups = [
   { title: "Equipe", url: "Funcionarios", icon: UserIcon, module: "funcionarios" },
   { title: "Gestão de RH", url: "GestaoRH", icon: UserCog, module: "rh" },
   { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
+  { title: "Escalas de Trabalho", url: "EscalasTrabalho", icon: Timer, module: "ponto" },
+  { title: "Banco de Horas", url: "BancoHoras", icon: Wallet, module: "ponto" },
   { title: "Folha de Pagamento", url: "FolhaPagamento", icon: Wallet, module: "folha" },
   { title: "13º Salário", url: "Folha13", icon: Wallet, module: "folha" },
   { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" }]

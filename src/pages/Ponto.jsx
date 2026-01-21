@@ -3,7 +3,9 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Upload, Eye, X, Loader2, BarChart3, FileText, Link as LinkIcon } from "lucide-react";
+import { Upload, Eye, X, Loader2, BarChart3, FileText, Link as LinkIcon, Clock, Wallet, AlertCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -39,6 +41,7 @@ export default function PontoPage() {
   const [filtroMes, setFiltroMes] = useState("");
 
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -220,7 +223,23 @@ export default function PontoPage() {
                   className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
                 >
                   <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Importar Batidas
+                  Importar
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(createPageUrl("EscalasTrabalho"))}
+                  className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
+                >
+                  <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  Escalas
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(createPageUrl("BancoHoras"))}
+                  className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
+                >
+                  <Wallet className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  Banco Horas
                 </Button>
                 {idsNaoVinculados > 0 && (
                   <Button
@@ -229,7 +248,7 @@ export default function PontoPage() {
                     className="gap-2 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300 text-xs md:text-sm h-8 md:h-10"
                   >
                     <LinkIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    Mapear IDs ({idsNaoVinculados})
+                    Mapear ({idsNaoVinculados})
                   </Button>
                 )}
                 <Button
@@ -245,7 +264,7 @@ export default function PontoPage() {
                   ) : (
                     <>
                       <BarChart3 className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                      Apurar Mês
+                      Apurar
                     </>
                   )}
                 </Button>
@@ -365,7 +384,11 @@ export default function PontoPage() {
                               {minToHHmm(resumo.total_hora_extra_min)}
                             </TableCell>
                             <TableCell className="text-xs md:text-sm text-center hidden xl:table-cell">
-                              <Badge className={saldoBanco >= 0 ? "bg-blue-100 text-blue-800" : "bg-red-100 text-red-800"}>
+                              <Badge 
+                                className={`cursor-pointer ${saldoBanco >= 0 ? "bg-blue-100 text-blue-800 hover:bg-blue-200" : "bg-red-100 text-red-800 hover:bg-red-200"}`}
+                                onClick={() => navigate(createPageUrl("BancoHoras"))}
+                                title="Ver Banco de Horas"
+                              >
                                 {minToHHmm(saldoBanco)}
                               </Badge>
                             </TableCell>
