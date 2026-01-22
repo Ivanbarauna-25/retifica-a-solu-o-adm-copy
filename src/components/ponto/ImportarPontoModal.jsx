@@ -113,10 +113,12 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
 
     } catch (error) {
       console.error("❌ Erro ao processar:", error);
+      console.error("❌ Detalhes:", error.response?.data);
       toast({
         title: "Erro",
-        description: error?.message || "Falha ao processar",
-        variant: "destructive"
+        description: error?.response?.data?.error || error?.message || "Falha ao processar",
+        variant: "destructive",
+        duration: 8000
       });
       setProcessando(false);
     } finally {
