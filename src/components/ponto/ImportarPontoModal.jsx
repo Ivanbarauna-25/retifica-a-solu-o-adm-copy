@@ -345,11 +345,11 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
             </TabsContent>
           </Tabs>
 
-          {preview && (
+          {previewGerado && preview && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-xs sm:text-sm font-semibold text-slate-700">
-                  Preview da Importação ({formatoDetectado})
+                <Label className="text-xs sm:text-sm font-semibold text-green-700">
+                  ✅ Importação Concluída ({formatoDetectado})
                 </Label>
                 {(preview?.log_erros || preview?.log) && (
                   <Button
