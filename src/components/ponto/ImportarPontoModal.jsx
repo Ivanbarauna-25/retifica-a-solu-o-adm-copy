@@ -4,60 +4,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Upload,
-  FileText,
-  CheckCircle2,
-  X,
-  Loader2,
-  AlertCircle,
-  Download,
-  Eye
-} from "lucide-react";
+import { Upload, FileText, CheckCircle2, X, Loader2, AlertCircle, Download, Eye } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const [arquivo, setArquivo] = useState(null);
   const [conteudoColado, setConteudoColado] = useState("");
   const [processando, setProcessando] = useState(false);
-  const [preview, setPreview] = useState(null);
-  const [previewGerado, setPreviewGerado] = useState(false);
-
+  const [resultado, setResultado] = useState(null);
+  
   const { toast } = useToast();
   const fileInputRef = useRef(null);
 
   const resetTudo = () => {
     setArquivo(null);
     setConteudoColado("");
-    setPreview(null);
-    setPreviewGerado(false);
+    setResultado(null);
     setProcessando(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-
-  const isTextLikeFile = (file) => {
-    const name = (file?.name || "").toLowerCase();
-    return name.endsWith(".txt") || name.endsWith(".xml");
-  };
-
-  const readFileAsBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = String(reader.result || "");
-        const base64 = result.includes(",") ? result.split(",")[1] : result;
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -65,15 +32,12 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
 
     setArquivo(file);
     setConteudoColado("");
-    setPreview(null);
-    setPreviewGerado(false);
+    setResultado(null);
   };
 
   const temEntrada = useMemo(() => {
     return Boolean((conteudoColado || "").trim() || arquivo);
   }, [conteudoColado, arquivo]);
-
-  // REMOVIDO - Não há mais payload de preview
 
   const importarDireto = async () => {
     if (!temEntrada) {
@@ -86,7 +50,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     }
 
     setProcessando(true);
-    setPreview(null);
+    setResultado(null);
 
     try {
       const formData = new FormData();
@@ -119,8 +83,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       }
 
       // Mostrar resumo
-      setPreview(data);
-      setPreviewGerado(true);
+      setResultado(data);
 
       toast({
         title: "Importação concluída",
@@ -146,67 +109,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     }
   };
 
-  const confirmarImportacao = async () => {
-    if (!previewGerado || !preview) {
-      toast({
-        title: "Preview necessário",
-        description: "Clique em “Gerar Preview” antes de confirmar.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Recomendado: confirmar via importacao_temp_id
-    // Caso seu backend ainda retorne apenas registros_normalizados, adapte no backend para gerar temp_id.
-    const importacaoTempId = preview?.importacao_temp_id || preview?.temp_id || null;
-
-    if (!importacaoTempId) {
-      toast({
-        title: "Backend incompleto",
-        description:
-          "O preview não retornou importacao_temp_id. Ajuste o backend para retornar um ID temporário de preview e confirmar por ele.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setProcessando(true);
-    try {
-      const { data } = await base44.functions.invoke("confirmarImportacaoPonto", {
-        importacao_temp_id: importacaoTempId
-      });
-
-      if (!data?.success) {
-        toast({
-          title: "Erro na importação",
-          description: data?.error || data?.mensagem || "Falha ao salvar registros",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      toast({
-        title: "Importação concluída",
-        description: data?.message || "Registros importados com sucesso."
-      });
-
-      resetTudo();
-      if (onImportado) onImportado();
-      onClose();
-    } catch (error) {
-      console.error("Erro na importação:", error);
-      toast({
-        title: "Erro na importação",
-        description: error?.message || "Falha ao confirmar importação",
-        variant: "destructive"
-      });
-    } finally {
-      setProcessando(false);
-    }
-  };
-
   const baixarLog = () => {
-    const log = preview?.log_erros || preview?.log || "";
+    const log = resultado?.log_erros || resultado?.stats?.log_erros || "";
     if (!log) {
       toast({
         title: "Sem log",
@@ -225,15 +129,15 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     URL.revokeObjectURL(url);
   };
 
-  const stats = preview?.stats || {};
-  const totalLidos = stats.total_lidos ?? preview?.total_lidos ?? 0;
-  const totalValidos = stats.total_validos ?? preview?.total_validos ?? 0;
-  const totalInvalidos = stats.total_invalidos ?? preview?.total_invalidos ?? 0;
-  const periodoInicio = stats.periodo_inicio ?? preview?.periodo_inicio ?? "N/A";
-  const periodoFim = stats.periodo_fim ?? preview?.periodo_fim ?? "N/A";
-  const formatoDetectado = preview?.formato_detectado ?? preview?.detected_format ?? "N/A";
-  const idsSemMapeamento = preview?.ids_sem_mapeamento || stats?.ids_sem_mapeamento || [];
-  const previewRows = preview?.preview || preview?.preview_rows || [];
+  const stats = resultado?.stats || {};
+  const totalLidos = stats.total_lidos ?? 0;
+  const totalSalvos = stats.total_salvos ?? 0;
+  const totalValidos = stats.total_validos ?? 0;
+  const totalInvalidos = stats.total_invalidos ?? 0;
+  const periodoInicio = stats.periodo_inicio ?? "N/A";
+  const periodoFim = stats.periodo_fim ?? "N/A";
+  const formatoDetectado = stats.formato_detectado || resultado?.formato_detectado || "N/A";
+  const idsSemMapeamento = resultado?.ids_sem_mapeamento || [];
 
   return (
     <Dialog
@@ -279,9 +183,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   Formatos suportados
                 </p>
                 <p className="text-[10px] sm:text-xs text-blue-800">
-                  <strong>TXT:</strong> AttendLog (ACL.001.TXT) com colunas TAB (EnNo, Name, DateTime...)<br />
-                  <strong>XML:</strong> export do relógio (caso exista) <br />
-                  <strong>Excel:</strong> RegistroPresença.xls / Relatórios do relógio
+                  <strong>TXT:</strong> AttendLog (ACL.001.TXT) - vínculo por EnNo<br />
+                  <strong>Excel:</strong> RegistroPresença.xls/xlsx - vínculo por EnNo
                 </p>
               </div>
             </div>
@@ -331,8 +234,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   onChange={(e) => {
                     setConteudoColado(e.target.value);
                     setArquivo(null);
-                    setPreview(null);
-                    setPreviewGerado(false);
+                    setResultado(null);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
                   rows={10}
@@ -340,18 +242,19 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 />
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500">
-                Cole o conteúdo completo. O sistema irá detectar formato e mapear EnNo → user_id_relogio.
+                Cole o conteúdo completo. O sistema detecta formato e vincula EnNo → user_id_relogio.
               </p>
             </TabsContent>
           </Tabs>
 
-          {previewGerado && preview && (
+          {/* Resumo da Importação */}
+          {resultado && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-xs sm:text-sm font-semibold text-green-700">
                   ✅ Importação Concluída ({formatoDetectado})
                 </Label>
-                {(preview?.log_erros || preview?.log) && (
+                {(resultado?.log_erros || stats.log_erros) && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -372,20 +275,25 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   </div>
 
                   <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-2.5 sm:p-3 rounded-lg border-2 border-green-300 shadow-sm">
-                    <div className="text-green-700 text-[10px] sm:text-xs font-medium mb-1">Válidos</div>
-                    <div className="text-xl sm:text-2xl font-bold text-green-700">{totalValidos}</div>
+                    <div className="text-green-700 text-[10px] sm:text-xs font-medium mb-1">✓ Salvos</div>
+                    <div className="text-xl sm:text-2xl font-bold text-green-700">{totalSalvos}</div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-emerald-50 to-green-50 p-2.5 sm:p-3 rounded-lg border-2 border-emerald-300 shadow-sm">
+                    <div className="text-emerald-700 text-[10px] sm:text-xs font-medium mb-1">✓ Válidos</div>
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-700">{totalValidos}</div>
                   </div>
 
                   <div className="bg-gradient-to-br from-red-50 to-rose-50 p-2.5 sm:p-3 rounded-lg border-2 border-red-300 shadow-sm">
-                    <div className="text-red-700 text-[10px] sm:text-xs font-medium mb-1">Inválidos</div>
+                    <div className="text-red-700 text-[10px] sm:text-xs font-medium mb-1">⚠ Inválidos</div>
                     <div className="text-xl sm:text-2xl font-bold text-red-700">{totalInvalidos}</div>
                   </div>
+                </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-2.5 sm:p-3 rounded-lg border-2 border-blue-300 shadow-sm">
-                    <div className="text-blue-700 text-[10px] sm:text-xs font-medium mb-1">Período</div>
-                    <div className="text-xs sm:text-sm font-bold text-blue-900 break-words">
-                      {periodoInicio}<br />a {periodoFim}
-                    </div>
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-2.5 sm:p-3 rounded-lg border-2 border-blue-300 shadow-sm">
+                  <div className="text-blue-700 text-[10px] sm:text-xs font-medium mb-1">📅 Período</div>
+                  <div className="text-xs sm:text-sm font-bold text-blue-900">
+                    {periodoInicio} até {periodoFim}
                   </div>
                 </div>
 
@@ -394,10 +302,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                     <AlertCircle className="w-5 h-5 text-yellow-700 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <p className="text-xs sm:text-sm font-semibold text-yellow-900 mb-1">
-                        IDs sem mapeamento ({idsSemMapeamento.length})
+                        ⚠️ IDs sem mapeamento ({idsSemMapeamento.length})
                       </p>
                       <p className="text-[10px] sm:text-xs text-yellow-800 mb-2">
-                        Após importar, use <strong>“Mapear IDs”</strong> para vincular.
+                        Estes EnNos não têm funcionário vinculado. Use <strong>"Mapear IDs"</strong> na página de Ponto.
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {idsSemMapeamento.slice(0, 12).map((id) => (
@@ -405,11 +313,11 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                             key={String(id)}
                             className="inline-block px-2 py-0.5 bg-yellow-200 text-yellow-900 text-[10px] font-mono rounded"
                           >
-                            ID {String(id)}
+                            EnNo {String(id)}
                           </span>
                         ))}
                         {idsSemMapeamento.length > 12 && (
-                          <span className="text-[10px] text-yellow-700">
+                          <span className="text-[10px] text-yellow-700 font-semibold">
                             +{idsSemMapeamento.length - 12} mais
                           </span>
                         )}
@@ -422,61 +330,11 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   <div className="flex items-start gap-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-lg shadow-sm">
                     <CheckCircle2 className="w-5 h-5 text-green-700 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs sm:text-sm font-semibold text-green-900">Pronto para importar</p>
+                      <p className="text-xs sm:text-sm font-semibold text-green-900">✅ Importação bem-sucedida</p>
                       <p className="text-[10px] sm:text-xs text-green-800">
-                        {totalValidos} registros serão importados.
+                        {totalValidos} registros vinculados corretamente.
                       </p>
                     </div>
-                  </div>
-                )}
-
-                {Array.isArray(previewRows) && previewRows.length > 0 && (
-                  <div className="mt-3">
-                    <details className="group">
-                      <summary className="cursor-pointer flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-slate-900">
-                        <Eye className="w-4 h-4" />
-                        Ver amostra ({previewRows.length})
-                      </summary>
-
-                      <div className="mt-2 overflow-x-auto">
-                        <table className="w-full text-[10px] border-collapse">
-                          <thead>
-                            <tr className="bg-slate-700 text-white">
-                              <th className="p-1 border">EnNo</th>
-                              <th className="p-1 border">Nome</th>
-                              <th className="p-1 border">Data/Hora</th>
-                              <th className="p-1 border">Status</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {previewRows.map((r, i) => {
-                              const ok = Boolean(r?.valido);
-                              const enno = r?.user_id_relogio ?? r?.EnNo ?? r?.enno ?? "-";
-                              const nome = r?.nome_detectado ?? r?.Name ?? r?.nome ?? "-";
-                              const dh = r?.data_hora || `${r?.data || ""} ${r?.hora || ""}`.trim() || "-";
-                              const motivo = r?.motivo_invalido || r?.erro || "";
-
-                              return (
-                                <tr key={i} className={ok ? "bg-green-50" : "bg-red-50"}>
-                                  <td className="p-1 border font-mono">{String(enno)}</td>
-                                  <td className="p-1 border">{String(nome)}</td>
-                                  <td className="p-1 border font-mono">{String(dh)}</td>
-                                  <td className="p-1 border text-[9px]">
-                                    {ok ? (
-                                      <span className="text-green-700">OK</span>
-                                    ) : (
-                                      <span className="text-red-700" title={motivo}>
-                                        ERRO{motivo ? `: ${motivo}` : ""}
-                                      </span>
-                                    )}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-                    </details>
                   </div>
                 )}
               </div>
@@ -496,26 +354,28 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               disabled={processando}
             >
               <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              Cancelar
+              {resultado ? 'Fechar' : 'Cancelar'}
             </Button>
 
-            <Button
-              onClick={importarDireto}
-              disabled={processando || !temEntrada}
-              className="w-full sm:w-auto gap-2 bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
-            >
-              {processando ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                  Importando...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  Importar Agora
-                </>
-              )}
-            </Button>
+            {!resultado && (
+              <Button
+                onClick={importarDireto}
+                disabled={processando || !temEntrada}
+                className="w-full sm:w-auto gap-2 bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
+              >
+                {processando ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                    Importando...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    Importar Agora
+                  </>
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
