@@ -9,11 +9,11 @@ import * as XLSX from 'npm:xlsx@0.18.5';
  * - Vincula por user_id_relogio (EnNo)
  */
 
-// === PARSER TXT (AttendLog TSV) ===
+// === PARSER TXT (AttendLog TSV) - DINÂMICO ===
 function parseTXT(conteudo) {
   const linhas = conteudo.split('\n');
   const registros = [];
-  let headerDetected = false;
+  let headerMap = null;
 
   for (const linha of linhas) {
     const limpa = linha.replace(/\r/g, '').trim();
@@ -21,29 +21,48 @@ function parseTXT(conteudo) {
     if (!limpa) continue;
     if (limpa.startsWith('#')) continue; // metadados
     
-    // Header: No	TMNo	EnNo	Name...	DateTime	TR
-    if (limpa.includes('No\t') && limpa.includes('EnNo') && limpa.includes('DateTime')) {
-      headerDetected = true;
+    // Detectar header dinamicamente
+    if (!headerMap && (limpa.includes('EnNo') || limpa.includes('Name')) && limpa.includes('\t')) {
+      const colunas = limpa.split('\t');
+      headerMap = {};
+      
+      colunas.forEach((col, idx) => {
+        const colLimpa = col.trim().toLowerCase();
+        if (colLimpa === 'enno' || colLimpa === 'empno' || colLimpa === 'userid') {
+          headerMap.enNo = idx;
+        } else if (colLimpa === 'name' || colLimpa === 'nome' || colLimpa === 'employee') {
+          headerMap.name = idx;
+        } else if (colLimpa === 'datetime' || colLimpa === 'checktime' || colLimpa === 'timestamp') {
+          headerMap.dateTime = idx;
+        } else if (colLimpa === 'tmno' || colLimpa === 'deviceid') {
+          headerMap.tmNo = idx;
+        } else if (colLimpa === 'mode' || colLimpa === 'modo') {
+          headerMap.mode = idx;
+        } else if (colLimpa === 'tr' || colLimpa === 'type') {
+          headerMap.tr = idx;
+        }
+      });
+      
       continue;
     }
     
-    if (!headerDetected) continue;
+    if (!headerMap || headerMap.enNo === undefined || headerMap.dateTime === undefined) continue;
     
     const campos = limpa.split('\t');
-    if (campos.length < 10) continue;
+    if (campos.length < 3) continue;
     
-    const enNo = (campos[2] || '').trim();
-    const dateTime = (campos[9] || '').trim().replace(/\s+/g, ' ');
+    const enNo = (campos[headerMap.enNo] || '').trim();
+    const dateTime = (campos[headerMap.dateTime] || '').trim().replace(/\s+/g, ' ');
     
     if (!enNo || !dateTime) continue;
     
     registros.push({
       enNo,
-      name: (campos[3] || '').trim(),
+      name: headerMap.name !== undefined ? (campos[headerMap.name] || '').trim() : '',
       dateTime,
-      tmNo: (campos[1] || '').trim(),
-      mode: (campos[5] || '').trim(),
-      tr: (campos[10] || '').trim(),
+      tmNo: headerMap.tmNo !== undefined ? (campos[headerMap.tmNo] || '').trim() : '',
+      mode: headerMap.mode !== undefined ? (campos[headerMap.mode] || '').trim() : '',
+      tr: headerMap.tr !== undefined ? (campos[headerMap.tr] || '').trim() : '',
       raw: limpa
     });
   }
