@@ -41,6 +41,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
     departamento_id: '',
     salario: '',
     regime: 'clt',
+    user_id_relogio: '',
     email: '',
     telefone: '',
     telefone2: '',
@@ -136,7 +137,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
       setFormData({
         nome: '', cpf: '', rg: '', data_nascimento: '', data_inicio: '', data_fim_experiencia: '',
         status: 'experiencia', cargo_id: '', departamento_id: '', salario: '', regime: 'clt',
-        email: '', telefone: '', telefone2: '', contato_emergencia: '', telefone_emergencia: '',
+        user_id_relogio: '', email: '', telefone: '', telefone2: '', contato_emergencia: '', telefone_emergencia: '',
         parente_emergencia: '', cep: '', logradouro: '', numero: '', complemento: '', bairro: '',
         cidade: '', uf: '', banco: '', agencia: '', conta: '', tipo_conta: '', pix: '',
         regra_desconto_falta: 'dia_cheio', fator_hora_extra_semana: 1.5, fator_hora_extra_fds: 2,
@@ -563,6 +564,25 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
                         placeholder="Selecione um cargo..."
                         className="mt-1.5"
                       />
+                    </div>
+
+                    <div>
+                      <OptionalLabel htmlFor="user_id_relogio">ID do Relógio de Ponto (EnNo)</OptionalLabel>
+                      <Input
+                        id="user_id_relogio"
+                        type="text"
+                        value={formData.user_id_relogio || ''}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '');
+                          handleChange('user_id_relogio', value);
+                        }}
+                        placeholder="Ex: 1, 13, 8..."
+                        maxLength={10}
+                        className="text-slate-950 mt-1.5 modern-input font-mono"
+                      />
+                      <p className="text-[10px] text-slate-500 mt-1">
+                        ID numérico do funcionário no relógio de ponto (EnNo). Obrigatório para importação de batidas.
+                      </p>
                     </div>
 
                     <div>
