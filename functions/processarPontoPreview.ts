@@ -177,37 +177,46 @@ async function normalizar(registros, funcionarios) {
 
 // === HANDLER ===
 Deno.serve(async (req) => {
+  console.log('🚀 Function iniciada');
+  
   try {
+    console.log('1️⃣ Criando cliente...');
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     
     if (!user) {
+      console.log('❌ Não autorizado');
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
+    console.log('2️⃣ Lendo body...');
     const body = await req.json();
     const { conteudo_colado, file_data, nome_arquivo } = body;
     
     console.log('📥 Payload recebido:', { 
       tem_conteudo: !!conteudo_colado, 
+      tam_conteudo: conteudo_colado?.length,
       tem_file: !!file_data,
       nome_arquivo 
     });
     
     if (!conteudo_colado && !file_data) {
+      console.log('❌ Sem dados');
       return Response.json({
         success: false,
         error: 'Nenhum arquivo ou conteúdo fornecido'
       }, { status: 400 });
     }
     
+    console.log('3️⃣ Parseando...');
     let registros = [];
     let formato = 'desconhecido';
     
     if (conteudo_colado) {
-      console.log('📝 Processando conteúdo colado...');
+      console.log('📝 Processando conteúdo colado...', conteudo_colado.substring(0, 100));
       formato = 'txt';
       registros = parseTXT(conteudo_colado);
+      console.log('✅ Parseado:', registros.length, 'registros');
     } else if (file_data) {
       console.log('📄 Processando arquivo...');
       const fileName = (nome_arquivo || '').toLowerCase();
@@ -228,17 +237,24 @@ Deno.serve(async (req) => {
     }
     
     if (registros.length === 0) {
+      console.log('⚠️ Nenhum registro encontrado');
       return Response.json({
         success: false,
         error: 'Nenhum registro encontrado no arquivo'
       });
     }
     
+    console.log('4️⃣ Buscando funcionários...');
     const funcionarios = await base44.asServiceRole.entities.Funcionario.list();
+    console.log('✅ Encontrados:', funcionarios.length, 'funcionários');
+    
+    console.log('5️⃣ Normalizando...');
     const normalizados = await normalizar(registros, funcionarios);
+    console.log('✅ Normalizado:', normalizados.length, 'registros');
     
     const datas = normalizados.filter(r => r.data).map(r => r.data).sort();
     
+    console.log('6️⃣ Retornando resposta...');
     return Response.json({
       success: true,
       registros: normalizados,
@@ -253,10 +269,12 @@ Deno.serve(async (req) => {
     });
     
   } catch (error) {
-    console.error('Erro ao processar:', error);
+    console.error('❌ ERRO CRÍTICO:', error);
+    console.error('Stack:', error.stack);
     return Response.json({
       success: false,
-      error: error.message || 'Erro ao processar arquivo'
+      error: error.message || 'Erro ao processar arquivo',
+      details: error.stack
     }, { status: 500 });
   }
 });
