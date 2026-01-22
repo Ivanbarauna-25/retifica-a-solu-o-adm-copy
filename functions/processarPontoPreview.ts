@@ -2,11 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 import * as XLSX from 'npm:xlsx@0.18.5';
 
 /**
- * IMPORTAÇÃO DIRETA DE PONTO
- * - TXT (AttendLog TSV)
- * - XLSX (export do relógio)
- * - Salva TODOS os registros (válidos e inválidos)
- * - Vincula por user_id_relogio (EnNo)
+ * GERAR PREVIEW DE IMPORTAÇÃO (NÃO SALVA)
+ * Retorna registros normalizados para revisão
  */
 
 // === PARSER TXT (AttendLog TSV) - DINÂMICO ===
@@ -19,9 +16,8 @@ function parseTXT(conteudo) {
     const limpa = linha.replace(/\r/g, '').trim();
     
     if (!limpa) continue;
-    if (limpa.startsWith('#')) continue; // metadados
+    if (limpa.startsWith('#')) continue;
     
-    // Detectar header dinamicamente
     if (!headerMap && (limpa.includes('EnNo') || limpa.includes('Name')) && limpa.includes('\t')) {
       const colunas = limpa.split('\t');
       headerMap = {};
@@ -38,8 +34,6 @@ function parseTXT(conteudo) {
           headerMap.tmNo = idx;
         } else if (colLimpa === 'mode' || colLimpa === 'modo') {
           headerMap.mode = idx;
-        } else if (colLimpa === 'tr' || colLimpa === 'type') {
-          headerMap.tr = idx;
         }
       });
       
@@ -62,7 +56,6 @@ function parseTXT(conteudo) {
       dateTime,
       tmNo: headerMap.tmNo !== undefined ? (campos[headerMap.tmNo] || '').trim() : '',
       mode: headerMap.mode !== undefined ? (campos[headerMap.mode] || '').trim() : '',
-      tr: headerMap.tr !== undefined ? (campos[headerMap.tr] || '').trim() : '',
       raw: limpa
     });
   }
@@ -80,7 +73,6 @@ function parseXLSX(buffer) {
   const registros = [];
   
   for (const row of rows) {
-    // Identificar colunas por sinônimos
     const enNo = String(row['EnNo'] || row['EmpNo'] || row['UserID'] || row['ID'] || '').trim();
     const dateTime = String(row['DateTime'] || row['CheckTime'] || row['Timestamp'] || row['Data/Hora'] || '').trim();
     const name = String(row['Name'] || row['Nome'] || row['Employee'] || '').trim();
@@ -102,14 +94,13 @@ function parseXLSX(buffer) {
   return registros;
 }
 
-// === NORMALIZAR E VINCULAR ===
+// === NORMALIZAR ===
 async function normalizar(registros, funcionarios) {
   const normalizados = [];
   
   for (const reg of registros) {
     const enNo = String(reg.enNo || '').trim();
     
-    // Validar EnNo numérico
     if (!enNo || !/^\d+$/.test(enNo)) {
       normalizados.push({
         user_id_relogio: enNo || null,
@@ -128,13 +119,11 @@ async function normalizar(registros, funcionarios) {
       continue;
     }
     
-    // Parse DateTime
     let dataHora;
     try {
       const dt = String(reg.dateTime || '').trim();
       if (!dt) throw new Error('DateTime vazio');
       
-      // Normalizar formato
       const normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
       dataHora = new Date(normalizado);
       
@@ -162,7 +151,6 @@ async function normalizar(registros, funcionarios) {
     const data = dataHora.toISOString().split('T')[0];
     const hora = dataHora.toISOString().split('T')[1].split('.')[0];
     
-    // Buscar funcionário por EnNo
     const funcionario = funcionarios.find(f => {
       if (!f || !f.user_id_relogio) return false;
       return String(f.user_id_relogio).trim() === enNo;
@@ -180,14 +168,14 @@ async function normalizar(registros, funcionarios) {
       dispositivo_id: reg.tmNo || '',
       raw_linha: (reg.raw || '').substring(0, 500),
       valido: !!funcionario,
-      motivo_invalido: funcionario ? null : 'Funcionário não vinculado ao ID do relógio'
+      motivo_invalido: funcionario ? null : 'EnNo sem funcionário vinculado'
     });
   }
   
   return normalizados;
 }
 
-// === HANDLER PRINCIPAL ===
+// === HANDLER ===
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -209,12 +197,10 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
     
-    // 1. Detectar e parsear
     let registros = [];
     let formato = 'desconhecido';
     
     if (conteudoColado) {
-      // Conteúdo colado = TXT
       formato = 'txt';
       registros = parseTXT(conteudoColado);
     } else if (file) {
@@ -240,78 +226,33 @@ Deno.serve(async (req) => {
     if (registros.length === 0) {
       return Response.json({
         success: false,
-        error: 'Nenhum registro válido encontrado no arquivo'
+        error: 'Nenhum registro encontrado no arquivo'
       });
     }
     
-    // 2. Buscar funcionários
     const funcionarios = await base44.asServiceRole.entities.Funcionario.list();
-    
-    // 3. Normalizar e vincular
     const normalizados = await normalizar(registros, funcionarios);
     
-    // 4. Salvar TODOS os registros
-    const salvos = [];
-    for (const registro of normalizados) {
-      try {
-        const salvo = await base44.asServiceRole.entities.PontoRegistro.create(registro);
-        salvos.push(salvo);
-      } catch (e) {
-        console.error('Erro ao salvar registro:', e);
-      }
-    }
-    
-    // 5. Criar registro de importação
     const datas = normalizados.filter(r => r.data).map(r => r.data).sort();
-    const periodo_inicio = datas[0] || null;
-    const periodo_fim = datas[datas.length - 1] || null;
     
-    const validos = normalizados.filter(r => r.valido).length;
-    const invalidos = normalizados.filter(r => !r.valido).length;
-    
-    const logErros = normalizados
-      .filter(r => !r.valido)
-      .slice(0, 50)
-      .map(r => `${r.motivo_invalido} | EnNo: ${r.user_id_relogio}`)
-      .join('\n');
-    
-    await base44.asServiceRole.entities.ImportacaoPonto.create({
-      data_importacao: new Date().toISOString(),
-      arquivo_nome: nomeArquivo,
-      periodo_inicio,
-      periodo_fim,
-      total_linhas: registros.length,
-      total_registros_validos: validos,
-      total_ignorados: invalidos,
-      status: 'concluida',
-      log_erros: logErros || null
-    });
-    
-    // 6. Retornar resumo
     return Response.json({
       success: true,
-      message: `${salvos.length} registros importados com sucesso`,
+      registros: normalizados,
       stats: {
-        total_lidos: registros.length,
-        total_salvos: salvos.length,
-        total_validos: validos,
-        total_invalidos: invalidos,
-        periodo_inicio,
-        periodo_fim,
-        formato_detectado: formato
-      },
-      ids_sem_mapeamento: [...new Set(
-        normalizados
-          .filter(r => !r.funcionario_id && r.user_id_relogio && /^\d+$/.test(r.user_id_relogio))
-          .map(r => r.user_id_relogio)
-      )]
+        total: normalizados.length,
+        validos: normalizados.filter(r => r.valido).length,
+        invalidos: normalizados.filter(r => !r.valido).length,
+        periodo_inicio: datas[0] || null,
+        periodo_fim: datas[datas.length - 1] || null,
+        formato
+      }
     });
     
   } catch (error) {
-    console.error('Erro na importação:', error);
+    console.error('Erro ao processar:', error);
     return Response.json({
       success: false,
-      error: error.message || 'Erro ao importar dados de ponto'
+      error: error.message || 'Erro ao processar arquivo'
     }, { status: 500 });
   }
 });

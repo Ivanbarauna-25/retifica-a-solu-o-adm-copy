@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
-import MapearFuncionariosModal from "@/components/ponto/MapearFuncionariosModal";
 import EspelhoPontoCompleto from "@/components/ponto/EspelhoPontoCompleto";
 
 function minToHHmm(min) {
@@ -31,7 +30,6 @@ export default function PontoPage() {
   const [isLoading, setIsLoading] = useState(true);
   
   const [isImportarOpen, setIsImportarOpen] = useState(false);
-  const [isMapearOpen, setIsMapearOpen] = useState(false);
   const [isEspelhoOpen, setIsEspelhoOpen] = useState(false);
   const [funcionarioEspelho, setFuncionarioEspelho] = useState(null);
   const [mesEspelho, setMesEspelho] = useState("");
@@ -244,16 +242,7 @@ export default function PontoPage() {
                   <Wallet className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   Banco Horas
                 </Button>
-                {idsNaoVinculados > 0 && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsMapearOpen(true)}
-                    className="gap-2 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300 text-xs md:text-sm h-8 md:h-10"
-                  >
-                    <LinkIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    Mapear ({idsNaoVinculados})
-                  </Button>
-                )}
+
                 <Button
                   onClick={handleApurarMes}
                   disabled={apurando || !filtroFuncionario || filtroFuncionario === "todos" || !filtroMes}
@@ -429,13 +418,6 @@ export default function PontoPage() {
         isOpen={isImportarOpen}
         onClose={() => setIsImportarOpen(false)}
         onImportado={fetchData}
-      />
-
-      {/* Modal: Mapear Funcionários */}
-      <MapearFuncionariosModal
-        isOpen={isMapearOpen}
-        onClose={() => setIsMapearOpen(false)}
-        onMapeamentoFeito={fetchData}
       />
 
       {/* Modal: Espelho de Ponto */}
