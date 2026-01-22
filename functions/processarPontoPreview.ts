@@ -177,19 +177,14 @@ async function normalizar(registros, funcionarios) {
 
 // === HANDLER ===
 Deno.serve(async (req) => {
-  console.log('🚀 Function iniciada');
-  
   try {
-    console.log('1️⃣ Criando cliente...');
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     
     if (!user) {
-      console.log('❌ Não autorizado');
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    console.log('2️⃣ Lendo body...');
     const body = await req.json();
     const { conteudo_colado, file_data, nome_arquivo } = body;
     
