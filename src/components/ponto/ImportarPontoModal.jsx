@@ -27,8 +27,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const [arquivo, setArquivo] = useState(null);
   const [conteudoColado, setConteudoColado] = useState("");
   const [processando, setProcessando] = useState(false);
-  const [gerandoPreview, setGerandoPreview] = useState(false);
-
   const [preview, setPreview] = useState(null);
   const [previewGerado, setPreviewGerado] = useState(false);
 
@@ -41,7 +39,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setPreview(null);
     setPreviewGerado(false);
     setProcessando(false);
-    setGerandoPreview(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -76,42 +73,9 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     return Boolean((conteudoColado || "").trim() || arquivo);
   }, [conteudoColado, arquivo]);
 
-  const gerarPayloadPreview = async () => {
-    // 1) Conteúdo colado (TXT/XML)
-    if ((conteudoColado || "").trim()) {
-      return {
-        input_type: "PASTE",
-        text_content: conteudoColado,
-        file_name: "conteudo_colado.txt"
-      };
-    }
+  // REMOVIDO - Não há mais payload de preview
 
-    // 2) Arquivo
-    if (!arquivo) {
-      throw new Error("Selecione um arquivo ou cole o conteúdo.");
-    }
-
-    // TXT / XML (texto)
-    if (isTextLikeFile(arquivo)) {
-      const text = await arquivo.text();
-      return {
-        input_type: "FILE_TEXT",
-        text_content: text,
-        file_name: arquivo.name
-      };
-    }
-
-    // XLS / XLSX (binário)
-    const file_base64 = await readFileAsBase64(arquivo);
-    return {
-      input_type: "FILE_BINARY",
-      file_base64,
-      file_name: arquivo.name,
-      mime_type: arquivo.type || null
-    };
-  };
-
-  const gerarPreview = async () => {
+  const importarDireto = async () => {
     if (!temEntrada) {
       toast({
         title: "Atenção",
@@ -121,43 +85,64 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       return;
     }
 
-    setGerandoPreview(true);
+    setProcessando(true);
     setPreview(null);
 
     try {
-      const payload = await gerarPayloadPreview();
+      const formData = new FormData();
+      
+      if (conteudoColado.trim()) {
+        formData.append('conteudo_colado', conteudoColado);
+        formData.append('nome_arquivo', 'conteudo_colado.txt');
+      } else if (arquivo) {
+        formData.append('file', arquivo);
+        formData.append('nome_arquivo', arquivo.name);
+      }
 
-      // CORREÇÃO: preview tem que chamar função de preview, não de processamento/salvamento
-      const { data } = await base44.functions.invoke("gerarPreviewImportacaoPonto", payload);
+      const response = await fetch('/api/functions/importarPontoDireto', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${await base44.auth.getToken()}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
 
       if (!data?.success) {
         toast({
-          title: "Erro no preview",
-          description: data?.error || "Formato não reconhecido ou falha ao processar.",
+          title: "Erro na importação",
+          description: data?.error || "Falha ao importar registros.",
           variant: "destructive"
         });
         return;
       }
 
+      // Mostrar resumo
       setPreview(data);
       setPreviewGerado(true);
 
-      const total = data?.stats?.total_lidos ?? data?.total_lidos ?? 0;
-      const formato = data?.formato_detectado ?? data?.detected_format ?? "desconhecido";
-
       toast({
-        title: "Preview gerado",
-        description: `${total} registros lidos. Formato: ${formato}`
+        title: "Importação concluída",
+        description: data.message || `${data.stats.total_salvos} registros importados`
       });
+
+      // Fechar após 2s
+      setTimeout(() => {
+        resetTudo();
+        if (onImportado) onImportado();
+        onClose();
+      }, 2000);
+
     } catch (error) {
-      console.error("Erro ao gerar preview:", error);
+      console.error("Erro ao importar:", error);
       toast({
         title: "Erro",
-        description: error?.message || "Falha ao gerar preview",
+        description: error?.message || "Falha ao importar",
         variant: "destructive"
       });
     } finally {
-      setGerandoPreview(false);
+      setProcessando(false);
     }
   };
 
@@ -507,49 +492,30 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 resetTudo();
                 onClose();
               }}
-              className="w-full sm:w-auto gap-2 text-xs sm:text-sm h-9 sm:h-10 border-slate-300 hover:bg-slate-100"
+              className="w-full sm:w-auto gap-2 text-xs sm:text-sm h-9 sm:h-10"
+              disabled={processando}
             >
               <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               Cancelar
             </Button>
 
-            {!previewGerado ? (
-              <Button
-                onClick={gerarPreview}
-                disabled={gerandoPreview || !temEntrada}
-                className="w-full sm:w-auto gap-2 bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
-              >
-                {gerandoPreview ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                    Processando...
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    Gerar Preview
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Button
-                onClick={confirmarImportacao}
-                disabled={processando}
-                className="w-full sm:w-auto gap-2 bg-green-600 hover:bg-green-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
-              >
-                {processando ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
-                    Importando...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    Confirmar e Salvar ({totalValidos})
-                  </>
-                )}
-              </Button>
-            )}
+            <Button
+              onClick={importarDireto}
+              disabled={processando || !temEntrada}
+              className="w-full sm:w-auto gap-2 bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm h-9 sm:h-10 font-semibold"
+            >
+              {processando ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin" />
+                  Importando...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  Importar Agora
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </DialogContent>
