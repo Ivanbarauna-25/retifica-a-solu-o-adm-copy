@@ -49,9 +49,14 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   }, [conteudoColado, arquivo]);
 
   const processarArquivo = async () => {
-    console.log('🔍 ProcessarArquivo chamado', { temEntrada, conteudoColado: conteudoColado.length, arquivo });
+    console.log('🔍 ProcessarArquivo chamado', { 
+      temEntrada, 
+      conteudoColado: conteudoColado.substring(0, 100), 
+      arquivo: arquivo?.name 
+    });
     
     if (!temEntrada) {
+      console.log('❌ Sem entrada');
       toast({
         title: "Atenção",
         description: "Selecione um arquivo ou cole o conteúdo.",
@@ -64,12 +69,15 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setProgresso(10);
 
     try {
-      // Buscar funcionários
+      console.log('1️⃣ Buscando funcionários...');
       const funcs = await base44.entities.Funcionario.list();
       setFuncionarios(funcs || []);
       setProgresso(30);
 
-      console.log('📤 Enviando para backend...');
+      console.log('2️⃣ Enviando para backend...', {
+        tem_conteudo: !!conteudoColado.trim(),
+        tem_arquivo: !!arquivo
+      });
       
       const response = await base44.functions.invoke('processarPontoPreview', {
         conteudo_colado: conteudoColado.trim() || null,
@@ -77,22 +85,26 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         nome_arquivo: arquivo ? arquivo.name : 'conteudo_colado.txt'
       });
 
-      console.log('📥 Resposta backend:', response.data);
+      console.log('3️⃣ Resposta backend:', response?.data);
 
       setProgresso(90);
 
       if (!response?.data?.success) {
+        console.log('❌ Erro no backend:', response?.data?.error);
         toast({
           title: "Erro no processamento",
           description: response?.data?.error || "Falha ao processar arquivo.",
           variant: "destructive"
         });
+        setProcessando(false);
         return;
       }
 
       setPreview(response.data);
       setRegistrosEditaveis(response.data.registros || []);
       setProgresso(100);
+
+      console.log('✅ Preview gerado:', response.data.registros?.length);
 
       toast({
         title: "Preview gerado",
@@ -106,8 +118,9 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         description: error?.message || "Falha ao processar",
         variant: "destructive"
       });
-    } finally {
       setProcessando(false);
+    } finally {
+      setTimeout(() => setProcessando(false), 500);
     }
   };
 
