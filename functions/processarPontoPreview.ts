@@ -185,12 +185,16 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    const formData = await req.formData();
-    const file = formData.get('file');
-    const conteudoColado = formData.get('conteudo_colado');
-    const nomeArquivo = formData.get('nome_arquivo') || 'arquivo';
+    const body = await req.json();
+    const { conteudo_colado, file_data, nome_arquivo } = body;
     
-    if (!file && !conteudoColado) {
+    console.log('📥 Payload recebido:', { 
+      tem_conteudo: !!conteudo_colado, 
+      tem_file: !!file_data,
+      nome_arquivo 
+    });
+    
+    if (!conteudo_colado && !file_data) {
       return Response.json({
         success: false,
         error: 'Nenhum arquivo ou conteúdo fornecido'
@@ -200,20 +204,20 @@ Deno.serve(async (req) => {
     let registros = [];
     let formato = 'desconhecido';
     
-    if (conteudoColado) {
+    if (conteudo_colado) {
+      console.log('📝 Processando conteúdo colado...');
       formato = 'txt';
-      registros = parseTXT(conteudoColado);
-    } else if (file) {
-      const fileName = file.name.toLowerCase();
+      registros = parseTXT(conteudo_colado);
+    } else if (file_data) {
+      console.log('📄 Processando arquivo...');
+      const fileName = (nome_arquivo || '').toLowerCase();
       
       if (fileName.endsWith('.txt')) {
         formato = 'txt';
-        const texto = await file.text();
-        registros = parseTXT(texto);
+        registros = parseTXT(file_data);
       } else if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
         formato = 'xlsx';
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = new Uint8Array(arrayBuffer);
+        const buffer = new TextEncoder().encode(file_data);
         registros = parseXLSX(buffer);
       } else {
         return Response.json({

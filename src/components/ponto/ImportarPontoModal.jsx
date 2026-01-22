@@ -49,6 +49,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   }, [conteudoColado, arquivo]);
 
   const processarArquivo = async () => {
+    console.log('🔍 ProcessarArquivo chamado', { temEntrada, conteudoColado: conteudoColado.length, arquivo });
+    
     if (!temEntrada) {
       toast({
         title: "Atenção",
@@ -67,49 +69,38 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       setFuncionarios(funcs || []);
       setProgresso(30);
 
-      const formData = new FormData();
+      console.log('📤 Enviando para backend...');
       
-      if (conteudoColado.trim()) {
-        formData.append('conteudo_colado', conteudoColado);
-        formData.append('nome_arquivo', 'conteudo_colado.txt');
-      } else if (arquivo) {
-        formData.append('file', arquivo);
-        formData.append('nome_arquivo', arquivo.name);
-      }
-
-      setProgresso(50);
-
-      const response = await fetch('/api/functions/processarPontoPreview', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${await base44.auth.getToken()}`
-        },
-        body: formData
+      const response = await base44.functions.invoke('processarPontoPreview', {
+        conteudo_colado: conteudoColado.trim() || null,
+        file_data: arquivo ? await arquivo.text() : null,
+        nome_arquivo: arquivo ? arquivo.name : 'conteudo_colado.txt'
       });
 
-      const data = await response.json();
+      console.log('📥 Resposta backend:', response.data);
+
       setProgresso(90);
 
-      if (!data?.success) {
+      if (!response?.data?.success) {
         toast({
           title: "Erro no processamento",
-          description: data?.error || "Falha ao processar arquivo.",
+          description: response?.data?.error || "Falha ao processar arquivo.",
           variant: "destructive"
         });
         return;
       }
 
-      setPreview(data);
-      setRegistrosEditaveis(data.registros || []);
+      setPreview(response.data);
+      setRegistrosEditaveis(response.data.registros || []);
       setProgresso(100);
 
       toast({
         title: "Preview gerado",
-        description: `${data.registros?.length || 0} registros prontos para revisão`
+        description: `${response.data.registros?.length || 0} registros prontos para revisão`
       });
 
     } catch (error) {
-      console.error("Erro ao processar:", error);
+      console.error("❌ Erro ao processar:", error);
       toast({
         title: "Erro",
         description: error?.message || "Falha ao processar",
