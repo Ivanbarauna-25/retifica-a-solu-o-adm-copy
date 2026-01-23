@@ -316,21 +316,24 @@ export default function PontoPage() {
             funcionariosEscalas={funcionariosEscalas}
           />
 
-          {/* Calendário */}
-          <div className="mb-6">
-            <CalendarioPonto
-              registros={registros}
-              funcionariosEscalas={funcionariosEscalas}
-              ocorrencias={ocorrencias}
-              funcionarioSelecionado={filtroFuncionario}
-              onDiaClicado={(data) => {
-                setFiltroDataInicio(data);
-                setFiltroDataFim(data);
-              }}
-            />
-          </div>
+          {/* Calendário + Tabela em Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+            {/* Calendário - Sidebar (Compacto) */}
+            <div className="lg:col-span-1">
+              <CalendarioPonto
+                registros={registros}
+                funcionariosEscalas={funcionariosEscalas}
+                ocorrencias={ocorrencias}
+                funcionarioSelecionado={filtroFuncionario}
+                onDiaClicado={(data) => {
+                  setFiltroDataInicio(data);
+                  setFiltroDataFim(data);
+                }}
+              />
+            </div>
 
-          <Card className="shadow-sm">
+            {/* Tabela - Área Principal */}
+            <Card className="lg:col-span-3 shadow-sm">
             <CardContent className="p-3 md:p-6">
               {/* Filtros */}
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 md:p-5 mb-4 md:mb-6 border border-slate-200 shadow-sm">
