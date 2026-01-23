@@ -11,6 +11,8 @@ import AdiantamentoLoteForm from "@/components/AdiantamentoLoteForm";
 import AdiantamentoViewer from "@/components/adiantamentos/AdiantamentoViewer";
 import PagamentoParcialModal from "@/components/adiantamentos/PagamentoParcialModal";
 import GerarMovimentacaoModal from "@/components/adiantamentos/GerarMovimentacaoModal";
+import BulkActionsBar from "@/components/adiantamentos/BulkActionsBar";
+import { useAutoCompleteHelper } from "@/components/adiantamentos/AutoCompleteHelper";
 import { formatCurrency, formatDate } from "@/components/formatters";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
