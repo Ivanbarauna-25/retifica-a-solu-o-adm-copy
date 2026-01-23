@@ -166,7 +166,21 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         const dt = String(reg.dateTime || '').trim();
         if (!dt) throw new Error('DateTime vazio');
         
-        const normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
+        // Corrigir formato mal formatado (ex: 2026-01-22 56:45:08 -> 2026-01-22 08:45:56)
+        let normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
+        
+        // Verificar se a hora está mal formatada (minutos > 59)
+        const partes = normalizado.split(' ');
+        if (partes.length === 2) {
+          const [data, hora] = partes;
+          const [h, m, s] = hora.split(':').map(n => parseInt(n) || 0);
+          
+          // Se minutos > 59, está invertido (min:hora:seg)
+          if (m > 59) {
+            normalizado = `${data} ${String(m).padStart(2, '0')}:${String(h).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          }
+        }
+        
         dataHora = new Date(normalizado);
         
         if (isNaN(dataHora.getTime())) {

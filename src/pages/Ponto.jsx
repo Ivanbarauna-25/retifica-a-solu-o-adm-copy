@@ -400,38 +400,18 @@ export default function PontoPage() {
                             const saldoDia = calcularSaldoDia(grupo.funcionario_id, grupo.data, grupo.batidas);
                             const ocorrencia = ocorrencias.find(o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data);
                             
-                            // Identificar batidas presentes e posicioná-las corretamente
-                            const batidas = ["", "", "", ""];
+                            // Ordenar batidas cronologicamente
                             const batidasOrdenadas = [...grupo.batidas].sort((a, b) => {
                               const horaA = a.hora || a.data_hora?.substring(11, 19) || "00:00:00";
                               const horaB = b.hora || b.data_hora?.substring(11, 19) || "00:00:00";
                               return horaA.localeCompare(horaB);
                             });
                             
-                            // Posicionar batidas comparando com os horários esperados
-                            for (const batida of batidasOrdenadas) {
-                              const horaBatida = batida.hora || batida.data_hora?.substring(11, 19) || "00:00:00";
-                              const [hB, mB] = horaBatida.split(":").map(Number);
-                              const minBatida = hB * 60 + mB;
-                              
-                              // Encontrar posição mais próxima
-                              let melhorPosicao = 0;
-                              let menorDiff = Infinity;
-                              
-                              for (let i = 0; i < batidasEsperadas.length; i++) {
-                                if (batidas[i] !== "") continue; // Pula se já preenchido
-                                
-                                const [hE, mE] = batidasEsperadas[i].split(":").map(Number);
-                                const minEsperado = hE * 60 + mE;
-                                const diff = Math.abs(minBatida - minEsperado);
-                                
-                                if (diff < menorDiff) {
-                                  menorDiff = diff;
-                                  melhorPosicao = i;
-                                }
-                              }
-                              
-                              batidas[melhorPosicao] = formatarHora(horaBatida);
+                            // Exibir batidas na ordem cronológica (1ª, 2ª, 3ª, 4ª)
+                            const batidas = ["", "", "", ""];
+                            for (let i = 0; i < batidasOrdenadas.length && i < 4; i++) {
+                              const horaBatida = batidasOrdenadas[i].hora || batidasOrdenadas[i].data_hora?.substring(11, 19) || "00:00:00";
+                              batidas[i] = formatarHora(horaBatida);
                             }
                             
                             // Identificar quais batidas faltaram
