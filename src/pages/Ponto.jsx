@@ -16,6 +16,7 @@ import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
 import PontoDashboard from "@/components/ponto/PontoDashboard";
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
+import HistoricoAuditoria from "@/components/ponto/HistoricoAuditoria";
 
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
