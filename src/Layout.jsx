@@ -139,6 +139,7 @@ const navigationGroups = [
   { title: "Equipe", url: "Funcionarios", icon: UserIcon, module: "funcionarios" },
   { title: "Gestão de RH", url: "GestaoRH", icon: UserCog, module: "rh" },
   { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
+  { title: "Espelho de Ponto", url: "EspelhoPonto", icon: FileText, module: "ponto" },
   { title: "Escalas de Trabalho", url: "EscalasTrabalho", icon: Timer, module: "ponto" },
   { title: "Banco de Horas", url: "BancoHoras", icon: Wallet, module: "ponto" },
   { title: "Folha de Pagamento", url: "FolhaPagamento", icon: Wallet, module: "folha" },
