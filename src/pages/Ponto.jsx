@@ -96,31 +96,15 @@ export default function PontoPage() {
     return Object.values(grupos);
   }, [registros]);
 
-  // Função para calcular saldo de horas baseado na escala
+  // Função para calcular saldo de horas
   const calcularSaldoDia = (funcionarioId, data, batidas) => {
-    const funcEscala = funcionariosEscalas.find(fe => {
-      if (fe.funcionario_id !== funcionarioId) return false;
-      if (!fe.vigencia_inicio) return false;
-      if (data < fe.vigencia_inicio) return false;
-      if (fe.vigencia_fim && data > fe.vigencia_fim) return false;
-      return true;
-    });
-    
+    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
     if (!funcEscala) return { saldo: 0, esperado: 0, trabalhado: 0 };
     
     const escala = escalas.find(e => e.id === funcEscala.escala_id);
-    if (!escala) return { saldo: 0, esperado: 0, trabalhado: 0 };
+    if (!escala || !escala.carga_diaria_minutos) return { saldo: 0, esperado: 0, trabalhado: 0 };
     
-    // Verificar se o dia é trabalhado na escala
-    const diaSemana = new Date(data + 'T00:00:00').getDay();
-    const diaNumero = diaSemana === 0 ? "7" : String(diaSemana); // 1=Segunda, 7=Domingo
-    const diasTrabalho = (escala.dias_semana || "").split(",");
-    
-    if (!diasTrabalho.includes(diaNumero)) {
-      return { saldo: 0, esperado: 0, trabalhado: 0 };
-    }
-    
-    const totalEsperado = escala.carga_diaria_minutos || 0;
+    const totalEsperado = escala.carga_diaria_minutos;
     
     let totalTrabalhado = 0;
     for (let i = 0; i < batidas.length; i += 2) {
@@ -146,33 +130,18 @@ export default function PontoPage() {
 
   // Função para pegar batidas esperadas da escala (4 batidas padrão)
   const getBatidasEsperadas = (funcionarioId, data) => {
-    const funcEscala = funcionariosEscalas.find(fe => {
-      if (fe.funcionario_id !== funcionarioId) return false;
-      if (!fe.vigencia_inicio) return false;
-      if (data < fe.vigencia_inicio) return false;
-      if (fe.vigencia_fim && data > fe.vigencia_fim) return false;
-      return true;
-    });
-    
-    if (!funcEscala) return [];
+    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    if (!funcEscala) return ["08:00", "12:00", "13:00", "17:00"];
     
     const escala = escalas.find(e => e.id === funcEscala.escala_id);
-    if (!escala) return [];
+    if (!escala) return ["08:00", "12:00", "13:00", "17:00"];
     
-    // Verificar se o dia é trabalhado
-    const diaSemana = new Date(data + 'T00:00:00').getDay();
-    const diaNumero = diaSemana === 0 ? "7" : String(diaSemana);
-    const diasTrabalho = (escala.dias_semana || "").split(",");
-    
-    if (!diasTrabalho.includes(diaNumero)) return [];
-    
-    // Retornar as 4 batidas esperadas (entrada, saída almoço, volta almoço, saída final)
     return [
-      escala.hora_entrada_prevista || "",
-      escala.intervalo_inicio_previsto || "",
-      escala.intervalo_fim_previsto || "",
-      escala.hora_saida_prevista || ""
-    ].filter(h => h);
+      escala.hora_entrada_prevista || "08:00",
+      escala.intervalo_inicio_previsto || "12:00",
+      escala.intervalo_fim_previsto || "13:00",
+      escala.hora_saida_prevista || "17:00"
+    ];
   };
 
   const registrosFiltrados = useMemo(() => {
@@ -200,7 +169,7 @@ export default function PontoPage() {
     setOcorrenciaModal({
       funcionario_id: grupo.funcionario_id,
       data: grupo.data,
-      tipo: ocorrenciaExistente?.tipo || "normal",
+      tipo: ocorrenciaExistente?.tipo || "justificativa",
       descricao: ocorrenciaExistente?.descricao || "",
       ocorrencia_id: ocorrenciaExistente?.id || null
     });
@@ -210,25 +179,29 @@ export default function PontoPage() {
   const handleSalvarOcorrencia = async () => {
     if (!ocorrenciaModal) return;
     
+    if (!ocorrenciaModal.descricao?.trim()) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, informe uma descrição/justificativa.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     try {
-      if (ocorrenciaModal.tipo === "normal" && ocorrenciaModal.ocorrencia_id) {
-        // Se tipo é normal e já existe, deletar a ocorrência
-        await base44.entities.OcorrenciaPonto.delete(ocorrenciaModal.ocorrencia_id);
-      } else if (ocorrenciaModal.tipo !== "normal") {
-        // Criar ou atualizar ocorrência
-        if (ocorrenciaModal.ocorrencia_id) {
-          await base44.entities.OcorrenciaPonto.update(ocorrenciaModal.ocorrencia_id, {
-            tipo: ocorrenciaModal.tipo,
-            descricao: ocorrenciaModal.descricao
-          });
-        } else {
-          await base44.entities.OcorrenciaPonto.create({
-            funcionario_id: ocorrenciaModal.funcionario_id,
-            data: ocorrenciaModal.data,
-            tipo: ocorrenciaModal.tipo,
-            descricao: ocorrenciaModal.descricao
-          });
-        }
+      if (ocorrenciaModal.ocorrencia_id) {
+        await base44.entities.OcorrenciaPonto.update(ocorrenciaModal.ocorrencia_id, {
+          tipo: ocorrenciaModal.tipo,
+          descricao: ocorrenciaModal.descricao
+        });
+      } else {
+        await base44.entities.OcorrenciaPonto.create({
+          funcionario_id: ocorrenciaModal.funcionario_id,
+          data: ocorrenciaModal.data,
+          tipo: ocorrenciaModal.tipo,
+          descricao: ocorrenciaModal.descricao,
+          status: "aprovado"
+        });
       }
       
       toast({
@@ -399,22 +372,21 @@ export default function PontoPage() {
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">2ª</th>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">3ª</th>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">4ª</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Posição Faltante</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ocorrência</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Saldo do Dia</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ações</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Faltou</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Saldo</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ação</th>
                         </tr>
                       </thead>
                       <tbody>
                         {isLoading ? (
                           <tr>
-                            <td colSpan={10} className="text-center py-12">
+                            <td colSpan={9} className="text-center py-12">
                               <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
                             </td>
                           </tr>
                         ) : registrosFiltrados.length === 0 ? (
                           <tr>
-                            <td colSpan={10} className="text-center py-12">
+                            <td colSpan={9} className="text-center py-12">
                               <div className="flex flex-col items-center gap-3">
                                 <FileText className="w-16 h-16 text-slate-300" />
                                 <p className="text-slate-500 text-xs md:text-sm font-medium">Nenhum registro encontrado</p>
@@ -425,19 +397,48 @@ export default function PontoPage() {
                         ) : (
                           registrosFiltrados.map((grupo, idx) => {
                             const batidasEsperadas = getBatidasEsperadas(grupo.funcionario_id, grupo.data);
-                            const numBatidasEsperadas = batidasEsperadas.length;
                             const saldoDia = calcularSaldoDia(grupo.funcionario_id, grupo.data, grupo.batidas);
                             const ocorrencia = ocorrencias.find(o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data);
                             
-                            // Exibir batidas na posição correta
+                            // Identificar batidas presentes e posicioná-las corretamente
                             const batidas = ["", "", "", ""];
-                            const posicoesFaltantes = [];
+                            const batidasOrdenadas = [...grupo.batidas].sort((a, b) => {
+                              const horaA = a.hora || a.data_hora?.substring(11, 19) || "00:00:00";
+                              const horaB = b.hora || b.data_hora?.substring(11, 19) || "00:00:00";
+                              return horaA.localeCompare(horaB);
+                            });
                             
-                            for (let i = 0; i < numBatidasEsperadas && i < 4; i++) {
-                              if (grupo.batidas[i]) {
-                                batidas[i] = formatarHora(grupo.batidas[i].hora || grupo.batidas[i].data_hora?.substring(11, 19));
-                              } else {
-                                posicoesFaltantes.push(i + 1);
+                            // Posicionar batidas comparando com os horários esperados
+                            for (const batida of batidasOrdenadas) {
+                              const horaBatida = batida.hora || batida.data_hora?.substring(11, 19) || "00:00:00";
+                              const [hB, mB] = horaBatida.split(":").map(Number);
+                              const minBatida = hB * 60 + mB;
+                              
+                              // Encontrar posição mais próxima
+                              let melhorPosicao = 0;
+                              let menorDiff = Infinity;
+                              
+                              for (let i = 0; i < batidasEsperadas.length; i++) {
+                                if (batidas[i] !== "") continue; // Pula se já preenchido
+                                
+                                const [hE, mE] = batidasEsperadas[i].split(":").map(Number);
+                                const minEsperado = hE * 60 + mE;
+                                const diff = Math.abs(minBatida - minEsperado);
+                                
+                                if (diff < menorDiff) {
+                                  menorDiff = diff;
+                                  melhorPosicao = i;
+                                }
+                              }
+                              
+                              batidas[melhorPosicao] = formatarHora(horaBatida);
+                            }
+                            
+                            // Identificar quais batidas faltaram
+                            const faltantes = [];
+                            for (let i = 0; i < 4; i++) {
+                              if (!batidas[i] || batidas[i] === "") {
+                                faltantes.push(i + 1);
                               }
                             }
                             
@@ -449,50 +450,38 @@ export default function PontoPage() {
                                 <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center text-slate-900 font-semibold">
                                   {formatarData(grupo.data)}
                                 </td>
-                                {batidas.map((batida, i) => (
-                                  <td 
-                                    key={i} 
-                                    className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${
-                                      !batida || batida === "" ? "text-red-500 font-bold" : "text-slate-900"
-                                    }`}
-                                  >
-                                    {batida || "faltou"}
-                                  </td>
-                                ))}
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                  {posicoesFaltantes.length > 0 ? (
-                                    <Badge variant="destructive" className="text-[8px] md:text-[10px]">
-                                      {posicoesFaltantes.join(", ")}ª
-                                    </Badge>
-                                  ) : (
-                                    <span className="text-green-600 font-semibold">✓</span>
-                                  )}
+                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                  {batidas[0] || "-"}
+                                </td>
+                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                  {batidas[1] || "-"}
+                                </td>
+                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                  {batidas[2] || "-"}
+                                </td>
+                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                  {batidas[3] || "-"}
                                 </td>
                                 <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
                                   {ocorrencia ? (
-                                    <Badge 
-                                      className={`text-[8px] md:text-[10px] cursor-pointer ${
-                                        ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
-                                        ocorrencia.tipo === "abono" ? "bg-green-100 text-green-700" :
-                                        ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
-                                        ocorrencia.tipo === "ferias" ? "bg-orange-100 text-orange-700" :
-                                        ocorrencia.tipo === "falta_justificada" ? "bg-yellow-100 text-yellow-700" :
-                                        "bg-slate-100 text-slate-700"
-                                      }`}
-                                      onClick={() => handleAbrirOcorrencia(grupo)}
-                                    >
-                                      {ocorrencia.tipo === "atestado" ? "Atestado" :
-                                       ocorrencia.tipo === "abono" ? "Abonado" :
-                                       ocorrencia.tipo === "folga" ? "Folga" :
-                                       ocorrencia.tipo === "ferias" ? "Férias" :
-                                       ocorrencia.tipo === "falta_justificada" ? "Justificada" :
-                                       ocorrencia.tipo}
+                                    <Badge className={
+                                      ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
+                                      ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700" :
+                                      ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
+                                      ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
+                                      "bg-yellow-100 text-yellow-700"
+                                    } className="text-[8px] md:text-[10px] capitalize">
+                                      {ocorrencia.tipo}
+                                    </Badge>
+                                  ) : faltantes.length > 0 ? (
+                                    <Badge variant="destructive" className="text-[8px] md:text-[10px]">
+                                      {faltantes.join(", ")}ª
                                     </Badge>
                                   ) : (
-                                    <span className="text-slate-400 text-[10px]">-</span>
+                                    <span className="text-slate-400">-</span>
                                   )}
                                 </td>
-                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-bold">
+                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-semibold">
                                   <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
                                     {minToHHmm(saldoDia.saldo)}
                                   </span>
@@ -503,10 +492,22 @@ export default function PontoPage() {
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => handleAbrirOcorrencia(grupo)}
-                                      className="h-6 w-6 md:h-7 md:w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
-                                      title="Gerenciar Ocorrência"
+                                      className="h-6 md:h-7 px-2 hover:bg-blue-100 hover:text-blue-600 text-[9px] md:text-[10px]"
+                                      title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
                                     >
-                                      <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                      {ocorrencia ? (
+                                        <Badge className={
+                                          ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
+                                          ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700" :
+                                          ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
+                                          ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
+                                          "bg-yellow-100 text-yellow-700"
+                                        } className="text-[8px] md:text-[10px] capitalize cursor-pointer">
+                                          {ocorrencia.tipo}
+                                        </Badge>
+                                      ) : (
+                                        <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                      )}
                                     </Button>
                                   </div>
                                 </td>
@@ -558,43 +559,39 @@ export default function PontoPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm font-semibold">Tipo de Ocorrência</Label>
+                <Label className="text-xs md:text-sm font-semibold">Tipo de Ação</Label>
                 <Select
                   value={ocorrenciaModal.tipo}
-                  onValueChange={(value) => setOcorrenciaModal({...ocorrenciaModal, tipo: value})}
+                  onValueChange={(value) => setOcorrenciaModal({...ocorrenciaModal, tipo: value, descricao: ocorrenciaModal.descricao || ''})}
                 >
                   <SelectTrigger className="text-xs md:text-sm">
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="normal">Normal (Sem Ocorrência)</SelectItem>
-                    <SelectItem value="atestado">Atestado Médico</SelectItem>
-                    <SelectItem value="abono">Abono</SelectItem>
+                    <SelectItem value="atestado">Atestado</SelectItem>
+                    <SelectItem value="abonado">Abonado</SelectItem>
                     <SelectItem value="folga">Folga</SelectItem>
                     <SelectItem value="ferias">Férias</SelectItem>
-                    <SelectItem value="falta_justificada">Falta Justificada</SelectItem>
-                    <SelectItem value="ajuste_manual">Ajuste Manual</SelectItem>
+                    <SelectItem value="justificativa">Justificativa</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {ocorrenciaModal.tipo !== "normal" && (
-                <div className="space-y-2">
-                  <Label className="text-xs md:text-sm font-semibold">Descrição/Justificativa</Label>
-                  <Textarea
-                    value={ocorrenciaModal.descricao || ''}
-                    onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, descricao: e.target.value})}
-                    placeholder="Descreva o motivo da ocorrência..."
-                    rows={4}
-                    className="text-xs md:text-sm resize-none"
-                  />
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label className="text-xs md:text-sm font-semibold">Descrição/Justificativa</Label>
+                <Textarea
+                  value={ocorrenciaModal.descricao || ''}
+                  onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, descricao: e.target.value})}
+                  placeholder="Ex: Atestado médico, reunião externa, feriado local, etc..."
+                  rows={4}
+                  className="text-xs md:text-sm resize-none"
+                />
+              </div>
 
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <p className="text-[10px] md:text-xs text-blue-800">
                   <strong>📋 Importante:</strong> As batidas originais do relógio nunca são alteradas. 
-                  Esta ocorrência registra apenas a ação tomada (atestado, abono, etc.) para fins de gestão e relatórios.
+                  Esta ação apenas registra a justificativa/abono para fins de gestão.
                 </p>
               </div>
 
