@@ -179,13 +179,38 @@ async function normalizar(registros, funcionarios) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
     
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    let user;
+    try {
+      user = await base44.auth.me();
+    } catch (authError) {
+      console.error('Erro de autenticação:', authError);
+      return Response.json({ 
+        success: false,
+        error: 'Erro de autenticação',
+        details: authError.message 
+      }, { status: 401 });
     }
     
-    const body = await req.json();
+    if (!user) {
+      return Response.json({ 
+        success: false,
+        error: 'Usuário não autenticado' 
+      }, { status: 401 });
+    }
+    
+    let body;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      console.error('Erro ao parsear JSON:', parseError);
+      return Response.json({ 
+        success: false,
+        error: 'Erro ao ler dados da requisição',
+        details: parseError.message 
+      }, { status: 400 });
+    }
+    
     const { conteudo_colado, file_data, nome_arquivo } = body;
     
     if (!conteudo_colado && !file_data) {
