@@ -20,6 +20,7 @@ export default function AdiantamentoForm({
   const [tab, setTab] = useState("dados");
   const [openFuncionario, setOpenFuncionario] = useState(false);
   const [openPlano, setOpenPlano] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [form, setForm] = useState({
     funcionario_id: "",
@@ -66,11 +67,21 @@ export default function AdiantamentoForm({
     if (e && e.preventDefault) {
       e.preventDefault();
     }
-    const payload = {
-      ...form,
-      valor: form.valor === "" ? 0 : Number(String(form.valor).replace(",", ".")),
-    };
-    await onSave(payload);
+    
+    if (isSaving) return;
+    
+    try {
+      setIsSaving(true);
+      const payload = {
+        ...form,
+        valor: form.valor === "" ? 0 : Number(String(form.valor).replace(",", ".")),
+      };
+      await onSave(payload);
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const setField = (field, value) => setForm((f) => ({ ...f, [field]: value }));
@@ -269,11 +280,11 @@ export default function AdiantamentoForm({
 
           {/* Rodapé fixo */}
           <div className="sticky bottom-0 left-0 right-0 bg-white border-t mt-auto px-6 py-3 flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>
               <X className="mr-2 h-4 w-4" /> Cancelar
             </Button>
-            <Button type="submit" disabled={!canSave}>
-              <Save className="mr-2 h-4 w-4" /> Salvar
+            <Button type="submit" disabled={!canSave || isSaving}>
+              <Save className="mr-2 h-4 w-4" /> {isSaving ? "Salvando..." : "Salvar"}
             </Button>
           </div>
         </form>
