@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
+import PontoDashboard from "@/components/ponto/PontoDashboard";
+import CalendarioPonto from "@/components/ponto/CalendarioPonto";
 
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
