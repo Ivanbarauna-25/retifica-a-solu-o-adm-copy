@@ -661,7 +661,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                       <thead className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 sticky top-0 z-10 shadow-md">
                         <tr>
                           <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">ID</th>
-                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">Nome</th>
                           <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">Data/Hora</th>
                           <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600 hidden md:table-cell">Modo</th>
                           <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">Funcionário</th>
@@ -679,9 +678,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                             <td className="font-mono text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-900 font-bold">
                               {reg.user_id_relogio || '-'}
                             </td>
-                            <td className="text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-700 font-medium max-w-[120px] md:max-w-none truncate">
-                              {reg.nome_arquivo || '-'}
-                            </td>
                             <td className="font-mono text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-900 whitespace-nowrap font-semibold">
                               {reg.data && reg.hora ? `${reg.data} ${reg.hora.substring(0, 5)}` : '-'}
                             </td>
@@ -694,7 +690,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                                 onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
                               >
                                 <SelectTrigger className="h-8 md:h-9 text-[10px] md:text-xs border-2 border-slate-300 bg-white rounded-lg font-medium hover:border-blue-500 transition-colors">
-                                  <SelectValue placeholder="Selecionar..." />
+                                  <SelectValue placeholder={reg.nome_arquivo ? `📋 ${reg.nome_arquivo}` : "Selecionar funcionário..."} />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
                                   {funcionarios.map((f) => (
