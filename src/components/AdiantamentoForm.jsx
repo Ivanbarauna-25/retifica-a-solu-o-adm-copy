@@ -62,13 +62,13 @@ export default function AdiantamentoForm({
     return form.funcionario_id && form.data_adiantamento && form.valor !== "";
   }, [form]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
       ...form,
       valor: form.valor === "" ? 0 : Number(String(form.valor).replace(",", ".")),
     };
-    onSave(payload);
+    await onSave(payload);
   };
 
   const setField = (field, value) => setForm((f) => ({ ...f, [field]: value }));
