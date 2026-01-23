@@ -25,16 +25,19 @@ export default function EspelhoPontoPage() {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [funcs, configs, esc, funcEsc] = await Promise.all([
+        const [funcs, configs, esc, funcEsc, cargos] = await Promise.all([
           base44.entities.Funcionario.list(),
           base44.entities.Configuracoes.list(),
           base44.entities.EscalaTrabalho.list(),
-          base44.entities.FuncionarioEscala.list()
+          base44.entities.FuncionarioEscala.list(),
+          base44.entities.Cargo.list()
         ]);
         setFuncionarios((funcs || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
         setConfiguracoes(configs?.[0] || null);
         setEscalas(esc || []);
         setFuncionariosEscalas(funcEsc || []);
+        // Armazenar cargos no localStorage para referência
+        sessionStorage.setItem('cargosMap', JSON.stringify((cargos || []).reduce((acc, c) => ({ ...acc, [c.id]: c }), {})));
       } catch (error) {
         console.error("Erro ao carregar:", error);
         toast({ title: "Erro", description: "Falha ao carregar dados", variant: "destructive" });
@@ -162,6 +165,7 @@ export default function EspelhoPontoPage() {
               configuracoes={configuracoes}
               escalas={escalas}
               funcionariosEscalas={funcionariosEscalas}
+              cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
             />
           </div>
         )}
