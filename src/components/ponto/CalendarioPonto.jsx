@@ -1,0 +1,186 @@
+import React, { useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+export default function CalendarioPonto({ 
+  registros, 
+  funcionariosEscalas, 
+  ocorrencias, 
+  funcionarioSelecionado,
+  onDiaClicado 
+}) {
+  const [mes, setMes] = React.useState(new Date());
+
+  const getDaysInMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const cores = useMemo(() => {
+    const map = {};
+
+    if (funcionarioSelecionado === "todos") {
+      // Visão geral: verde se tem ponto, vermelho se sem ponto com escala
+      registros.forEach(r => {
+        const key = r.data;
+        const temEscala = funcionariosEscalas.some(fe => fe.funcionario_id === r.funcionario_id);
+        if (temEscala && !map[key]) {
+          map[key] = "verde"; // tem ponto
+        }
+      });
+
+      // Marcar faltas não justificadas
+      ocorrencias.forEach(o => {
+        const key = o.data;
+        if (!registros.some(r => r.funcionario_id === o.funcionario_id && r.data === o.data)) {
+          if (['atestado', 'abonado', 'folga', 'ferias'].includes(o.tipo)) {
+            map[key] = "cinza"; // justificado
+          }
+        }
+      });
+    } else {
+      // Visão individual do funcionário
+      registros.forEach(r => {
+        if (r.funcionario_id === funcionarioSelecionado) {
+          const key = r.data;
+          const temOcorrencia = ocorrencias.find(o => o.funcionario_id === r.funcionario_id && o.data === key);
+          
+          if (temOcorrencia) {
+            if (['atestado', 'abonado', 'folga', 'ferias'].includes(temOcorrencia.tipo)) {
+              map[key] = "cinza"; // justificado
+            } else {
+              map[key] = "amarelo"; // justificativa pendente
+            }
+          } else {
+            map[key] = "verde"; // com ponto
+          }
+        }
+      });
+    }
+
+    return map;
+  }, [registros, ocorrencias, funcionarioSelecionado]);
+
+  const getStatusDia = (dia) => {
+    const dataStr = `${mes.getFullYear()}-${String(mes.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+    const cor = cores[dataStr];
+
+    if (cor === "verde") return { class: "bg-green-100 border-green-300 text-green-700", label: "✓" };
+    if (cor === "cinza") return { class: "bg-gray-100 border-gray-300 text-gray-700", label: "○" };
+    if (cor === "amarelo") return { class: "bg-yellow-100 border-yellow-300 text-yellow-700", label: "!" };
+    return { class: "bg-slate-50 border-slate-200 text-slate-500", label: "-" };
+  };
+
+  const daysInMonth = getDaysInMonth(mes);
+  const firstDay = getFirstDayOfMonth(mes);
+  const days = [];
+
+  for (let i = 0; i < firstDay; i++) {
+    days.push(null);
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push(i);
+  }
+
+  const handlePrevMes = () => {
+    setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1));
+  };
+
+  const handleProxMes = () => {
+    setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1));
+  };
+
+  const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  const diaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+
+  return (
+    <Card className="shadow-sm">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm md:text-base">Calendário de Ponto</CardTitle>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handlePrevMes}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <span className="text-xs md:text-sm font-semibold min-w-[120px] text-center">
+              {meses[mes.getMonth()]} {mes.getFullYear()}
+            </span>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleProxMes}
+              className="h-8 w-8 p-0"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Legenda */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-[10px] md:text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-green-100 border border-green-300 rounded"></div>
+            <span>Com ponto</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-yellow-100 border border-yellow-300 rounded"></div>
+            <span>Justificativa</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-gray-100 border border-gray-300 rounded"></div>
+            <span>Justificado</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-slate-50 border border-slate-200 rounded"></div>
+            <span>Sem registro</span>
+          </div>
+        </div>
+
+        {/* Grid do calendário */}
+        <div className="grid grid-cols-7 gap-1">
+          {/* Cabeçalho com dias da semana */}
+          {diaSemana.map(dia => (
+            <div key={dia} className="text-center font-semibold text-[9px] md:text-xs text-slate-600 py-2">
+              {dia}
+            </div>
+          ))}
+
+          {/* Dias */}
+          {days.map((dia, idx) => {
+            if (!dia) {
+              return <div key={`empty-${idx}`} className="aspect-square"></div>;
+            }
+
+            const dataStr = `${mes.getFullYear()}-${String(mes.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+            const status = getStatusDia(dia);
+
+            return (
+              <button
+                key={dia}
+                onClick={() => onDiaClicado?.(dataStr)}
+                className={`aspect-square flex items-center justify-center rounded border-2 text-xs md:text-sm font-semibold transition-colors hover:shadow-md cursor-pointer ${status.class}`}
+                title={dataStr}
+              >
+                <div className="flex flex-col items-center">
+                  <span>{dia}</span>
+                  <span className="text-[8px] md:text-[10px] opacity-70">{status.label}</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
