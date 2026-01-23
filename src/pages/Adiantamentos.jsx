@@ -241,6 +241,95 @@ export default function AdiantamentosPage() {
     );
   };
 
+  const excluirMultiplos = async (ids) => {
+    showConfirm(
+      'Confirmar Exclusão em Lote',
+      `Tem certeza que deseja excluir ${ids.length} adiantamento(s)?`,
+      async () => {
+        setProcessandoLote(true);
+        progress.start('Excluindo adiantamentos...', ids.length);
+        
+        try {
+          let sucessos = 0;
+          for (let i = 0; i < ids.length; i++) {
+            await base44.entities.Adiantamento.delete(ids[i]);
+            sucessos++;
+            progress.updateProgress(i + 1);
+          }
+          
+          setSelecionados([]);
+          await carregar();
+          progress.success(`${sucessos} adiantamento(s) excluído(s) com sucesso.`);
+        } catch (error) {
+          progress.error(error.message);
+        } finally {
+          setProcessandoLote(false);
+        }
+      }
+    );
+  };
+
+  const rejectMultiplos = async (ids) => {
+    showConfirm(
+      'Rejeitar em Lote',
+      `Tem certeza que deseja rejeitar ${ids.length} adiantamento(s)?`,
+      async () => {
+        setProcessandoLote(true);
+        progress.start('Rejeitando adiantamentos...', ids.length);
+        
+        try {
+          let sucessos = 0;
+          for (let i = 0; i < ids.length; i++) {
+            const a = itens.find(x => x.id === ids[i]);
+            if (a && a.status === 'pendente') {
+              await base44.entities.Adiantamento.update(ids[i], { status: 'cancelado' });
+              sucessos++;
+            }
+            progress.updateProgress(i + 1);
+          }
+          
+          setSelecionados([]);
+          await carregar();
+          progress.success(`${sucessos} adiantamento(s) rejeitado(s) com sucesso.`);
+        } catch (error) {
+          progress.error(error.message);
+        } finally {
+          setProcessandoLote(false);
+        }
+      }
+    );
+  };
+
+  const exportarSelecionados = () => {
+    const dados = adiantamentosSelecionados.map(a => ({
+      'Funcionário': getFuncionarioNome(a.funcionario_id),
+      'Data': formatDate(a.data_adiantamento),
+      'Competência': a.competencia,
+      'Valor': formatCurrency(a.valor),
+      'Status': statusLabels[a.status],
+      'Motivo': a.motivo || '-'
+    }));
+    
+    const csv = [
+      Object.keys(dados[0]),
+      ...dados.map(d => Object.values(d).map(v => `"${v}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `adiantamentos_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "✅ Exportado",
+      description: `${selecionados.length} adiantamento(s) exportado(s) com sucesso.`
+    });
+  };
+
   const onSave = async (data) => {
     try {
       if (editando) {
