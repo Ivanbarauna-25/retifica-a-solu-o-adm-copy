@@ -213,7 +213,18 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
           </div>
 
           <div className="md:col-span-2">
-            <Label className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 block">Motivo</Label>
+            <div className="flex items-center justify-between mb-1 md:mb-2">
+              <Label className="text-xs md:text-sm font-bold text-slate-900">Motivo</Label>
+              {form.funcionario_id && autoComplete.sugerirMotivo(form.funcionario_id) && !form.motivo && (
+                <button
+                  type="button"
+                  onClick={() => setField("motivo", autoComplete.sugerirMotivo(form.funcionario_id))}
+                  className="text-[10px] md:text-xs text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+                >
+                  <Zap className="w-3 h-3" /> Último
+                </button>
+              )}
+            </div>
             <Textarea
               placeholder="Descreva o motivo"
               value={form.motivo}
