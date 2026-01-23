@@ -126,29 +126,29 @@ export default function CalendarioPonto({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-2 md:px-6 py-3 md:py-4">
         {/* Legenda */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-[10px] md:text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 md:w-4 md:h-4 bg-green-100 border border-green-300 rounded"></div>
-            <span>Com ponto</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-2 mb-3 md:mb-4 text-[9px] md:text-xs">
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-green-100 border border-green-300 rounded flex-shrink-0"></div>
+            <span className="truncate">Com ponto</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 md:w-4 md:h-4 bg-yellow-100 border border-yellow-300 rounded"></div>
-            <span>Justificativa</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-yellow-100 border border-yellow-300 rounded flex-shrink-0"></div>
+            <span className="truncate">Justificativa</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 md:w-4 md:h-4 bg-gray-100 border border-gray-300 rounded"></div>
-            <span>Justificado</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-gray-100 border border-gray-300 rounded flex-shrink-0"></div>
+            <span className="truncate">Justificado</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 md:w-4 md:h-4 bg-slate-50 border border-slate-200 rounded"></div>
-            <span>Sem registro</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 md:w-4 md:h-4 bg-slate-50 border border-slate-200 rounded flex-shrink-0"></div>
+            <span className="truncate">Sem registro</span>
           </div>
         </div>
 
         {/* Grid do calendário */}
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-0.5 md:gap-1">
           {/* Cabeçalho com dias da semana */}
           {diaSemana.map(dia => (
             <div key={dia} className="text-center font-semibold text-[9px] md:text-xs text-slate-600 py-2">
