@@ -421,16 +421,22 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         }
       }}
     >
-      <DialogContent className="max-w-[98vw] w-[98vw] max-h-[95vh] flex flex-col p-0 gap-0 sm:max-w-7xl rounded-xl overflow-hidden">
-        <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-3 sm:px-5 py-2.5 sm:py-4 sticky top-0 z-10 shadow-md">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xs sm:text-lg font-bold flex items-center gap-2">
-              <Upload className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-              <div className="flex flex-col">
-                <span>{preview ? 'Revisar Importação' : 'Importar Batidas'}</span>
-                {preview && <span className="text-[9px] sm:text-xs font-normal text-slate-300">Revise e ajuste os registros antes de confirmar</span>}
+      <DialogContent className="max-w-[96vw] w-[96vw] max-h-[90vh] md:max-w-7xl flex flex-col p-0 gap-0 rounded-xl overflow-hidden">
+        <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-3 md:px-5 py-2 md:py-3 sticky top-0 z-10 shadow-md">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2 flex-1 min-w-0">
+              <Upload className="w-3.5 h-3.5 md:w-5 md:h-5 flex-shrink-0" />
+              <div className="flex flex-col min-w-0">
+                <DialogTitle className="text-[11px] md:text-lg font-bold truncate">
+                  {preview ? 'Revisar Importação' : 'Importar Batidas'}
+                </DialogTitle>
+                {preview && (
+                  <span className="text-[8px] md:text-xs font-normal text-slate-300 truncate">
+                    Revise os registros antes de confirmar
+                  </span>
+                )}
               </div>
-            </DialogTitle>
+            </div>
 
             <Button
               variant="ghost"
@@ -441,26 +447,26 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   onClose();
                 }
               }}
-              className="text-white hover:bg-slate-600 h-7 w-7 sm:h-8 sm:w-8 p-0 rounded-lg flex-shrink-0"
+              className="text-white hover:bg-slate-600 h-6 w-6 md:h-8 md:w-8 p-0 rounded-lg flex-shrink-0"
               disabled={processando || salvando}
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5 md:w-4 md:h-4" />
             </Button>
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4 space-y-3 sm:space-y-4 bg-slate-50">
+        <div className="flex-1 overflow-y-auto px-2 md:px-5 py-2 md:py-4 space-y-2 md:space-y-4 bg-slate-50">
           {!preview ? (
             <>
-              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-3">
-                <div className="flex items-start gap-2">
-                  <FileText className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-blue-900 font-semibold mb-1">
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-2 md:p-3">
+                <div className="flex items-start gap-1.5 md:gap-2">
+                  <FileText className="w-4 h-4 md:w-5 md:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] md:text-sm text-blue-900 font-semibold mb-0.5 md:mb-1">
                       Formatos suportados
                     </p>
-                    <p className="text-xs text-blue-800">
-                      <strong>TXT:</strong> AttendLog (vínculo por EnNo) | <strong>Excel:</strong> Relatórios do relógio
+                    <p className="text-[9px] md:text-xs text-blue-800">
+                      <strong>TXT:</strong> AttendLog | <strong>Excel:</strong> Relatórios do relógio
                     </p>
                   </div>
                 </div>
@@ -514,33 +520,33 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               )}
             </>
           ) : (
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3">
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-2.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm">
-                  <div className="text-[10px] sm:text-xs text-slate-600 font-semibold mb-1">Total</div>
-                  <div className="text-xl sm:text-3xl font-bold text-slate-900">{totalRegistros}</div>
+            <div className="space-y-2 md:space-y-4">
+              <div className="grid grid-cols-3 gap-1.5 md:gap-3 mb-2 md:mb-3">
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-4 rounded-lg md:rounded-xl border border-slate-200 shadow-sm">
+                  <div className="text-[8px] md:text-xs text-slate-600 font-semibold mb-0.5 md:mb-1">Total</div>
+                  <div className="text-lg md:text-3xl font-bold text-slate-900">{totalRegistros}</div>
                 </div>
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-2.5 sm:p-4 rounded-xl border border-green-200 shadow-sm">
-                  <div className="text-[10px] sm:text-xs text-green-700 font-semibold mb-1">Válidos</div>
-                  <div className="text-xl sm:text-3xl font-bold text-green-700">{totalValidos}</div>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-2 md:p-4 rounded-lg md:rounded-xl border border-green-200 shadow-sm">
+                  <div className="text-[8px] md:text-xs text-green-700 font-semibold mb-0.5 md:mb-1">Válidos</div>
+                  <div className="text-lg md:text-3xl font-bold text-green-700">{totalValidos}</div>
                 </div>
-                <div className="bg-gradient-to-br from-red-50 to-red-100 p-2.5 sm:p-4 rounded-xl border border-red-200 shadow-sm">
-                  <div className="text-[10px] sm:text-xs text-red-700 font-semibold mb-1">Pendentes</div>
-                  <div className="text-xl sm:text-3xl font-bold text-red-700">{totalInvalidos}</div>
+                <div className="bg-gradient-to-br from-red-50 to-red-100 p-2 md:p-4 rounded-lg md:rounded-xl border border-red-200 shadow-sm">
+                  <div className="text-[8px] md:text-xs text-red-700 font-semibold mb-0.5 md:mb-1">Pendentes</div>
+                  <div className="text-lg md:text-3xl font-bold text-red-700">{totalInvalidos}</div>
                 </div>
               </div>
 
-              <div className="border rounded-lg overflow-hidden shadow-sm">
+              <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
                 <div className="overflow-x-auto">
-                  <div className="max-h-[55vh] overflow-y-auto">
-                    <table className="w-full">
+                  <div className="max-h-[45vh] md:max-h-[55vh] overflow-y-auto">
+                    <table className="w-full min-w-[600px]">
                       <thead className="bg-slate-800 sticky top-0 z-10">
                         <tr>
-                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap">EnNo</th>
-                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap hidden md:table-cell">Nome</th>
-                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap">Data/Hora</th>
-                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap">Funcionário</th>
-                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-center whitespace-nowrap">Status</th>
+                          <th className="text-white text-[8px] md:text-[11px] font-semibold px-1 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">EnNo</th>
+                          <th className="text-white text-[8px] md:text-[11px] font-semibold px-1 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap hidden lg:table-cell">Nome</th>
+                          <th className="text-white text-[8px] md:text-[11px] font-semibold px-1 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Data/Hora</th>
+                          <th className="text-white text-[8px] md:text-[11px] font-semibold px-1 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Funcionário</th>
+                          <th className="text-white text-[8px] md:text-[11px] font-semibold px-1 md:px-3 py-1.5 md:py-2 text-center whitespace-nowrap">Status</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -549,47 +555,47 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                             key={idx} 
                             className={`border-b border-slate-200 ${reg.valido ? "bg-green-50/30 hover:bg-green-50" : "bg-red-50/30 hover:bg-red-50"} transition-colors`}
                           >
-                            <td className="font-mono text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-slate-900 font-medium whitespace-nowrap">
+                            <td className="font-mono text-[8px] md:text-[11px] px-1 md:px-3 py-1.5 md:py-2 text-slate-900 font-medium whitespace-nowrap">
                               {reg.user_id_relogio || '-'}
                             </td>
-                            <td className="text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-slate-700 hidden md:table-cell">
-                              {(reg.nome_arquivo || reg.nome_detectado || '-').substring(0, 25)}
+                            <td className="text-[8px] md:text-[11px] px-1 md:px-3 py-1.5 md:py-2 text-slate-700 hidden lg:table-cell">
+                              {(reg.nome_arquivo || reg.nome_detectado || '-').substring(0, 20)}
                             </td>
-                            <td className="font-mono text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-slate-900 whitespace-nowrap">
+                            <td className="font-mono text-[8px] md:text-[11px] px-1 md:px-3 py-1.5 md:py-2 text-slate-900 whitespace-nowrap">
                               {reg.data_hora ? (
                                 <div className="flex flex-col">
-                                  <span>{reg.data_hora.substring(0, 10)}</span>
-                                  <span className="text-slate-600">{reg.data_hora.substring(11, 19)}</span>
+                                  <span className="text-[8px] md:text-[10px]">{reg.data_hora.substring(0, 10)}</span>
+                                  <span className="text-[8px] md:text-[10px] text-slate-600">{reg.data_hora.substring(11, 16)}</span>
                                 </div>
                               ) : '-'}
                             </td>
-                            <td className="px-1.5 sm:px-3 py-2">
+                            <td className="px-1 md:px-3 py-1.5 md:py-2">
                               <Select
                                 value={reg.funcionario_id || ''}
                                 onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
                               >
-                                <SelectTrigger className="h-7 text-[9px] sm:text-[11px] border-slate-300 bg-white hover:bg-slate-50">
+                                <SelectTrigger className="h-6 md:h-7 text-[8px] md:text-[11px] border-slate-300 bg-white hover:bg-slate-50">
                                   <SelectValue placeholder="Selecionar..." />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-[200px]">
+                                <SelectContent className="max-h-[180px]">
                                   {funcionarios.map((f) => (
-                                    <SelectItem key={f.id} value={f.id} className="text-[10px] sm:text-xs">
+                                    <SelectItem key={f.id} value={f.id} className="text-[9px] md:text-xs">
                                       {f.nome}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             </td>
-                            <td className="text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-center">
+                            <td className="text-[8px] md:text-[11px] px-1 md:px-3 py-1.5 md:py-2 text-center">
                               {reg.valido ? (
-                                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
-                                  <CheckCircle2 className="w-3 h-3" />
-                                  <span className="hidden sm:inline">OK</span>
+                                <div className="inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium text-[8px] md:text-[10px]">
+                                  <CheckCircle2 className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                  <span className="hidden md:inline">OK</span>
                                 </div>
                               ) : (
-                                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium" title={reg.motivo_invalido}>
-                                  <AlertCircle className="w-3 h-3" />
-                                  <span className="hidden sm:inline">Pendente</span>
+                                <div className="inline-flex items-center gap-0.5 md:gap-1 px-1.5 md:px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium text-[8px] md:text-[10px]" title={reg.motivo_invalido}>
+                                  <AlertCircle className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                  <span className="hidden md:inline">Pend</span>
                                 </div>
                               )}
                             </td>
@@ -604,8 +610,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           )}
         </div>
 
-        <div className="flex-shrink-0 border-t bg-white px-3 sm:px-5 py-2.5 sm:py-3 sticky bottom-0 shadow-lg">
-          <div className="flex gap-2 sm:gap-3 justify-end flex-wrap">
+        <div className="flex-shrink-0 border-t bg-white px-2 md:px-5 py-2 md:py-3 sticky bottom-0 shadow-lg">
+          <div className="flex gap-1.5 md:gap-3 justify-end">
             <Button
               variant="outline"
               onClick={() => {
@@ -620,9 +626,9 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               }}
               disabled={processando || salvando}
               size="sm"
-              className="text-xs sm:text-sm"
+              className="text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-4"
             >
-              <X className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <X className="w-3 h-3 md:w-4 md:h-4 mr-1" />
               {preview ? 'Voltar' : 'Cancelar'}
             </Button>
 
@@ -630,18 +636,18 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               <Button
                 onClick={processarArquivo}
                 disabled={processando || !temEntrada}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-4"
                 size="sm"
               >
                 {processando ? (
                   <>
-                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
-                    <span className="text-xs sm:text-sm">Processando...</span>
+                    <Loader2 className="w-3 h-3 md:w-4 md:h-4 mr-1 animate-spin" />
+                    <span>Processando...</span>
                   </>
                 ) : (
                   <>
-                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="text-xs sm:text-sm">Gerar Preview</span>
+                    <Eye className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span>Preview</span>
                   </>
                 )}
               </Button>
@@ -649,18 +655,18 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               <Button
                 onClick={confirmarImportacao}
                 disabled={salvando || totalValidos === 0}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-4"
                 size="sm"
               >
                 {salvando ? (
                   <>
-                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
-                    <span className="text-xs sm:text-sm">Salvando...</span>
+                    <Loader2 className="w-3 h-3 md:w-4 md:h-4 mr-1 animate-spin" />
+                    <span>Salvando...</span>
                   </>
                 ) : (
                   <>
-                    <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="text-xs sm:text-sm">Confirmar ({totalValidos})</span>
+                    <Save className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    <span>Confirmar ({totalValidos})</span>
                   </>
                 )}
               </Button>
