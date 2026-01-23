@@ -301,6 +301,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       const normalizados = normalizar(registros, funcs);
       const datas = normalizados.filter(r => r.data).map(r => r.data).sort();
 
+      // Validar registros
+      const validacao = validarLote(normalizados);
+      setValidacoes(validacao);
+
       setPreview({
         stats: {
           total: normalizados.length,
