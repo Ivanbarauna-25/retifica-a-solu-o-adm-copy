@@ -336,6 +336,24 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
         }
       }
 
+      // Vincular escala padrão ao funcionário (apenas para novos)
+      if (!funcionario) {
+        try {
+          const escalas = await base44.entities.EscalaTrabalho.filter({ escala_padrao: true, ativo: true });
+          if (escalas && escalas.length > 0) {
+            const escalaPadrao = escalas[0];
+            await base44.entities.FuncionarioEscala.create({
+              funcionario_id: savedFuncionario.id,
+              escala_id: escalaPadrao.id,
+              vigencia_inicio: formData.data_inicio || new Date().toISOString().split('T')[0]
+            });
+          }
+        } catch (escalaError) {
+          console.error('Erro ao vincular escala padrão:', escalaError);
+          // Não bloqueia o cadastro, apenas avisa
+        }
+      }
+
       toast({
         title: funcionario ? 'Funcionário atualizado!' : 'Funcionário cadastrado!',
         description: funcionario ? 'Os dados foram atualizados com sucesso.' : 'Novo funcionário cadastrado com sucesso.'

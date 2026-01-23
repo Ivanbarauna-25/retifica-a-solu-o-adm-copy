@@ -28,7 +28,8 @@ export default function EscalaForm({ escala, onSave, onCancel }) {
     intervalo_fim_previsto: "13:00",
     tolerancia_minutos: 5,
     carga_diaria_minutos: 480,
-    ativo: true
+    ativo: true,
+    escala_padrao: false
   });
 
   const [diasSelecionados, setDiasSelecionados] = useState(["1", "2", "3", "4", "5"]);
@@ -47,7 +48,8 @@ export default function EscalaForm({ escala, onSave, onCancel }) {
         intervalo_fim_previsto: escala.intervalo_fim_previsto || "",
         tolerancia_minutos: escala.tolerancia_minutos || 5,
         carga_diaria_minutos: escala.carga_diaria_minutos || 480,
-        ativo: escala.ativo !== false
+        ativo: escala.ativo !== false,
+        escala_padrao: escala.escala_padrao || false
       });
       setDiasSelecionados((escala.dias_semana || "1,2,3,4,5").split(",").filter(Boolean));
     }
@@ -249,12 +251,24 @@ export default function EscalaForm({ escala, onSave, onCancel }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Checkbox
-          checked={formData.ativo}
-          onCheckedChange={(checked) => setFormData(prev => ({ ...prev, ativo: checked }))}
-        />
-        <Label className="text-xs cursor-pointer">Escala ativa</Label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={formData.ativo}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, ativo: checked }))}
+          />
+          <Label className="text-xs cursor-pointer">Escala ativa</Label>
+        </div>
+        
+        <div className="flex items-center gap-2 p-2 bg-blue-50 rounded border border-blue-200">
+          <Checkbox
+            checked={formData.escala_padrao}
+            onCheckedChange={(checked) => setFormData(prev => ({ ...prev, escala_padrao: checked }))}
+          />
+          <Label className="text-xs cursor-pointer font-medium">
+            Definir como escala padrão para novos funcionários
+          </Label>
+        </div>
       </div>
 
       <div className="flex gap-2 justify-end pt-2">
