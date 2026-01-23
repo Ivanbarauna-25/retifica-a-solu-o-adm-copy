@@ -248,10 +248,21 @@ Deno.serve(async (req) => {
       return Response.json({
         success: false,
         error: 'Nenhum registro encontrado no arquivo'
-      });
+      }, { status: 400 });
     }
     
-    const funcionarios = await base44.asServiceRole.entities.Funcionario.list();
+    let funcionarios;
+    try {
+      funcionarios = await base44.asServiceRole.entities.Funcionario.list();
+    } catch (funcError) {
+      console.error('Erro ao buscar funcionários:', funcError);
+      return Response.json({
+        success: false,
+        error: 'Erro ao buscar funcionários',
+        details: funcError.message
+      }, { status: 500 });
+    }
+    
     const normalizados = await normalizar(registros, funcionarios);
     const datas = normalizados.filter(r => r.data).map(r => r.data).sort();
     
