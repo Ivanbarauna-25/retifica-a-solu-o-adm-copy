@@ -475,15 +475,16 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const totalInvalidos = totalRegistros - totalValidos;
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open && !processando && !salvando) {
-          resetTudo();
-          onClose();
-        }
-      }}
-    >
+    <>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open && !processando && !salvando) {
+            resetTudo();
+            onClose();
+          }
+        }}
+      >
       <DialogContent className="max-w-[100vw] w-[100vw] max-h-[100vh] h-[100vh] md:max-w-7xl md:max-h-[90vh] md:h-auto flex flex-col p-0 gap-0 rounded-none md:rounded-xl overflow-hidden">
         <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white px-3 md:px-6 py-3 md:py-4 sticky top-0 z-20 shadow-xl border-b-2 border-slate-600">
           <div className="flex items-center justify-between gap-3">
