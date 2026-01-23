@@ -478,35 +478,40 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       }}
     >
       <DialogContent className="max-w-[100vw] w-[100vw] max-h-[100vh] h-[100vh] md:max-w-7xl md:max-h-[90vh] md:h-auto flex flex-col p-0 gap-0 rounded-none md:rounded-xl overflow-hidden">
-        <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-2 md:px-5 py-2 md:py-3 sticky top-0 z-10 shadow-md">
-          <div className="flex items-center justify-between gap-1.5 md:gap-2">
-            <div className="flex items-center gap-1.5 md:gap-2 flex-1 min-w-0">
-              <Upload className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
+        <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white px-3 md:px-6 py-3 md:py-4 sticky top-0 z-20 shadow-xl border-b-2 border-slate-600">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 md:gap-3 flex-1 min-w-0">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              </div>
               <div className="flex flex-col min-w-0">
-                <DialogTitle className="text-xs md:text-lg font-bold truncate">
+                <DialogTitle className="text-sm md:text-xl font-bold text-white truncate">
                   {preview ? 'Revisar Importação' : 'Importar Batidas'}
                 </DialogTitle>
-                {preview && (
-                  <span className="text-[9px] md:text-xs font-normal text-slate-300 truncate">
-                    Revise e ajuste antes de confirmar
-                  </span>
-                )}
+                <span className="text-[10px] md:text-xs font-medium text-slate-300 truncate">
+                  {preview ? 'Revise e ajuste antes de confirmar' : 'Faça upload ou cole o conteúdo'}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 md:gap-2">
+            <div className="flex items-center gap-2 md:gap-3">
               {!preview ? (
                 <Button
                   onClick={processarArquivo}
                   disabled={processando || !temEntrada}
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg"
-                  title="Gerar Preview"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white h-8 md:h-10 px-3 md:px-5 rounded-xl shadow-lg font-semibold text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 >
                   {processando ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2 animate-spin" />
+                      <span className="hidden md:inline">Processando</span>
+                    </>
                   ) : (
-                    <Eye className="w-4 h-4" />
+                    <>
+                      <Eye className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                      <span className="hidden md:inline">Preview</span>
+                    </>
                   )}
                 </Button>
               ) : (
@@ -514,13 +519,21 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   onClick={confirmarImportacao}
                   disabled={salvando || totalValidos === 0}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg"
-                  title={`Confirmar ${totalValidos} registros`}
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white h-8 md:h-10 px-3 md:px-5 rounded-xl shadow-lg font-semibold text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
                 >
                   {salvando ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2 animate-spin" />
+                      <span className="hidden md:inline">Salvando</span>
+                    </>
                   ) : (
-                    <Save className="w-4 h-4" />
+                    <>
+                      <Save className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                      Confirmar
+                      <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded-md text-[10px] md:text-xs font-bold">
+                        {totalValidos}
+                      </span>
+                    </>
                   )}
                 </Button>
               )}
@@ -539,10 +552,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   }
                 }}
                 disabled={processando || salvando}
-                className="text-white hover:bg-slate-600 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg flex-shrink-0"
+                className="text-white hover:bg-white/10 h-8 md:h-10 w-8 md:w-10 p-0 rounded-xl flex-shrink-0 transition-all hover:scale-105 disabled:hover:scale-100"
                 title={preview ? 'Voltar' : 'Fechar'}
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </div>
           </div>
@@ -613,79 +626,95 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               )}
             </>
           ) : (
-            <div className="space-y-2 md:space-y-4">
-              <div className="grid grid-cols-3 gap-2 md:gap-3 mb-3 md:mb-3">
-                <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-4 rounded-lg md:rounded-xl border border-slate-200 shadow-sm">
-                  <div className="text-[9px] md:text-xs text-slate-600 font-semibold mb-1">Total</div>
-                  <div className="text-xl md:text-3xl font-bold text-slate-900">{totalRegistros}</div>
+            <div className="space-y-3 md:space-y-4">
+              <div className="grid grid-cols-3 gap-2 md:gap-4">
+                <div className="bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 p-3 md:p-5 rounded-xl md:rounded-2xl border-2 border-slate-200 shadow-md hover:shadow-lg transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] md:text-xs text-slate-600 font-bold uppercase tracking-wide">Total</div>
+                    <FileText className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
+                  </div>
+                  <div className="text-2xl md:text-4xl font-black text-slate-900">{totalRegistros}</div>
+                  <div className="text-[9px] md:text-xs text-slate-500 mt-1 font-medium">registros</div>
                 </div>
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-2 md:p-4 rounded-lg md:rounded-xl border border-green-200 shadow-sm">
-                  <div className="text-[9px] md:text-xs text-green-700 font-semibold mb-1">Válidos</div>
-                  <div className="text-xl md:text-3xl font-bold text-green-700">{totalValidos}</div>
+                <div className="bg-gradient-to-br from-green-50 via-green-100 to-green-50 p-3 md:p-5 rounded-xl md:rounded-2xl border-2 border-green-300 shadow-md hover:shadow-lg transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] md:text-xs text-green-700 font-bold uppercase tracking-wide">Válidos</div>
+                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-green-500" />
+                  </div>
+                  <div className="text-2xl md:text-4xl font-black text-green-700">{totalValidos}</div>
+                  <div className="text-[9px] md:text-xs text-green-600 mt-1 font-medium">prontos</div>
                 </div>
-                <div className="bg-gradient-to-br from-red-50 to-red-100 p-2 md:p-4 rounded-lg md:rounded-xl border border-red-200 shadow-sm">
-                  <div className="text-[9px] md:text-xs text-red-700 font-semibold mb-1">Pendentes</div>
-                  <div className="text-xl md:text-3xl font-bold text-red-700">{totalInvalidos}</div>
+                <div className="bg-gradient-to-br from-red-50 via-red-100 to-red-50 p-3 md:p-5 rounded-xl md:rounded-2xl border-2 border-red-300 shadow-md hover:shadow-lg transition-all">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-[10px] md:text-xs text-red-700 font-bold uppercase tracking-wide">Pendentes</div>
+                    <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
+                  </div>
+                  <div className="text-2xl md:text-4xl font-black text-red-700">{totalInvalidos}</div>
+                  <div className="text-[9px] md:text-xs text-red-600 mt-1 font-medium">corrigir</div>
                 </div>
               </div>
 
-              <div className="border rounded-lg overflow-hidden shadow-sm bg-white">
+              <div className="border-2 border-slate-200 rounded-xl overflow-hidden shadow-lg bg-white">
                 <div className="overflow-x-auto">
-                  <div className="max-h-[calc(100vh-280px)] md:max-h-[55vh] overflow-y-auto">
+                  <div className="max-h-[calc(100vh-350px)] md:max-h-[50vh] overflow-y-auto">
                     <table className="w-full">
-                      <thead className="bg-slate-800 sticky top-0 z-10">
+                      <thead className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 sticky top-0 z-10 shadow-md">
                         <tr>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">EnNo</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Name</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">DateTime</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Mode</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Funcionário</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-center whitespace-nowrap">Status</th>
+                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">ID</th>
+                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">Nome</th>
+                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">Data/Hora</th>
+                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600 hidden md:table-cell">Modo</th>
+                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-left whitespace-nowrap border-r border-slate-600">Funcionário</th>
+                          <th className="text-white text-[10px] md:text-xs font-bold px-2 md:px-4 py-2.5 md:py-3 text-center whitespace-nowrap">Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         {registrosEditaveis.map((reg, idx) => (
                           <tr 
                             key={idx} 
-                            className={`border-b border-slate-200 ${reg.valido ? "bg-green-50/30" : "bg-red-50/30"}`}
+                            className={`border-b-2 border-slate-100 transition-colors hover:bg-slate-50 ${
+                              reg.valido ? "bg-green-50/40" : "bg-red-50/40"
+                            }`}
                           >
-                            <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-900 font-medium">
+                            <td className="font-mono text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-900 font-bold">
                               {reg.user_id_relogio || '-'}
                             </td>
-                            <td className="text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-700">
+                            <td className="text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-700 font-medium max-w-[120px] md:max-w-none truncate">
                               {reg.nome_arquivo || '-'}
                             </td>
-                            <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-900 whitespace-nowrap">
-                              {reg.data && reg.hora ? `${reg.data} ${reg.hora}` : '-'}
+                            <td className="font-mono text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-900 whitespace-nowrap font-semibold">
+                              {reg.data && reg.hora ? `${reg.data} ${reg.hora.substring(0, 5)}` : '-'}
                             </td>
-                            <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-600">
+                            <td className="font-mono text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-slate-600 hidden md:table-cell">
                               {reg.metodo || '-'}
                             </td>
-                            <td className="px-1.5 md:px-3 py-2 md:py-2">
+                            <td className="px-2 md:px-4 py-2.5 md:py-3">
                               <Select
                                 value={reg.funcionario_id || ''}
                                 onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
                               >
-                                <SelectTrigger className="h-7 md:h-7 text-[9px] md:text-[11px] border-slate-300 bg-white">
+                                <SelectTrigger className="h-8 md:h-9 text-[10px] md:text-xs border-2 border-slate-300 bg-white rounded-lg font-medium hover:border-blue-500 transition-colors">
                                   <SelectValue placeholder="Selecionar..." />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
                                   {funcionarios.map((f) => (
-                                    <SelectItem key={f.id} value={f.id} className="text-[10px] md:text-xs">
+                                    <SelectItem key={f.id} value={f.id} className="text-[10px] md:text-xs font-medium">
                                       {f.nome}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             </td>
-                            <td className="text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-center">
+                            <td className="text-[10px] md:text-xs px-2 md:px-4 py-2.5 md:py-3 text-center">
                               {reg.valido ? (
-                                <div className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
-                                  <CheckCircle2 className="w-3 h-3" />
+                                <div className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-gradient-to-r from-green-100 to-green-200 text-green-700 rounded-lg font-bold shadow-sm">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <span className="hidden md:inline text-[10px]">OK</span>
                                 </div>
                               ) : (
-                                <div className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-red-100 text-red-700 rounded-full font-medium" title={reg.motivo_invalido}>
-                                  <AlertCircle className="w-3 h-3" />
+                                <div className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-gradient-to-r from-red-100 to-red-200 text-red-700 rounded-lg font-bold shadow-sm" title={reg.motivo_invalido}>
+                                  <AlertCircle className="w-3.5 h-3.5" />
+                                  <span className="hidden md:inline text-[10px]">Erro</span>
                                 </div>
                               )}
                             </td>
