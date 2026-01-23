@@ -96,26 +96,31 @@ export default function PontoPage() {
     return Object.values(grupos);
   }, [registros]);
 
-  // Função para calcular saldo de horas
+  // Função para calcular saldo de horas baseado na escala
   const calcularSaldoDia = (funcionarioId, data, batidas) => {
-    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    const funcEscala = funcionariosEscalas.find(fe => {
+      if (fe.funcionario_id !== funcionarioId) return false;
+      if (!fe.vigencia_inicio) return false;
+      if (data < fe.vigencia_inicio) return false;
+      if (fe.vigencia_fim && data > fe.vigencia_fim) return false;
+      return true;
+    });
+    
     if (!funcEscala) return { saldo: 0, esperado: 0, trabalhado: 0 };
     
     const escala = escalas.find(e => e.id === funcEscala.escala_id);
     if (!escala) return { saldo: 0, esperado: 0, trabalhado: 0 };
     
+    // Verificar se o dia é trabalhado na escala
     const diaSemana = new Date(data + 'T00:00:00').getDay();
-    const diasMap = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
-    const diaKey = diasMap[diaSemana];
+    const diaNumero = diaSemana === 0 ? "7" : String(diaSemana); // 1=Segunda, 7=Domingo
+    const diasTrabalho = (escala.dias_semana || "").split(",");
     
-    const jornadaEsperada = escala.jornadas?.[diaKey] || [];
-    const totalEsperado = jornadaEsperada.reduce((sum, j) => {
-      const [hIni, mIni] = (j.entrada || "00:00").split(":").map(Number);
-      const [hFim, mFim] = (j.saida || "00:00").split(":").map(Number);
-      const minIni = hIni * 60 + mIni;
-      const minFim = hFim * 60 + mFim;
-      return sum + (minFim - minIni);
-    }, 0);
+    if (!diasTrabalho.includes(diaNumero)) {
+      return { saldo: 0, esperado: 0, trabalhado: 0 };
+    }
+    
+    const totalEsperado = escala.carga_diaria_minutos || 0;
     
     let totalTrabalhado = 0;
     for (let i = 0; i < batidas.length; i += 2) {
@@ -139,27 +144,35 @@ export default function PontoPage() {
     };
   };
 
-  // Função para pegar batidas esperadas da escala
+  // Função para pegar batidas esperadas da escala (4 batidas padrão)
   const getBatidasEsperadas = (funcionarioId, data) => {
-    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    const funcEscala = funcionariosEscalas.find(fe => {
+      if (fe.funcionario_id !== funcionarioId) return false;
+      if (!fe.vigencia_inicio) return false;
+      if (data < fe.vigencia_inicio) return false;
+      if (fe.vigencia_fim && data > fe.vigencia_fim) return false;
+      return true;
+    });
+    
     if (!funcEscala) return [];
     
     const escala = escalas.find(e => e.id === funcEscala.escala_id);
     if (!escala) return [];
     
+    // Verificar se o dia é trabalhado
     const diaSemana = new Date(data + 'T00:00:00').getDay();
-    const diasMap = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado'];
-    const diaKey = diasMap[diaSemana];
+    const diaNumero = diaSemana === 0 ? "7" : String(diaSemana);
+    const diasTrabalho = (escala.dias_semana || "").split(",");
     
-    const jornadaEsperada = escala.jornadas?.[diaKey] || [];
-    const esperadas = [];
+    if (!diasTrabalho.includes(diaNumero)) return [];
     
-    for (const j of jornadaEsperada) {
-      esperadas.push(j.entrada || "");
-      esperadas.push(j.saida || "");
-    }
-    
-    return esperadas;
+    // Retornar as 4 batidas esperadas (entrada, saída almoço, volta almoço, saída final)
+    return [
+      escala.hora_entrada_prevista || "",
+      escala.intervalo_inicio_previsto || "",
+      escala.intervalo_fim_previsto || "",
+      escala.hora_saida_prevista || ""
+    ].filter(h => h);
   };
 
   const registrosFiltrados = useMemo(() => {
@@ -188,7 +201,7 @@ export default function PontoPage() {
       funcionario_id: grupo.funcionario_id,
       data: grupo.data,
       tipo: ocorrenciaExistente?.tipo || "normal",
-      justificativa: ocorrenciaExistente?.justificativa || "",
+      descricao: ocorrenciaExistente?.descricao || "",
       ocorrencia_id: ocorrenciaExistente?.id || null
     });
     setIsOcorrenciaModalOpen(true);
@@ -198,18 +211,24 @@ export default function PontoPage() {
     if (!ocorrenciaModal) return;
     
     try {
-      if (ocorrenciaModal.ocorrencia_id) {
-        await base44.entities.OcorrenciaPonto.update(ocorrenciaModal.ocorrencia_id, {
-          tipo: ocorrenciaModal.tipo,
-          justificativa: ocorrenciaModal.justificativa
-        });
-      } else {
-        await base44.entities.OcorrenciaPonto.create({
-          funcionario_id: ocorrenciaModal.funcionario_id,
-          data: ocorrenciaModal.data,
-          tipo: ocorrenciaModal.tipo,
-          justificativa: ocorrenciaModal.justificativa
-        });
+      if (ocorrenciaModal.tipo === "normal" && ocorrenciaModal.ocorrencia_id) {
+        // Se tipo é normal e já existe, deletar a ocorrência
+        await base44.entities.OcorrenciaPonto.delete(ocorrenciaModal.ocorrencia_id);
+      } else if (ocorrenciaModal.tipo !== "normal") {
+        // Criar ou atualizar ocorrência
+        if (ocorrenciaModal.ocorrencia_id) {
+          await base44.entities.OcorrenciaPonto.update(ocorrenciaModal.ocorrencia_id, {
+            tipo: ocorrenciaModal.tipo,
+            descricao: ocorrenciaModal.descricao
+          });
+        } else {
+          await base44.entities.OcorrenciaPonto.create({
+            funcionario_id: ocorrenciaModal.funcionario_id,
+            data: ocorrenciaModal.data,
+            tipo: ocorrenciaModal.tipo,
+            descricao: ocorrenciaModal.descricao
+          });
+        }
       }
       
       toast({
@@ -380,21 +399,22 @@ export default function PontoPage() {
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">2ª</th>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">3ª</th>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">4ª</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Faltou</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Saldo</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ação</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Posição Faltante</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ocorrência</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Saldo do Dia</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
                         {isLoading ? (
                           <tr>
-                            <td colSpan={9} className="text-center py-12">
+                            <td colSpan={10} className="text-center py-12">
                               <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
                             </td>
                           </tr>
                         ) : registrosFiltrados.length === 0 ? (
                           <tr>
-                            <td colSpan={9} className="text-center py-12">
+                            <td colSpan={10} className="text-center py-12">
                               <div className="flex flex-col items-center gap-3">
                                 <FileText className="w-16 h-16 text-slate-300" />
                                 <p className="text-slate-500 text-xs md:text-sm font-medium">Nenhum registro encontrado</p>
@@ -405,20 +425,19 @@ export default function PontoPage() {
                         ) : (
                           registrosFiltrados.map((grupo, idx) => {
                             const batidasEsperadas = getBatidasEsperadas(grupo.funcionario_id, grupo.data);
+                            const numBatidasEsperadas = batidasEsperadas.length;
                             const saldoDia = calcularSaldoDia(grupo.funcionario_id, grupo.data, grupo.batidas);
                             const ocorrencia = ocorrencias.find(o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data);
                             
-                            const batidas = [
-                              grupo.batidas[0] ? formatarHora(grupo.batidas[0].hora || grupo.batidas[0].data_hora?.substring(11, 19)) : "00:00",
-                              grupo.batidas[1] ? formatarHora(grupo.batidas[1].hora || grupo.batidas[1].data_hora?.substring(11, 19)) : "00:00",
-                              grupo.batidas[2] ? formatarHora(grupo.batidas[2].hora || grupo.batidas[2].data_hora?.substring(11, 19)) : "00:00",
-                              grupo.batidas[3] ? formatarHora(grupo.batidas[3].hora || grupo.batidas[3].data_hora?.substring(11, 19)) : "00:00"
-                            ];
+                            // Exibir batidas na posição correta
+                            const batidas = ["", "", "", ""];
+                            const posicoesFaltantes = [];
                             
-                            const faltantes = [];
-                            for (let i = 0; i < batidasEsperadas.length; i++) {
-                              if (!grupo.batidas[i]) {
-                                faltantes.push(i + 1);
+                            for (let i = 0; i < numBatidasEsperadas && i < 4; i++) {
+                              if (grupo.batidas[i]) {
+                                batidas[i] = formatarHora(grupo.batidas[i].hora || grupo.batidas[i].data_hora?.substring(11, 19));
+                              } else {
+                                posicoesFaltantes.push(i + 1);
                               }
                             }
                             
@@ -430,62 +449,65 @@ export default function PontoPage() {
                                 <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center text-slate-900 font-semibold">
                                   {formatarData(grupo.data)}
                                 </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${batidas[0] === "00:00" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[0]}
-                                </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${batidas[1] === "00:00" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[1]}
-                                </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${batidas[2] === "00:00" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[2]}
-                                </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${batidas[3] === "00:00" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[3]}
-                                </td>
+                                {batidas.map((batida, i) => (
+                                  <td 
+                                    key={i} 
+                                    className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${
+                                      !batida || batida === "" ? "text-red-500 font-bold" : "text-slate-900"
+                                    }`}
+                                  >
+                                    {batida || "faltou"}
+                                  </td>
+                                ))}
                                 <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                  {faltantes.length > 0 ? (
+                                  {posicoesFaltantes.length > 0 ? (
                                     <Badge variant="destructive" className="text-[8px] md:text-[10px]">
-                                      {faltantes.join(", ")}ª
+                                      {posicoesFaltantes.join(", ")}ª
                                     </Badge>
                                   ) : (
-                                    <span className="text-slate-400">-</span>
+                                    <span className="text-green-600 font-semibold">✓</span>
                                   )}
                                 </td>
-                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-semibold">
+                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
+                                  {ocorrencia ? (
+                                    <Badge 
+                                      className={`text-[8px] md:text-[10px] cursor-pointer ${
+                                        ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
+                                        ocorrencia.tipo === "abono" ? "bg-green-100 text-green-700" :
+                                        ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
+                                        ocorrencia.tipo === "ferias" ? "bg-orange-100 text-orange-700" :
+                                        ocorrencia.tipo === "falta_justificada" ? "bg-yellow-100 text-yellow-700" :
+                                        "bg-slate-100 text-slate-700"
+                                      }`}
+                                      onClick={() => handleAbrirOcorrencia(grupo)}
+                                    >
+                                      {ocorrencia.tipo === "atestado" ? "Atestado" :
+                                       ocorrencia.tipo === "abono" ? "Abonado" :
+                                       ocorrencia.tipo === "folga" ? "Folga" :
+                                       ocorrencia.tipo === "ferias" ? "Férias" :
+                                       ocorrencia.tipo === "falta_justificada" ? "Justificada" :
+                                       ocorrencia.tipo}
+                                    </Badge>
+                                  ) : (
+                                    <span className="text-slate-400 text-[10px]">-</span>
+                                  )}
+                                </td>
+                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-bold">
                                   <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
                                     {minToHHmm(saldoDia.saldo)}
                                   </span>
                                 </td>
                                 <td className="px-2 md:px-3 py-2">
                                   <div className="flex gap-1 justify-center items-center">
-                                    {ocorrencia ? (
-                                      <div className="flex items-center gap-1">
-                                        {ocorrencia.tipo === "abonado" ? (
-                                          <Badge className="bg-green-100 text-green-700 text-[8px] md:text-[10px] cursor-pointer" onClick={() => handleAbrirOcorrencia(grupo)}>
-                                            <CheckCircle className="w-3 h-3 mr-1" />
-                                            Abonado
-                                          </Badge>
-                                        ) : ocorrencia.tipo === "justificado" ? (
-                                          <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px] cursor-pointer" onClick={() => handleAbrirOcorrencia(grupo)}>
-                                            Justificado
-                                          </Badge>
-                                        ) : (
-                                          <Badge variant="outline" className="text-[8px] md:text-[10px] cursor-pointer" onClick={() => handleAbrirOcorrencia(grupo)}>
-                                            Normal
-                                          </Badge>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleAbrirOcorrencia(grupo)}
-                                        className="h-6 w-6 md:h-7 md:w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
-                                        title="Adicionar Ação"
-                                      >
-                                        <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                                      </Button>
-                                    )}
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleAbrirOcorrencia(grupo)}
+                                      className="h-6 w-6 md:h-7 md:w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
+                                      title="Gerenciar Ocorrência"
+                                    >
+                                      <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                    </Button>
                                   </div>
                                 </td>
                               </tr>
@@ -536,7 +558,7 @@ export default function PontoPage() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm font-semibold">Tipo de Ação</Label>
+                <Label className="text-xs md:text-sm font-semibold">Tipo de Ocorrência</Label>
                 <Select
                   value={ocorrenciaModal.tipo}
                   onValueChange={(value) => setOcorrenciaModal({...ocorrenciaModal, tipo: value})}
@@ -545,20 +567,24 @@ export default function PontoPage() {
                     <SelectValue placeholder="Selecionar..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="normal">Normal (Sem Ação)</SelectItem>
-                    <SelectItem value="abonado">Abonar Falta/Atraso</SelectItem>
-                    <SelectItem value="justificado">Justificar (Manter Negativo)</SelectItem>
+                    <SelectItem value="normal">Normal (Sem Ocorrência)</SelectItem>
+                    <SelectItem value="atestado">Atestado Médico</SelectItem>
+                    <SelectItem value="abono">Abono</SelectItem>
+                    <SelectItem value="folga">Folga</SelectItem>
+                    <SelectItem value="ferias">Férias</SelectItem>
+                    <SelectItem value="falta_justificada">Falta Justificada</SelectItem>
+                    <SelectItem value="ajuste_manual">Ajuste Manual</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {(ocorrenciaModal.tipo === "abonado" || ocorrenciaModal.tipo === "justificado") && (
+              {ocorrenciaModal.tipo !== "normal" && (
                 <div className="space-y-2">
-                  <Label className="text-xs md:text-sm font-semibold">Justificativa</Label>
+                  <Label className="text-xs md:text-sm font-semibold">Descrição/Justificativa</Label>
                   <Textarea
-                    value={ocorrenciaModal.justificativa || ''}
-                    onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, justificativa: e.target.value})}
-                    placeholder="Ex: Atestado médico, reunião externa, feriado local, etc..."
+                    value={ocorrenciaModal.descricao || ''}
+                    onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, descricao: e.target.value})}
+                    placeholder="Descreva o motivo da ocorrência..."
                     rows={4}
                     className="text-xs md:text-sm resize-none"
                   />
@@ -568,7 +594,7 @@ export default function PontoPage() {
               <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <p className="text-[10px] md:text-xs text-blue-800">
                   <strong>📋 Importante:</strong> As batidas originais do relógio nunca são alteradas. 
-                  Esta ação apenas registra a justificativa/abono para fins de gestão.
+                  Esta ocorrência registra apenas a ação tomada (atestado, abono, etc.) para fins de gestão e relatórios.
                 </p>
               </div>
 
