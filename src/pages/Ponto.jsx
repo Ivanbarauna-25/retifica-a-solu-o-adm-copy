@@ -517,6 +517,7 @@ export default function PontoPage() {
                                 </td>
                                 <td className="px-2 md:px-3 py-2">
                                   <div className="flex gap-1 justify-center items-center">
+                                    <HistoricoAuditoria registro={grupo.batidas?.[0]} />
                                     <Button
                                       variant="ghost"
                                       size="sm"
