@@ -180,7 +180,18 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
           </div>
 
           <div>
-            <Label className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 block">Valor</Label>
+            <div className="flex items-center justify-between mb-1 md:mb-2">
+              <Label className="text-xs md:text-sm font-bold text-slate-900">Valor</Label>
+              {form.funcionario_id && autoComplete.sugerirValor(form.funcionario_id) && (
+                <button
+                  type="button"
+                  onClick={() => setField("valor", autoComplete.sugerirValor(form.funcionario_id))}
+                  className="text-[10px] md:text-xs text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+                >
+                  <Zap className="w-3 h-3" /> {autoComplete.sugerirValor(form.funcionario_id)}
+                </button>
+              )}
+            </div>
             <Input
               type="number"
               step="0.01"
