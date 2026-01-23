@@ -64,7 +64,9 @@ export default function AdiantamentoForm({
   }, [form]);
 
   const handleSubmit = async (e) => {
-    e?.preventDefault?.();
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
     
     if (isSaving) return;
     
@@ -77,6 +79,7 @@ export default function AdiantamentoForm({
       await onSave(payload);
     } catch (error) {
       console.error("Erro ao salvar:", error);
+      throw error;
     } finally {
       setIsSaving(false);
     }
