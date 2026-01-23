@@ -460,20 +460,57 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
               </div>
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                if (!processando && !salvando) {
-                  resetTudo();
-                  onClose();
-                }
-              }}
-              className="text-white hover:bg-slate-600 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg flex-shrink-0"
-              disabled={processando || salvando}
-            >
-              <X className="w-4 h-4 md:w-4 md:h-4" />
-            </Button>
+            <div className="flex items-center gap-1.5 md:gap-2">
+              {!preview ? (
+                <Button
+                  onClick={processarArquivo}
+                  disabled={processando || !temEntrada}
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg"
+                  title="Gerar Preview"
+                >
+                  {processando ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  onClick={confirmarImportacao}
+                  disabled={salvando || totalValidos === 0}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg"
+                  title={`Confirmar ${totalValidos} registros`}
+                >
+                  {salvando ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                </Button>
+              )}
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  if (preview) {
+                    setPreview(null);
+                    setRegistrosEditaveis([]);
+                    setProgresso(0);
+                  } else {
+                    resetTudo();
+                    onClose();
+                  }
+                }}
+                disabled={processando || salvando}
+                className="text-white hover:bg-slate-600 h-7 w-7 md:h-8 md:w-8 p-0 rounded-lg flex-shrink-0"
+                title={preview ? 'Voltar' : 'Fechar'}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </DialogHeader>
 
@@ -629,66 +666,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           )}
         </div>
 
-        <div className="flex-shrink-0 border-t bg-white px-2 md:px-5 py-2 md:py-3 sticky bottom-0 shadow-lg safe-area-bottom">
-          <div className="flex gap-2 md:gap-3 justify-end">
-            <Button
-              variant="outline"
-              onClick={() => {
-                if (preview) {
-                  setPreview(null);
-                  setRegistrosEditaveis([]);
-                  setProgresso(0);
-                } else {
-                  resetTudo();
-                  onClose();
-                }
-              }}
-              disabled={processando || salvando}
-              className="flex-1 md:flex-none text-[10px] md:text-sm h-8 md:h-9 px-3 md:px-4"
-            >
-              <X className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-              {preview ? 'Voltar' : 'Cancelar'}
-            </Button>
 
-            {!preview ? (
-              <Button
-                onClick={processarArquivo}
-                disabled={processando || !temEntrada}
-                className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-[10px] md:text-sm h-8 md:h-9 px-3 md:px-4"
-              >
-                {processando ? (
-                  <>
-                    <Loader2 className="w-3 h-3 md:w-4 md:h-4 mr-1 animate-spin" />
-                    Processando
-                  </>
-                ) : (
-                  <>
-                    <Eye className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    Preview
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Button
-                onClick={confirmarImportacao}
-                disabled={salvando || totalValidos === 0}
-                className="flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-[10px] md:text-sm h-8 md:h-9 px-3 md:px-4"
-              >
-                {salvando ? (
-                  <>
-                    <Loader2 className="w-3 h-3 md:w-4 md:h-4 mr-1 animate-spin" />
-                    Salvando
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-                    Confirmar ({totalValidos})
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        </div>
       </DialogContent>
     </Dialog>
   );
