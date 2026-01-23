@@ -306,6 +306,29 @@ export default function PontoPage() {
         </div>
 
         <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+          {/* Dashboard */}
+          <PontoDashboard 
+            registros={registros}
+            funcionarios={funcionarios}
+            ocorrencias={ocorrencias}
+            escalas={escalas}
+            funcionariosEscalas={funcionariosEscalas}
+          />
+
+          {/* Calendário */}
+          <div className="mb-6">
+            <CalendarioPonto
+              registros={registros}
+              funcionariosEscalas={funcionariosEscalas}
+              ocorrencias={ocorrencias}
+              funcionarioSelecionado={filtroFuncionario}
+              onDiaClicado={(data) => {
+                setFiltroDataInicio(data);
+                setFiltroDataFim(data);
+              }}
+            />
+          </div>
+
           <Card className="shadow-sm">
             <CardContent className="p-3 md:p-6">
               {/* Filtros */}
