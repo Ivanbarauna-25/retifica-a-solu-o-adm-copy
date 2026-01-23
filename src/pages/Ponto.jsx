@@ -561,7 +561,6 @@ export default function PontoPage() {
               </div>
             </CardContent>
             </Card>
-            </div>
           </div>
         </div>
       </div>
