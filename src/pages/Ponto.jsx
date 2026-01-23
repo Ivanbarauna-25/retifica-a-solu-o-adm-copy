@@ -18,26 +18,19 @@ import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [registros, setRegistros] = useState([]);
+  const [escalas, setEscalas] = useState([]);
+  const [funcionarioEscalas, setFuncionarioEscalas] = useState([]);
+  const [ocorrencias, setOcorrencias] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
   const [isImportarOpen, setIsImportarOpen] = useState(false);
-  const [editandoRegistro, setEditandoRegistro] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [ocorrenciaModal, setOcorrenciaModal] = useState(null);
+  const [isOcorrenciaModalOpen, setIsOcorrenciaModalOpen] = useState(false);
   
   const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
   const [filtroDataFim, setFiltroDataFim] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
-  const [colunasVisiveis, setColunasVisiveis] = useState({
-    enNo: true,
-    nome: true,
-    dataHora: true,
-    metodo: false,
-    dispositivo: false,
-    status: true,
-    justificativa: true,
-    acoes: true
-  });
 
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -45,13 +38,19 @@ export default function PontoPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [funcsData, registrosData] = await Promise.all([
+      const [funcsData, registrosData, escalasData, funcEscalasData, ocorrenciasData] = await Promise.all([
         base44.entities.Funcionario.list(),
-        base44.entities.PontoRegistro.list("-data_hora", 2000)
+        base44.entities.PontoRegistro.list("-data_hora", 3000),
+        base44.entities.EscalaTrabalho.list(),
+        base44.entities.FuncionarioEscala.list(),
+        base44.entities.OcorrenciaPonto.list()
       ]);
 
       setFuncionarios((funcsData || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
       setRegistros(registrosData || []);
+      setEscalas(escalasData || []);
+      setFuncionarioEscalas(funcEscalasData || []);
+      setOcorrencias(ocorrenciasData || []);
     } catch (err) {
       console.error("Erro ao carregar dados:", err);
       toast({
@@ -68,22 +67,43 @@ export default function PontoPage() {
     fetchData();
   }, []);
 
-  const registrosFiltrados = useMemo(() => {
-    return registros.filter((reg) => {
+  // Agrupar batidas por funcionário + data
+  const registrosAgrupados = useMemo(() => {
+    const grupos = {};
+    
+    const regsAProcessar = registros.filter((reg) => {
       const passaFunc = filtroFuncionario === "todos" || reg.funcionario_id === filtroFuncionario;
-      
       const dataReg = reg.data || "";
       const passaDataInicio = !filtroDataInicio || dataReg >= filtroDataInicio;
       const passaDataFim = !filtroDataFim || dataReg <= filtroDataFim;
-      
-      let passaStatus = true;
-      if (filtroStatus === "abonado") passaStatus = reg.abonado === true;
-      else if (filtroStatus === "normal") passaStatus = !reg.abonado;
-      else if (filtroStatus === "com_justificativa") passaStatus = !!reg.justificativa;
-      
-      return passaFunc && passaDataInicio && passaDataFim && passaStatus;
+      return passaFunc && passaDataInicio && passaDataFim;
     });
-  }, [registros, filtroFuncionario, filtroDataInicio, filtroDataFim, filtroStatus]);
+
+    for (const reg of regsAProcessar) {
+      if (!reg.funcionario_id || !reg.data) continue;
+      
+      const key = `${reg.funcionario_id}_${reg.data}`;
+      if (!grupos[key]) {
+        grupos[key] = {
+          funcionario_id: reg.funcionario_id,
+          data: reg.data,
+          batidas: []
+        };
+      }
+      grupos[key].batidas.push(reg);
+    }
+
+    // Ordenar batidas por hora
+    Object.values(grupos).forEach(grupo => {
+      grupo.batidas.sort((a, b) => (a.data_hora || "").localeCompare(b.data_hora || ""));
+    });
+
+    return Object.values(grupos).sort((a, b) => {
+      const compFunc = getFuncionarioNome(a.funcionario_id).localeCompare(getFuncionarioNome(b.funcionario_id));
+      if (compFunc !== 0) return compFunc;
+      return b.data.localeCompare(a.data);
+    });
+  }, [registros, filtroFuncionario, filtroDataInicio, filtroDataFim]);
 
   const limparFiltros = () => {
     setFiltroFuncionario("todos");
@@ -92,56 +112,112 @@ export default function PontoPage() {
     setFiltroStatus("todos");
   };
 
-  const handleEditarRegistro = (registro) => {
-    setEditandoRegistro({...registro});
-    setIsEditModalOpen(true);
+  const getEscalaDoFuncionario = (funcionarioId, data) => {
+    const vinculos = funcionarioEscalas.filter(fe => fe.funcionario_id === funcionarioId);
+    for (const vinculo of vinculos) {
+      const inicio = vinculo.vigencia_inicio || "";
+      const fim = vinculo.vigencia_fim || "9999-12-31";
+      if (data >= inicio && data <= fim) {
+        return escalas.find(e => e.id === vinculo.escala_id);
+      }
+    }
+    return null;
   };
 
-  const handleSalvarEdicao = async () => {
-    if (!editandoRegistro) return;
-    
-    try {
-      await base44.entities.PontoRegistro.update(editandoRegistro.id, editandoRegistro);
-      toast({
-        title: "✅ Sucesso",
-        description: "Registro atualizado com sucesso"
-      });
-      setIsEditModalOpen(false);
-      setEditandoRegistro(null);
-      fetchData();
-    } catch (error) {
-      console.error("Erro ao salvar:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível salvar o registro",
-        variant: "destructive"
-      });
+  const calcularSaldoDia = (grupo) => {
+    const escala = getEscalaDoFuncionario(grupo.funcionario_id, grupo.data);
+    if (!escala) return { saldo: 0, texto: "-" };
+
+    const batidas = grupo.batidas;
+    if (batidas.length < 2) return { saldo: 0, texto: "Incompleto" };
+
+    const entrada = batidas[0]?.data_hora ? new Date(batidas[0].data_hora) : null;
+    const saida = batidas[batidas.length - 1]?.data_hora ? new Date(batidas[batidas.length - 1].data_hora) : null;
+
+    if (!entrada || !saida) return { saldo: 0, texto: "Incompleto" };
+
+    let minutosTrabalhados = Math.floor((saida - entrada) / 60000);
+
+    // Descontar intervalo se houver
+    if (batidas.length >= 4 && escala.intervalo_inicio_previsto && escala.intervalo_fim_previsto) {
+      const intervaloInicio = batidas[2]?.data_hora ? new Date(batidas[2].data_hora) : null;
+      const intervaloFim = batidas[3]?.data_hora ? new Date(batidas[3].data_hora) : null;
+      
+      if (intervaloInicio && intervaloFim) {
+        const minIntervalo = Math.floor((intervaloFim - intervaloInicio) / 60000);
+        minutosTrabalhados -= minIntervalo;
+      }
     }
+
+    const cargaEsperada = escala.carga_diaria_minutos || 0;
+    const saldo = minutosTrabalhados - cargaEsperada;
+
+    const h = Math.floor(Math.abs(saldo) / 60);
+    const m = Math.abs(saldo) % 60;
+    const sinal = saldo >= 0 ? "+" : "-";
+    const texto = `${sinal}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+
+    return { saldo, texto };
   };
 
-  const handleExcluirRegistro = async (registroId) => {
-    if (!window.confirm("Tem certeza que deseja excluir esta batida?")) return;
-    
-    try {
-      await base44.entities.PontoRegistro.delete(registroId);
-      toast({
-        title: "✅ Sucesso",
-        description: "Registro excluído"
-      });
-      fetchData();
-    } catch (error) {
-      console.error("Erro ao excluir:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível excluir o registro",
-        variant: "destructive"
-      });
-    }
+  const formatarDataBr = (data) => {
+    if (!data) return "-";
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  const formatarHora = (dataHora) => {
+    if (!dataHora) return "-";
+    return dataHora.substring(11, 16);
   };
 
   const getFuncionarioNome = (funcionarioId) => {
     const func = funcionarios.find(f => f.id === funcionarioId);
     return func?.nome || "-";
+  };
+
+  const getOcorrenciasDoDia = (funcionarioId, data) => {
+    return ocorrencias.filter(o => o.funcionario_id === funcionarioId && o.data === data);
+  };
+
+  const handleNovaOcorrencia = (grupo) => {
+    setOcorrenciaModal({
+      funcionario_id: grupo.funcionario_id,
+      data: grupo.data,
+      tipo: "justificativa",
+      descricao: "",
+      minutos: 0
+    });
+    setIsOcorrenciaModalOpen(true);
+  };
+
+  const handleSalvarOcorrencia = async () => {
+    if (!ocorrenciaModal || !ocorrenciaModal.descricao) {
+      toast({
+        title: "Atenção",
+        description: "Preencha a descrição",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await base44.entities.OcorrenciaPonto.create(ocorrenciaModal);
+      toast({
+        title: "✅ Sucesso",
+        description: "Ocorrência registrada"
+      });
+      setIsOcorrenciaModalOpen(false);
+      setOcorrenciaModal(null);
+      fetchData();
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -258,130 +334,141 @@ export default function PontoPage() {
                 </div>
               </div>
 
-              {/* Tabela de Batidas */}
+              {/* Tabela Agrupada por Dia */}
               <div className="rounded-lg border overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                  <div className="max-h-[calc(100vh-400px)] overflow-y-auto">
-                    <table className="w-full">
-                      <thead className="bg-slate-800 sticky top-0 z-10">
+                  <table className="w-full text-[10px] md:text-xs">
+                    <thead className="bg-slate-800 sticky top-0 z-10">
+                      <tr>
+                        <th className="text-white font-semibold px-2 py-2 text-left">Funcionário</th>
+                        <th className="text-white font-semibold px-2 py-2 text-left">Data</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center">1ª</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center">2ª</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center hidden md:table-cell">3ª</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center hidden md:table-cell">4ª</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center">Faltou</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center">Saldo</th>
+                        <th className="text-white font-semibold px-2 py-2 text-left hidden lg:table-cell">Ação/Justificativa</th>
+                        <th className="text-white font-semibold px-2 py-2 text-center">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {isLoading ? (
                         <tr>
-                          {colunasVisiveis.enNo && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap">EnNo</th>}
-                          {colunasVisiveis.nome && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap">Funcionário</th>}
-                          {colunasVisiveis.dataHora && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap">Data/Hora</th>}
-                          {colunasVisiveis.metodo && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap hidden lg:table-cell">Método</th>}
-                          {colunasVisiveis.dispositivo && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap hidden xl:table-cell">Dispositivo</th>}
-                          {colunasVisiveis.status && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Status</th>}
-                          {colunasVisiveis.justificativa && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap hidden md:table-cell">Justificativa</th>}
-                          {colunasVisiveis.acoes && <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ações</th>}
+                          <td colSpan={10} className="text-center py-12">
+                            <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {isLoading ? (
-                          <tr>
-                            <td colSpan={8} className="text-center py-12">
-                              <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
-                            </td>
-                          </tr>
-                        ) : registrosFiltrados.length === 0 ? (
-                          <tr>
-                            <td colSpan={8} className="text-center py-12">
-                              <div className="flex flex-col items-center gap-3">
-                                <FileText className="w-16 h-16 text-slate-300" />
-                                <p className="text-slate-500 text-xs md:text-sm font-medium">Nenhuma batida encontrada</p>
-                                <p className="text-slate-400 text-[10px] md:text-xs">Importe batidas ou ajuste os filtros</p>
-                              </div>
-                            </td>
-                          </tr>
-                        ) : (
-                          registrosFiltrados.map((reg, idx) => (
-                            <tr 
-                              key={reg.id || idx} 
-                              className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${reg.abonado ? 'bg-green-50/50' : ''}`}
-                            >
-                              {colunasVisiveis.enNo && (
-                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-900 font-medium">
-                                  {reg.user_id_relogio || '-'}
-                                </td>
-                              )}
-                              {colunasVisiveis.nome && (
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-700">
-                                  {getFuncionarioNome(reg.funcionario_id)}
-                                </td>
-                              )}
-                              {colunasVisiveis.dataHora && (
-                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-900 whitespace-nowrap">
-                                  {reg.data_hora ? (
-                                    <div className="flex flex-col">
-                                      <span className="font-semibold">{reg.data_hora.substring(0, 10)}</span>
-                                      <span className="text-slate-600">{reg.data_hora.substring(11, 19)}</span>
-                                    </div>
-                                  ) : '-'}
-                                </td>
-                              )}
-                              {colunasVisiveis.metodo && (
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-600 hidden lg:table-cell">
-                                  {reg.metodo || '-'}
-                                </td>
-                              )}
-                              {colunasVisiveis.dispositivo && (
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-600 hidden xl:table-cell">
-                                  {reg.dispositivo_id || '-'}
-                                </td>
-                              )}
-                              {colunasVisiveis.status && (
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                  {reg.abonado ? (
-                                    <Badge className="bg-green-100 text-green-700 text-[8px] md:text-[10px]">
-                                      <CheckCircle className="w-3 h-3 mr-1" />
-                                      Abonado
-                                    </Badge>
-                                  ) : (
-                                    <Badge variant="outline" className="text-[8px] md:text-[10px]">Normal</Badge>
-                                  )}
-                                </td>
-                              )}
-                              {colunasVisiveis.justificativa && (
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-600 hidden md:table-cell max-w-[200px] truncate">
-                                  {reg.justificativa || '-'}
-                                </td>
-                              )}
-                              {colunasVisiveis.acoes && (
-                                <td className="px-2 md:px-3 py-2">
-                                  <div className="flex gap-1 justify-center">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleEditarRegistro(reg)}
-                                      className="h-6 w-6 md:h-7 md:w-7 p-0 hover:bg-blue-100 hover:text-blue-600"
-                                      title="Editar"
-                                    >
-                                      <Edit className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleExcluirRegistro(reg.id)}
-                                      className="h-6 w-6 md:h-7 md:w-7 p-0 hover:bg-red-100 hover:text-red-600"
-                                      title="Excluir"
-                                    >
-                                      <Trash2 className="h-3 w-3 md:h-3.5 md:w-3.5" />
-                                    </Button>
+                      ) : registrosAgrupados.length === 0 ? (
+                        <tr>
+                          <td colSpan={10} className="text-center py-12">
+                            <div className="flex flex-col items-center gap-3">
+                              <FileText className="w-16 h-16 text-slate-300" />
+                              <p className="text-slate-500 font-medium">Nenhum registro encontrado</p>
+                              <p className="text-slate-400 text-[9px]">Importe batidas ou ajuste os filtros</p>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        registrosAgrupados.map((grupo, idx) => {
+                          const escala = getEscalaDoFuncionario(grupo.funcionario_id, grupo.data);
+                          const { saldo, texto: saldoTexto } = calcularSaldoDia(grupo);
+                          const ocorrenciasDia = getOcorrenciasDoDia(grupo.funcionario_id, grupo.data);
+                          
+                          const batidas = [
+                            grupo.batidas[0] || null,
+                            grupo.batidas[1] || null,
+                            grupo.batidas[2] || null,
+                            grupo.batidas[3] || null
+                          ];
+
+                          const faltantes = [];
+                          if (!batidas[0]) faltantes.push("1ª");
+                          if (!batidas[1]) faltantes.push("2ª");
+                          if (escala?.intervalo_inicio_previsto && !batidas[2]) faltantes.push("3ª");
+                          if (escala?.intervalo_fim_previsto && !batidas[3]) faltantes.push("4ª");
+
+                          return (
+                            <tr key={`${grupo.funcionario_id}_${grupo.data}_${idx}`} className="border-b hover:bg-slate-50">
+                              <td className="px-2 py-2 font-medium text-slate-900">{getFuncionarioNome(grupo.funcionario_id)}</td>
+                              <td className="px-2 py-2 font-mono text-slate-700">{formatarDataBr(grupo.data)}</td>
+                              <td className="px-2 py-2 text-center font-mono">
+                                {batidas[0] ? (
+                                  <span className="text-blue-700 font-semibold">{formatarHora(batidas[0].data_hora)}</span>
+                                ) : (
+                                  <span className="text-red-500 font-bold">--:--</span>
+                                )}
+                              </td>
+                              <td className="px-2 py-2 text-center font-mono">
+                                {batidas[1] ? (
+                                  <span className="text-blue-700 font-semibold">{formatarHora(batidas[1].data_hora)}</span>
+                                ) : (
+                                  <span className="text-red-500 font-bold">--:--</span>
+                                )}
+                              </td>
+                              <td className="px-2 py-2 text-center font-mono hidden md:table-cell">
+                                {batidas[2] ? (
+                                  <span className="text-blue-700 font-semibold">{formatarHora(batidas[2].data_hora)}</span>
+                                ) : escala?.intervalo_inicio_previsto ? (
+                                  <span className="text-red-500 font-bold">--:--</span>
+                                ) : (
+                                  <span className="text-slate-400">-</span>
+                                )}
+                              </td>
+                              <td className="px-2 py-2 text-center font-mono hidden md:table-cell">
+                                {batidas[3] ? (
+                                  <span className="text-blue-700 font-semibold">{formatarHora(batidas[3].data_hora)}</span>
+                                ) : escala?.intervalo_fim_previsto ? (
+                                  <span className="text-red-500 font-bold">--:--</span>
+                                ) : (
+                                  <span className="text-slate-400">-</span>
+                                )}
+                              </td>
+                              <td className="px-2 py-2 text-center">
+                                {faltantes.length > 0 ? (
+                                  <Badge variant="destructive" className="text-[8px] md:text-[9px]">{faltantes.join(", ")}</Badge>
+                                ) : (
+                                  <span className="text-green-600 font-semibold">✓</span>
+                                )}
+                              </td>
+                              <td className={`px-2 py-2 text-center font-mono font-bold ${saldo >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                {saldoTexto}
+                              </td>
+                              <td className="px-2 py-2 text-slate-700 hidden lg:table-cell max-w-[200px]">
+                                {ocorrenciasDia.length > 0 ? (
+                                  <div className="space-y-1">
+                                    {ocorrenciasDia.map(o => (
+                                      <div key={o.id} className="text-[9px] bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5">
+                                        <strong className="text-amber-700 uppercase">{o.tipo}:</strong> {o.descricao}
+                                      </div>
+                                    ))}
                                   </div>
-                                </td>
-                              )}
+                                ) : (
+                                  <span className="text-slate-400 text-[9px]">-</span>
+                                )}
+                              </td>
+                              <td className="px-2 py-2 text-center">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleNovaOcorrencia(grupo)}
+                                  className="h-6 w-6 md:h-7 md:w-7 p-0 hover:bg-amber-100 hover:text-amber-700"
+                                  title="Registrar Ocorrência"
+                                >
+                                  <FileText className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                </Button>
+                              </td>
                             </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                <div className="text-xs md:text-sm text-slate-600">
-                  <strong>{registrosFiltrados.length}</strong> batida(s) encontrada(s)
-                </div>
+              <div className="mt-4 text-xs text-slate-600">
+                <strong>{registrosAgrupados.length}</strong> dia(s) com registros
               </div>
             </CardContent>
           </Card>
@@ -395,80 +482,80 @@ export default function PontoPage() {
         onImportado={fetchData}
       />
 
-      {/* Modal: Editar Batida */}
-      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+      {/* Modal: Registrar Ocorrência */}
+      <Dialog open={isOcorrenciaModalOpen} onOpenChange={setIsOcorrenciaModalOpen}>
         <DialogContent className="max-w-[95vw] md:max-w-lg rounded-xl">
-          <DialogHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white -mx-6 -mt-6 px-5 py-4 rounded-t-xl mb-4">
+          <DialogHeader className="bg-gradient-to-r from-amber-600 to-amber-700 text-white -mx-6 -mt-6 px-5 py-4 rounded-t-xl mb-4">
             <DialogTitle className="text-base md:text-lg flex items-center gap-2">
-              <Edit className="w-4 h-4 md:w-5 md:h-5" />
-              Editar Batida
+              <FileText className="w-4 h-4 md:w-5 md:h-5" />
+              Registrar Ocorrência
             </DialogTitle>
           </DialogHeader>
-          {editandoRegistro && (
+          {ocorrenciaModal && (
             <div className="space-y-4 px-1">
-              <div className="space-y-2">
-                <Label className="text-xs md:text-sm font-semibold">Data/Hora</Label>
-                <Input
-                  type="datetime-local"
-                  value={editandoRegistro.data_hora?.substring(0, 16) || ''}
-                  onChange={(e) => setEditandoRegistro({...editandoRegistro, data_hora: e.target.value})}
-                  className="text-xs md:text-sm"
-                />
+              <div className="bg-slate-100 rounded-lg p-3 text-xs">
+                <div><strong>Funcionário:</strong> {getFuncionarioNome(ocorrenciaModal.funcionario_id)}</div>
+                <div><strong>Data:</strong> {formatarDataBr(ocorrenciaModal.data)}</div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm font-semibold">Funcionário</Label>
+                <Label className="text-xs md:text-sm font-semibold">Tipo de Ocorrência</Label>
                 <Select
-                  value={editandoRegistro.funcionario_id || ''}
-                  onValueChange={(value) => setEditandoRegistro({...editandoRegistro, funcionario_id: value})}
+                  value={ocorrenciaModal.tipo}
+                  onValueChange={(value) => setOcorrenciaModal({...ocorrenciaModal, tipo: value})}
                 >
                   <SelectTrigger className="text-xs md:text-sm">
-                    <SelectValue placeholder="Selecionar..." />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {funcionarios.map((f) => (
-                      <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-                    ))}
+                    <SelectItem value="abono">Abono</SelectItem>
+                    <SelectItem value="justificativa">Justificativa</SelectItem>
+                    <SelectItem value="ajuste_batida">Ajuste de Batida</SelectItem>
+                    <SelectItem value="falta">Falta</SelectItem>
+                    <SelectItem value="atraso">Atraso</SelectItem>
+                    <SelectItem value="hora_extra_autorizada">Hora Extra Autorizada</SelectItem>
+                    <SelectItem value="banco_horas_ajuste">Ajuste Banco de Horas</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                <Checkbox
-                  id="abonado"
-                  checked={editandoRegistro.abonado || false}
-                  onCheckedChange={(checked) => setEditandoRegistro({...editandoRegistro, abonado: checked})}
-                />
-                <Label htmlFor="abonado" className="text-xs md:text-sm font-semibold text-green-700 cursor-pointer">
-                  Abonar esta batida
-                </Label>
-              </div>
-
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm font-semibold">Justificativa</Label>
+                <Label className="text-xs md:text-sm font-semibold">Descrição/Justificativa</Label>
                 <Textarea
-                  value={editandoRegistro.justificativa || ''}
-                  onChange={(e) => setEditandoRegistro({...editandoRegistro, justificativa: e.target.value})}
-                  placeholder="Ex: Atestado médico, reunião externa, etc..."
-                  rows={3}
+                  value={ocorrenciaModal.descricao}
+                  onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, descricao: e.target.value})}
+                  placeholder="Descreva a ocorrência..."
+                  rows={4}
                   className="text-xs md:text-sm resize-none"
                 />
               </div>
+
+              {(ocorrenciaModal.tipo === 'banco_horas_ajuste' || ocorrenciaModal.tipo === 'hora_extra_autorizada') && (
+                <div className="space-y-2">
+                  <Label className="text-xs md:text-sm font-semibold">Minutos</Label>
+                  <Input
+                    type="number"
+                    value={ocorrenciaModal.minutos || 0}
+                    onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, minutos: parseInt(e.target.value) || 0})}
+                    className="text-xs md:text-sm"
+                  />
+                </div>
+              )}
 
               <div className="flex gap-3 pt-4 border-t">
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setIsEditModalOpen(false);
-                    setEditandoRegistro(null);
+                    setIsOcorrenciaModalOpen(false);
+                    setOcorrenciaModal(null);
                   }}
                   className="flex-1 text-xs md:text-sm"
                 >
                   Cancelar
                 </Button>
                 <Button
-                  onClick={handleSalvarEdicao}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-xs md:text-sm"
+                  onClick={handleSalvarOcorrencia}
+                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-xs md:text-sm"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
                   Salvar
