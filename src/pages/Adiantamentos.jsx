@@ -257,11 +257,13 @@ export default function AdiantamentosPage() {
       setEditando(null);
       await carregar();
     } catch (error) {
+      console.error('Erro ao salvar adiantamento:', error);
       toast({
         title: "❌ Erro ao salvar",
-        description: error.message,
+        description: error?.message || "Erro desconhecido ao salvar",
         variant: "destructive"
       });
+      throw error;
     }
   };
 
