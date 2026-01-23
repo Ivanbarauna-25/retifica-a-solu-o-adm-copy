@@ -16,13 +16,15 @@ import { validarLote, validarRegistro, recomendarAjustes } from "./ValidadorPont
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const [arquivo, setArquivo] = useState(null);
-  const [conteudoColado, setConteudoColado] = useState("");
-  const [processando, setProcessando] = useState(false);
-  const [salvando, setSalvando] = useState(false);
-  const [progresso, setProgresso] = useState(0);
-  const [preview, setPreview] = useState(null);
-  const [registrosEditaveis, setRegistrosEditaveis] = useState([]);
-  const [funcionarios, setFuncionarios] = useState([]);
+   const [conteudoColado, setConteudoColado] = useState("");
+   const [processando, setProcessando] = useState(false);
+   const [salvando, setSalvando] = useState(false);
+   const [progresso, setProgresso] = useState(0);
+   const [preview, setPreview] = useState(null);
+   const [registrosEditaveis, setRegistrosEditaveis] = useState([]);
+   const [funcionarios, setFuncionarios] = useState([]);
+   const [validacoes, setValidacoes] = useState(null);
+   const [mostrarErros, setMostrarErros] = useState(false);
 
   const { toast } = useToast();
   const fileInputRef = useRef(null);
