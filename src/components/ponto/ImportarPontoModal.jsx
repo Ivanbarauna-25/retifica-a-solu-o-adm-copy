@@ -758,78 +758,79 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
 
       {/* Dialog de Confirmação Personalizado */}
       <Dialog open={!!confirmDialog} onOpenChange={(open) => {
-      if (!open) setConfirmDialog(null);
+       if (!open) setConfirmDialog(null);
       }}>
-      <DialogContent className="max-w-md rounded-2xl border-2 border-slate-200 shadow-xl">
-        <DialogHeader className="bg-gradient-to-r from-amber-500 to-orange-500 text-white -mx-6 -mt-6 px-6 py-4 rounded-t-2xl mb-4">
-          <DialogTitle className="text-lg flex items-center gap-2">
-            <AlertCircle className="w-5 h-5" />
-            {confirmDialog?.tipo === 'duplicadas' ? 'Duplicatas Detectadas' : 'Confirmar Importação'}
-          </DialogTitle>
-        </DialogHeader>
+       <DialogContent className="max-w-md rounded-2xl border-2 border-slate-200 shadow-xl">
+         <DialogHeader className="bg-gradient-to-r from-amber-500 to-orange-500 text-white -mx-6 -mt-6 px-6 py-4 rounded-t-2xl mb-4">
+           <DialogTitle className="text-lg flex items-center gap-2">
+             <AlertCircle className="w-5 h-5" />
+             {confirmDialog?.tipo === 'duplicadas' ? 'Duplicatas Detectadas' : 'Confirmar Importação'}
+           </DialogTitle>
+         </DialogHeader>
 
-        <div className="space-y-4 px-1">
-          {confirmDialog?.tipo === 'duplicadas' ? (
-            <>
-              <div className="bg-amber-50 p-4 rounded-xl border border-amber-200">
-                <p className="text-sm text-amber-900 font-medium mb-3">
-                  ⚠️ Foram encontradas batidas que já existem no sistema:
-                </p>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-amber-100">
-                    <span className="text-xs text-amber-700">Duplicatas</span>
-                    <span className="text-lg font-bold text-amber-600">{confirmDialog.duplicatas}</span>
-                  </div>
-                  <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-green-100">
-                    <span className="text-xs text-green-700">Novas batidas</span>
-                    <span className="text-lg font-bold text-green-600">{confirmDialog.novos}</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-slate-600">
-                As duplicatas serão ignoradas e apenas as <strong>{confirmDialog.novos} novas batidas</strong> serão importadas.
-              </p>
-            </>
-          ) : (
-            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-              <p className="text-sm text-blue-900 font-medium mb-3">
-                Importar <strong>{confirmDialog?.total}</strong> registros?
-              </p>
-              <p className="text-xs text-blue-700">
-                ✓ Todos os registros foram validados e estão prontos para serem importados.
-              </p>
-            </div>
-          )}
-        </div>
+         <div className="space-y-4 px-1">
+           {confirmDialog?.tipo === 'duplicadas' ? (
+             <>
+               <div className="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                 <p className="text-sm text-amber-900 font-medium mb-3">
+                   ⚠️ Foram encontradas batidas que já existem no sistema:
+                 </p>
+                 <div className="space-y-2">
+                   <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-amber-100">
+                     <span className="text-xs text-amber-700">Duplicatas</span>
+                     <span className="text-lg font-bold text-amber-600">{confirmDialog.duplicatas}</span>
+                   </div>
+                   <div className="flex items-center justify-between bg-white p-2 rounded-lg border border-green-100">
+                     <span className="text-xs text-green-700">Novas batidas</span>
+                     <span className="text-lg font-bold text-green-600">{confirmDialog.novos}</span>
+                   </div>
+                 </div>
+               </div>
+               <p className="text-xs text-slate-600">
+                 As duplicatas serão ignoradas e apenas as <strong>{confirmDialog.novos} novas batidas</strong> serão importadas.
+               </p>
+             </>
+           ) : (
+             <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+               <p className="text-sm text-blue-900 font-medium mb-3">
+                 Importar <strong>{confirmDialog?.total}</strong> registros?
+               </p>
+               <p className="text-xs text-blue-700">
+                 ✓ Todos os registros foram validados e estão prontos para serem importados.
+               </p>
+             </div>
+           )}
+         </div>
 
-        <div className="flex gap-3 pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => {
-              confirmDialog?.callback(false);
-            }}
-            className="flex-1 text-sm"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={() => {
-              confirmDialog?.callback(true);
-            }}
-            disabled={salvando}
-            className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold text-sm"
-          >
-            {salvando ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Importando...
-              </>
-            ) : (
-              'Confirmar'
-            )}
-          </Button>
-        </div>
-      </DialogContent>
+         <div className="flex gap-3 pt-4 border-t">
+           <Button
+             variant="outline"
+             onClick={() => {
+               confirmDialog?.callback(false);
+             }}
+             className="flex-1 text-sm"
+           >
+             Cancelar
+           </Button>
+           <Button
+             onClick={() => {
+               confirmDialog?.callback(true);
+             }}
+             disabled={salvando}
+             className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold text-sm"
+           >
+             {salvando ? (
+               <>
+                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                 Importando...
+               </>
+             ) : (
+               'Confirmar'
+             )}
+           </Button>
+         </div>
+       </DialogContent>
       </Dialog>
+      </>
       );
       }
