@@ -56,6 +56,16 @@ export default function EscalasTrabalhoPage() {
 
   const handleSalvar = async (dados) => {
     try {
+      // Se marcou como padrão, desmarcar outras
+      if (dados.escala_padrao) {
+        const todasEscalas = await base44.entities.EscalaTrabalho.list();
+        for (const escala of todasEscalas) {
+          if (escala.escala_padrao && escala.id !== escalaEditando?.id) {
+            await base44.entities.EscalaTrabalho.update(escala.id, { escala_padrao: false });
+          }
+        }
+      }
+      
       if (escalaEditando) {
         await base44.entities.EscalaTrabalho.update(escalaEditando.id, dados);
         toast({ title: "Sucesso", description: "Escala atualizada com sucesso." });
@@ -187,9 +197,16 @@ export default function EscalasTrabalhoPage() {
                           </TableCell>
                           <TableCell className="text-sm text-center">{minToHHmm(escala.carga_diaria_minutos)}</TableCell>
                           <TableCell className="text-center">
-                            <Badge className={escala.ativo !== false ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                              {escala.ativo !== false ? "Ativa" : "Inativa"}
-                            </Badge>
+                            <div className="flex flex-col gap-1 items-center">
+                              <Badge className={escala.ativo !== false ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                                {escala.ativo !== false ? "Ativa" : "Inativa"}
+                              </Badge>
+                              {escala.escala_padrao &&
+                                <Badge className="bg-blue-100 text-blue-800">
+                                  Padrão
+                                </Badge>
+                              }
+                            </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-1 justify-center">
@@ -225,9 +242,16 @@ export default function EscalasTrabalhoPage() {
                             <h3 className="font-semibold text-sm text-slate-900">{escala.nome}</h3>
                             <p className="text-xs text-slate-500 capitalize">{escala.tipo}</p>
                           </div>
-                          <Badge className={escala.ativo !== false ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-                            {escala.ativo !== false ? "Ativa" : "Inativa"}
-                          </Badge>
+                          <div className="flex flex-col gap-1 items-end">
+                            <Badge className={escala.ativo !== false ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                              {escala.ativo !== false ? "Ativa" : "Inativa"}
+                            </Badge>
+                            {escala.escala_padrao &&
+                              <Badge className="bg-blue-100 text-blue-800 text-[9px]">
+                                Padrão
+                              </Badge>
+                            }
+                          </div>
                         </div>
                         <div className="space-y-1 text-xs text-slate-600 mb-3">
                           <div>⏰ {escala.hora_entrada_prevista} - {escala.hora_saida_prevista}</div>
