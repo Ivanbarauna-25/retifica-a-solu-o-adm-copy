@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import * as XLSX from "xlsx";
+import { validarLote, validarRegistro, recomendarAjustes } from "./ValidadorPonto";
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const [arquivo, setArquivo] = useState(null);
