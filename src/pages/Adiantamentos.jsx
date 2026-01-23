@@ -70,6 +70,7 @@ export default function AdiantamentosPage() {
 
 
   const { toast } = useToast();
+  const autoComplete = useAutoCompleteHelper(funcionarios, itens);
 
   const statusColors = {
     'pendente': 'bg-yellow-100 text-yellow-800 border-yellow-200',
