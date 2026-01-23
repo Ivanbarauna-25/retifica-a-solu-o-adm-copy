@@ -83,6 +83,11 @@ export default function VisualizarRegistroDiaModal({ isOpen, onClose, grupo, onS
   };
 
   const calcularSaldo = () => {
+    // Se dia justificado, saldo é zero (OK)
+    if (ocorrencia && ['atestado', 'abonado', 'folga', 'ferias'].includes(ocorrencia.tipo)) {
+      return 0;
+    }
+    
     if (!escala || !escala.carga_diaria_minutos) return 0;
     
     let totalTrabalhado = 0;
@@ -102,6 +107,7 @@ export default function VisualizarRegistroDiaModal({ isOpen, onClose, grupo, onS
       totalTrabalhado += (min2 - min1);
     }
     
+    // CORREÇÃO: Saldo simples = trabalhado - esperado
     return totalTrabalhado - escala.carga_diaria_minutos;
   };
 

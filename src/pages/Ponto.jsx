@@ -99,8 +99,20 @@ export default function PontoPage() {
     return Object.values(grupos);
   }, [registros]);
 
-  // Função para calcular saldo de horas
+  // Função para calcular saldo de horas (CORRIGIDA)
   const calcularSaldoDia = (funcionarioId, data, batidas) => {
+    // Verificar se há ocorrência justificada
+    const ocorrenciaJustificada = ocorrencias.find(
+      o => o.funcionario_id === funcionarioId && 
+           o.data === data && 
+           ['atestado', 'abonado', 'folga', 'ferias'].includes(o.tipo)
+    );
+    
+    // Se justificado, considerar dia completo (sem débito)
+    if (ocorrenciaJustificada) {
+      return { saldo: 0, esperado: 0, trabalhado: 0, justificado: true };
+    }
+    
     const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
     if (!funcEscala) return { saldo: 0, esperado: 0, trabalhado: 0 };
     
@@ -124,10 +136,12 @@ export default function PontoPage() {
       totalTrabalhado += (min2 - min1);
     }
     
+    // CORREÇÃO: Saldo = trabalhado - esperado (sem penalizar 2x)
     return {
       saldo: totalTrabalhado - totalEsperado,
       esperado: totalEsperado,
-      trabalhado: totalTrabalhado
+      trabalhado: totalTrabalhado,
+      justificado: false
     };
   };
 
@@ -465,9 +479,15 @@ export default function PontoPage() {
                                   )}
                                 </td>
                                 <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-semibold">
-                                  <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
-                                    {minToHHmm(saldoDia.saldo)}
-                                  </span>
+                                  {saldoDia.justificado ? (
+                                    <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px]">
+                                      OK
+                                    </Badge>
+                                  ) : (
+                                    <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
+                                      {minToHHmm(saldoDia.saldo)}
+                                    </span>
+                                  )}
                                 </td>
                                 <td className="px-2 md:px-3 py-2">
                                   <div className="flex gap-1 justify-center items-center">
