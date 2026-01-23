@@ -237,8 +237,13 @@ Deno.serve(async (req) => {
         registros = parseTXT(file_data);
       } else if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
         formato = 'xlsx';
-        const buffer = new TextEncoder().encode(file_data);
-        registros = parseXLSX(buffer);
+        // Decodificar base64 para buffer
+        const binaryString = atob(file_data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        registros = parseXLSX(bytes);
       } else {
         return Response.json({
           success: false,

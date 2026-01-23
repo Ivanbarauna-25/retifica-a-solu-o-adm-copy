@@ -79,9 +79,23 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         tem_arquivo: !!arquivo
       });
       
+      let fileData = null;
+      if (arquivo) {
+        const nomeArquivo = arquivo.name.toLowerCase();
+        if (nomeArquivo.endsWith('.xls') || nomeArquivo.endsWith('.xlsx')) {
+          // XLSX: enviar como base64
+          const arrayBuffer = await arquivo.arrayBuffer();
+          const bytes = new Uint8Array(arrayBuffer);
+          fileData = btoa(String.fromCharCode(...bytes));
+        } else {
+          // TXT: enviar como texto
+          fileData = await arquivo.text();
+        }
+      }
+      
       const response = await base44.functions.invoke('processarPontoPreview', {
         conteudo_colado: conteudoColado.trim() || null,
-        file_data: arquivo ? await arquivo.text() : null,
+        file_data: fileData,
         nome_arquivo: arquivo ? arquivo.name : 'conteudo_colado.txt'
       });
 
