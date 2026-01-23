@@ -151,7 +151,7 @@ export default function CalendarioPonto({
         <div className="grid grid-cols-7 gap-0.5 md:gap-1">
           {/* Cabeçalho com dias da semana */}
           {diaSemana.map(dia => (
-            <div key={dia} className="text-center font-semibold text-[9px] md:text-xs text-slate-600 py-2">
+            <div key={dia} className="text-center font-semibold text-[8px] md:text-xs text-slate-600 py-1 md:py-2">
               {dia}
             </div>
           ))}
@@ -169,12 +169,12 @@ export default function CalendarioPonto({
               <button
                 key={dia}
                 onClick={() => onDiaClicado?.(dataStr)}
-                className={`aspect-square flex items-center justify-center rounded border-2 text-xs md:text-sm font-semibold transition-colors hover:shadow-md cursor-pointer ${status.class}`}
+                className={`aspect-square min-h-[32px] md:min-h-[40px] flex items-center justify-center rounded border-2 text-xs md:text-sm font-semibold transition-colors hover:shadow-md active:scale-95 cursor-pointer ${status.class}`}
                 title={dataStr}
               >
                 <div className="flex flex-col items-center">
-                  <span>{dia}</span>
-                  <span className="text-[8px] md:text-[10px] opacity-70">{status.label}</span>
+                  <span className="leading-tight">{dia}</span>
+                  <span className="text-[7px] md:text-[10px] opacity-70 leading-tight">{status.label}</span>
                 </div>
               </button>
             );
