@@ -103,6 +103,11 @@ export default function EspelhoPontoPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {funcionarioSelecionado && (
+                  <p className="text-xs text-slate-600 mt-1">
+                    Selecionado: {funcionarios.find(f => f.id === funcionarioSelecionado)?.nome}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
