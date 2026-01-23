@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, FileText, CheckCircle2, X, Loader2, Save, Eye } from "lucide-react";
+import { Upload, FileText, CheckCircle2, X, Loader2, Save, Eye, AlertCircle } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -421,13 +421,15 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         }
       }}
     >
-      <DialogContent className="max-w-[98vw] w-[98vw] max-h-[98vh] flex flex-col p-0 gap-0 sm:max-w-7xl">
-        <DialogHeader className="flex-shrink-0 bg-slate-800 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-t-lg sticky top-0 z-10">
+      <DialogContent className="max-w-[98vw] w-[98vw] max-h-[95vh] flex flex-col p-0 gap-0 sm:max-w-7xl rounded-xl overflow-hidden">
+        <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-3 sm:px-5 py-2.5 sm:py-4 sticky top-0 z-10 shadow-md">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-sm sm:text-base font-bold flex items-center gap-2">
-              <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Importar Batidas - {preview ? 'Revisar' : 'Selecionar'}</span>
-              <span className="sm:hidden">Importar</span>
+            <DialogTitle className="text-xs sm:text-lg font-bold flex items-center gap-2">
+              <Upload className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+              <div className="flex flex-col">
+                <span>{preview ? 'Revisar Importação' : 'Importar Batidas'}</span>
+                {preview && <span className="text-[9px] sm:text-xs font-normal text-slate-300">Revise e ajuste os registros antes de confirmar</span>}
+              </div>
             </DialogTitle>
 
             <Button
@@ -439,7 +441,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   onClose();
                 }
               }}
-              className="text-white hover:bg-slate-600 h-8 w-8 p-0"
+              className="text-white hover:bg-slate-600 h-7 w-7 sm:h-8 sm:w-8 p-0 rounded-lg flex-shrink-0"
               disabled={processando || salvando}
             >
               <X className="w-4 h-4" />
@@ -447,7 +449,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-4">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-5 py-3 sm:py-4 space-y-3 sm:space-y-4 bg-slate-50">
           {!preview ? (
             <>
               <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-3">
@@ -513,84 +515,96 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
             </>
           ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                <div className="bg-slate-50 p-2 sm:p-3 rounded-lg border">
-                  <div className="text-[10px] sm:text-xs text-slate-600 font-medium">Total</div>
-                  <div className="text-lg sm:text-2xl font-bold text-slate-900">{totalRegistros}</div>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3">
+                <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-2.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm">
+                  <div className="text-[10px] sm:text-xs text-slate-600 font-semibold mb-1">Total</div>
+                  <div className="text-xl sm:text-3xl font-bold text-slate-900">{totalRegistros}</div>
                 </div>
-                <div className="bg-green-50 p-2 sm:p-3 rounded-lg border border-green-200">
-                  <div className="text-[10px] sm:text-xs text-green-700 font-medium">Válidos</div>
-                  <div className="text-lg sm:text-2xl font-bold text-green-700">{totalValidos}</div>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-2.5 sm:p-4 rounded-xl border border-green-200 shadow-sm">
+                  <div className="text-[10px] sm:text-xs text-green-700 font-semibold mb-1">Válidos</div>
+                  <div className="text-xl sm:text-3xl font-bold text-green-700">{totalValidos}</div>
                 </div>
-                <div className="bg-red-50 p-2 sm:p-3 rounded-lg border border-red-200">
-                  <div className="text-[10px] sm:text-xs text-red-700 font-medium">Pendentes</div>
-                  <div className="text-lg sm:text-2xl font-bold text-red-700">{totalInvalidos}</div>
+                <div className="bg-gradient-to-br from-red-50 to-red-100 p-2.5 sm:p-4 rounded-xl border border-red-200 shadow-sm">
+                  <div className="text-[10px] sm:text-xs text-red-700 font-semibold mb-1">Pendentes</div>
+                  <div className="text-xl sm:text-3xl font-bold text-red-700">{totalInvalidos}</div>
                 </div>
               </div>
 
-              <div className="border rounded-lg overflow-hidden">
-                <div className="max-h-[60vh] overflow-auto">
-                  <Table>
-                    <TableHeader className="bg-slate-800 sticky top-0 z-10">
-                      <TableRow>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">EnNo</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">Nome Arquivo</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">Data</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">Hora</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 lg:hidden">Data/Hora</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">Método</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">Dispositivo</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">Funcionário</TableHead>
-                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {registrosEditaveis.map((reg, idx) => (
-                        <TableRow key={idx} className={reg.valido ? "bg-green-50" : "bg-red-50"}>
-                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4">{reg.user_id_relogio}</TableCell>
-                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4">{reg.nome_arquivo || reg.nome_detectado || '-'}</TableCell>
-                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">{reg.data || '-'}</TableCell>
-                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">{reg.hora?.substring(0, 8) || '-'}</TableCell>
-                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4 lg:hidden">{reg.data_hora?.substring(0, 16).replace('T', ' ') || '-'}</TableCell>
-                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">{reg.metodo || '-'}</TableCell>
-                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">{reg.dispositivo_id || '-'}</TableCell>
-                          <TableCell className="min-w-[150px] sm:min-w-[200px] px-2 sm:px-4">
-                            <Select
-                              value={reg.funcionario_id || ''}
-                              onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
-                            >
-                              <SelectTrigger className="h-7 sm:h-8 text-[10px] sm:text-xs">
-                                <SelectValue placeholder="Selecionar..." />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {funcionarios.map((f) => (
-                                  <SelectItem key={f.id} value={f.id} className="text-[10px] sm:text-xs">
-                                    {f.nome} {f.user_id_relogio ? `(EnNo: ${f.user_id_relogio})` : ''}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4">
-                            {reg.valido ? (
-                              <span className="text-green-700 font-medium">✓ OK</span>
-                            ) : (
-                              <span className="text-red-700 text-[9px] sm:text-[10px]" title={reg.motivo_invalido}>
-                                ⚠ {reg.motivo_invalido?.substring(0, 20)}
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+              <div className="border rounded-lg overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <div className="max-h-[55vh] overflow-y-auto">
+                    <table className="w-full">
+                      <thead className="bg-slate-800 sticky top-0 z-10">
+                        <tr>
+                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap">EnNo</th>
+                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap hidden md:table-cell">Nome</th>
+                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap">Data/Hora</th>
+                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-left whitespace-nowrap">Funcionário</th>
+                          <th className="text-white text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-3 py-2 text-center whitespace-nowrap">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {registrosEditaveis.map((reg, idx) => (
+                          <tr 
+                            key={idx} 
+                            className={`border-b border-slate-200 ${reg.valido ? "bg-green-50/30 hover:bg-green-50" : "bg-red-50/30 hover:bg-red-50"} transition-colors`}
+                          >
+                            <td className="font-mono text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-slate-900 font-medium whitespace-nowrap">
+                              {reg.user_id_relogio || '-'}
+                            </td>
+                            <td className="text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-slate-700 hidden md:table-cell">
+                              {(reg.nome_arquivo || reg.nome_detectado || '-').substring(0, 25)}
+                            </td>
+                            <td className="font-mono text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-slate-900 whitespace-nowrap">
+                              {reg.data_hora ? (
+                                <div className="flex flex-col">
+                                  <span>{reg.data_hora.substring(0, 10)}</span>
+                                  <span className="text-slate-600">{reg.data_hora.substring(11, 19)}</span>
+                                </div>
+                              ) : '-'}
+                            </td>
+                            <td className="px-1.5 sm:px-3 py-2">
+                              <Select
+                                value={reg.funcionario_id || ''}
+                                onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
+                              >
+                                <SelectTrigger className="h-7 text-[9px] sm:text-[11px] border-slate-300 bg-white hover:bg-slate-50">
+                                  <SelectValue placeholder="Selecionar..." />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[200px]">
+                                  {funcionarios.map((f) => (
+                                    <SelectItem key={f.id} value={f.id} className="text-[10px] sm:text-xs">
+                                      {f.nome}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="text-[9px] sm:text-[11px] px-1.5 sm:px-3 py-2 text-center">
+                              {reg.valido ? (
+                                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  <span className="hidden sm:inline">OK</span>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium" title={reg.motivo_invalido}>
+                                  <AlertCircle className="w-3 h-3" />
+                                  <span className="hidden sm:inline">Pendente</span>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        <div className="flex-shrink-0 border-t bg-slate-50 px-3 sm:px-4 py-2 sm:py-3 rounded-b-lg sticky bottom-0">
+        <div className="flex-shrink-0 border-t bg-white px-3 sm:px-5 py-2.5 sm:py-3 sticky bottom-0 shadow-lg">
           <div className="flex gap-2 sm:gap-3 justify-end flex-wrap">
             <Button
               variant="outline"
