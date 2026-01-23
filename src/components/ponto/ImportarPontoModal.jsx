@@ -205,12 +205,13 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         }
       }}
     >
-      <DialogContent className="max-w-7xl w-[98vw] max-h-[98vh] flex flex-col p-0 gap-0">
-        <DialogHeader className="flex-shrink-0 bg-slate-800 text-white px-4 py-3 rounded-t-lg sticky top-0 z-10">
+      <DialogContent className="max-w-[98vw] w-[98vw] max-h-[98vh] flex flex-col p-0 gap-0 sm:max-w-7xl">
+        <DialogHeader className="flex-shrink-0 bg-slate-800 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-t-lg sticky top-0 z-10">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-base font-bold flex items-center gap-2">
-              <Upload className="w-5 h-5" />
-              Importar Batidas - {preview ? 'Revisar' : 'Selecionar Arquivo'}
+            <DialogTitle className="text-sm sm:text-base font-bold flex items-center gap-2">
+              <Upload className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Importar Batidas - {preview ? 'Revisar' : 'Selecionar'}</span>
+              <span className="sm:hidden">Importar</span>
             </DialogTitle>
 
             <Button
@@ -230,7 +231,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+        <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-4">
           {!preview ? (
             <>
               <div className="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-3">
@@ -297,18 +298,18 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           ) : (
             <div className="space-y-4">
               {/* Resumo */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-slate-50 p-3 rounded-lg border">
-                  <div className="text-xs text-slate-600 font-medium">Total</div>
-                  <div className="text-2xl font-bold text-slate-900">{totalRegistros}</div>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="bg-slate-50 p-2 sm:p-3 rounded-lg border">
+                  <div className="text-[10px] sm:text-xs text-slate-600 font-medium">Total</div>
+                  <div className="text-lg sm:text-2xl font-bold text-slate-900">{totalRegistros}</div>
                 </div>
-                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                  <div className="text-xs text-green-700 font-medium">Válidos</div>
-                  <div className="text-2xl font-bold text-green-700">{totalValidos}</div>
+                <div className="bg-green-50 p-2 sm:p-3 rounded-lg border border-green-200">
+                  <div className="text-[10px] sm:text-xs text-green-700 font-medium">Válidos</div>
+                  <div className="text-lg sm:text-2xl font-bold text-green-700">{totalValidos}</div>
                 </div>
-                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-                  <div className="text-xs text-red-700 font-medium">Pendentes</div>
-                  <div className="text-2xl font-bold text-red-700">{totalInvalidos}</div>
+                <div className="bg-red-50 p-2 sm:p-3 rounded-lg border border-red-200">
+                  <div className="text-[10px] sm:text-xs text-red-700 font-medium">Pendentes</div>
+                  <div className="text-lg sm:text-2xl font-bold text-red-700">{totalInvalidos}</div>
                 </div>
               </div>
 
@@ -318,42 +319,50 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   <Table>
                     <TableHeader className="bg-slate-800 sticky top-0 z-10">
                       <TableRow>
-                        <TableHead className="text-white text-xs">EnNo</TableHead>
-                        <TableHead className="text-white text-xs">Nome</TableHead>
-                        <TableHead className="text-white text-xs">Data/Hora</TableHead>
-                        <TableHead className="text-white text-xs">Funcionário</TableHead>
-                        <TableHead className="text-white text-xs">Status</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">EnNo</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">Nome Arquivo</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">Data</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">Hora</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 lg:hidden">Data/Hora</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">Método</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">Dispositivo</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">Funcionário</TableHead>
+                        <TableHead className="text-white text-[10px] sm:text-xs px-2 sm:px-4">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {registrosEditaveis.map((reg, idx) => (
                         <TableRow key={idx} className={reg.valido ? "bg-green-50" : "bg-red-50"}>
-                          <TableCell className="font-mono text-xs">{reg.user_id_relogio}</TableCell>
-                          <TableCell className="text-xs">{reg.nome_detectado || '-'}</TableCell>
-                          <TableCell className="font-mono text-xs">{reg.data_hora?.substring(0, 16) || '-'}</TableCell>
-                          <TableCell className="min-w-[200px]">
+                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4">{reg.user_id_relogio}</TableCell>
+                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4">{reg.nome_arquivo || reg.nome_detectado || '-'}</TableCell>
+                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">{reg.data || '-'}</TableCell>
+                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4 hidden lg:table-cell">{reg.hora?.substring(0, 8) || '-'}</TableCell>
+                          <TableCell className="font-mono text-[10px] sm:text-xs px-2 sm:px-4 lg:hidden">{reg.data_hora?.substring(0, 16).replace('T', ' ') || '-'}</TableCell>
+                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">{reg.metodo || '-'}</TableCell>
+                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4 hidden xl:table-cell">{reg.dispositivo_id || '-'}</TableCell>
+                          <TableCell className="min-w-[150px] sm:min-w-[200px] px-2 sm:px-4">
                             <Select
                               value={reg.funcionario_id || ''}
                               onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
                             >
-                              <SelectTrigger className="h-8 text-xs">
+                              <SelectTrigger className="h-7 sm:h-8 text-[10px] sm:text-xs">
                                 <SelectValue placeholder="Selecionar..." />
                               </SelectTrigger>
                               <SelectContent>
                                 {funcionarios.map((f) => (
-                                  <SelectItem key={f.id} value={f.id} className="text-xs">
+                                  <SelectItem key={f.id} value={f.id} className="text-[10px] sm:text-xs">
                                     {f.nome} {f.user_id_relogio ? `(EnNo: ${f.user_id_relogio})` : ''}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
                           </TableCell>
-                          <TableCell className="text-xs">
+                          <TableCell className="text-[10px] sm:text-xs px-2 sm:px-4">
                             {reg.valido ? (
                               <span className="text-green-700 font-medium">✓ OK</span>
                             ) : (
-                              <span className="text-red-700 text-[10px]" title={reg.motivo_invalido}>
-                                ⚠ {reg.motivo_invalido?.substring(0, 30)}
+                              <span className="text-red-700 text-[9px] sm:text-[10px]" title={reg.motivo_invalido}>
+                                ⚠ {reg.motivo_invalido?.substring(0, 20)}
                               </span>
                             )}
                           </TableCell>
@@ -367,8 +376,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           )}
         </div>
 
-        <div className="flex-shrink-0 border-t bg-slate-50 px-4 py-3 rounded-b-lg sticky bottom-0">
-          <div className="flex gap-3 justify-end">
+        <div className="flex-shrink-0 border-t bg-slate-50 px-3 sm:px-4 py-2 sm:py-3 rounded-b-lg sticky bottom-0">
+          <div className="flex gap-2 sm:gap-3 justify-end flex-wrap">
             <Button
               variant="outline"
               onClick={() => {
@@ -382,8 +391,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 }
               }}
               disabled={processando || salvando}
+              size="sm"
+              className="text-xs sm:text-sm"
             >
-              <X className="w-4 h-4 mr-2" />
+              <X className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               {preview ? 'Voltar' : 'Cancelar'}
             </Button>
 
@@ -392,16 +403,17 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 onClick={processarArquivo}
                 disabled={processando || !temEntrada}
                 className="bg-blue-600 hover:bg-blue-700"
+                size="sm"
               >
                 {processando ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processando...
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
+                    <span className="text-xs sm:text-sm">Processando...</span>
                   </>
                 ) : (
                   <>
-                    <Eye className="w-4 h-4 mr-2" />
-                    Gerar Preview
+                    <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Gerar Preview</span>
                   </>
                 )}
               </Button>
@@ -410,16 +422,17 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 onClick={confirmarImportacao}
                 disabled={salvando || totalValidos === 0}
                 className="bg-green-600 hover:bg-green-700"
+                size="sm"
               >
                 {salvando ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Salvando...
+                    <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
+                    <span className="text-xs sm:text-sm">Salvando...</span>
                   </>
                 ) : (
                   <>
-                    <Save className="w-4 h-4 mr-2" />
-                    Confirmar ({totalValidos})
+                    <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="text-xs sm:text-sm">Confirmar ({totalValidos})</span>
                   </>
                 )}
               </Button>

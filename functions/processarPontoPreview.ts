@@ -104,6 +104,7 @@ async function normalizar(registros, funcionarios) {
     if (!enNo || !/^\d+$/.test(enNo)) {
       normalizados.push({
         user_id_relogio: enNo || null,
+        nome_arquivo: reg.name || '',
         nome_detectado: reg.name || '',
         data_hora: null,
         data: null,
@@ -133,6 +134,7 @@ async function normalizar(registros, funcionarios) {
     } catch (e) {
       normalizados.push({
         user_id_relogio: enNo,
+        nome_arquivo: reg.name || '',
         nome_detectado: reg.name || '',
         data_hora: null,
         data: null,
@@ -159,6 +161,7 @@ async function normalizar(registros, funcionarios) {
     normalizados.push({
       funcionario_id: funcionario?.id || null,
       user_id_relogio: enNo,
+      nome_arquivo: reg.name || '',
       nome_detectado: reg.name || '',
       data,
       hora,

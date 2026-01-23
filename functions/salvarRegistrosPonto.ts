@@ -32,6 +32,7 @@ Deno.serve(async (req) => {
         const salvo = await base44.asServiceRole.entities.PontoRegistro.create({
           funcionario_id: registro.funcionario_id || null,
           user_id_relogio: registro.user_id_relogio,
+          nome_arquivo: registro.nome_arquivo || registro.nome_detectado || '',
           data: registro.data,
           hora: registro.hora,
           data_hora: registro.data_hora,
