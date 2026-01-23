@@ -191,8 +191,16 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         continue;
       }
       
-      const data = dataHora.toISOString().split('T')[0];
-      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
+      // Manter formato exato do TXT (24h)
+      const ano = dataHora.getFullYear();
+      const mes = String(dataHora.getMonth() + 1).padStart(2, '0');
+      const dia = String(dataHora.getDate()).padStart(2, '0');
+      const horas = String(dataHora.getHours()).padStart(2, '0');
+      const minutos = String(dataHora.getMinutes()).padStart(2, '0');
+      const segundos = String(dataHora.getSeconds()).padStart(2, '0');
+      
+      const data = `${ano}-${mes}-${dia}`;
+      const hora = `${horas}:${minutos}:${segundos}`;
       
       const funcionario = funcionarios.find(f => {
         if (!f || !f.user_id_relogio) return false;
@@ -558,12 +566,12 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                               {reg.user_id_relogio || '-'}
                             </td>
                             <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-900 whitespace-nowrap">
-                              {reg.data_hora ? (
-                                <div className="flex flex-col leading-tight">
-                                  <span>{reg.data_hora.substring(8, 10)}/{reg.data_hora.substring(5, 7)}/{reg.data_hora.substring(0, 4)}</span>
-                                  <span className="text-slate-600">{reg.data_hora.substring(11, 16)}</span>
-                                </div>
-                              ) : '-'}
+                             {reg.data && reg.hora ? (
+                               <div className="flex flex-col leading-tight">
+                                 <span>{reg.data.substring(8, 10)}/{reg.data.substring(5, 7)}/{reg.data.substring(0, 4)}</span>
+                                 <span className="text-slate-600">{reg.hora.substring(0, 5)}</span>
+                               </div>
+                             ) : '-'}
                             </td>
                             <td className="px-1.5 md:px-3 py-2 md:py-2">
                               <Select
