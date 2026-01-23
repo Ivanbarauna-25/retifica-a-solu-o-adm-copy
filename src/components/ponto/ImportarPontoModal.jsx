@@ -352,6 +352,8 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setRegistrosEditaveis(novosRegistros);
   };
 
+  const [confirmDialog, setConfirmDialog] = useState(null);
+
   const confirmarImportacao = async () => {
     const validos = registrosEditaveis.filter(r => r.valido);
     
@@ -363,8 +365,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       });
       return;
     }
-
-    setSalvando(true);
 
     try {
       // Verificar duplicatas
@@ -385,21 +385,44 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         }
       }
 
+      // Mostrar dialog de confirmação personalizado
       if (duplicatas.length > 0) {
-        const continuar = window.confirm(
-          `⚠️ Detectadas ${duplicatas.length} batidas duplicadas que serão ignoradas.\n\n` +
-          `${novos.length} novas batidas serão importadas.\n\nDeseja continuar?`
-        );
-        if (!continuar) {
-          setSalvando(false);
-          return;
-        }
+        setConfirmDialog({
+          tipo: 'duplicadas',
+          duplicatas: duplicatas.length,
+          novos: novos.length,
+          callback: async (confirmado) => {
+            if (confirmado) {
+              await executarImportacao(novos);
+            }
+            setConfirmDialog(null);
+          }
+        });
       } else {
-        if (!window.confirm(`Confirmar importação de ${novos.length} registros?`)) {
-          setSalvando(false);
-          return;
-        }
+        setConfirmDialog({
+          tipo: 'simples',
+          total: novos.length,
+          callback: async (confirmado) => {
+            if (confirmado) {
+              await executarImportacao(novos);
+            }
+            setConfirmDialog(null);
+          }
+        });
       }
+    } catch (error) {
+      console.error("Erro ao verificar duplicatas:", error);
+      toast({
+        title: "Erro",
+        description: error?.message || "Falha ao verificar duplicatas",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const executarImportacao = async (novos) => {
+    setSalvando(true);
+    try {
 
       const erros = [];
       let salvos = 0;
