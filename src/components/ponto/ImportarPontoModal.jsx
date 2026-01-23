@@ -651,15 +651,34 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                   <div className="text-2xl md:text-4xl font-black text-green-700">{totalValidos}</div>
                   <div className="text-[9px] md:text-xs text-green-600 mt-1 font-medium">prontos</div>
                 </div>
-                <div className="bg-gradient-to-br from-red-50 via-red-100 to-red-50 p-3 md:p-5 rounded-xl md:rounded-2xl border-2 border-red-300 shadow-md hover:shadow-lg transition-all">
+                <button 
+                  onClick={() => setMostrarErros(!mostrarErros)}
+                  className="bg-gradient-to-br from-red-50 via-red-100 to-red-50 p-3 md:p-5 rounded-xl md:rounded-2xl border-2 border-red-300 shadow-md hover:shadow-lg transition-all cursor-pointer hover:scale-105">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-[10px] md:text-xs text-red-700 font-bold uppercase tracking-wide">Pendentes</div>
+                    <div className="text-[10px] md:text-xs text-red-700 font-bold uppercase tracking-wide">Avisos</div>
                     <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
                   </div>
-                  <div className="text-2xl md:text-4xl font-black text-red-700">{totalInvalidos}</div>
-                  <div className="text-[9px] md:text-xs text-red-600 mt-1 font-medium">corrigir</div>
-                </div>
+                  <div className="text-2xl md:text-4xl font-black text-red-700">{validacoes?.detalhes.filter(d => d.avisos.length > 0).length || 0}</div>
+                  <div className="text-[9px] md:text-xs text-red-600 mt-1 font-medium">verificar</div>
+                </button>
               </div>
+
+              {/* Alertas de Validação */}
+              {mostrarErros && validacoes && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-3 md:p-4">
+                  <p className="text-xs md:text-sm font-semibold text-yellow-900 mb-2">⚠️ Avisos de Validação</p>
+                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                    {validacoes.detalhes.filter(d => d.avisos.length > 0).map((detalhe, idx) => (
+                      <div key={idx} className="bg-white p-2 rounded border border-yellow-200 text-[9px] md:text-xs">
+                        <p className="font-medium text-slate-700">Linha {detalhe.index + 1}</p>
+                        <ul className="text-yellow-800 ml-3 mt-1 list-disc">
+                          {detalhe.avisos.map((av, i) => <li key={i}>{av}</li>)}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="border-2 border-slate-200 rounded-xl overflow-hidden shadow-lg bg-white">
                 <div className="overflow-x-auto">
