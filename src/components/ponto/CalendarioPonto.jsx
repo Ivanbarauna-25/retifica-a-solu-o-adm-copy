@@ -100,28 +100,28 @@ export default function CalendarioPonto({
 
   return (
     <Card className="shadow-sm">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm md:text-base">Calendário de Ponto</CardTitle>
-          <div className="flex items-center gap-2">
+      <CardHeader className="pb-2 md:pb-3 px-2 md:px-6 py-3 md:py-4">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-xs md:text-base truncate">Calendário de Ponto</CardTitle>
+          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={handlePrevMes}
-              className="h-8 w-8 p-0"
+              className="h-9 w-9 md:h-8 md:w-8 p-0 hover:bg-slate-100"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-5 md:w-4 h-5 md:h-4" />
             </Button>
-            <span className="text-xs md:text-sm font-semibold min-w-[120px] text-center">
+            <span className="text-xs md:text-sm font-semibold whitespace-nowrap px-2">
               {meses[mes.getMonth()]} {mes.getFullYear()}
             </span>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={handleProxMes}
-              className="h-8 w-8 p-0"
+              className="h-9 w-9 md:h-8 md:w-8 p-0 hover:bg-slate-100"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 md:w-4 h-5 md:h-4" />
             </Button>
           </div>
         </div>
