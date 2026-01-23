@@ -1001,6 +1001,7 @@ export default function AdiantamentosPage() {
           funcionarios={funcionarios}
           planos={planos}
           contasBancarias={contasBancarias}
+          adiantamentos={itens}
           onSave={onSave}
           onClose={() => {
             setIsFormOpen(false);
