@@ -326,25 +326,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     } catch (error) {
       console.error("❌ Erro ao processar:", error);
       
-      try {
-        await base44.entities.ErrorLog.create({
-          error_message: error?.message || "Erro ao processar importação de ponto",
-          error_stack: error?.stack || "",
-          component_name: "ImportarPontoModal - processarArquivo",
-          severity: "error",
-          status: 'novo',
-          source: 'frontend',
-          url: window.location.href,
-          extra: JSON.stringify({
-            tem_arquivo: !!arquivo,
-            tem_conteudo: !!conteudoColado.trim(),
-            timestamp: new Date().toISOString()
-          })
-        });
-      } catch (logError) {
-        console.error("Erro ao registrar log:", logError);
-      }
-      
       toast({
         title: "Erro",
         description: error?.message || "Falha ao processar",
