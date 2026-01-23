@@ -8,7 +8,8 @@ export default function EspelhoPontoDoc({
   dataFim,
   configuracoes,
   escalas,
-  funcionariosEscalas
+  funcionariosEscalas,
+  cargos = {}
 }) {
   const formatarData = (data) => {
     if (!data) return "-";
@@ -33,11 +34,17 @@ export default function EspelhoPontoDoc({
   const registrosAgrupados = useMemo(() => {
     const grupos = {};
     for (const reg of registros) {
-      if (!reg.data) continue;
-      if (!grupos[reg.data]) {
-        grupos[reg.data] = [];
+      // Extrair data de data_hora se data não existir
+      let data = reg.data;
+      if (!data && reg.data_hora) {
+        data = reg.data_hora.substring(0, 10);
       }
-      grupos[reg.data].push(reg);
+      if (!data) continue;
+      
+      if (!grupos[data]) {
+        grupos[data] = [];
+      }
+      grupos[data].push(reg);
     }
     
     // Ordenar batidas e converter em objeto
@@ -111,7 +118,7 @@ export default function EspelhoPontoDoc({
           <div>
             <p className="text-slate-600"><strong>Nome:</strong> {funcionario?.nome || "-"}</p>
             <p className="text-slate-600"><strong>CPF:</strong> {funcionario?.cpf || "-"}</p>
-            <p className="text-slate-600"><strong>Cargo:</strong> {funcionario?.cargo_id || "-"}</p>
+            <p className="text-slate-600"><strong>Cargo:</strong> {cargos[funcionario?.cargo_id]?.nome || funcionario?.cargo_id || "-"}</p>
           </div>
           <div>
             <p className="text-slate-600"><strong>Departamento:</strong> {funcionario?.departamento_id || "-"}</p>
