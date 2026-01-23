@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { Upload, FileText, CheckCircle2, X, Loader2, AlertCircle, Save, Eye } from "lucide-react";
+import { Upload, FileText, CheckCircle2, X, Loader2, Save, Eye } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import * as XLSX from "xlsx";
 
 export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
   const [arquivo, setArquivo] = useState(null);
@@ -48,15 +49,178 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     return Boolean((conteudoColado || "").trim() || arquivo);
   }, [conteudoColado, arquivo]);
 
-  const processarArquivo = async () => {
-    console.log('🔍 ProcessarArquivo chamado', { 
-      temEntrada, 
-      conteudoColado: conteudoColado.substring(0, 100), 
-      arquivo: arquivo?.name 
-    });
+  // === PARSERS NO FRONTEND ===
+  const parseTXT = (conteudo) => {
+    const linhas = conteudo.split('\n');
+    const registros = [];
+    let headerMap = null;
+
+    for (const linha of linhas) {
+      const limpa = linha.replace(/\r/g, '').trim();
+      
+      if (!limpa) continue;
+      if (limpa.startsWith('#')) continue;
+      
+      if (!headerMap && (limpa.includes('EnNo') || limpa.includes('Name')) && limpa.includes('\t')) {
+        const colunas = limpa.split('\t');
+        headerMap = {};
+        
+        colunas.forEach((col, idx) => {
+          const colLimpa = col.trim().toLowerCase();
+          if (colLimpa === 'enno' || colLimpa === 'empno' || colLimpa === 'userid') {
+            headerMap.enNo = idx;
+          } else if (colLimpa === 'name' || colLimpa === 'nome' || colLimpa === 'employee') {
+            headerMap.name = idx;
+          } else if (colLimpa === 'datetime' || colLimpa === 'checktime' || colLimpa === 'timestamp') {
+            headerMap.dateTime = idx;
+          } else if (colLimpa === 'tmno' || colLimpa === 'deviceid') {
+            headerMap.tmNo = idx;
+          } else if (colLimpa === 'mode' || colLimpa === 'modo') {
+            headerMap.mode = idx;
+          }
+        });
+        
+        continue;
+      }
+      
+      if (!headerMap || headerMap.enNo === undefined || headerMap.dateTime === undefined) continue;
+      
+      const campos = limpa.split('\t');
+      if (campos.length < 3) continue;
+      
+      const enNo = (campos[headerMap.enNo] || '').trim();
+      const dateTime = (campos[headerMap.dateTime] || '').trim().replace(/\s+/g, ' ');
+      
+      if (!enNo || !dateTime) continue;
+      
+      registros.push({
+        enNo,
+        name: headerMap.name !== undefined ? (campos[headerMap.name] || '').trim() : '',
+        dateTime,
+        tmNo: headerMap.tmNo !== undefined ? (campos[headerMap.tmNo] || '').trim() : '',
+        mode: headerMap.mode !== undefined ? (campos[headerMap.mode] || '').trim() : '',
+        raw: limpa
+      });
+    }
     
+    return registros;
+  };
+
+  const parseXLSX = (buffer) => {
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet);
+    
+    const registros = [];
+    
+    for (const row of rows) {
+      const enNo = String(row['EnNo'] || row['EmpNo'] || row['UserID'] || row['ID'] || '').trim();
+      const dateTime = String(row['DateTime'] || row['CheckTime'] || row['Timestamp'] || row['Data/Hora'] || '').trim();
+      const name = String(row['Name'] || row['Nome'] || row['Employee'] || '').trim();
+      const tmNo = String(row['TMNo'] || row['DeviceID'] || '').trim();
+      const mode = String(row['Mode'] || row['Modo'] || '').trim();
+      
+      if (!enNo || !dateTime) continue;
+      
+      registros.push({
+        enNo,
+        name,
+        dateTime,
+        tmNo,
+        mode,
+        raw: JSON.stringify(row).substring(0, 500)
+      });
+    }
+    
+    return registros;
+  };
+
+  const normalizar = (registros, funcionarios) => {
+    const normalizados = [];
+    
+    for (const reg of registros) {
+      const enNo = String(reg.enNo || '').trim();
+      
+      if (!enNo || !/^\d+$/.test(enNo)) {
+        normalizados.push({
+          user_id_relogio: enNo || null,
+          nome_arquivo: reg.name || '',
+          nome_detectado: reg.name || '',
+          data_hora: null,
+          data: null,
+          hora: null,
+          origem: 'relogio',
+          metodo: reg.mode || '',
+          dispositivo_id: reg.tmNo || '',
+          raw_linha: (reg.raw || '').substring(0, 500),
+          valido: false,
+          motivo_invalido: !enNo ? 'EnNo vazio' : 'EnNo não numérico',
+          funcionario_id: null
+        });
+        continue;
+      }
+      
+      let dataHora;
+      try {
+        const dt = String(reg.dateTime || '').trim();
+        if (!dt) throw new Error('DateTime vazio');
+        
+        const normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
+        dataHora = new Date(normalizado);
+        
+        if (isNaN(dataHora.getTime())) {
+          throw new Error('Data inválida');
+        }
+      } catch (e) {
+        normalizados.push({
+          user_id_relogio: enNo,
+          nome_arquivo: reg.name || '',
+          nome_detectado: reg.name || '',
+          data_hora: null,
+          data: null,
+          hora: null,
+          origem: 'relogio',
+          metodo: reg.mode || '',
+          dispositivo_id: reg.tmNo || '',
+          raw_linha: (reg.raw || '').substring(0, 500),
+          valido: false,
+          motivo_invalido: `DateTime inválido: "${reg.dateTime}"`,
+          funcionario_id: null
+        });
+        continue;
+      }
+      
+      const data = dataHora.toISOString().split('T')[0];
+      const hora = dataHora.toISOString().split('T')[1].split('.')[0];
+      
+      const funcionario = funcionarios.find(f => {
+        if (!f || !f.user_id_relogio) return false;
+        return String(f.user_id_relogio).trim() === enNo;
+      });
+      
+      normalizados.push({
+        funcionario_id: funcionario?.id || null,
+        user_id_relogio: enNo,
+        nome_arquivo: reg.name || '',
+        nome_detectado: reg.name || '',
+        data,
+        hora,
+        data_hora: dataHora.toISOString(),
+        origem: 'relogio',
+        metodo: reg.mode || '',
+        dispositivo_id: reg.tmNo || '',
+        raw_linha: (reg.raw || '').substring(0, 500),
+        valido: !!funcionario,
+        motivo_invalido: funcionario ? null : 'EnNo sem funcionário vinculado'
+      });
+    }
+    
+    return normalizados;
+  };
+
+  const processarArquivo = async () => {
     if (!temEntrada) {
-      console.log('❌ Sem entrada');
       toast({
         title: "Atenção",
         description: "Selecione um arquivo ou cole o conteúdo.",
@@ -69,67 +233,71 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setProgresso(10);
 
     try {
-      console.log('1️⃣ Buscando funcionários...');
       const funcs = await base44.entities.Funcionario.list();
       setFuncionarios(funcs || []);
       setProgresso(30);
 
-      console.log('2️⃣ Enviando para backend...', {
-        tem_conteudo: !!conteudoColado.trim(),
-        tem_arquivo: !!arquivo
-      });
-      
-      let fileData = null;
+      let registros = [];
+      let formato = 'desconhecido';
+
       if (arquivo) {
-        const nomeArquivo = arquivo.name.toLowerCase();
-        if (nomeArquivo.endsWith('.xls') || nomeArquivo.endsWith('.xlsx')) {
-          // XLSX: enviar como base64
-          const arrayBuffer = await arquivo.arrayBuffer();
-          const bytes = new Uint8Array(arrayBuffer);
-          fileData = btoa(String.fromCharCode(...bytes));
-        } else {
-          // TXT: enviar como texto
-          fileData = await arquivo.text();
-        }
-      }
-      
-      const response = await base44.functions.invoke('processarPontoPreview', {
-        conteudo_colado: conteudoColado.trim() || null,
-        file_data: fileData,
-        nome_arquivo: arquivo ? arquivo.name : 'conteudo_colado.txt'
-      });
-
-      console.log('3️⃣ Resposta backend:', response?.data);
-
-      setProgresso(90);
-
-      if (!response?.data?.success) {
-        console.log('❌ Erro no backend:', response?.data?.error);
-        toast({
-          title: "Erro no processamento",
-          description: response?.data?.error || "Falha ao processar arquivo.",
-          variant: "destructive"
+        const reader = new FileReader();
+        
+        const fileContent = await new Promise((resolve, reject) => {
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = reject;
+          
+          if (arquivo.name.toLowerCase().endsWith('.txt')) {
+            reader.readAsText(arquivo);
+          } else {
+            reader.readAsArrayBuffer(arquivo);
+          }
         });
-        setProcessando(false);
-        return;
+
+        if (arquivo.name.toLowerCase().endsWith('.txt')) {
+          formato = 'txt';
+          registros = parseTXT(fileContent);
+        } else if (arquivo.name.toLowerCase().endsWith('.xls') || arquivo.name.toLowerCase().endsWith('.xlsx')) {
+          formato = 'xlsx';
+          registros = parseXLSX(new Uint8Array(fileContent));
+        } else {
+          throw new Error('Formato não suportado. Use TXT ou XLSX.');
+        }
+      } else {
+        formato = 'txt';
+        registros = parseTXT(conteudoColado);
       }
 
-      setPreview(response.data);
-      setRegistrosEditaveis(response.data.registros || []);
-      setProgresso(100);
+      if (registros.length === 0) {
+        throw new Error('Nenhum registro encontrado no arquivo');
+      }
 
-      console.log('✅ Preview gerado:', response.data.registros?.length);
+      setProgresso(60);
+
+      const normalizados = normalizar(registros, funcs);
+      const datas = normalizados.filter(r => r.data).map(r => r.data).sort();
+
+      setPreview({
+        stats: {
+          total: normalizados.length,
+          validos: normalizados.filter(r => r.valido).length,
+          invalidos: normalizados.filter(r => !r.valido).length,
+          periodo_inicio: datas[0] || null,
+          periodo_fim: datas[datas.length - 1] || null,
+          formato
+        }
+      });
+      setRegistrosEditaveis(normalizados);
+      setProgresso(100);
 
       toast({
         title: "Preview gerado",
-        description: `${response.data.registros?.length || 0} registros prontos para revisão`
+        description: `${normalizados.length} registros prontos para revisão`
       });
 
     } catch (error) {
       console.error("❌ Erro ao processar:", error);
-      console.error("❌ Detalhes:", error.response?.data);
       
-      // Registrar erro automaticamente
       try {
         await base44.entities.ErrorLog.create({
           error_message: error?.message || "Erro ao processar importação de ponto",
@@ -140,7 +308,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
           source: 'frontend',
           url: window.location.href,
           extra: JSON.stringify({
-            error_response: error?.response?.data,
             tem_arquivo: !!arquivo,
             tem_conteudo: !!conteudoColado.trim(),
             timestamp: new Date().toISOString()
@@ -152,13 +319,12 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       
       toast({
         title: "Erro",
-        description: error?.response?.data?.error || error?.message || "Falha ao processar",
+        description: error?.message || "Falha ao processar",
         variant: "destructive",
         duration: 8000
       });
-      setProcessando(false);
     } finally {
-      setTimeout(() => setProcessando(false), 500);
+      setProcessando(false);
     }
   };
 
@@ -169,7 +335,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       [field]: value
     };
     
-    // Revalidar se mudou funcionario_id
     if (field === 'funcionario_id') {
       novosRegistros[index].valido = !!value;
       novosRegistros[index].motivo_invalido = value ? null : 'Funcionário não selecionado';
@@ -197,22 +362,38 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     setSalvando(true);
 
     try {
-      const response = await base44.functions.invoke('salvarRegistrosPonto', {
-        registros: registrosEditaveis
+      const erros = [];
+      let salvos = 0;
+
+      for (const registro of validos) {
+        try {
+          await base44.entities.PontoRegistro.create(registro);
+          salvos++;
+        } catch (err) {
+          erros.push({
+            registro,
+            erro: err.message
+          });
+        }
+      }
+
+      await base44.entities.ImportacaoPonto.create({
+        origem_arquivo: arquivo?.name || "conteudo_colado.txt",
+        total_registros: registrosEditaveis.length,
+        registros_validos: validos.length,
+        registros_salvos: salvos,
+        registros_erro: erros.length,
+        erros_detalhes: erros.length > 0 ? JSON.stringify(erros) : null
       });
 
-      if (response?.data?.success) {
-        toast({
-          title: "Importação concluída",
-          description: response.data.message || `${validos.length} registros salvos`
-        });
+      toast({
+        title: "Importação concluída",
+        description: `${salvos} registros salvos com sucesso`
+      });
 
-        resetTudo();
-        if (onImportado) onImportado();
-        onClose();
-      } else {
-        throw new Error(response?.data?.error || "Erro ao salvar");
-      }
+      resetTudo();
+      if (onImportado) onImportado();
+      onClose();
 
     } catch (error) {
       console.error("Erro ao salvar:", error);
@@ -226,7 +407,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     }
   };
 
-  const stats = preview?.stats || {};
   const totalRegistros = registrosEditaveis.length;
   const totalValidos = registrosEditaveis.filter(r => r.valido).length;
   const totalInvalidos = totalRegistros - totalValidos;
@@ -333,7 +513,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
             </>
           ) : (
             <div className="space-y-4">
-              {/* Resumo */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 <div className="bg-slate-50 p-2 sm:p-3 rounded-lg border">
                   <div className="text-[10px] sm:text-xs text-slate-600 font-medium">Total</div>
@@ -349,7 +528,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                 </div>
               </div>
 
-              {/* Tabela Editável */}
               <div className="border rounded-lg overflow-hidden">
                 <div className="max-h-[60vh] overflow-auto">
                   <Table>
