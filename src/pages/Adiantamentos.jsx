@@ -671,6 +671,21 @@ export default function AdiantamentosPage() {
             </div>
           </div>
 
+          {/* Bulk Actions Bar */}
+          <BulkActionsBar 
+            selecionados={selecionados}
+            totalSelecionados={totalSelecionados}
+            onAprovar={abrirAprovacaoLote}
+            onRejeitar={() => rejectMultiplos(selecionados)}
+            onExcluir={() => excluirMultiplos(selecionados)}
+            onVisualizarTodos={() => {
+              const primeiro = itens.find(a => a.id === selecionados[0]);
+              if (primeiro) abrirVisualizacao(primeiro);
+            }}
+            onExportar={exportarSelecionados}
+            isProcessing={processandoLote}
+          />
+
           {showFilters && (
             <Card className="mb-6">
               <CardContent className="pt-6">
