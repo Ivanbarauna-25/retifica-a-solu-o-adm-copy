@@ -8,7 +8,7 @@ import SmartInput from "@/components/SmartInput";
 import { useToast } from "@/components/ui/use-toast";
 import ResponsiveModal from "@/components/ui/ResponsiveModal";
 
-export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, planos, onSave, onClose }) {
+export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, planos, adiantamentos, onSave, onClose }) {
   const { toast } = useToast();
   const [form, setForm] = useState({
     funcionario_id: "",
@@ -19,6 +19,38 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
     motivo: "",
     status: "pendente"
   });
+
+  // Auto-complete helper
+  const autoComplete = useMemo(() => {
+    const hoje = new Date();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    
+    return {
+      sugerirValor: (funcId) => {
+        if (!funcId || !adiantamentos) return null;
+        const historico = adiantamentos.filter(a => a.funcionario_id === funcId);
+        if (historico.length === 0) return null;
+        const valoresAprovados = historico
+          .filter(a => a.status === 'aprovado' || a.status === 'pago')
+          .map(a => Number(a.valor) || 0);
+        if (valoresAprovados.length === 0) return null;
+        const media = valoresAprovados.slice(-3).reduce((a, b) => a + b, 0) / Math.min(3, valoresAprovados.length);
+        return Math.round(media);
+      },
+      sugerirMotivo: (funcId) => {
+        if (!funcId || !adiantamentos) return null;
+        const historico = adiantamentos.filter(a => a.funcionario_id === funcId && a.motivo);
+        if (historico.length === 0) return null;
+        const motivos = {};
+        historico.forEach(a => {
+          motivos[a.motivo] = (motivos[a.motivo] || 0) + 1;
+        });
+        return Object.entries(motivos).sort(([, a], [, b]) => b - a)[0][0];
+      },
+      competenciaAtual: `${ano}-${mes}`
+    };
+  }, [adiantamentos]);
 
   useEffect(() => {
     if (adiantamento) {
