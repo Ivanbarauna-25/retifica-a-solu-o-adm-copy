@@ -152,7 +152,16 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
           </div>
 
           <div>
-            <Label className="text-xs md:text-sm font-bold text-slate-900 mb-1 md:mb-2 block">Competência</Label>
+            <div className="flex items-center justify-between mb-1 md:mb-2">
+              <Label className="text-xs md:text-sm font-bold text-slate-900">Competência</Label>
+              <button
+                type="button"
+                onClick={() => setField("competencia", autoComplete.competenciaAtual)}
+                className="text-[10px] md:text-xs text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+              >
+                <Zap className="w-3 h-3" /> Atual
+              </button>
+            </div>
             <Input
               type="month"
               value={form.competencia}
