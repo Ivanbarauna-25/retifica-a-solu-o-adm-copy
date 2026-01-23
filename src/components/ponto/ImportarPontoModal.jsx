@@ -205,7 +205,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         }
       }}
     >
-      <DialogContent className="max-w-6xl w-[98vw] max-h-[95vh] flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-7xl w-[98vw] max-h-[98vh] flex flex-col p-0 gap-0">
         <DialogHeader className="flex-shrink-0 bg-slate-800 text-white px-4 py-3 rounded-t-lg sticky top-0 z-10">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-base font-bold flex items-center gap-2">
@@ -314,7 +314,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
 
               {/* Tabela Editável */}
               <div className="border rounded-lg overflow-hidden">
-                <div className="max-h-[50vh] overflow-auto">
+                <div className="max-h-[60vh] overflow-auto">
                   <Table>
                     <TableHeader className="bg-slate-800 sticky top-0 z-10">
                       <TableRow>
