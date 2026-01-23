@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Printer, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import EspelhoPontoDoc from "@/components/ponto/EspelhoPontoDoc";
+import EspelhoPontoDoc from "@/components/ponto/EspelhoPontoDoc.jsx";
 
 export default function EspelhoPontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
