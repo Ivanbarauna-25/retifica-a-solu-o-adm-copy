@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  FileText, Plus, Save, Pencil, Trash2, Loader2, Camera, Upload, Sparkles } from
+  FileText, Plus, Save, Pencil, Trash2, Loader2, Camera, Upload, Sparkles, X } from
 "lucide-react";
 import { base44 } from "@/api/base44Client";
 import SmartInput from "@/components/SmartInput";
