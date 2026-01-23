@@ -166,18 +166,17 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         const dt = String(reg.dateTime || '').trim();
         if (!dt) throw new Error('DateTime vazio');
         
-        // Corrigir formato mal formatado (ex: 2026-01-22 56:45:08 -> 2026-01-22 08:45:56)
         let normalizado = dt.replace(/\//g, '-').replace(/T/, ' ').split('.')[0];
         
-        // Verificar se a hora está mal formatada (minutos > 59)
+        // Validar formato hora (rejeitar valores inválidos)
         const partes = normalizado.split(' ');
         if (partes.length === 2) {
           const [data, hora] = partes;
           const [h, m, s] = hora.split(':').map(n => parseInt(n) || 0);
           
-          // Se minutos > 59, está invertido (min:hora:seg)
-          if (m > 59) {
-            normalizado = `${data} ${String(m).padStart(2, '0')}:${String(h).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          // Validar ranges (hora 0-23, minuto/segundo 0-59)
+          if (h < 0 || h > 23 || m < 0 || m > 59 || s < 0 || s > 59) {
+            throw new Error(`Horário inválido: ${hora}`);
           }
         }
         
@@ -377,17 +376,47 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       return;
     }
 
-    if (!window.confirm(`Confirmar importação de ${validos.length} registros?`)) {
-      return;
-    }
-
     setSalvando(true);
 
     try {
+      // Verificar duplicatas
+      const registrosExistentes = await base44.entities.PontoRegistro.list();
+      const duplicatas = [];
+      const novos = [];
+
+      for (const registro of validos) {
+        const isDuplicado = registrosExistentes.some(
+          r => r.funcionario_id === registro.funcionario_id && 
+               r.data_hora === registro.data_hora
+        );
+        
+        if (isDuplicado) {
+          duplicatas.push(registro);
+        } else {
+          novos.push(registro);
+        }
+      }
+
+      if (duplicatas.length > 0) {
+        const continuar = window.confirm(
+          `⚠️ Detectadas ${duplicatas.length} batidas duplicadas que serão ignoradas.\n\n` +
+          `${novos.length} novas batidas serão importadas.\n\nDeseja continuar?`
+        );
+        if (!continuar) {
+          setSalvando(false);
+          return;
+        }
+      } else {
+        if (!window.confirm(`Confirmar importação de ${novos.length} registros?`)) {
+          setSalvando(false);
+          return;
+        }
+      }
+
       const erros = [];
       let salvos = 0;
 
-      for (const registro of validos) {
+      for (const registro of novos) {
         try {
           await base44.entities.PontoRegistro.create(registro);
           salvos++;
@@ -404,13 +433,18 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         total_registros: registrosEditaveis.length,
         registros_validos: validos.length,
         registros_salvos: salvos,
+        registros_duplicados: duplicatas.length,
         registros_erro: erros.length,
         erros_detalhes: erros.length > 0 ? JSON.stringify(erros) : null
       });
 
+      const mensagem = duplicatas.length > 0
+        ? `${salvos} novos registros salvos. ${duplicatas.length} duplicatas ignoradas.`
+        : `${salvos} registros salvos com sucesso`;
+
       toast({
         title: "Importação concluída",
-        description: `${salvos} registros salvos com sucesso`
+        description: mensagem
       });
 
       resetTudo();
