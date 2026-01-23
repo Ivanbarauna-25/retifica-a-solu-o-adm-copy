@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter } from "lucide-react";
+import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
+import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
 
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
@@ -25,6 +26,8 @@ export default function PontoPage() {
   const [isImportarOpen, setIsImportarOpen] = useState(false);
   const [ocorrenciaModal, setOcorrenciaModal] = useState(null);
   const [isOcorrenciaModalOpen, setIsOcorrenciaModalOpen] = useState(false);
+  const [visualizarGrupo, setVisualizarGrupo] = useState(null);
+  const [isVisualizarOpen, setIsVisualizarOpen] = useState(false);
   
   const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
@@ -516,6 +519,17 @@ export default function PontoPage() {
         isOpen={isImportarOpen}
         onClose={() => setIsImportarOpen(false)}
         onImportado={fetchData}
+      />
+
+      {/* Modal: Visualizar Registro do Dia */}
+      <VisualizarRegistroDiaModal
+        isOpen={isVisualizarOpen}
+        onClose={() => {
+          setIsVisualizarOpen(false);
+          setVisualizarGrupo(null);
+        }}
+        grupo={visualizarGrupo}
+        onSalvo={fetchData}
       />
 
       {/* Modal: Ocorrência/Justificativa */}

@@ -565,7 +565,9 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                       <thead className="bg-slate-800 sticky top-0 z-10">
                         <tr>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">EnNo</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Data/Hora</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Name</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">DateTime</th>
+                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Mode</th>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-left whitespace-nowrap">Funcionário</th>
                           <th className="text-white text-[9px] md:text-[11px] font-semibold px-1.5 md:px-3 py-1.5 md:py-2 text-center whitespace-nowrap">Status</th>
                         </tr>
@@ -579,13 +581,14 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                             <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-900 font-medium">
                               {reg.user_id_relogio || '-'}
                             </td>
+                            <td className="text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-700">
+                              {reg.nome_arquivo || '-'}
+                            </td>
                             <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-900 whitespace-nowrap">
-                             {reg.data && reg.hora ? (
-                               <div className="flex flex-col leading-tight">
-                                 <span>{reg.data.substring(8, 10)}/{reg.data.substring(5, 7)}/{reg.data.substring(0, 4)}</span>
-                                 <span className="text-slate-600">{reg.hora.substring(0, 5)}</span>
-                               </div>
-                             ) : '-'}
+                              {reg.data && reg.hora ? `${reg.data} ${reg.hora}` : '-'}
+                            </td>
+                            <td className="font-mono text-[9px] md:text-[11px] px-1.5 md:px-3 py-2 md:py-2 text-slate-600">
+                              {reg.metodo || '-'}
                             </td>
                             <td className="px-1.5 md:px-3 py-2 md:py-2">
                               <Select
