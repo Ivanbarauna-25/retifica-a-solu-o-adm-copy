@@ -64,14 +64,12 @@ export default function AdiantamentoForm({
   }, [form]);
 
   const handleSubmit = async (e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-    }
+    e?.preventDefault?.();
     
     if (isSaving) return;
     
+    setIsSaving(true);
     try {
-      setIsSaving(true);
       const payload = {
         ...form,
         valor: form.valor === "" ? 0 : Number(String(form.valor).replace(",", ".")),
