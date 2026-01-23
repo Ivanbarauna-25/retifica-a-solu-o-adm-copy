@@ -442,20 +442,16 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
       await base44.entities.ImportacaoPonto.create({
         origem_arquivo: arquivo?.name || "conteudo_colado.txt",
         total_registros: registrosEditaveis.length,
-        registros_validos: validos.length,
+        registros_validos: registrosEditaveis.filter(r => r.valido).length,
         registros_salvos: salvos,
-        registros_duplicados: duplicatas.length,
+        registros_duplicados: 0,
         registros_erro: erros.length,
         erros_detalhes: erros.length > 0 ? JSON.stringify(erros) : null
       });
 
-      const mensagem = duplicatas.length > 0
-        ? `${salvos} novos registros salvos. ${duplicatas.length} duplicatas ignoradas.`
-        : `${salvos} registros salvos com sucesso`;
-
       toast({
-        title: "Importação concluída",
-        description: mensagem
+        title: "✅ Importação concluída",
+        description: `${salvos} registros salvos com sucesso`
       });
 
       resetTudo();
@@ -465,7 +461,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     } catch (error) {
       console.error("Erro ao salvar:", error);
       toast({
-        title: "Erro ao salvar",
+        title: "❌ Erro ao salvar",
         description: error?.message || "Falha ao salvar registros",
         variant: "destructive"
       });
