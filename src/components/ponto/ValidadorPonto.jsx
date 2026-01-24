@@ -1,13 +1,9 @@
-/* =========================================================
-   ValidadorPonto.jsx
-   Arquivo CENTRAL de validação de ponto
-   FRONT-END ONLY (Base44)
-   ========================================================= */
+// components/ponto/ValidadorPonto.jsx
 
-/* =========================
-   VALIDAR BATIDA INDIVIDUAL
-   ========================= */
-export function validarBatida(batida, registrosDoDia = []) {
+// ===============================
+// Validação individual de batida
+// ===============================
+export function validarRegistro(batida, registrosDoDia = []) {
   const erros = [];
   const avisos = [];
 
@@ -16,39 +12,22 @@ export function validarBatida(batida, registrosDoDia = []) {
   }
 
   const duplicada = registrosDoDia.find(
-    r => r.hora === batida.hora && r.origem === batida.origem
+    r =>
+      r.hora === batida.hora &&
+      r.funcionario_id === batida.funcionario_id &&
+      r.data === batida.data
   );
 
   if (duplicada) {
     erros.push("Batida duplicada");
   }
 
-  const [h, m] = batida.hora.split(":").map(Number);
-  const minutos = h * 60 + m;
+  if (batida.hora) {
+    const [h, m] = batida.hora.split(":").map(Number);
+    const minutos = h * 60 + m;
 
-  if (minutos < 360) avisos.push("Batida antes das 06:00");
-  if (minutos > 1320) avisos.push("Batida após 22:00");
-
-  return {
-    valido: erros.length === 0,
-    erros,
-    avisos
-  };
-}
-
-/* =========================
-   VALIDAR REGISTRO (1 DIA)
-   ========================= */
-export function validarRegistro(registrosDoDia = []) {
-  const erros = [];
-  const avisos = [];
-
-  if (registrosDoDia.length === 0) {
-    erros.push("Dia sem nenhuma batida");
-  }
-
-  if (registrosDoDia.length % 2 !== 0) {
-    avisos.push("Quantidade ímpar de batidas");
+    if (minutos < 360) avisos.push("Batida antes das 06:00");
+    if (minutos > 1320) avisos.push("Batida após 22:00");
   }
 
   return {
@@ -58,54 +37,53 @@ export function validarRegistro(registrosDoDia = []) {
   };
 }
 
-/* =========================
-   VALIDAR LOTE (IMPORTAÇÃO)
-   ========================= */
-export function validarLote(registros = []) {
-  const resultado = [];
+// ===============================
+// Validação em lote (importação)
+// ===============================
+export function validarLote(batidas = []) {
+  const resumo = {
+    total: batidas.length,
+    validas: 0,
+    comErros: 0,
+    comAvisos: 0,
+    detalhes: []
+  };
 
-  const agrupadoPorDia = {};
+  batidas.forEach((batida, idx) => {
+    const anteriores = batidas.slice(0, idx);
+    const validacao = validarRegistro(batida, anteriores);
 
-  registros.forEach(r => {
-    const data = r.data || r.data_hora?.substring(0, 10);
-    if (!data) return;
+    if (!validacao.valido) resumo.comErros++;
+    else if (validacao.avisos.length) resumo.comAvisos++;
+    else resumo.validas++;
 
-    if (!agrupadoPorDia[data]) {
-      agrupadoPorDia[data] = [];
-    }
-
-    agrupadoPorDia[data].push(r);
-  });
-
-  Object.entries(agrupadoPorDia).forEach(([data, lista]) => {
-    const validacao = validarRegistro(lista);
-
-    resultado.push({
-      data,
+    resumo.detalhes.push({
+      index: idx,
+      batida,
       ...validacao
     });
   });
 
-  return resultado;
+  return resumo;
 }
 
-/* =========================
-   RECOMENDAR AJUSTES (UX)
-   ========================= */
-export function recomendarAjustes(registrosDoDia = []) {
-  const recomendacoes = [];
+// ===============================
+// Sugestões automáticas (NÃO altera)
+// ===============================
+export function recomendarAjustes(batida) {
+  const sugestoes = [];
 
-  if (registrosDoDia.length === 1) {
-    recomendacoes.push("Registrar saída");
+  if (batida?.hora_entrada && batida?.hora_saida) {
+    const [h1, m1] = batida.hora_entrada.split(":").map(Number);
+    const [h2, m2] = batida.hora_saida.split(":").map(Number);
+
+    if (h2 * 60 + m2 < h1 * 60 + m1) {
+      sugestoes.push({
+        tipo: "inverter",
+        descricao: "Hora de saída anterior à entrada"
+      });
+    }
   }
 
-  if (registrosDoDia.length === 3) {
-    recomendacoes.push("Registrar última saída");
-  }
-
-  if (registrosDoDia.length > 4) {
-    recomendacoes.push("Excesso de batidas no dia");
-  }
-
-  return recomendacoes;
+  return sugestoes;
 }
