@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter, Eye } from "lucide-react";
+import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter, Eye, FileBarChart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,8 @@ import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDia
 import PontoDashboard from "@/components/ponto/PontoDashboard";
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
 import HistoricoAuditoria from "@/components/ponto/HistoricoAuditoria";
+import FiltrosPontoModal from "@/components/ponto/FiltrosPontoModal";
+import RelatorioOcorrenciasFiltersModal from "@/components/ponto/RelatorioOcorrenciasFiltersModal";
 
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
@@ -31,6 +33,8 @@ export default function PontoPage() {
   const [isOcorrenciaModalOpen, setIsOcorrenciaModalOpen] = useState(false);
   const [visualizarGrupo, setVisualizarGrupo] = useState(null);
   const [isVisualizarOpen, setIsVisualizarOpen] = useState(false);
+  const [isFiltrosOpen, setIsFiltrosOpen] = useState(false);
+  const [isRelatorioOpen, setIsRelatorioOpen] = useState(false);
   
   const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
@@ -358,7 +362,7 @@ export default function PontoPage() {
                   className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
                 >
                   <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Importar
+                  <span className="hidden sm:inline">Importar</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -366,7 +370,7 @@ export default function PontoPage() {
                   className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
                 >
                   <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Escalas
+                  <span className="hidden sm:inline">Escalas</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -374,7 +378,15 @@ export default function PontoPage() {
                   className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
                 >
                   <Wallet className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Banco Horas
+                  <span className="hidden sm:inline">Banco Horas</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsRelatorioOpen(true)}
+                  className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10"
+                >
+                  <FileBarChart className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                  <span className="hidden sm:inline">Relatório</span>
                 </Button>
               </div>
             </div>
@@ -410,72 +422,92 @@ export default function PontoPage() {
             {/* Tabela - Área Principal */}
             <Card className="lg:col-span-3 shadow-sm">
             <CardContent className="p-3 md:p-6">
-              {/* Filtros */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 md:p-5 mb-4 md:mb-6 border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Filter className="w-4 h-4 text-slate-600" />
-                  <h3 className="text-xs md:text-sm font-semibold text-slate-700">Filtros</h3>
+              {/* Filtros - Mobile: Botão / Desktop: Inline */}
+              <div className="mb-4">
+                {/* Mobile: Botão de Filtros */}
+                <div className="md:hidden">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsFiltrosOpen(true)}
+                    className="w-full gap-2"
+                  >
+                    <Filter className="w-4 h-4" />
+                    Filtros
+                    {(filtroFuncionario !== "todos" || filtroDataInicio || filtroDataFim) && (
+                      <span className="ml-auto bg-blue-600 text-white text-xs rounded-full px-2">
+                        Ativo
+                      </span>
+                    )}
+                  </Button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Funcionário</Label>
-                    <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
-                      <SelectTrigger className="text-xs md:text-sm h-8 md:h-9 bg-white">
-                        <SelectValue placeholder="Todos" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        {funcionarios.map((f) => (
-                          <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
 
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Data Início</Label>
-                    <Input
-                      type="date"
-                      value={filtroDataInicio}
-                      onChange={(e) => setFiltroDataInicio(e.target.value)}
-                      className="text-xs md:text-sm h-8 md:h-9 bg-white"
-                    />
+                {/* Desktop: Filtros Inline */}
+                <div className="hidden md:block bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-5 border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Filter className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-700">Filtros</h3>
                   </div>
+                  <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Funcionário</Label>
+                      <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+                        <SelectTrigger className="text-sm h-9 bg-white">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          {funcionarios.map((f) => (
+                            <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Data Fim</Label>
-                    <Input
-                      type="date"
-                      value={filtroDataFim}
-                      onChange={(e) => setFiltroDataFim(e.target.value)}
-                      className="text-xs md:text-sm h-8 md:h-9 bg-white"
-                    />
-                  </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Data Início</Label>
+                      <Input
+                        type="date"
+                        value={filtroDataInicio}
+                        onChange={(e) => setFiltroDataInicio(e.target.value)}
+                        className="text-sm h-9 bg-white"
+                      />
+                    </div>
 
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Status</Label>
-                    <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-                      <SelectTrigger className="text-xs md:text-sm h-8 md:h-9 bg-white">
-                        <SelectValue placeholder="Todos" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="abonado">Abonado</SelectItem>
-                        <SelectItem value="com_justificativa">Com Justificativa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Data Fim</Label>
+                      <Input
+                        type="date"
+                        value={filtroDataFim}
+                        onChange={(e) => setFiltroDataFim(e.target.value)}
+                        className="text-sm h-9 bg-white"
+                      />
+                    </div>
 
-                  <div className="space-y-1.5 flex items-end">
-                    <Button
-                      variant="outline"
-                      onClick={limparFiltros}
-                      className="w-full gap-2 text-xs md:text-sm h-8 md:h-9"
-                    >
-                      <X className="w-3 h-3 md:w-4 md:h-4" />
-                      Limpar
-                    </Button>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-slate-600">Status</Label>
+                      <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                        <SelectTrigger className="text-sm h-9 bg-white">
+                          <SelectValue placeholder="Todos" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          <SelectItem value="normal">Normal</SelectItem>
+                          <SelectItem value="abonado">Abonado</SelectItem>
+                          <SelectItem value="com_justificativa">Com Justificativa</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1.5 flex items-end">
+                      <Button
+                        variant="outline"
+                        onClick={limparFiltros}
+                        className="w-full gap-2 text-sm h-9"
+                      >
+                        <X className="w-4 h-4" />
+                        Limpar
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -673,6 +705,41 @@ export default function PontoPage() {
         isOpen={isImportarOpen}
         onClose={() => setIsImportarOpen(false)}
         onImportado={fetchData}
+      />
+
+      {/* Modal: Filtros (Mobile) */}
+      <FiltrosPontoModal
+        isOpen={isFiltrosOpen}
+        onClose={() => setIsFiltrosOpen(false)}
+        filtros={{
+          funcionario: filtroFuncionario,
+          dataInicio: filtroDataInicio,
+          dataFim: filtroDataFim,
+          status: filtroStatus
+        }}
+        onFiltrosChange={(novosFiltros) => {
+          setFiltroFuncionario(novosFiltros.funcionario);
+          setFiltroDataInicio(novosFiltros.dataInicio);
+          setFiltroDataFim(novosFiltros.dataFim);
+          setFiltroStatus(novosFiltros.status);
+        }}
+        funcionarios={funcionarios}
+      />
+
+      {/* Modal: Relatório de Ocorrências */}
+      <RelatorioOcorrenciasFiltersModal
+        isOpen={isRelatorioOpen}
+        onClose={() => setIsRelatorioOpen(false)}
+        filtros={{
+          funcionario: filtroFuncionario,
+          dataInicio: filtroDataInicio,
+          dataFim: filtroDataFim,
+          tipo: "todos"
+        }}
+        onFiltrosChange={(filtros) => {
+          navigate(createPageUrl("RelatorioOcorrenciasPonto"), { state: { filtros } });
+        }}
+        funcionarios={funcionarios}
       />
 
       {/* Modal: Visualizar Registro do Dia */}
