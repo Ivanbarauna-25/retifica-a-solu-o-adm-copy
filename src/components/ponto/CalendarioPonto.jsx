@@ -1,76 +1,64 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// src/components/ponto/CalendarioPonto.jsx
+
+import React, { useState, useMemo } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function CalendarioPonto({
-  registros = [],
-  ocorrencias = [],
-  onDiaClicado
-}) {
+export default function CalendarioPonto({ registros = [], onSelecionar }) {
   const [mes, setMes] = useState(new Date());
 
   const diasMes = new Date(mes.getFullYear(), mes.getMonth() + 1, 0).getDate();
-  const primeiroDia = new Date(mes.getFullYear(), mes.getMonth(), 1).getDay();
+  const inicio = new Date(mes.getFullYear(), mes.getMonth(), 1).getDay();
 
-  const statusMap = useMemo(() => {
-    const map = {};
-    registros.forEach(r => {
-      if (r.data) map[r.data] = "verde";
-    });
-    ocorrencias.forEach(o => {
-      map[o.data] = "cinza";
-    });
-    return map;
-  }, [registros, ocorrencias]);
+  const mapa = useMemo(() => {
+    const m = {};
+    registros.forEach(r => (m[r.data] = true));
+    return m;
+  }, [registros]);
 
-  const getClasse = (data) => {
-    if (statusMap[data] === "verde") return "bg-green-100 border-green-300";
-    if (statusMap[data] === "cinza") return "bg-gray-100 border-gray-300";
-    return "bg-slate-50 border-slate-200";
-  };
-
-  const datas = [];
-  for (let i = 0; i < primeiroDia; i++) datas.push(null);
-  for (let d = 1; d <= diasMes; d++) datas.push(d);
+  const dias = [];
+  for (let i = 0; i < inicio; i++) dias.push(null);
+  for (let d = 1; d <= diasMes; d++) dias.push(d);
 
   return (
-    <Card>
-      <CardHeader className="flex justify-between items-center">
-        <CardTitle>Calendário</CardTitle>
-        <div className="flex gap-2">
-          <Button size="icon" variant="ghost" onClick={() =>
-            setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))
-          }>
-            <ChevronLeft />
-          </Button>
-          <Button size="icon" variant="ghost" onClick={() =>
-            setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))
-          }>
-            <ChevronRight />
-          </Button>
-        </div>
-      </CardHeader>
+    <Card className="p-3">
+      <div className="flex justify-between mb-2">
+        <Button size="icon" variant="ghost" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))}>
+          <ChevronLeft />
+        </Button>
+        <span className="font-semibold text-sm">
+          {mes.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+        </span>
+        <Button size="icon" variant="ghost" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))}>
+          <ChevronRight />
+        </Button>
+      </div>
 
-      <CardContent className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 text-xs">
         {["D","S","T","Q","Q","S","S"].map(d => (
-          <div key={d} className="text-center text-xs font-bold">{d}</div>
+          <div key={d} className="text-center font-bold">{d}</div>
         ))}
-
-        {datas.map((dia, i) => {
-          if (!dia) return <div key={i} />;
-          const data = `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
-          return (
+        {dias.map((d, i) =>
+          d ? (
             <button
-              key={data}
-              onClick={() => onDiaClicado?.(data)}
-              className={`border rounded aspect-square text-xs ${getClasse(data)}`}
+              key={i}
+              className={`aspect-square border rounded ${
+                mapa[`${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`]
+                  ? "bg-green-100"
+                  : ""
+              }`}
+              onClick={() =>
+                onSelecionar(
+                  `${mes.getFullYear()}-${String(mes.getMonth()+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`
+                )
+              }
             >
-              {dia}
+              {d}
             </button>
-          );
-        })}
-      </CardContent>
+          ) : <div key={i} />
+        )}
+      </div>
     </Card>
   );
 }
