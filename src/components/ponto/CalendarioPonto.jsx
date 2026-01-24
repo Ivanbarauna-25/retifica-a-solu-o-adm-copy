@@ -6,7 +6,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export default function CalendarioPonto({
   registros = [],
   ocorrencias = [],
-  funcionarioSelecionado,
   onDiaClicado
 }) {
   const [mes, setMes] = useState(new Date());
@@ -17,7 +16,7 @@ export default function CalendarioPonto({
   const statusMap = useMemo(() => {
     const map = {};
     registros.forEach(r => {
-      map[r.data] = "verde";
+      if (r.data) map[r.data] = "verde";
     });
     ocorrencias.forEach(o => {
       map[o.data] = "cinza";
@@ -25,7 +24,7 @@ export default function CalendarioPonto({
     return map;
   }, [registros, ocorrencias]);
 
-  const getStatus = (data) => {
+  const getClasse = (data) => {
     if (statusMap[data] === "verde") return "bg-green-100 border-green-300";
     if (statusMap[data] === "cinza") return "bg-gray-100 border-gray-300";
     return "bg-slate-50 border-slate-200";
@@ -37,13 +36,17 @@ export default function CalendarioPonto({
 
   return (
     <Card>
-      <CardHeader className="flex flex-row justify-between items-center">
+      <CardHeader className="flex justify-between items-center">
         <CardTitle>Calendário</CardTitle>
         <div className="flex gap-2">
-          <Button size="icon" variant="ghost" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))}>
+          <Button size="icon" variant="ghost" onClick={() =>
+            setMes(new Date(mes.getFullYear(), mes.getMonth() - 1, 1))
+          }>
             <ChevronLeft />
           </Button>
-          <Button size="icon" variant="ghost" onClick={() => setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))}>
+          <Button size="icon" variant="ghost" onClick={() =>
+            setMes(new Date(mes.getFullYear(), mes.getMonth() + 1, 1))
+          }>
             <ChevronRight />
           </Button>
         </div>
@@ -61,7 +64,7 @@ export default function CalendarioPonto({
             <button
               key={data}
               onClick={() => onDiaClicado?.(data)}
-              className={`border rounded aspect-square text-xs ${getStatus(data)}`}
+              className={`border rounded aspect-square text-xs ${getClasse(data)}`}
             >
               {dia}
             </button>
