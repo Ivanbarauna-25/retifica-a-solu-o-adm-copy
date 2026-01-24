@@ -332,6 +332,69 @@ function ConfiguracoesPage() {
 
               <Separator />
 
+              <div className="space-y-3 md:space-y-4">
+                <Label className="text-sm md:text-base font-semibold">Responsável pela Empresa</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="responsavel_nome" className="text-xs md:text-sm">Nome</Label>
+                    <Input
+                      id="responsavel_nome"
+                      value={config?.responsavel_empresa_nome || ''}
+                      onChange={(e) => setConfig({ ...config, responsavel_empresa_nome: e.target.value })}
+                      placeholder="Nome completo"
+                      className="h-9 md:h-10 text-xs md:text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="responsavel_cpf" className="text-xs md:text-sm">CPF</Label>
+                    <Input
+                      id="responsavel_cpf"
+                      value={config?.responsavel_empresa_cpf || ''}
+                      onChange={(e) => setConfig({ ...config, responsavel_empresa_cpf: e.target.value })}
+                      placeholder="000.000.000-00"
+                      className="h-9 md:h-10 text-xs md:text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="responsavel_cargo" className="text-xs md:text-sm">Cargo</Label>
+                    <Input
+                      id="responsavel_cargo"
+                      value={config?.responsavel_empresa_cargo || ''}
+                      onChange={(e) => setConfig({ ...config, responsavel_empresa_cargo: e.target.value })}
+                      placeholder="Ex: Diretor, Gerente Geral"
+                      className="h-9 md:h-10 text-xs md:text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="responsavel_email" className="text-xs md:text-sm">Email</Label>
+                    <Input
+                      id="responsavel_email"
+                      type="email"
+                      value={config?.responsavel_empresa_email || ''}
+                      onChange={(e) => setConfig({ ...config, responsavel_empresa_email: e.target.value })}
+                      placeholder="email@empresa.com"
+                      className="h-9 md:h-10 text-xs md:text-sm"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5 md:space-y-2">
+                    <Label htmlFor="responsavel_telefone" className="text-xs md:text-sm">Telefone</Label>
+                    <Input
+                      id="responsavel_telefone"
+                      value={config?.responsavel_empresa_telefone || ''}
+                      onChange={(e) => setConfig({ ...config, responsavel_empresa_telefone: e.target.value })}
+                      placeholder="(00) 00000-0000"
+                      className="h-9 md:h-10 text-xs md:text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
               <div className="space-y-1.5 md:space-y-2">
                 <Label htmlFor="logo" className="text-xs md:text-sm">Logo da Empresa</Label>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4">

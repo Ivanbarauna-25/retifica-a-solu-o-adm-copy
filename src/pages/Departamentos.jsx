@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Departamento } from '@/entities/Departamento';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Edit, Trash2, Building2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 // Formulário embutido para simplicidade
-const DepartamentoForm = ({ departamento, onSave, onClose }) => {
+const DepartamentoForm = ({ departamento, onSave, onClose, funcionarios }) => {
     const [nome, setNome] = useState(departamento?.nome || '');
     const [descricao, setDescricao] = useState(departamento?.descricao || '');
+    const [responsavelId, setResponsavelId] = useState(departamento?.responsavel_id || '');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ nome, descricao });
+        onSave({ nome, descricao, responsavel_id: responsavelId || null });
     };
 
     return (
@@ -35,6 +39,20 @@ const DepartamentoForm = ({ departamento, onSave, onClose }) => {
                             <label htmlFor="descricao" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">Descrição</label>
                             <textarea id="descricao" value={descricao} onChange={(e) => setDescricao(e.target.value)} rows="3" className="w-full p-2 border rounded-md text-sm" />
                         </div>
+                        <div>
+                            <Label htmlFor="responsavel" className="text-xs md:text-sm">Responsável</Label>
+                            <Select value={responsavelId} onValueChange={setResponsavelId}>
+                                <SelectTrigger className="h-9 md:h-10">
+                                    <SelectValue placeholder="Selecione o responsável..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={null}>Nenhum</SelectItem>
+                                    {funcionarios.map(f => (
+                                        <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="flex justify-end gap-2 pt-2">
                             <Button type="button" variant="outline" onClick={onClose} className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Cancelar</Button>
                             <Button type="submit" className="h-8 md:h-9 text-xs md:text-sm px-3 md:px-4">Salvar</Button>
@@ -49,6 +67,7 @@ const DepartamentoForm = ({ departamento, onSave, onClose }) => {
 
 export default function DepartamentosPage() {
   const [departamentos, setDepartamentos] = useState([]);
+  const [funcionarios, setFuncionarios] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -56,8 +75,12 @@ export default function DepartamentosPage() {
 
   const fetchData = async () => {
     setIsLoading(true);
-    const data = await Departamento.list('-created_date');
-    setDepartamentos(data);
+    const [deptData, funcData] = await Promise.all([
+      Departamento.list('-created_date'),
+      base44.entities.Funcionario.list()
+    ]);
+    setDepartamentos(deptData);
+    setFuncionarios((funcData || []).sort((a, b) => a.nome.localeCompare(b.nome)));
     setIsLoading(false);
   };
 
@@ -198,6 +221,7 @@ export default function DepartamentosPage() {
           departamento={selected}
           onSave={handleSave}
           onClose={() => setIsFormOpen(false)}
+          funcionarios={funcionarios}
         />
       )}
     </>
