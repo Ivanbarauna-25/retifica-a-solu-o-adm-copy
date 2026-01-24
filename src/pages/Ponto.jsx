@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, CalendarDays } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import HistoricoAuditoria from "@/components/ponto/HistoricoAuditoria";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function PontoPage() {
   const { toast } = useToast();
@@ -17,8 +19,17 @@ export default function PontoPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isImportarOpen, setIsImportarOpen] = useState(false);
-  const [dataSelecionada, setDataSelecionada] = useState(null);
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
+  const hojeISO = new Date().toISOString().substring(0, 10);
+
+  const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
+  const [dataInicio, setDataInicio] = useState(hojeISO);
+  const [dataFim, setDataFim] = useState(hojeISO);
+
+  /* =========================
+     CARREGAMENTO (FRONT ONLY)
+     ========================= */
   const carregarDados = async () => {
     setIsLoading(true);
     try {
@@ -31,7 +42,7 @@ export default function PontoPage() {
       setFuncionarios(funcs || []);
       setRegistros(regs || []);
       setOcorrencias(ocors || []);
-    } catch {
+    } catch (e) {
       toast({
         title: "Erro",
         description: "Falha ao carregar dados do ponto",
@@ -46,96 +57,166 @@ export default function PontoPage() {
     carregarDados();
   }, []);
 
-  const mesAtual = useMemo(() => {
-    if (!dataSelecionada) return new Date();
-    return new Date(dataSelecionada + "T12:00:00");
-  }, [dataSelecionada]);
-
-  const diasDoMes = useMemo(() => {
-    const ano = mesAtual.getFullYear();
-    const mes = mesAtual.getMonth();
-    const total = new Date(ano, mes + 1, 0).getDate();
-    return Array.from({ length: total }, (_, i) =>
-      `${ano}-${String(mes + 1).padStart(2,"0")}-${String(i + 1).padStart(2,"0")}`
-    );
-  }, [mesAtual]);
-
+  /* =========================
+     FILTRO + NORMALIZAÇÃO
+     ========================= */
   const linhas = useMemo(() => {
     const lista = [];
-    funcionarios.forEach(func => {
-      diasDoMes.forEach(data => {
-        const batidas = registros.filter(r => {
-          const d = r.data || r.data_hora?.substring(0,10);
-          return r.funcionario_id === func.id && d === data;
-        });
+
+    const funcionariosFiltrados =
+      filtroFuncionario === "todos"
+        ? funcionarios
+        : funcionarios.filter(f => f.id === filtroFuncionario);
+
+    funcionariosFiltrados.forEach(func => {
+      const datas = [];
+      let d = new Date(dataInicio + "T12:00:00");
+      const fim = new Date(dataFim + "T12:00:00");
+
+      while (d <= fim) {
+        datas.push(d.toISOString().substring(0, 10));
+        d.setDate(d.getDate() + 1);
+      }
+
+      datas.forEach(data => {
+        const batidas = registros
+          .filter(r => {
+            const dataReg = r.data || r.data_hora?.substring(0, 10);
+            return r.funcionario_id === func.id && dataReg === data;
+          })
+          .sort((a, b) => {
+            const hA = a.hora || a.data_hora?.substring(11, 19) || "";
+            const hB = b.hora || b.data_hora?.substring(11, 19) || "";
+            return hA.localeCompare(hB);
+          });
+
         const ocorrencia = ocorrencias.find(
           o => o.funcionario_id === func.id && o.data === data
         );
+
         lista.push({ funcionario: func, data, batidas, ocorrencia });
       });
     });
+
     return lista;
-  }, [funcionarios, registros, ocorrencias, diasDoMes]);
+  }, [funcionarios, registros, ocorrencias, filtroFuncionario, dataInicio, dataFim]);
+
+  const formatarDataHora = (iso) => {
+    if (!iso) return "-";
+    const d = new Date(iso);
+    return d.toLocaleString("pt-BR");
+  };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="w-10 h-10 animate-spin" />
+        <Loader2 className="w-10 h-10 animate-spin text-slate-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4">
-      <Button onClick={() => setIsImportarOpen(true)} className="mb-4">
-        Importar Ponto
-      </Button>
+    <div className="min-h-screen bg-slate-50 p-4 space-y-4">
+      {/* AÇÕES */}
+      <div className="flex flex-wrap gap-2 items-end">
+        <Button onClick={() => setIsImportarOpen(true)}>
+          Importar Ponto
+        </Button>
 
-      <CalendarioPonto
-        registros={registros.map(r => ({
-          data: r.data || r.data_hora?.substring(0,10)
-        }))}
-        ocorrencias={ocorrencias}
-        onDiaClicado={setDataSelecionada}
-      />
+        <Button
+          variant="outline"
+          onClick={() => setMostrarCalendario(v => !v)}
+          className="gap-2"
+        >
+          <CalendarDays className="w-4 h-4" />
+          Calendário
+        </Button>
 
-      <Card className="mt-6">
+        <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+          <SelectTrigger className="w-56">
+            <SelectValue placeholder="Funcionário" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos</SelectItem>
+            {funcionarios.map(f => (
+              <SelectItem key={f.id} value={f.id}>
+                {f.nome}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
+        <Input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+      </div>
+
+      {/* CALENDÁRIO (OCULTO POR PADRÃO) */}
+      {mostrarCalendario && (
+        <CalendarioPonto
+          registros={registros.map(r => ({
+            data: r.data || r.data_hora?.substring(0, 10)
+          }))}
+          ocorrencias={ocorrencias}
+          onDiaClicado={(data) => {
+            setDataInicio(data);
+            setDataFim(data);
+            setMostrarCalendario(false);
+          }}
+        />
+      )}
+
+      {/* TABELA */}
+      <Card>
         <CardContent className="p-0 overflow-x-auto">
-          <table className="w-full min-w-[900px] text-xs">
+          <table className="w-full min-w-[1000px] text-xs">
             <thead className="bg-slate-800 text-white">
               <tr>
-                <th className="px-3 py-2">Funcionário</th>
-                <th className="px-3 py-2">Data</th>
-                <th className="px-3 py-2">1ª</th>
-                <th className="px-3 py-2">2ª</th>
-                <th className="px-3 py-2">3ª</th>
-                <th className="px-3 py-2">4ª</th>
-                <th className="px-3 py-2">Status</th>
-                <th className="px-3 py-2">Ações</th>
+                <th className="px-3 py-2 text-left">Funcionário</th>
+                <th className="px-3 py-2 text-center">Data</th>
+                <th className="px-3 py-2 text-center">1ª</th>
+                <th className="px-3 py-2 text-center">2ª</th>
+                <th className="px-3 py-2 text-center">3ª</th>
+                <th className="px-3 py-2 text-center">4ª</th>
+                <th className="px-3 py-2 text-center">Status</th>
+                <th className="px-3 py-2 text-center">Ações</th>
               </tr>
             </thead>
             <tbody>
-              {linhas.map((l, i) => {
-                const b = ["-","-","-","-"];
-                l.batidas.slice(0,4).forEach((x, idx) => {
-                  b[idx] = x.hora || x.data_hora?.substring(11,16) || "-";
+              {linhas.map((l, idx) => {
+                const batidas = ["-", "-", "-", "-"];
+                l.batidas.slice(0, 4).forEach((b, i) => {
+                  batidas[i] = formatarDataHora(b.data_hora || `${l.data}T${b.hora}`);
                 });
 
                 return (
-                  <tr key={i} className="border-b">
+                  <tr key={idx} className="border-b">
                     <td className="px-3 py-2">{l.funcionario.nome}</td>
-                    <td className="px-3 py-2">{l.data}</td>
-                    {b.map((x, j) => (
-                      <td key={j} className={`px-3 py-2 ${x==="-"?"text-red-600":""}`}>
-                        {x}
+                    <td className="px-3 py-2 text-center">
+                      {new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR")}
+                    </td>
+
+                    {batidas.map((b, i) => (
+                      <td
+                        key={i}
+                        className={`px-3 py-2 text-center ${b === "-" ? "text-red-600" : ""}`}
+                      >
+                        {b}
                       </td>
                     ))}
-                    <td className="px-3 py-2">
-                      {l.ocorrencia ? l.ocorrencia.tipo : l.batidas.length ? "OK" : "SEM REGISTRO"}
+
+                    <td className="px-3 py-2 text-center">
+                      {l.ocorrencia
+                        ? l.ocorrencia.tipo
+                        : l.batidas.length
+                        ? "OK"
+                        : "SEM REGISTRO"}
                     </td>
-                    <td className="px-3 py-2">
+
+                    <td className="px-3 py-2 text-center">
                       <HistoricoAuditoria registro={l.batidas[0]} />
-                      {!l.batidas.length && <AlertTriangle className="inline w-4 h-4 ml-2 text-red-600" />}
+                      {!l.batidas.length && (
+                        <AlertTriangle className="inline w-4 h-4 ml-2 text-red-600" />
+                      )}
                     </td>
                   </tr>
                 );
@@ -145,6 +226,7 @@ export default function PontoPage() {
         </CardContent>
       </Card>
 
+      {/* MODAL IMPORTAÇÃO */}
       <ImportarPontoModal
         isOpen={isImportarOpen}
         onClose={() => setIsImportarOpen(false)}
