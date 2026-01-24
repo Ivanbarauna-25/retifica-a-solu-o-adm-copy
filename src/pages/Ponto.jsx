@@ -1,6 +1,3 @@
-// PontoPage.jsx
-// SUBSTITUIR ESTE ARQUIVO INTEIRO
-
 import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,42 +14,24 @@ export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [registros, setRegistros] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
-  const [escalas, setEscalas] = useState([]);
-  const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isImportarOpen, setIsImportarOpen] = useState(false);
-
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState("todos");
   const [dataSelecionada, setDataSelecionada] = useState(null);
 
-  /* =========================
-     CARREGAMENTO FRONT ONLY
-     ========================= */
   const carregarDados = async () => {
     setIsLoading(true);
     try {
-      const [
-        funcs,
-        regs,
-        ocors,
-        escs,
-        funcEscs
-      ] = await Promise.all([
+      const [funcs, regs, ocors] = await Promise.all([
         base44.entities.Funcionario.list(),
         base44.entities.PontoRegistro.list("-data_hora", 5000),
-        base44.entities.OcorrenciaPonto.list("-data", 3000),
-        base44.entities.EscalaTrabalho.list(),
-        base44.entities.FuncionarioEscala.list()
+        base44.entities.OcorrenciaPonto.list("-data", 3000)
       ]);
 
       setFuncionarios(funcs || []);
       setRegistros(regs || []);
       setOcorrencias(ocors || []);
-      setEscalas(escs || []);
-      setFuncionariosEscalas(funcEscs || []);
-    } catch (e) {
-      console.error(e);
+    } catch {
       toast({
         title: "Erro",
         description: "Falha ao carregar dados do ponto",
@@ -67,9 +46,6 @@ export default function PontoPage() {
     carregarDados();
   }, []);
 
-  /* =========================
-     GERAR MÊS COMPLETO
-     ========================= */
   const mesAtual = useMemo(() => {
     if (!dataSelecionada) return new Date();
     return new Date(dataSelecionada + "T12:00:00");
@@ -79,147 +55,87 @@ export default function PontoPage() {
     const ano = mesAtual.getFullYear();
     const mes = mesAtual.getMonth();
     const total = new Date(ano, mes + 1, 0).getDate();
-
-    const lista = [];
-    for (let d = 1; d <= total; d++) {
-      lista.push(
-        `${ano}-${String(mes + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`
-      );
-    }
-    return lista;
+    return Array.from({ length: total }, (_, i) =>
+      `${ano}-${String(mes + 1).padStart(2,"0")}-${String(i + 1).padStart(2,"0")}`
+    );
   }, [mesAtual]);
 
-  /* =========================
-     MATRIZ FUNCIONÁRIO x DIA
-     ========================= */
   const linhas = useMemo(() => {
-    const funcionariosFiltrados =
-      funcionarioSelecionado === "todos"
-        ? funcionarios
-        : funcionarios.filter(f => f.id === funcionarioSelecionado);
-
-    const linhasGeradas = [];
-
-    funcionariosFiltrados.forEach(func => {
+    const lista = [];
+    funcionarios.forEach(func => {
       diasDoMes.forEach(data => {
-        const batidas = registros
-          .filter(r => {
-            const dataReg = r.data || r.data_hora?.substring(0, 10);
-            return r.funcionario_id === func.id && dataReg === data;
-          })
-          .sort((a, b) => {
-            const hA = a.hora || a.data_hora?.substring(11, 19) || "";
-            const hB = b.hora || b.data_hora?.substring(11, 19) || "";
-            return hA.localeCompare(hB);
-          });
-
+        const batidas = registros.filter(r => {
+          const d = r.data || r.data_hora?.substring(0,10);
+          return r.funcionario_id === func.id && d === data;
+        });
         const ocorrencia = ocorrencias.find(
           o => o.funcionario_id === func.id && o.data === data
         );
-
-        linhasGeradas.push({
-          funcionario: func,
-          data,
-          batidas,
-          ocorrencia
-        });
+        lista.push({ funcionario: func, data, batidas, ocorrencia });
       });
     });
+    return lista;
+  }, [funcionarios, registros, ocorrencias, diasDoMes]);
 
-    return linhasGeradas;
-  }, [funcionarios, registros, ocorrencias, diasDoMes, funcionarioSelecionado]);
-
-  /* =========================
-     RENDER
-     ========================= */
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="w-10 h-10 animate-spin text-slate-600" />
+        <Loader2 className="w-10 h-10 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-3 md:p-6">
-      {/* AÇÕES */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        <Button onClick={() => setIsImportarOpen(true)}>
-          Importar Ponto
-        </Button>
-      </div>
+    <div className="min-h-screen bg-slate-50 p-4">
+      <Button onClick={() => setIsImportarOpen(true)} className="mb-4">
+        Importar Ponto
+      </Button>
 
-      {/* CALENDÁRIO */}
-      <div className="mb-6">
-        <CalendarioPonto
-          registros={registros.map(r => ({
-            data: r.data || r.data_hora?.substring(0, 10)
-          }))}
-          ocorrencias={ocorrencias}
-          funcionarioSelecionado={funcionarioSelecionado}
-          onDiaClicado={setDataSelecionada}
-        />
-      </div>
+      <CalendarioPonto
+        registros={registros.map(r => ({
+          data: r.data || r.data_hora?.substring(0,10)
+        }))}
+        ocorrencias={ocorrencias}
+        onDiaClicado={setDataSelecionada}
+      />
 
-      {/* TABELA */}
-      <Card>
+      <Card className="mt-6">
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full min-w-[900px] text-xs">
             <thead className="bg-slate-800 text-white">
               <tr>
-                <th className="px-3 py-2 text-left">Funcionário</th>
-                <th className="px-3 py-2 text-center">Data</th>
-                <th className="px-3 py-2 text-center">1ª</th>
-                <th className="px-3 py-2 text-center">2ª</th>
-                <th className="px-3 py-2 text-center">3ª</th>
-                <th className="px-3 py-2 text-center">4ª</th>
-                <th className="px-3 py-2 text-center">Status</th>
-                <th className="px-3 py-2 text-center">Ações</th>
+                <th className="px-3 py-2">Funcionário</th>
+                <th className="px-3 py-2">Data</th>
+                <th className="px-3 py-2">1ª</th>
+                <th className="px-3 py-2">2ª</th>
+                <th className="px-3 py-2">3ª</th>
+                <th className="px-3 py-2">4ª</th>
+                <th className="px-3 py-2">Status</th>
+                <th className="px-3 py-2">Ações</th>
               </tr>
             </thead>
             <tbody>
-              {linhas.map((linha, idx) => {
-                const batidas = ["-", "-", "-", "-"];
-                linha.batidas.slice(0, 4).forEach((b, i) => {
-                  const h = b.hora || b.data_hora?.substring(11, 16);
-                  batidas[i] = h || "-";
+              {linhas.map((l, i) => {
+                const b = ["-","-","-","-"];
+                l.batidas.slice(0,4).forEach((x, idx) => {
+                  b[idx] = x.hora || x.data_hora?.substring(11,16) || "-";
                 });
 
                 return (
-                  <tr key={idx} className="border-b">
-                    <td className="px-3 py-2">{linha.funcionario.nome}</td>
-                    <td className="px-3 py-2 text-center">{linha.data}</td>
-
-                    {batidas.map((b, i) => (
-                      <td
-                        key={i}
-                        className={`px-3 py-2 text-center ${
-                          b === "-" ? "text-red-600" : ""
-                        }`}
-                      >
-                        {b}
+                  <tr key={i} className="border-b">
+                    <td className="px-3 py-2">{l.funcionario.nome}</td>
+                    <td className="px-3 py-2">{l.data}</td>
+                    {b.map((x, j) => (
+                      <td key={j} className={`px-3 py-2 ${x==="-"?"text-red-600":""}`}>
+                        {x}
                       </td>
                     ))}
-
-                    <td className="px-3 py-2 text-center">
-                      {linha.ocorrencia ? (
-                        <span className="text-blue-700 font-semibold">
-                          {linha.ocorrencia.tipo}
-                        </span>
-                      ) : linha.batidas.length === 0 ? (
-                        <span className="text-red-600 font-semibold">
-                          SEM REGISTRO
-                        </span>
-                      ) : (
-                        "OK"
-                      )}
+                    <td className="px-3 py-2">
+                      {l.ocorrencia ? l.ocorrencia.tipo : l.batidas.length ? "OK" : "SEM REGISTRO"}
                     </td>
-
-                    <td className="px-3 py-2 text-center">
-                      <HistoricoAuditoria registro={linha.batidas[0]} />
-                      {!linha.ocorrencia && linha.batidas.length === 0 && (
-                        <AlertTriangle className="inline w-4 h-4 text-red-600 ml-2" />
-                      )}
+                    <td className="px-3 py-2">
+                      <HistoricoAuditoria registro={l.batidas[0]} />
+                      {!l.batidas.length && <AlertTriangle className="inline w-4 h-4 ml-2 text-red-600" />}
                     </td>
                   </tr>
                 );
@@ -229,7 +145,6 @@ export default function PontoPage() {
         </CardContent>
       </Card>
 
-      {/* MODAL IMPORTAÇÃO */}
       <ImportarPontoModal
         isOpen={isImportarOpen}
         onClose={() => setIsImportarOpen(false)}
