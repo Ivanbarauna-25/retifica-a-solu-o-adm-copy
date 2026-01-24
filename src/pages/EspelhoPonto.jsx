@@ -20,22 +20,25 @@ export default function EspelhoPontoPage() {
   const [configuracoes, setConfiguracoes] = useState(null);
   const [escalas, setEscalas] = useState([]);
   const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
+  const [departamentos, setDepartamentos] = useState([]);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [funcs, configs, esc, funcEsc, cargos] = await Promise.all([
+        const [funcs, configs, esc, funcEsc, cargos, depts] = await Promise.all([
           base44.entities.Funcionario.list(),
           base44.entities.Configuracoes.list(),
           base44.entities.EscalaTrabalho.list(),
           base44.entities.FuncionarioEscala.list(),
-          base44.entities.Cargo.list()
+          base44.entities.Cargo.list(),
+          base44.entities.Departamento.list()
         ]);
         setFuncionarios((funcs || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
         setConfiguracoes(configs?.[0] || null);
         setEscalas(esc || []);
         setFuncionariosEscalas(funcEsc || []);
+        setDepartamentos(depts || []);
         // Armazenar cargos no localStorage para referência
         sessionStorage.setItem('cargosMap', JSON.stringify((cargos || []).reduce((acc, c) => ({ ...acc, [c.id]: c }), {})));
       } catch (error) {
@@ -90,6 +93,10 @@ export default function EspelhoPontoPage() {
   };
 
   const funcionario = funcionarios.find(f => f.id === funcionarioSelecionado);
+  const departamento = funcionario ? departamentos.find(d => d.id === funcionario.departamento_id) : null;
+  const departamentoResponsavel = departamento?.responsavel_id 
+    ? funcionarios.find(f => f.id === departamento.responsavel_id) 
+    : null;
 
   return (
     <div className="min-h-screen bg-slate-50 p-2 md:p-6">
@@ -177,6 +184,8 @@ export default function EspelhoPontoPage() {
               escalas={escalas}
               funcionariosEscalas={funcionariosEscalas}
               cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
+              departamento={departamento}
+              departamentoResponsavel={departamentoResponsavel}
             />
           </div>
         )}

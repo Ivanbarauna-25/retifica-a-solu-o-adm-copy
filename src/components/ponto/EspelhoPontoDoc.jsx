@@ -9,7 +9,9 @@ export default function EspelhoPontoDoc({
   configuracoes,
   escalas,
   funcionariosEscalas,
-  cargos = {}
+  cargos = {},
+  departamento = null,
+  departamentoResponsavel = null
 }) {
   const formatarData = (data) => {
     if (!data) return "-";
@@ -227,7 +229,12 @@ export default function EspelhoPontoDoc({
           {/* Responsável Departamento */}
           <div className="text-center">
             <p className="text-slate-600 text-xs md:text-sm mb-2">Responsável do Departamento:</p>
-            <p className="text-slate-600 text-xs md:text-sm mb-1">_".repeat(30)</p>
+            <p className="text-slate-600 text-xs md:text-sm mb-1">
+              {departamentoResponsavel?.nome || "_".repeat(30)}
+            </p>
+            {departamentoResponsavel?.cargo && (
+              <p className="text-slate-500 text-[10px] md:text-xs">{cargos[departamentoResponsavel.cargo_id]?.nome || ""}</p>
+            )}
             <div className="border-t-2 border-slate-800 h-16 print:h-12"></div>
             <p className="text-slate-600 text-xs mt-2">Data: ___/___/______</p>
           </div>
