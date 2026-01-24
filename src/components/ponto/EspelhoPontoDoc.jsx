@@ -243,7 +243,12 @@ export default function EspelhoPontoDoc({
           {/* Responsável Empresa */}
           <div className="text-center">
             <p className="text-slate-600 text-xs md:text-sm mb-2">Responsável Empresa:</p>
-            <p className="text-slate-600 text-xs md:text-sm mb-1">_".repeat(30)</p>
+            <p className="text-slate-600 text-xs md:text-sm mb-1">
+              {configuracoes?.responsavel_empresa_nome || "_".repeat(30)}
+            </p>
+            {configuracoes?.responsavel_empresa_cargo && (
+              <p className="text-slate-500 text-[10px] md:text-xs">{configuracoes.responsavel_empresa_cargo}</p>
+            )}
             <div className="border-t-2 border-slate-800 h-16 print:h-12"></div>
             <p className="text-slate-600 text-xs mt-2">Data: ___/___/______</p>
           </div>
