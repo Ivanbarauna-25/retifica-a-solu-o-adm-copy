@@ -56,6 +56,7 @@ import RelatorioFolhaPagamento from './pages/RelatorioFolhaPagamento';
 import RelatorioFuncionarios from './pages/RelatorioFuncionarios';
 import RelatorioNotasFiscais from './pages/RelatorioNotasFiscais';
 import RelatorioOS from './pages/RelatorioOS';
+import RelatorioOcorrenciasPonto from './pages/RelatorioOcorrenciasPonto';
 import RelatorioOrcamentos from './pages/RelatorioOrcamentos';
 import Servicos from './pages/Servicos';
 import Tarefas from './pages/Tarefas';
@@ -63,7 +64,6 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
-import RelatorioOcorrenciasPonto from './pages/RelatorioOcorrenciasPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -126,6 +126,7 @@ export const PAGES = {
     "RelatorioFuncionarios": RelatorioFuncionarios,
     "RelatorioNotasFiscais": RelatorioNotasFiscais,
     "RelatorioOS": RelatorioOS,
+    "RelatorioOcorrenciasPonto": RelatorioOcorrenciasPonto,
     "RelatorioOrcamentos": RelatorioOrcamentos,
     "Servicos": Servicos,
     "Tarefas": Tarefas,
@@ -133,7 +134,6 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
-    "RelatorioOcorrenciasPonto": RelatorioOcorrenciasPonto,
 }
 
 export const pagesConfig = {

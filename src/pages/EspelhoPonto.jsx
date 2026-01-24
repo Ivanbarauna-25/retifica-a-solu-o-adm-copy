@@ -99,97 +99,110 @@ export default function EspelhoPontoPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-2 md:p-6">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          body { margin: 0; padding: 0; background: white; }
+        }
+      `}</style>
+
+      <div className="min-h-screen bg-slate-50">
         {!mostrarEspelho ? (
-          <div className="bg-white rounded-xl shadow-lg p-4 md:p-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Espelho de Ponto</h1>
-            <p className="text-slate-600 text-sm md:text-base mb-8">Gere o documento individual para assinatura</p>
+          <div className="max-w-4xl mx-auto p-3 md:p-6">
+            <div className="bg-white rounded-lg md:rounded-xl shadow-lg p-4 md:p-8">
+              <h1 className="text-xl md:text-3xl font-bold text-slate-900 mb-2">Espelho de Ponto</h1>
+              <p className="text-slate-600 text-xs md:text-base mb-6 md:mb-8">Gere o documento individual para assinatura</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">Funcionário</Label>
-                <Select value={funcionarioSelecionado || ""} onValueChange={setFuncionarioSelecionado}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecionar...">
-                      {funcionarioSelecionado ? funcionarios.find(f => f.id === funcionarioSelecionado)?.nome : "Selecionar..."}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {funcionarios.map(f => (
-                      <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label className="text-xs md:text-sm font-semibold">Funcionário *</Label>
+                  <Select value={funcionarioSelecionado || ""} onValueChange={setFuncionarioSelecionado}>
+                    <SelectTrigger className="h-9 md:h-10 text-xs md:text-sm">
+                      <SelectValue placeholder="Selecionar...">
+                        {funcionarioSelecionado ? funcionarios.find(f => f.id === funcionarioSelecionado)?.nome : "Selecionar..."}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {funcionarios.map(f => (
+                        <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label className="text-xs md:text-sm font-semibold">Data Início *</Label>
+                  <Input
+                    type="date"
+                    value={dataInicio}
+                    onChange={(e) => setDataInicio(e.target.value)}
+                    className="h-9 md:h-10 text-xs md:text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5 md:space-y-2">
+                  <Label className="text-xs md:text-sm font-semibold">Data Fim *</Label>
+                  <Input
+                    type="date"
+                    value={dataFim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                    className="h-9 md:h-10 text-xs md:text-sm"
+                  />
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">Data Início</Label>
-                <Input
-                  type="date"
-                  value={dataInicio}
-                  onChange={(e) => setDataInicio(e.target.value)}
-                  className="w-full"
-                />
+              <div className="flex gap-2 md:gap-3 mt-6 md:mt-8">
+                <Button
+                  onClick={handleGerarEspelho}
+                  disabled={isLoading}
+                  className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white gap-2 h-9 md:h-10 text-xs md:text-sm"
+                >
+                  {isLoading ? <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" /> : <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />}
+                  Gerar Espelho
+                </Button>
               </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">Data Fim</Label>
-                <Input
-                  type="date"
-                  value={dataFim}
-                  onChange={(e) => setDataFim(e.target.value)}
-                  className="w-full"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-8">
-              <Button
-                onClick={handleGerarEspelho}
-                disabled={isLoading}
-                className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
-              >
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
-                Gerar Espelho
-              </Button>
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="flex gap-3">
+          <div className="min-h-screen">
+            {/* Barra de ações - oculta na impressão */}
+            <div className="no-print bg-slate-800 px-3 md:px-4 py-2 md:py-3 flex items-center gap-2 md:gap-3 shadow-lg sticky top-0 z-10">
               <Button
                 onClick={() => setMostrarEspelho(false)}
                 variant="outline"
-                className="gap-2"
+                className="gap-1.5 md:gap-2 bg-white h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
               >
                 ← Voltar
               </Button>
               <Button
                 onClick={() => window.print()}
-                className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                className="gap-1.5 md:gap-2 bg-green-600 hover:bg-green-700 text-white h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
               >
-                <Printer className="w-4 h-4" />
+                <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 Imprimir
               </Button>
             </div>
 
-            <EspelhoPontoDoc
-              funcionario={funcionario}
-              registros={registros}
-              ocorrencias={ocorrencias}
-              dataInicio={dataInicio}
-              dataFim={dataFim}
-              configuracoes={configuracoes}
-              escalas={escalas}
-              funcionariosEscalas={funcionariosEscalas}
-              cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
-              departamento={departamento}
-              departamentoResponsavel={departamentoResponsavel}
-            />
+            {/* Documento para impressão */}
+            <div className="bg-white">
+              <EspelhoPontoDoc
+                funcionario={funcionario}
+                registros={registros}
+                ocorrencias={ocorrencias}
+                dataInicio={dataInicio}
+                dataFim={dataFim}
+                configuracoes={configuracoes}
+                escalas={escalas}
+                funcionariosEscalas={funcionariosEscalas}
+                cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
+                departamento={departamento}
+                departamentoResponsavel={departamentoResponsavel}
+              />
+            </div>
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
