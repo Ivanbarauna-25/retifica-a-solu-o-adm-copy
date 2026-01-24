@@ -123,7 +123,7 @@ export default function EspelhoPontoDoc({
             <p className="text-slate-600"><strong>Cargo:</strong> {cargos[funcionario?.cargo_id]?.nome || funcionario?.cargo_id || "-"}</p>
           </div>
           <div>
-            <p className="text-slate-600"><strong>Departamento:</strong> {funcionario?.departamento_id || "-"}</p>
+            <p className="text-slate-600"><strong>Departamento:</strong> {departamento?.nome || funcionario?.departamento_id || "-"}</p>
             <p className="text-slate-600"><strong>Regime:</strong> {funcionario?.regime?.toUpperCase() || "-"}</p>
             <p className="text-slate-600"><strong>Escala:</strong> {escala?.nome || "Não definida"}</p>
           </div>
