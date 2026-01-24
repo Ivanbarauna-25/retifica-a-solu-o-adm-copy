@@ -16,6 +16,7 @@ import Dashboard from './pages/Dashboard';
 import Departamentos from './pages/Departamentos';
 import EPIs from './pages/EPIs';
 import EscalasTrabalho from './pages/EscalasTrabalho';
+import EspelhoPonto from './pages/EspelhoPonto';
 import Estoque from './pages/Estoque';
 import FichaCandidato from './pages/FichaCandidato';
 import FichaFuncionario from './pages/FichaFuncionario';
@@ -62,7 +63,6 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
-import EspelhoPonto from './pages/EspelhoPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +85,7 @@ export const PAGES = {
     "Departamentos": Departamentos,
     "EPIs": EPIs,
     "EscalasTrabalho": EscalasTrabalho,
+    "EspelhoPonto": EspelhoPonto,
     "Estoque": Estoque,
     "FichaCandidato": FichaCandidato,
     "FichaFuncionario": FichaFuncionario,
@@ -131,7 +132,6 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
-    "EspelhoPonto": EspelhoPonto,
 }
 
 export const pagesConfig = {
