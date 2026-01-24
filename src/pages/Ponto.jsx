@@ -180,13 +180,32 @@ export default function PontoPage() {
 
   // Gerar todos os dias do período selecionado
   const gerarTodasDatas = useMemo(() => {
-    if (!filtroDataInicio || !filtroDataFim || filtroFuncionario === "todos") {
+    if (filtroFuncionario === "todos") {
       return [];
     }
 
+    // Se não tem filtro de data, pegar mês atual completo
+    let dataInicio = filtroDataInicio;
+    let dataFim = filtroDataFim;
+    
+    if (!dataInicio && !dataFim) {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = hoje.getMonth();
+      dataInicio = new Date(ano, mes, 1).toISOString().split('T')[0];
+      dataFim = new Date(ano, mes + 1, 0).toISOString().split('T')[0];
+    } else if (!dataInicio && dataFim) {
+      const [ano, mes] = dataFim.split('-');
+      dataInicio = `${ano}-${mes}-01`;
+    } else if (dataInicio && !dataFim) {
+      const [ano, mes] = dataInicio.split('-');
+      const ultimoDia = new Date(parseInt(ano), parseInt(mes), 0).getDate();
+      dataFim = `${ano}-${mes}-${String(ultimoDia).padStart(2, '0')}`;
+    }
+
     const datas = [];
-    let dataAtual = new Date(filtroDataInicio + "T12:00:00");
-    const dataFinal = new Date(filtroDataFim + "T12:00:00");
+    let dataAtual = new Date(dataInicio + "T12:00:00");
+    const dataFinal = new Date(dataFim + "T12:00:00");
 
     while (dataAtual <= dataFinal) {
       const ano = dataAtual.getFullYear();
