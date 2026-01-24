@@ -58,10 +58,13 @@ export default function EspelhoPontoPage() {
 
     setIsLoading(true);
     try {
+      const dataInicioISO = `${dataInicio}T00:00:00`;
+      const dataFimISO = `${dataFim}T23:59:59`;
+      
       const [regsData, ocorrenciasData] = await Promise.all([
         base44.entities.PontoRegistro.filter({
           funcionario_id: funcionarioSelecionado,
-          data: { $gte: dataInicio, $lte: dataFim }
+          data_hora: { $gte: dataInicioISO, $lte: dataFimISO }
         }, "-data_hora", 2000),
         base44.entities.OcorrenciaPonto.filter({
           funcionario_id: funcionarioSelecionado,
