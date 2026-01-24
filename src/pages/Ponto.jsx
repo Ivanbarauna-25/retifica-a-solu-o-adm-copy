@@ -148,6 +148,20 @@ export default function PontoPage() {
     };
   };
 
+  // Verificar se é dia de trabalho na escala
+  const isDiaTrabalho = (funcionarioId, data) => {
+    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    if (!funcEscala) return true; // Se não tem escala, considera dia útil
+
+    const escala = escalas.find(e => e.id === funcEscala.escala_id);
+    if (!escala || !escala.dias_semana) return true;
+
+    const diaSemana = new Date(data + "T12:00:00").getDay();
+    const diaConfig = escala.dias_semana[diaSemana];
+    
+    return diaConfig?.ativo === true;
+  };
+
   // Função para pegar batidas esperadas da escala (4 batidas padrão)
   const getBatidasEsperadas = (funcionarioId, data) => {
     const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
@@ -164,7 +178,49 @@ export default function PontoPage() {
     ];
   };
 
+  // Gerar todos os dias do período selecionado
+  const gerarTodasDatas = useMemo(() => {
+    if (!filtroDataInicio || !filtroDataFim || filtroFuncionario === "todos") {
+      return [];
+    }
+
+    const datas = [];
+    let dataAtual = new Date(filtroDataInicio + "T12:00:00");
+    const dataFinal = new Date(filtroDataFim + "T12:00:00");
+
+    while (dataAtual <= dataFinal) {
+      const ano = dataAtual.getFullYear();
+      const mes = String(dataAtual.getMonth() + 1).padStart(2, "0");
+      const dia = String(dataAtual.getDate()).padStart(2, "0");
+      datas.push(`${ano}-${mes}-${dia}`);
+      dataAtual.setDate(dataAtual.getDate() + 1);
+    }
+
+    return datas;
+  }, [filtroDataInicio, filtroDataFim, filtroFuncionario]);
+
   const registrosFiltrados = useMemo(() => {
+    // Se tem funcionário selecionado e período, gerar todos os dias
+    if (filtroFuncionario !== "todos" && gerarTodasDatas.length > 0) {
+      return gerarTodasDatas.map(data => {
+        const grupoExistente = registrosAgrupados.find(
+          g => g.funcionario_id === filtroFuncionario && g.data === data
+        );
+
+        if (grupoExistente) {
+          return grupoExistente;
+        }
+
+        // Criar linha vazia para o dia
+        return {
+          funcionario_id: filtroFuncionario,
+          data: data,
+          batidas: []
+        };
+      }).sort((a, b) => b.data.localeCompare(a.data));
+    }
+
+    // Filtro normal (sem preencher dias vazios)
     return registrosAgrupados.filter((grupo) => {
       const passaFunc = filtroFuncionario === "todos" || grupo.funcionario_id === filtroFuncionario;
       const passaDataInicio = !filtroDataInicio || grupo.data >= filtroDataInicio;
@@ -172,7 +228,7 @@ export default function PontoPage() {
       
       return passaFunc && passaDataInicio && passaDataFim;
     }).sort((a, b) => b.data.localeCompare(a.data));
-  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim]);
+  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim, gerarTodasDatas]);
 
   const limparFiltros = () => {
     setFiltroFuncionario("todos");
@@ -445,6 +501,7 @@ export default function PontoPage() {
                             const batidasEsperadas = getBatidasEsperadas(grupo.funcionario_id, grupo.data);
                             const saldoDia = calcularSaldoDia(grupo.funcionario_id, grupo.data, grupo.batidas);
                             const ocorrencia = ocorrencias.find(o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data);
+                            const diaTrabalho = isDiaTrabalho(grupo.funcionario_id, grupo.data);
                             
                             // Ordenar batidas cronologicamente
                             const batidasOrdenadas = [...grupo.batidas].sort((a, b) => {
@@ -460,74 +517,58 @@ export default function PontoPage() {
                               batidas[i] = formatarHora(horaBatida);
                             }
                             
+                            // Se não é dia de trabalho e não tem batidas
+                            const naoEDiaTrabalho = !diaTrabalho && grupo.batidas.length === 0;
+                            
                             // Identificar quais batidas faltaram
                             const faltantes = [];
-                            for (let i = 0; i < 4; i++) {
-                              if (!batidas[i] || batidas[i] === "") {
-                                faltantes.push(i + 1);
+                            if (!naoEDiaTrabalho && !ocorrencia) {
+                              for (let i = 0; i < 4; i++) {
+                                if (!batidas[i] || batidas[i] === "") {
+                                  faltantes.push(i + 1);
+                                }
                               }
                             }
                             
                             return (
-                              <tr key={idx} className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                              <tr key={idx} className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${naoEDiaTrabalho ? 'bg-slate-100' : ''}`}>
                                 <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-700 font-medium">
                                   {getFuncionarioNome(grupo.funcionario_id)}
                                 </td>
                                 <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center text-slate-900 font-semibold">
                                   {formatarData(grupo.data)}
                                 </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[0] || "-"}
-                                </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[1] || "-"}
-                                </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[2] || "-"}
-                                </td>
-                                <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                  {batidas[3] || "-"}
-                                </td>
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                  {ocorrencia ? (
-                                    <Badge className={
-                                      ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
-                                      ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700" :
-                                      ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
-                                      ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
-                                      "bg-yellow-100 text-yellow-700"
-                                    } className="text-[8px] md:text-[10px] capitalize">
-                                      {ocorrencia.tipo}
-                                    </Badge>
-                                  ) : faltantes.length > 0 ? (
-                                    <Badge variant="destructive" className="text-[8px] md:text-[10px]">
-                                      {faltantes.join(", ")}ª
-                                    </Badge>
-                                  ) : (
-                                    <span className="text-slate-400">-</span>
-                                  )}
-                                </td>
-                                <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-semibold">
-                                  {saldoDia.justificado ? (
-                                    <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px]">
-                                      OK
-                                    </Badge>
-                                  ) : (
-                                    <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
-                                      {minToHHmm(saldoDia.saldo)}
-                                    </span>
-                                  )}
-                                </td>
-                                <td className="px-2 md:px-3 py-2">
-                                  <div className="flex gap-1 justify-center items-center">
-                                    <HistoricoAuditoria registro={grupo.batidas?.[0]} />
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleAbrirOcorrencia(grupo)}
-                                      className="h-6 md:h-7 px-2 hover:bg-blue-100 hover:text-blue-600 text-[9px] md:text-[10px]"
-                                      title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
-                                    >
+                                {naoEDiaTrabalho ? (
+                                  <>
+                                    <td colSpan={4} className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
+                                      <Badge className="bg-slate-200 text-slate-700 text-[8px] md:text-[10px]">
+                                        FOLGA/FINAL DE SEMANA
+                                      </Badge>
+                                    </td>
+                                    <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
+                                      <span className="text-slate-400">-</span>
+                                    </td>
+                                    <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
+                                      <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px]">
+                                        OK
+                                      </Badge>
+                                    </td>
+                                  </>
+                                ) : (
+                                  <>
+                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                      {batidas[0] || "-"}
+                                    </td>
+                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                      {batidas[1] || "-"}
+                                    </td>
+                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                      {batidas[2] || "-"}
+                                    </td>
+                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900"}`}>
+                                      {batidas[3] || "-"}
+                                    </td>
+                                    <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
                                       {ocorrencia ? (
                                         <Badge className={
                                           ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
@@ -535,14 +576,57 @@ export default function PontoPage() {
                                           ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
                                           ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
                                           "bg-yellow-100 text-yellow-700"
-                                        } className="text-[8px] md:text-[10px] capitalize cursor-pointer">
+                                        } className="text-[8px] md:text-[10px] capitalize">
                                           {ocorrencia.tipo}
                                         </Badge>
+                                      ) : faltantes.length > 0 ? (
+                                        <Badge variant="destructive" className="text-[8px] md:text-[10px]">
+                                          {faltantes.join(", ")}ª
+                                        </Badge>
                                       ) : (
-                                        <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                        <span className="text-slate-400">-</span>
                                       )}
-                                    </Button>
-                                  </div>
+                                    </td>
+                                    <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-semibold">
+                                      {saldoDia.justificado ? (
+                                        <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px]">
+                                          OK
+                                        </Badge>
+                                      ) : (
+                                        <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
+                                          {minToHHmm(saldoDia.saldo)}
+                                        </span>
+                                      )}
+                                    </td>
+                                  </>
+                                )}
+                                <td className="px-2 md:px-3 py-2">
+                                  {!naoEDiaTrabalho && (
+                                    <div className="flex gap-1 justify-center items-center">
+                                      <HistoricoAuditoria registro={grupo.batidas?.[0]} />
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleAbrirOcorrencia(grupo)}
+                                        className="h-6 md:h-7 px-2 hover:bg-blue-100 hover:text-blue-600 text-[9px] md:text-[10px]"
+                                        title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
+                                      >
+                                        {ocorrencia ? (
+                                          <Badge className={
+                                            ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
+                                            ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700" :
+                                            ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
+                                            ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
+                                            "bg-yellow-100 text-yellow-700"
+                                          } className="text-[8px] md:text-[10px] capitalize cursor-pointer">
+                                            {ocorrencia.tipo}
+                                          </Badge>
+                                        ) : (
+                                          <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  )}
                                 </td>
                               </tr>
                             );
