@@ -81,6 +81,61 @@ export default function EspelhoPontoDoc({
   const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionario?.id);
   const escala = funcEscala ? escalas.find(e => e.id === funcEscala.escala_id) : null;
 
+  // Calcular saldo de horas
+  const calcularSaldoHoras = () => {
+    let totalHorasTrabalhadas = 0;
+    let totalHorasEsperadas = 0;
+
+    datasDoPeríodo.forEach(data => {
+      const batidas = registrosAgrupados[data] || [];
+      const ocorrencia = ocorrencias.find(o => o.data === data);
+      
+      // Se tem justificativa, não desconta nem cobra horas
+      const temJustificativa = ocorrencia && ['falta_justificada', 'atestado', 'ferias', 'folga'].includes(ocorrencia.tipo);
+
+      // Calcular horas trabalhadas do dia (a cada 2 batidas)
+      if (batidas.length >= 2) {
+        for (let i = 0; i < batidas.length - 1; i += 2) {
+          const entrada = batidas[i];
+          const saida = batidas[i + 1];
+          if (entrada && saida) {
+            const horaEntrada = entrada.hora || entrada.data_hora?.substring(11, 19) || "00:00:00";
+            const horaSaida = saida.hora || saida.data_hora?.substring(11, 19) || "00:00:00";
+            
+            const [hE, mE, sE] = horaEntrada.split(':').map(Number);
+            const [hS, mS, sS] = horaSaida.split(':').map(Number);
+            const minEntrada = hE * 60 + mE + (sE / 60);
+            const minSaida = hS * 60 + mS + (sS / 60);
+            const diff = minSaida - minEntrada;
+            if (diff > 0) {
+              totalHorasTrabalhadas += diff / 60;
+            }
+          }
+        }
+      }
+
+      // Calcular horas esperadas do dia (se não for justificado)
+      if (!temJustificativa && escala) {
+        const diaSemana = new Date(data + "T12:00:00").getDay();
+        const diaConfig = escala.dias_semana?.[diaSemana];
+        if (diaConfig?.ativo) {
+          const horasPrevistas = diaConfig.horas_previstas || 8;
+          totalHorasEsperadas += horasPrevistas;
+        }
+      }
+    });
+
+    const saldo = totalHorasTrabalhadas - totalHorasEsperadas;
+    return {
+      trabalhadas: totalHorasTrabalhadas.toFixed(2),
+      esperadas: totalHorasEsperadas.toFixed(2),
+      saldo: saldo.toFixed(2),
+      saldoFormatado: `${saldo >= 0 ? '+' : ''}${saldo.toFixed(2)}h`
+    };
+  };
+
+  const saldoHoras = calcularSaldoHoras();
+
   return (
     <div className="bg-white p-8 md:p-10 rounded-lg shadow-lg print:shadow-none print:rounded-none print:p-0">
       {/* CABEÇALHO - INFORMAÇÕES DA EMPRESA */}
@@ -185,6 +240,10 @@ export default function EspelhoPontoDoc({
                         </span>
                       ) : batidas.length === 0 ? (
                         <span className="text-red-600 font-semibold">SEM REGISTRO</span>
+                      ) : batidas.length > 4 ? (
+                        <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                          {batidas.length} batidas
+                        </span>
                       ) : (
                         "-"
                       )}
@@ -198,7 +257,7 @@ export default function EspelhoPontoDoc({
       </div>
 
       {/* RESUMO DO PERÍODO */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="border border-slate-300 rounded-lg p-4 bg-blue-50">
           <p className="text-xs md:text-sm text-slate-600"><strong>Total de Dias Trabalhados:</strong></p>
           <p className="text-2xl font-bold text-blue-700">{datasDoPeríodo.filter(d => registrosAgrupados[d]?.length > 0).length}</p>
@@ -210,6 +269,15 @@ export default function EspelhoPontoDoc({
         <div className="border border-slate-300 rounded-lg p-4 bg-green-50">
           <p className="text-xs md:text-sm text-slate-600"><strong>Dias do Período:</strong></p>
           <p className="text-2xl font-bold text-green-700">{datasDoPeríodo.length}</p>
+        </div>
+        <div className={`border border-slate-300 rounded-lg p-4 ${parseFloat(saldoHoras.saldo) >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
+          <p className="text-xs md:text-sm text-slate-600"><strong>Saldo de Horas:</strong></p>
+          <p className={`text-2xl font-bold ${parseFloat(saldoHoras.saldo) >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+            {saldoHoras.saldoFormatado}
+          </p>
+          <p className="text-[10px] md:text-xs text-slate-500 mt-1">
+            {saldoHoras.trabalhadas}h / {saldoHoras.esperadas}h
+          </p>
         </div>
       </div>
 
