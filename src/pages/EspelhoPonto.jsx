@@ -58,22 +58,28 @@ export default function EspelhoPontoPage() {
 
     setIsLoading(true);
     try {
-      const dataInicioISO = `${dataInicio}T00:00:00`;
-      const dataFimISO = `${dataFim}T23:59:59`;
-      
       const [regsData, ocorrenciasData] = await Promise.all([
         base44.entities.PontoRegistro.filter({
-          funcionario_id: funcionarioSelecionado,
-          data_hora: { $gte: dataInicioISO, $lte: dataFimISO }
+          funcionario_id: funcionarioSelecionado
         }, "-data_hora", 2000),
         base44.entities.OcorrenciaPonto.filter({
-          funcionario_id: funcionarioSelecionado,
-          data: { $gte: dataInicio, $lte: dataFim }
+          funcionario_id: funcionarioSelecionado
         }, "-data", 1000)
       ]);
 
-      setRegistros(regsData || []);
-      setOcorrencias(ocorrenciasData || []);
+      // Filtrar localmente por data para evitar problemas de timezone
+      const registrosFiltrados = (regsData || []).filter(reg => {
+        if (!reg.data_hora) return false;
+        const data = reg.data_hora.substring(0, 10);
+        return data >= dataInicio && data <= dataFim;
+      });
+      
+      const ocorrenciasFiltradas = (ocorrenciasData || []).filter(ocor => {
+        return ocor.data >= dataInicio && ocor.data <= dataFim;
+      });
+
+      setRegistros(registrosFiltrados);
+      setOcorrencias(ocorrenciasFiltradas);
       setMostrarEspelho(true);
     } catch (error) {
       console.error("Erro:", error);
@@ -98,7 +104,9 @@ export default function EspelhoPontoPage() {
                 <Label className="text-sm font-semibold">Funcionário</Label>
                 <Select value={funcionarioSelecionado || ""} onValueChange={setFuncionarioSelecionado}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar..." />
+                    <SelectValue placeholder="Selecionar...">
+                      {funcionarioSelecionado ? funcionarios.find(f => f.id === funcionarioSelecionado)?.nome : "Selecionar..."}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {funcionarios.map(f => (
@@ -106,11 +114,6 @@ export default function EspelhoPontoPage() {
                     ))}
                   </SelectContent>
                 </Select>
-                {funcionarioSelecionado && (
-                  <p className="text-xs text-slate-600 mt-1">
-                    Selecionado: {funcionarios.find(f => f.id === funcionarioSelecionado)?.nome}
-                  </p>
-                )}
               </div>
 
               <div className="space-y-2">
