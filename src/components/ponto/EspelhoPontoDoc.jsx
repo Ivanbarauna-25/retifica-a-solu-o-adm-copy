@@ -63,8 +63,8 @@ export default function EspelhoPontoDoc({
   // Gerar lista de datas do período
   const datasDoPeríodo = useMemo(() => {
     const datas = [];
-    let data = new Date(dataInicio);
-    const fim = new Date(dataFim);
+    let data = new Date(dataInicio + "T12:00:00");
+    const fim = new Date(dataFim + "T12:00:00");
     
     while (data <= fim) {
       const ano = data.getFullYear();
