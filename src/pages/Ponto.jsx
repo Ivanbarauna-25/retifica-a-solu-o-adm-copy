@@ -1,15 +1,9 @@
 // pages/Ponto.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Calendar,
-  Filter,
-  FileText,
-  AlertTriangle
-} from "lucide-react";
+import { Loader2, Calendar, Filter, FileText, AlertTriangle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
@@ -38,7 +32,7 @@ export default function PontoPage() {
     dataFim: hoje
   });
 
-  async function carregarDados() {
+  const carregarDados = useCallback(async () => {
     setLoading(true);
     try {
       const [funcs, regs, ocors, escs, funcEscs] = await Promise.all([
@@ -55,7 +49,7 @@ export default function PontoPage() {
       setEscalas(escs || []);
       setFuncionariosEscalas(funcEscs || []);
     } catch (e) {
-      console.error(e); // Loga o erro detalhadamente
+      console.error(e);
       toast({
         title: "Erro",
         description: "Falha ao carregar controle de ponto: " + e.message,
@@ -64,11 +58,11 @@ export default function PontoPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [toast]); // Add toast in dependency
 
   useEffect(() => {
     carregarDados();
-  }, []);
+  }, [carregarDados]); // Add carregarDados in dependency
 
   const linhas = useMemo(() => {
     const lista = [];
@@ -77,7 +71,7 @@ export default function PontoPage() {
       : funcionarios;
 
     funcionariosFiltrados.forEach(func => {
-      let data = new Date(filtros.dataInicio + "T12:00:00");
+      const data = new Date(filtros.dataInicio + "T12:00:00");
       const fim = new Date(filtros.dataFim + "T12:00:00");
 
       while (data <= fim) {
@@ -91,7 +85,7 @@ export default function PontoPage() {
           .sort((a, b) => {
             const ha = a.hora || a.data_hora?.substring(11, 19) || "";
             const hb = b.hora || b.data_hora?.substring(11, 19) || "";
-            return ha.localeCompare(hb);
+            return ha.localeCompare(hb, 'en', { numeric: true }); // specify locale
           });
 
         const ocorrencia = ocorrencias.find(
@@ -122,7 +116,6 @@ export default function PontoPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 space-y-4">
-      {/* AÇÕES */}
       <div className="flex flex-wrap gap-2">
         <Button onClick={() => setMostrarFiltros(true)} variant="outline">
           <Filter className="w-4 h-4 mr-2" />
@@ -151,13 +144,10 @@ export default function PontoPage() {
         <CalendarioPonto
           registros={registros}
           ocorrencias={ocorrencias}
-          onDiaClicado={(data) =>
-            setFiltros({ ...filtros, dataInicio: data, dataFim: data })
-          }
+          onDiaClicado={data => setFiltros(prev => ({ ...prev, dataInicio: data, dataFim: data }))}
         />
       )}
 
-      {/* TABELA */}
       <Card>
         <CardContent className="p-0 overflow-x-auto">
           <table className="w-full min-w-[1000px] text-xs">
@@ -175,16 +165,16 @@ export default function PontoPage() {
             </thead>
             <tbody>
               {linhas.map((l, idx) => {
-                const bat = ["-", "-", "-", "-"];
+                const bat = new Array(4).fill("-");
                 l.batidas.slice(0, 4).forEach((b, bIdx) => {
                   const h = b.hora || b.data_hora?.substring(11, 19);
-                  bat[bIdx] = h
-                    ? `${l.data.split("-").reverse().join("/")} ${h}`
-                    : "-";
+                  if (h) {
+                    bat[bIdx] = `${l.data.split("-").reverse().join("/")} ${h}`;
+                  }
                 });
 
                 return (
-                  <tr key={l.data + l.funcionario.id + idx} className="border-b">
+                  <tr key={l.data + l.funcionario.id + idx} className="border-b">  
                     <td className="px-3 py-2">{l.funcionario.nome}</td>
                     <td className="px-3 py-2 text-center">
                       {l.data.split("-").reverse().join("/")}
@@ -192,25 +182,17 @@ export default function PontoPage() {
                     {bat.map((b, j) => (
                       <td
                         key={j}
-                        className={`px-3 py-2 text-center ${
-                          b === "-" ? "text-red-600" : ""
-                        }`}
+                        className={`px-3 py-2 text-center ${b === "-" ? "text-red-600" : ""}`}
                       >
                         {b}
                       </td>
                     ))}
                     <td className="px-3 py-2 text-center">
-                      {l.ocorrencia
-                        ? l.ocorrencia.tipo.toUpperCase()
-                        : l.batidas.length
-                        ? "OK"
-                        : "SEM REGISTRO"}
+                      {l.ocorrencia ? l.ocorrencia.tipo.toUpperCase() : l.batidas.length ? "OK" : "SEM REGISTRO"}
                     </td>
                     <td className="px-3 py-2 text-center">
                       <HistoricoAuditoria registro={l.batidas[0]} />
-                      {!l.batidas.length && (
-                        <AlertTriangle className="inline w-4 h-4 ml-2 text-red-600" />
-                      )}
+                      {!l.batidas.length && <AlertTriangle className="inline w-4 h-4 ml-2 text-red-600" />}
                     </td>
                   </tr>
                 );
@@ -220,7 +202,6 @@ export default function PontoPage() {
         </CardContent>
       </Card>
 
-      {/* MODAIS */}
       <FiltrosPontoModal
         open={mostrarFiltros}
         onClose={() => setMostrarFiltros(false)}
