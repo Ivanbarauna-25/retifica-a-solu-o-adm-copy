@@ -1,116 +1,129 @@
+// pages/Ponto.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, AlertTriangle, CalendarDays } from "lucide-react";
+import {
+  Loader2,
+  Calendar,
+  Filter,
+  FileText,
+  AlertTriangle
+} from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
+import FiltrosPontoModal from "@/components/ponto/FiltrosPontoModal";
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import HistoricoAuditoria from "@/components/ponto/HistoricoAuditoria";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import EspelhoPontoCompleto from "@/components/ponto/EspelhoPontoCompleto";
 
 export default function PontoPage() {
   const { toast } = useToast();
 
+  const hoje = new Date().toISOString().substring(0, 10);
+
   const [funcionarios, setFuncionarios] = useState([]);
   const [registros, setRegistros] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
+  const [escalas, setEscalas] = useState([]);
+  const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isImportarOpen, setIsImportarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [mostrarEspelho, setMostrarEspelho] = useState(false);
 
-  const hojeISO = new Date().toISOString().substring(0, 10);
+  const [filtros, setFiltros] = useState({
+    funcionarioId: null,
+    dataInicio: hoje,
+    dataFim: hoje
+  });
 
-  const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
-  const [dataInicio, setDataInicio] = useState(hojeISO);
-  const [dataFim, setDataFim] = useState(hojeISO);
-
-  /* =========================
-     CARREGAMENTO (FRONT ONLY)
-     ========================= */
-  const carregarDados = async () => {
-    setIsLoading(true);
+  async function carregarDados() {
+    setLoading(true);
     try {
-      const [funcs, regs, ocors] = await Promise.all([
+      const [
+        funcs,
+        regs,
+        ocors,
+        escs,
+        funcEscs
+      ] = await Promise.all([
         base44.entities.Funcionario.list(),
         base44.entities.PontoRegistro.list("-data_hora", 5000),
-        base44.entities.OcorrenciaPonto.list("-data", 3000)
+        base44.entities.OcorrenciaPonto.list("-data", 3000),
+        base44.entities.EscalaTrabalho.list(),
+        base44.entities.FuncionarioEscala.list()
       ]);
 
       setFuncionarios(funcs || []);
       setRegistros(regs || []);
       setOcorrencias(ocors || []);
+      setEscalas(escs || []);
+      setFuncionariosEscalas(funcEscs || []);
     } catch (e) {
       toast({
         title: "Erro",
-        description: "Falha ao carregar dados do ponto",
+        description: "Falha ao carregar controle de ponto",
         variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     carregarDados();
   }, []);
 
-  /* =========================
-     FILTRO + NORMALIZAÇÃO
-     ========================= */
   const linhas = useMemo(() => {
     const lista = [];
-
-    const funcionariosFiltrados =
-      filtroFuncionario === "todos"
-        ? funcionarios
-        : funcionarios.filter(f => f.id === filtroFuncionario);
+    const funcionariosFiltrados = filtros.funcionarioId
+      ? funcionarios.filter(f => f.id === filtros.funcionarioId)
+      : funcionarios;
 
     funcionariosFiltrados.forEach(func => {
-      const datas = [];
-      let d = new Date(dataInicio + "T12:00:00");
-      const fim = new Date(dataFim + "T12:00:00");
+      let data = new Date(filtros.dataInicio + "T12:00:00");
+      const fim = new Date(filtros.dataFim + "T12:00:00");
 
-      while (d <= fim) {
-        datas.push(d.toISOString().substring(0, 10));
-        d.setDate(d.getDate() + 1);
-      }
+      while (data <= fim) {
+        const dataStr = data.toISOString().substring(0, 10);
 
-      datas.forEach(data => {
         const batidas = registros
           .filter(r => {
-            const dataReg = r.data || r.data_hora?.substring(0, 10);
-            return r.funcionario_id === func.id && dataReg === data;
+            const d = r.data || r.data_hora?.substring(0, 10);
+            return r.funcionario_id === func.id && d === dataStr;
           })
           .sort((a, b) => {
-            const hA = a.hora || a.data_hora?.substring(11, 19) || "";
-            const hB = b.hora || b.data_hora?.substring(11, 19) || "";
-            return hA.localeCompare(hB);
+            const ha = a.hora || a.data_hora?.substring(11, 19) || "";
+            const hb = b.hora || b.data_hora?.substring(11, 19) || "";
+            return ha.localeCompare(hb);
           });
 
         const ocorrencia = ocorrencias.find(
-          o => o.funcionario_id === func.id && o.data === data
+          o => o.funcionario_id === func.id && o.data === dataStr
         );
 
-        lista.push({ funcionario: func, data, batidas, ocorrencia });
-      });
+        lista.push({
+          funcionario: func,
+          data: dataStr,
+          batidas,
+          ocorrencia
+        });
+
+        data.setDate(data.getDate() + 1);
+      }
     });
 
     return lista;
-  }, [funcionarios, registros, ocorrencias, filtroFuncionario, dataInicio, dataFim]);
+  }, [funcionarios, registros, ocorrencias, filtros]);
 
-  const formatarDataHora = (iso) => {
-    if (!iso) return "-";
-    const d = new Date(iso);
-    return d.toLocaleString("pt-BR");
-  };
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="w-10 h-10 animate-spin text-slate-600" />
+        <Loader2 className="w-10 h-10 animate-spin" />
       </div>
     );
   }
@@ -118,50 +131,37 @@ export default function PontoPage() {
   return (
     <div className="min-h-screen bg-slate-50 p-4 space-y-4">
       {/* AÇÕES */}
-      <div className="flex flex-wrap gap-2 items-end">
-        <Button onClick={() => setIsImportarOpen(true)}>
-          Importar Ponto
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setMostrarFiltros(true)} variant="outline">
+          <Filter className="w-4 h-4 mr-2" />
+          Filtros
         </Button>
 
         <Button
           variant="outline"
           onClick={() => setMostrarCalendario(v => !v)}
-          className="gap-2"
         >
-          <CalendarDays className="w-4 h-4" />
+          <Calendar className="w-4 h-4 mr-2" />
           Calendário
         </Button>
 
-        <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
-          <SelectTrigger className="w-56">
-            <SelectValue placeholder="Funcionário" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
-            {funcionarios.map(f => (
-              <SelectItem key={f.id} value={f.id}>
-                {f.nome}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Button onClick={() => setMostrarEspelho(true)}>
+          <FileText className="w-4 h-4 mr-2" />
+          Gerar Espelho
+        </Button>
 
-        <Input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
-        <Input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+        <Button onClick={() => setMostrarFiltros(true)}>
+          Importar Ponto
+        </Button>
       </div>
 
-      {/* CALENDÁRIO (OCULTO POR PADRÃO) */}
       {mostrarCalendario && (
         <CalendarioPonto
-          registros={registros.map(r => ({
-            data: r.data || r.data_hora?.substring(0, 10)
-          }))}
+          registros={registros}
           ocorrencias={ocorrencias}
-          onDiaClicado={(data) => {
-            setDataInicio(data);
-            setDataFim(data);
-            setMostrarCalendario(false);
-          }}
+          onDiaClicado={(data) =>
+            setFiltros({ ...filtros, dataInicio: data, dataFim: data })
+          }
         />
       )}
 
@@ -182,36 +182,38 @@ export default function PontoPage() {
               </tr>
             </thead>
             <tbody>
-              {linhas.map((l, idx) => {
-                const batidas = ["-", "-", "-", "-"];
-                l.batidas.slice(0, 4).forEach((b, i) => {
-                  batidas[i] = formatarDataHora(b.data_hora || `${l.data}T${b.hora}`);
+              {linhas.map((l, i) => {
+                const bat = ["-", "-", "-", "-"];
+                l.batidas.slice(0, 4).forEach((b, idx) => {
+                  const h = b.hora || b.data_hora?.substring(11, 19);
+                  bat[idx] = h
+                    ? `${l.data.split("-").reverse().join("/")} ${h}`
+                    : "-";
                 });
 
                 return (
-                  <tr key={idx} className="border-b">
+                  <tr key={i} className="border-b">
                     <td className="px-3 py-2">{l.funcionario.nome}</td>
                     <td className="px-3 py-2 text-center">
-                      {new Date(l.data + "T12:00:00").toLocaleDateString("pt-BR")}
+                      {l.data.split("-").reverse().join("/")}
                     </td>
-
-                    {batidas.map((b, i) => (
+                    {bat.map((b, j) => (
                       <td
-                        key={i}
-                        className={`px-3 py-2 text-center ${b === "-" ? "text-red-600" : ""}`}
+                        key={j}
+                        className={`px-3 py-2 text-center ${
+                          b === "-" ? "text-red-600" : ""
+                        }`}
                       >
                         {b}
                       </td>
                     ))}
-
                     <td className="px-3 py-2 text-center">
                       {l.ocorrencia
-                        ? l.ocorrencia.tipo
+                        ? l.ocorrencia.tipo.toUpperCase()
                         : l.batidas.length
                         ? "OK"
                         : "SEM REGISTRO"}
                     </td>
-
                     <td className="px-3 py-2 text-center">
                       <HistoricoAuditoria registro={l.batidas[0]} />
                       {!l.batidas.length && (
@@ -226,12 +228,26 @@ export default function PontoPage() {
         </CardContent>
       </Card>
 
-      {/* MODAL IMPORTAÇÃO */}
-      <ImportarPontoModal
-        isOpen={isImportarOpen}
-        onClose={() => setIsImportarOpen(false)}
-        onImportado={carregarDados}
+      {/* MODAIS */}
+      <FiltrosPontoModal
+        open={mostrarFiltros}
+        onClose={() => setMostrarFiltros(false)}
+        filtros={filtros}
+        setFiltros={setFiltros}
+        funcionarios={funcionarios}
       />
+
+      {mostrarEspelho && (
+        <EspelhoPontoCompleto
+          filtros={filtros}
+          registros={registros}
+          ocorrencias={ocorrencias}
+          funcionarios={funcionarios}
+          escalas={escalas}
+          funcionariosEscalas={funcionariosEscalas}
+          onClose={() => setMostrarEspelho(false)}
+        />
+      )}
     </div>
   );
 }
