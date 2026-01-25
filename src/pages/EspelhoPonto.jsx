@@ -1,176 +1,195 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Printer } from "lucide-react";
+import { Loader2, Printer, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import EspelhoPontoDoc from "@/components/ponto/EspelhoPontoDoc";
+import EspelhoPontoDoc from "@/components/ponto/EspelhoPontoDoc.jsx";
 
-export default function EspelhoPonto() {
-  const { toast } = useToast();
-
+export default function EspelhoPontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
-  const [funcionarioId, setFuncionarioId] = useState("");
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
-
   const [registros, setRegistros] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
-  const [escala, setEscala] = useState(null);
-
-  const [loading, setLoading] = useState(false);
-  const [mostrar, setMostrar] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [mostrarEspelho, setMostrarEspelho] = useState(false);
+  const [configuracoes, setConfiguracoes] = useState(null);
+  const [escalas, setEscalas] = useState([]);
+  const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
+  const [departamentos, setDepartamentos] = useState([]);
+  const { toast } = useToast();
 
   useEffect(() => {
-    base44.entities.Funcionario.list().then(setFuncionarios);
+    const fetchInitialData = async () => {
+      try {
+        const [funcs, configs, esc, funcEsc, cargos, depts] = await Promise.all([
+          base44.entities.Funcionario.list(),
+          base44.entities.Configuracoes.list(),
+          base44.entities.EscalaTrabalho.list(),
+          base44.entities.FuncionarioEscala.list(),
+          base44.entities.Cargo.list(),
+          base44.entities.Departamento.list()
+        ]);
+        setFuncionarios((funcs || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
+        setConfiguracoes(configs?.[0] || null);
+        setEscalas(esc || []);
+        setFuncionariosEscalas(funcEsc || []);
+        setDepartamentos(depts || []);
+        // Armazenar cargos no localStorage para referência
+        sessionStorage.setItem('cargosMap', JSON.stringify((cargos || []).reduce((acc, c) => ({ ...acc, [c.id]: c }), {})));
+      } catch (error) {
+        console.error("Erro ao carregar:", error);
+        toast({ title: "Erro", description: "Falha ao carregar dados", variant: "destructive" });
+      }
+    };
+    fetchInitialData();
   }, []);
 
-  const gerarEspelho = async () => {
-    if (!funcionarioId || !dataInicio || !dataFim) {
+  const handleGerarEspelho = async () => {
+    if (!funcionarioSelecionado || !dataInicio || !dataFim) {
       toast({
-        title: "Campos obrigatórios",
-        description: "Selecione funcionário e período",
+        title: "Atenção",
+        description: "Selecione um funcionário e o período",
         variant: "destructive"
       });
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     try {
-      const [regs, ocors, vinculo] = await Promise.all([
-        base44.entities.PontoRegistro.filter(
-          { funcionario_id: funcionarioId },
-          "-data_hora",
-          5000
-        ),
-        base44.entities.OcorrenciaPonto.filter(
-          { funcionario_id: funcionarioId },
-          "-data",
-          2000
-        ),
-        base44.entities.FuncionarioEscala.filter(
-          { funcionario_id: funcionarioId },
-          "-created_at",
-          1
-        )
+      const [regsData, ocorrenciasData] = await Promise.all([
+        base44.entities.PontoRegistro.filter({
+          funcionario_id: funcionarioSelecionado
+        }, "-data_hora", 2000),
+        base44.entities.OcorrenciaPonto.filter({
+          funcionario_id: funcionarioSelecionado
+        }, "-data", 1000)
       ]);
 
-      const registrosFiltrados = regs.filter(r => {
-        const d = r.data || r.data_hora?.substring(0, 10);
-        return d >= dataInicio && d <= dataFim;
+      // Filtrar localmente por data para evitar problemas de timezone
+      const registrosFiltrados = (regsData || []).filter(reg => {
+        if (!reg.data_hora) return false;
+        const data = reg.data_hora.substring(0, 10);
+        return data >= dataInicio && data <= dataFim;
       });
-
-      const ocorrenciasFiltradas = ocors.filter(
-        o => o.data >= dataInicio && o.data <= dataFim
-      );
+      
+      const ocorrenciasFiltradas = (ocorrenciasData || []).filter(ocor => {
+        return ocor.data >= dataInicio && ocor.data <= dataFim;
+      });
 
       setRegistros(registrosFiltrados);
       setOcorrencias(ocorrenciasFiltradas);
-
-      if (vinculo?.length) {
-        const esc = await base44.entities.EscalaTrabalho.get(
-          vinculo[0].escala_id
-        );
-        setEscala(esc);
-      } else {
-        setEscala(null);
-      }
-
-      setMostrar(true);
-    } catch (e) {
-      console.error(e);
-      toast({
-        title: "Erro",
-        description: "Falha ao gerar espelho",
-        variant: "destructive"
-      });
+      setMostrarEspelho(true);
+    } catch (error) {
+      console.error("Erro:", error);
+      toast({ title: "Erro", description: "Falha ao carregar registros", variant: "destructive" });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const funcionario = funcionarios.find(f => f.id === funcionarioId);
-
-  if (mostrar) {
-    return (
-      <>
-        <div className="no-print bg-slate-900 p-3 flex gap-2">
-          <Button variant="outline" onClick={() => setMostrar(false)}>
-            Voltar
-          </Button>
-          <Button onClick={() => window.print()}>
-            <Printer className="w-4 h-4 mr-2" />
-            Imprimir
-          </Button>
-        </div>
-
-        <EspelhoPontoDoc
-          funcionario={funcionario}
-          registros={registros}
-          ocorrencias={ocorrencias}
-          escala={escala}
-          dataInicio={dataInicio}
-          dataFim={dataFim}
-        />
-      </>
-    );
-  }
+  const funcionario = funcionarios.find(f => f.id === funcionarioSelecionado);
+  const departamento = funcionario ? departamentos.find(d => d.id === funcionario.departamento_id) : null;
+  const departamentoResponsavel = departamento?.responsavel_id 
+    ? funcionarios.find(f => f.id === departamento.responsavel_id) 
+    : null;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6">Espelho de Ponto</h1>
+    <div className="min-h-screen bg-slate-50 p-2 md:p-6">
+      <div className="max-w-7xl mx-auto">
+        {!mostrarEspelho ? (
+          <div className="bg-white rounded-xl shadow-lg p-4 md:p-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Espelho de Ponto</h1>
+            <p className="text-slate-600 text-sm md:text-base mb-8">Gere o documento individual para assinatura</p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <Label>Funcionário</Label>
-          <Select value={funcionarioId} onValueChange={setFuncionarioId}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar" />
-            </SelectTrigger>
-            <SelectContent>
-              {funcionarios.map(f => (
-                <SelectItem key={f.id} value={f.id}>
-                  {f.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Funcionário</Label>
+                <Select value={funcionarioSelecionado || ""} onValueChange={setFuncionarioSelecionado}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar...">
+                      {funcionarioSelecionado ? funcionarios.find(f => f.id === funcionarioSelecionado)?.nome : "Selecionar..."}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {funcionarios.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <div>
-          <Label>Data início</Label>
-          <Input
-            type="date"
-            value={dataInicio}
-            onChange={e => setDataInicio(e.target.value)}
-          />
-        </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Data Início</Label>
+                <Input
+                  type="date"
+                  value={dataInicio}
+                  onChange={(e) => setDataInicio(e.target.value)}
+                  className="w-full"
+                />
+              </div>
 
-        <div>
-          <Label>Data fim</Label>
-          <Input
-            type="date"
-            value={dataFim}
-            onChange={e => setDataFim(e.target.value)}
-          />
-        </div>
-      </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Data Fim</Label>
+                <Input
+                  type="date"
+                  value={dataFim}
+                  onChange={(e) => setDataFim(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            </div>
 
-      <Button onClick={gerarEspelho} disabled={loading} className="mt-6">
-        {loading ? (
-          <Loader2 className="animate-spin w-4 h-4" />
+            <div className="flex gap-3 mt-8">
+              <Button
+                onClick={handleGerarEspelho}
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+              >
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
+                Gerar Espelho
+              </Button>
+            </div>
+          </div>
         ) : (
-          "Gerar Espelho"
+          <div className="space-y-4">
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setMostrarEspelho(false)}
+                variant="outline"
+                className="gap-2"
+              >
+                ← Voltar
+              </Button>
+              <Button
+                onClick={() => window.print()}
+                className="bg-green-600 hover:bg-green-700 text-white gap-2"
+              >
+                <Printer className="w-4 h-4" />
+                Imprimir
+              </Button>
+            </div>
+
+            <EspelhoPontoDoc
+              funcionario={funcionario}
+              registros={registros}
+              ocorrencias={ocorrencias}
+              dataInicio={dataInicio}
+              dataFim={dataFim}
+              configuracoes={configuracoes}
+              escalas={escalas}
+              funcionariosEscalas={funcionariosEscalas}
+              cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
+              departamento={departamento}
+              departamentoResponsavel={departamentoResponsavel}
+            />
+          </div>
         )}
-      </Button>
+      </div>
     </div>
   );
 }

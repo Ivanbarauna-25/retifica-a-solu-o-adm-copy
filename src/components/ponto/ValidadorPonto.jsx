@@ -1,88 +1,98 @@
-// ValidadorPonto.jsx
-// CONTRATO ÚNICO E DEFINITIVO PARA TODO O MÓDULO DE PONTO
-
-/**
- * Valida uma batida individual (sem permitir edição)
- */
-export function validarBatida(batida, registrosDoDia = []) {
+// Funções de validação para registros de ponto
+export const validarRegistro = (batida, registrosExistentes = []) => {
   const erros = [];
   const avisos = [];
 
-  if (!batida?.hora || !/^\d{2}:\d{2}(:\d{2})?$/.test(batida.hora)) {
-    erros.push("Hora inválida");
+  // 1. Validar hora de entrada/saída invertidas
+  if (batida.hora && batida.hora_saida) {
+    const [hh, mm] = batida.hora.split(':').map(Number);
+    const [hs, ms] = batida.hora_saida.split(':').map(Number);
+    const minEntrada = hh * 60 + mm;
+    const minSaida = hs * 60 + ms;
+    
+    if (minSaida < minEntrada) {
+      erros.push('Hora de saída anterior à entrada');
+    }
   }
 
-  const duplicada = registrosDoDia.find(
-    r => r.hora === batida.hora && r.origem === batida.origem
+  // 2. Validar batida dupla (mesmo funcionário, mesmo horário)
+  const batidaDupla = registrosExistentes.find(
+    r => r.funcionario_id === batida.funcionario_id && 
+         r.hora === batida.hora &&
+         r.data === batida.data
   );
-
-  if (duplicada) {
-    erros.push("Batida duplicada");
+  if (batidaDupla) {
+    erros.push('Batida duplicada no mesmo horário');
   }
 
-  const [h, m] = batida.hora.split(":").map(Number);
-  const minutos = h * 60 + m;
+  // 3. Avisos (não erros)
+  if (batida.hora) {
+    const [hh, mm] = batida.hora.split(':').map(Number);
+    const minutos = hh * 60 + mm;
+    
+    // Muito cedo (antes 6am)
+    if (minutos < 360) {
+      avisos.push('Batida muito cedo (antes 6h)');
+    }
+    
+    // Muito tarde (depois 22h)
+    if (minutos > 1320) {
+      avisos.push('Batida muito tarde (após 22h)');
+    }
+  }
 
-  if (minutos < 360) avisos.push("Batida antes das 06:00");
-  if (minutos > 1320) avisos.push("Batida após 22:00");
+  return { erros, avisos, valido: erros.length === 0 };
+};
 
-  return {
-    valido: erros.length === 0,
-    erros,
-    avisos
+export const validarLote = (batidas) => {
+  const resumo = {
+    total: batidas.length,
+    validas: 0,
+    comErros: 0,
+    comAvisos: 0,
+    detalhes: []
   };
-}
 
-/**
- * Valida um conjunto de registros de um dia
- */
-export function validarRegistro(registrosDoDia = [], escala = null) {
-  const resultado = {
-    status: "OK",
-    saldoMinutos: 0,
-    observacoes: []
-  };
+  batidas.forEach((batida, idx) => {
+    const validacao = validarRegistro(batida, batidas.slice(0, idx));
+    
+    if (validacao.valido && validacao.avisos.length === 0) {
+      resumo.validas++;
+    } else if (!validacao.valido) {
+      resumo.comErros++;
+    } else {
+      resumo.comAvisos++;
+    }
 
-  if (!escala) {
-    resultado.status = "SEM_ESCALA";
-    resultado.observacoes.push("Funcionário sem escala vinculada");
-    return resultado;
+    resumo.detalhes.push({
+      index: idx,
+      batida,
+      ...validacao
+    });
+  });
+
+  return resumo;
+};
+
+// Recomendar ajustes automáticos
+export const recomendarAjustes = (batida) => {
+  const sugestoes = [];
+
+  // Se hora de saída < hora de entrada, inverter
+  if (batida.hora && batida.hora_saida) {
+    const [hh, mm] = batida.hora.split(':').map(Number);
+    const [hs, ms] = batida.hora_saida.split(':').map(Number);
+    const minEntrada = hh * 60 + mm;
+    const minSaida = hs * 60 + ms;
+    
+    if (minSaida < minEntrada) {
+      sugestoes.push({
+        tipo: 'inverter',
+        descricao: 'Inverter hora de entrada e saída?',
+        acao: () => ({ ...batida, hora: batida.hora_saida, hora_saida: batida.hora })
+      });
+    }
   }
 
-  if (registrosDoDia.length === 0) {
-    resultado.status = "SEM_REGISTRO";
-    resultado.saldoMinutos = -escala.carga_diaria_minutos;
-    return resultado;
-  }
-
-  return resultado;
-}
-
-/**
- * Validação de lote (importação)
- */
-export function validarLote(registros = []) {
-  return registros.map(r => ({
-    registro: r,
-    resultado: validarBatida(r, [])
-  }));
-}
-
-/**
- * Recomenda ações (SEM alterar batidas)
- */
-export function recomendarAjustes({ status, saldoMinutos }) {
-  if (status === "SEM_REGISTRO") {
-    return ["Abonar falta", "Gerar ocorrência"];
-  }
-
-  if (saldoMinutos < 0) {
-    return ["Descontar horas", "Banco de horas negativo"];
-  }
-
-  if (saldoMinutos > 0) {
-    return ["Banco de horas positivo"];
-  }
-
-  return [];
-}
+  return sugestoes;
+};

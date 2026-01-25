@@ -56,7 +56,6 @@ import RelatorioFolhaPagamento from './pages/RelatorioFolhaPagamento';
 import RelatorioFuncionarios from './pages/RelatorioFuncionarios';
 import RelatorioNotasFiscais from './pages/RelatorioNotasFiscais';
 import RelatorioOS from './pages/RelatorioOS';
-import RelatorioOcorrenciasPonto from './pages/RelatorioOcorrenciasPonto';
 import RelatorioOrcamentos from './pages/RelatorioOrcamentos';
 import Servicos from './pages/Servicos';
 import Tarefas from './pages/Tarefas';
@@ -126,7 +125,6 @@ export const PAGES = {
     "RelatorioFuncionarios": RelatorioFuncionarios,
     "RelatorioNotasFiscais": RelatorioNotasFiscais,
     "RelatorioOS": RelatorioOS,
-    "RelatorioOcorrenciasPonto": RelatorioOcorrenciasPonto,
     "RelatorioOrcamentos": RelatorioOrcamentos,
     "Servicos": Servicos,
     "Tarefas": Tarefas,
