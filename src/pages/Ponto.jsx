@@ -22,15 +22,12 @@ export default function PontoPage() {
   const { toast } = useToast();
 
   const hoje = new Date().toISOString().substring(0, 10);
-
   const [funcionarios, setFuncionarios] = useState([]);
   const [registros, setRegistros] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
   const [escalas, setEscalas] = useState([]);
   const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarEspelho, setMostrarEspelho] = useState(false);
@@ -44,13 +41,7 @@ export default function PontoPage() {
   async function carregarDados() {
     setLoading(true);
     try {
-      const [
-        funcs,
-        regs,
-        ocors,
-        escs,
-        funcEscs
-      ] = await Promise.all([
+      const [funcs, regs, ocors, escs, funcEscs] = await Promise.all([
         base44.entities.Funcionario.list(),
         base44.entities.PontoRegistro.list("-data_hora", 5000),
         base44.entities.OcorrenciaPonto.list("-data", 3000),
@@ -64,9 +55,10 @@ export default function PontoPage() {
       setEscalas(escs || []);
       setFuncionariosEscalas(funcEscs || []);
     } catch (e) {
+      console.error(e); // Loga o erro detalhadamente
       toast({
         title: "Erro",
-        description: "Falha ao carregar controle de ponto",
+        description: "Falha ao carregar controle de ponto: " + e.message,
         variant: "destructive"
       });
     } finally {
@@ -182,17 +174,17 @@ export default function PontoPage() {
               </tr>
             </thead>
             <tbody>
-              {linhas.map((l, i) => {
+              {linhas.map((l, idx) => {
                 const bat = ["-", "-", "-", "-"];
-                l.batidas.slice(0, 4).forEach((b, idx) => {
+                l.batidas.slice(0, 4).forEach((b, bIdx) => {
                   const h = b.hora || b.data_hora?.substring(11, 19);
-                  bat[idx] = h
+                  bat[bIdx] = h
                     ? `${l.data.split("-").reverse().join("/")} ${h}`
                     : "-";
                 });
 
                 return (
-                  <tr key={i} className="border-b">
+                  <tr key={l.data + l.funcionario.id + idx} className="border-b">
                     <td className="px-3 py-2">{l.funcionario.nome}</td>
                     <td className="px-3 py-2 text-center">
                       {l.data.split("-").reverse().join("/")}
