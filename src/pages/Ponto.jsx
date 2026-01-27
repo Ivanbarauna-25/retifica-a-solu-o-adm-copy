@@ -480,22 +480,22 @@ export default function PontoPage() {
                 </div>
               </div>
 
-              {/* Tabela de Ponto por Dia */}
-              <div className="rounded-lg border overflow-hidden shadow-sm">
+              {/* Tabela de Ponto por Dia - Desktop */}
+              <div className="hidden md:block rounded-lg border border-slate-200 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                   <div className="max-h-[calc(100vh-350px)] overflow-y-auto">
-                    <table className="w-full min-w-[900px]">
-                      <thead className="bg-slate-800 sticky top-0 z-10">
+                    <table className="w-full">
+                      <thead className="bg-gradient-to-r from-slate-800 to-slate-700 sticky top-0 z-10">
                         <tr>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-left whitespace-nowrap">Funcionário</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Data</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">1ª</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">2ª</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">3ª</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">4ª</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Faltou</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Saldo</th>
-                          <th className="text-white text-[9px] md:text-[11px] font-semibold px-2 md:px-3 py-2 text-center whitespace-nowrap">Ação</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-left whitespace-nowrap">Funcionário</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Data</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">1ª Entrada</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">2ª Saída</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">3ª Entrada</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">4ª Saída</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Faltou</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Saldo</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Ações</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -550,98 +550,106 @@ export default function PontoPage() {
                             }
                             
                             return (
-                              <tr key={idx} className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${naoEDiaTrabalho ? 'bg-slate-100' : ''}`}>
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-slate-700 font-medium">
+                              <tr key={idx} className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${naoEDiaTrabalho ? 'bg-slate-50' : ''}`}>
+                                <td className="px-3 py-2.5 text-slate-900 font-medium text-xs">
                                   {getFuncionarioNome(grupo.funcionario_id)}
                                 </td>
-                                <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center text-slate-900 font-semibold">
-                                  {formatarData(grupo.data)}
+                                <td className="px-3 py-2.5 text-center">
+                                  <span className="text-slate-900 font-semibold text-xs">{formatarData(grupo.data)}</span>
                                 </td>
                                 {naoEDiaTrabalho ? (
                                   <>
-                                    <td colSpan={4} className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                      <Badge className="bg-slate-200 text-slate-700 text-[8px] md:text-[10px]">
+                                    <td colSpan={4} className="px-3 py-2.5 text-center">
+                                      <Badge className="bg-slate-100 text-slate-700 text-xs border border-slate-300">
                                         FOLGA/FINAL DE SEMANA
                                       </Badge>
                                     </td>
-                                    <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                      <span className="text-slate-400">-</span>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className="text-slate-400 text-xs">-</span>
                                     </td>
-                                    <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
-                                      <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px]">
+                                    <td className="px-3 py-2.5 text-center">
+                                      <Badge className="bg-blue-100 text-blue-700 text-xs font-semibold">
                                         OK
                                       </Badge>
                                     </td>
                                   </>
                                 ) : (
                                   <>
-                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                      {batidas[0] || "-"}
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[0] || "-"}
+                                      </span>
                                     </td>
-                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                      {batidas[1] || "-"}
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[1] || "-"}
+                                      </span>
                                     </td>
-                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                      {batidas[2] || "-"}
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[2] || "-"}
+                                      </span>
                                     </td>
-                                    <td className={`font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900"}`}>
-                                      {batidas[3] || "-"}
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[3] || "-"}
+                                      </span>
                                     </td>
-                                    <td className="text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center">
+                                    <td className="px-3 py-2.5 text-center">
                                       {ocorrencia ? (
-                                        <Badge className={
-                                          ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
-                                          ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700" :
-                                          ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
-                                          ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
-                                          "bg-yellow-100 text-yellow-700"
-                                        } className="text-[8px] md:text-[10px] capitalize">
+                                        <Badge className={`text-xs font-semibold ${
+                                          ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700 border-purple-300" :
+                                          ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700 border-green-300" :
+                                          ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700 border-blue-300" :
+                                          ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700 border-cyan-300" :
+                                          "bg-yellow-100 text-yellow-700 border-yellow-300"
+                                        } border capitalize`}>
                                           {ocorrencia.tipo}
                                         </Badge>
                                       ) : faltantes.length > 0 ? (
-                                        <Badge variant="destructive" className="text-[8px] md:text-[10px]">
+                                        <Badge className="bg-red-100 text-red-700 border border-red-300 text-xs font-bold">
                                           {faltantes.join(", ")}ª
                                         </Badge>
                                       ) : (
-                                        <span className="text-slate-400">-</span>
+                                        <span className="text-slate-400 text-xs">-</span>
                                       )}
                                     </td>
-                                    <td className="font-mono text-[9px] md:text-[11px] px-2 md:px-3 py-2 text-center font-semibold">
+                                    <td className="px-3 py-2.5 text-center">
                                       {saldoDia.justificado ? (
-                                        <Badge className="bg-blue-100 text-blue-700 text-[8px] md:text-[10px]">
+                                        <Badge className="bg-blue-100 text-blue-700 border border-blue-300 text-xs font-semibold">
                                           OK
                                         </Badge>
                                       ) : (
-                                        <span className={saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}>
+                                        <span className={`font-mono font-bold text-xs ${saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}`}>
                                           {minToHHmm(saldoDia.saldo)}
                                         </span>
                                       )}
                                     </td>
                                   </>
                                 )}
-                                <td className="px-2 md:px-3 py-2">
+                                <td className="px-3 py-2.5">
                                   {!naoEDiaTrabalho && (
-                                    <div className="flex gap-1 justify-center items-center">
+                                    <div className="flex gap-2 justify-center items-center">
                                       <HistoricoAuditoria registro={grupo.batidas?.[0]} />
                                       <Button
                                         variant="ghost"
                                         size="sm"
                                         onClick={() => handleAbrirOcorrencia(grupo)}
-                                        className="h-6 md:h-7 px-2 hover:bg-blue-100 hover:text-blue-600 text-[9px] md:text-[10px]"
+                                        className="h-8 px-3 hover:bg-blue-100 hover:text-blue-700 text-xs font-medium rounded-lg transition-all"
                                         title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
                                       >
                                         {ocorrencia ? (
-                                          <Badge className={
-                                            ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
-                                            ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700" :
-                                            ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700" :
-                                            ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
-                                            "bg-yellow-100 text-yellow-700"
-                                          } className="text-[8px] md:text-[10px] capitalize cursor-pointer">
+                                          <Badge className={`text-xs font-semibold cursor-pointer ${
+                                            ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700 border-purple-300" :
+                                            ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700 border-green-300" :
+                                            ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700 border-blue-300" :
+                                            ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700 border-cyan-300" :
+                                            "bg-yellow-100 text-yellow-700 border-yellow-300"
+                                          } border capitalize`}>
                                             {ocorrencia.tipo}
                                           </Badge>
                                         ) : (
-                                          <AlertTriangle className="h-3 w-3 md:h-3.5 md:w-3.5" />
+                                          <AlertTriangle className="h-4 w-4 text-orange-500" />
                                         )}
                                       </Button>
                                     </div>
@@ -655,6 +663,151 @@ export default function PontoPage() {
                     </table>
                   </div>
                 </div>
+              </div>
+
+              {/* Cards Mobile */}
+              <div className="md:hidden space-y-3">
+                {isLoading ? (
+                  <div className="text-center py-12">
+                    <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
+                  </div>
+                ) : registrosFiltrados.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="flex flex-col items-center gap-3">
+                      <FileText className="w-16 h-16 text-slate-300" />
+                      <p className="text-slate-500 text-xs font-medium">Nenhum registro encontrado</p>
+                      <p className="text-slate-400 text-[10px]">Importe batidas ou ajuste os filtros</p>
+                    </div>
+                  </div>
+                ) : (
+                  registrosFiltrados.map((grupo, idx) => {
+                    const batidasEsperadas = getBatidasEsperadas(grupo.funcionario_id, grupo.data);
+                    const saldoDia = calcularSaldoDia(grupo.funcionario_id, grupo.data, grupo.batidas);
+                    const ocorrencia = ocorrencias.find(o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data);
+                    const diaTrabalho = isDiaTrabalho(grupo.funcionario_id, grupo.data);
+                    
+                    const batidasOrdenadas = [...grupo.batidas].sort((a, b) => {
+                      const horaA = a.hora || a.data_hora?.substring(11, 19) || "00:00:00";
+                      const horaB = b.hora || b.data_hora?.substring(11, 19) || "00:00:00";
+                      return horaA.localeCompare(horaB);
+                    });
+                    
+                    const batidas = ["", "", "", ""];
+                    for (let i = 0; i < batidasOrdenadas.length && i < 4; i++) {
+                      const horaBatida = batidasOrdenadas[i].hora || batidasOrdenadas[i].data_hora?.substring(11, 19) || "00:00:00";
+                      batidas[i] = formatarHora(horaBatida);
+                    }
+                    
+                    const naoEDiaTrabalho = !diaTrabalho && grupo.batidas.length === 0;
+                    const faltantes = [];
+                    if (!naoEDiaTrabalho && !ocorrencia) {
+                      for (let i = 0; i < 4; i++) {
+                        if (!batidas[i] || batidas[i] === "") {
+                          faltantes.push(i + 1);
+                        }
+                      }
+                    }
+
+                    return (
+                      <Card key={idx} className={`${naoEDiaTrabalho ? 'bg-slate-50' : 'bg-white'} border-slate-200 shadow-sm`}>
+                        <CardContent className="p-3">
+                          {/* Header do Card */}
+                          <div className="flex items-start justify-between mb-3 pb-2 border-b">
+                            <div>
+                              <h3 className="font-semibold text-sm text-slate-900">
+                                {getFuncionarioNome(grupo.funcionario_id)}
+                              </h3>
+                              <p className="text-xs text-slate-600 font-medium mt-0.5">
+                                {formatarData(grupo.data)}
+                              </p>
+                            </div>
+                            <div className="flex gap-2 items-center">
+                              <HistoricoAuditoria registro={grupo.batidas?.[0]} />
+                              {saldoDia.justificado ? (
+                                <Badge className="bg-blue-100 text-blue-700 border border-blue-300 text-xs font-semibold">
+                                  OK
+                                </Badge>
+                              ) : (
+                                <Badge className={`text-xs font-bold ${saldoDia.saldo >= 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                  {minToHHmm(saldoDia.saldo)}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+
+                          {naoEDiaTrabalho ? (
+                            <div className="text-center py-4">
+                              <Badge className="bg-slate-200 text-slate-700 text-xs">
+                                FOLGA/FINAL DE SEMANA
+                              </Badge>
+                            </div>
+                          ) : (
+                            <>
+                              {/* Batidas */}
+                              <div className="grid grid-cols-2 gap-2 mb-3">
+                                <div className={`bg-slate-50 rounded-lg p-2 border ${!batidas[0] ? "border-red-200" : "border-slate-200"}`}>
+                                  <p className="text-[9px] text-slate-600 mb-0.5">1ª Entrada</p>
+                                  <p className={`font-mono font-bold text-sm ${!batidas[0] ? "text-red-500" : "text-slate-900"}`}>
+                                    {batidas[0] || "-"}
+                                  </p>
+                                </div>
+                                <div className={`bg-slate-50 rounded-lg p-2 border ${!batidas[1] ? "border-red-200" : "border-slate-200"}`}>
+                                  <p className="text-[9px] text-slate-600 mb-0.5">2ª Saída</p>
+                                  <p className={`font-mono font-bold text-sm ${!batidas[1] ? "text-red-500" : "text-slate-900"}`}>
+                                    {batidas[1] || "-"}
+                                  </p>
+                                </div>
+                                <div className={`bg-slate-50 rounded-lg p-2 border ${!batidas[2] ? "border-red-200" : "border-slate-200"}`}>
+                                  <p className="text-[9px] text-slate-600 mb-0.5">3ª Entrada</p>
+                                  <p className={`font-mono font-bold text-sm ${!batidas[2] ? "text-red-500" : "text-slate-900"}`}>
+                                    {batidas[2] || "-"}
+                                  </p>
+                                </div>
+                                <div className={`bg-slate-50 rounded-lg p-2 border ${!batidas[3] ? "border-red-200" : "border-slate-200"}`}>
+                                  <p className="text-[9px] text-slate-600 mb-0.5">4ª Saída</p>
+                                  <p className={`font-mono font-bold text-sm ${!batidas[3] ? "text-red-500" : "text-slate-900"}`}>
+                                    {batidas[3] || "-"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Status e Ações */}
+                              <div className="flex items-center justify-between pt-2 border-t">
+                                <div>
+                                  {ocorrencia ? (
+                                    <Badge className={`text-xs font-semibold ${
+                                      ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700 border-purple-300" :
+                                      ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700 border-green-300" :
+                                      ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700 border-blue-300" :
+                                      ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700 border-cyan-300" :
+                                      "bg-yellow-100 text-yellow-700 border-yellow-300"
+                                    } border capitalize`}>
+                                      {ocorrencia.tipo}
+                                    </Badge>
+                                  ) : faltantes.length > 0 ? (
+                                    <Badge className="bg-red-100 text-red-700 border border-red-300 text-xs font-bold">
+                                      Faltou: {faltantes.join(", ")}ª
+                                    </Badge>
+                                  ) : (
+                                    <span className="text-slate-400 text-xs">Sem ocorrências</span>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleAbrirOcorrencia(grupo)}
+                                  className="h-8 px-3 text-xs font-medium"
+                                >
+                                  {ocorrencia ? "Editar" : "Adicionar"}
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )}
               </div>
 
               <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
