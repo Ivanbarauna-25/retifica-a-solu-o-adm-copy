@@ -142,21 +142,21 @@ export default function EscalaForm({ escala, onSave, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 px-1">
       <div>
-        <Label className="text-xs font-medium">Nome da Escala *</Label>
+        <Label className="text-[10px] md:text-xs font-medium">Nome da Escala *</Label>
         <Input
           value={formData.nome}
           onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))}
           placeholder="Ex: Expediente Normal"
-          className="text-sm"
+          className="text-xs md:text-sm h-8 md:h-9"
         />
       </div>
 
       <div>
-        <Label className="text-xs font-medium">Tipo</Label>
+        <Label className="text-[10px] md:text-xs font-medium">Tipo</Label>
         <Select value={formData.tipo} onValueChange={(v) => setFormData(prev => ({ ...prev, tipo: v }))}>
-          <SelectTrigger className="text-sm">
+          <SelectTrigger className="text-xs md:text-sm h-8 md:h-9">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -168,115 +168,122 @@ export default function EscalaForm({ escala, onSave, onCancel }) {
       </div>
 
       <div>
-        <Label className="text-xs font-medium mb-2 block">Dias da Semana</Label>
+        <Label className="text-[10px] md:text-xs font-medium mb-2 block">Dias da Semana</Label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {DIAS_SEMANA.map((dia) => (
-            <div key={dia.value} className="flex items-center gap-2">
+            <div key={dia.value} className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border">
               <Checkbox
+                id={`dia-${dia.value}`}
                 checked={diasSelecionados.includes(dia.value)}
                 onCheckedChange={(checked) => handleDiaChange(dia.value, checked)}
               />
-              <Label className="text-xs cursor-pointer">{dia.label}</Label>
+              <Label htmlFor={`dia-${dia.value}`} className="text-[10px] md:text-xs cursor-pointer flex-1">{dia.label}</Label>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label className="text-xs font-medium">Entrada *</Label>
-          <Input
-            type="time"
-            value={formData.hora_entrada_prevista}
-            onChange={(e) => setFormData(prev => ({ ...prev, hora_entrada_prevista: e.target.value }))}
-            onBlur={calcularCargaDiaria}
-            className="text-sm"
-          />
+      <div className="bg-slate-50 p-3 rounded-lg border space-y-3">
+        <h4 className="text-[10px] md:text-xs font-semibold text-slate-700">Horários</h4>
+        <div className="grid grid-cols-2 gap-2 md:gap-3">
+          <div>
+            <Label className="text-[10px] md:text-xs font-medium">Entrada *</Label>
+            <Input
+              type="time"
+              value={formData.hora_entrada_prevista}
+              onChange={(e) => setFormData(prev => ({ ...prev, hora_entrada_prevista: e.target.value }))}
+              onBlur={calcularCargaDiaria}
+              className="text-xs md:text-sm h-8 md:h-9"
+            />
+          </div>
+          <div>
+            <Label className="text-[10px] md:text-xs font-medium">Saída *</Label>
+            <Input
+              type="time"
+              value={formData.hora_saida_prevista}
+              onChange={(e) => setFormData(prev => ({ ...prev, hora_saida_prevista: e.target.value }))}
+              onBlur={calcularCargaDiaria}
+              className="text-xs md:text-sm h-8 md:h-9"
+            />
+          </div>
         </div>
-        <div>
-          <Label className="text-xs font-medium">Saída *</Label>
-          <Input
-            type="time"
-            value={formData.hora_saida_prevista}
-            onChange={(e) => setFormData(prev => ({ ...prev, hora_saida_prevista: e.target.value }))}
-            onBlur={calcularCargaDiaria}
-            className="text-sm"
-          />
+
+        <div className="grid grid-cols-2 gap-2 md:gap-3">
+          <div>
+            <Label className="text-[10px] md:text-xs font-medium">Intervalo Início</Label>
+            <Input
+              type="time"
+              value={formData.intervalo_inicio_previsto}
+              onChange={(e) => setFormData(prev => ({ ...prev, intervalo_inicio_previsto: e.target.value }))}
+              onBlur={calcularCargaDiaria}
+              className="text-xs md:text-sm h-8 md:h-9"
+            />
+          </div>
+          <div>
+            <Label className="text-[10px] md:text-xs font-medium">Intervalo Fim</Label>
+            <Input
+              type="time"
+              value={formData.intervalo_fim_previsto}
+              onChange={(e) => setFormData(prev => ({ ...prev, intervalo_fim_previsto: e.target.value }))}
+              onBlur={calcularCargaDiaria}
+              className="text-xs md:text-sm h-8 md:h-9"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 md:gap-3">
         <div>
-          <Label className="text-xs font-medium">Intervalo Início</Label>
-          <Input
-            type="time"
-            value={formData.intervalo_inicio_previsto}
-            onChange={(e) => setFormData(prev => ({ ...prev, intervalo_inicio_previsto: e.target.value }))}
-            onBlur={calcularCargaDiaria}
-            className="text-sm"
-          />
-        </div>
-        <div>
-          <Label className="text-xs font-medium">Intervalo Fim</Label>
-          <Input
-            type="time"
-            value={formData.intervalo_fim_previsto}
-            onChange={(e) => setFormData(prev => ({ ...prev, intervalo_fim_previsto: e.target.value }))}
-            onBlur={calcularCargaDiaria}
-            className="text-sm"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label className="text-xs font-medium">Tolerância (minutos)</Label>
+          <Label className="text-[10px] md:text-xs font-medium">Tolerância (min)</Label>
           <Input
             type="number"
             value={formData.tolerancia_minutos}
             onChange={(e) => setFormData(prev => ({ ...prev, tolerancia_minutos: parseInt(e.target.value) || 0 }))}
             min="0"
-            className="text-sm"
+            className="text-xs md:text-sm h-8 md:h-9"
           />
         </div>
         <div>
-          <Label className="text-xs font-medium">Carga Diária (minutos) *</Label>
+          <Label className="text-[10px] md:text-xs font-medium">Carga Diária (min) *</Label>
           <Input
             type="number"
             value={formData.carga_diaria_minutos}
             onChange={(e) => setFormData(prev => ({ ...prev, carga_diaria_minutos: parseInt(e.target.value) || 0 }))}
             min="1"
-            className="text-sm"
+            className="text-xs md:text-sm h-8 md:h-9"
+            readOnly
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border">
           <Checkbox
+            id="escala-ativa"
             checked={formData.ativo}
             onCheckedChange={(checked) => setFormData(prev => ({ ...prev, ativo: checked }))}
           />
-          <Label className="text-xs cursor-pointer">Escala ativa</Label>
+          <Label htmlFor="escala-ativa" className="text-[10px] md:text-xs cursor-pointer font-medium">Escala ativa</Label>
         </div>
         
-        <div className="flex items-center gap-2 p-2 bg-blue-50 rounded border border-blue-200">
+        <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg border border-blue-200">
           <Checkbox
+            id="escala-padrao"
             checked={formData.escala_padrao}
             onCheckedChange={(checked) => setFormData(prev => ({ ...prev, escala_padrao: checked }))}
           />
-          <Label className="text-xs cursor-pointer font-medium">
+          <Label htmlFor="escala-padrao" className="text-[10px] md:text-xs cursor-pointer font-medium">
             Definir como escala padrão para novos funcionários
           </Label>
         </div>
       </div>
 
-      <div className="flex gap-2 justify-end pt-2">
-        <Button type="button" variant="outline" onClick={onCancel} className="text-xs">
+      <div className="flex gap-2 justify-end pt-2 border-t">
+        <Button type="button" variant="outline" onClick={onCancel} className="text-[10px] md:text-xs h-8 md:h-9 flex-1 md:flex-initial">
           Cancelar
         </Button>
-        <Button type="submit" disabled={salvando} className="gap-2 text-xs">
-          {salvando && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+        <Button type="submit" disabled={salvando} className="gap-2 text-[10px] md:text-xs h-8 md:h-9 flex-1 md:flex-initial">
+          {salvando && <Loader2 className="w-3 h-3 md:w-3.5 md:h-3.5 animate-spin" />}
           {escala ? "Atualizar" : "Criar"} Escala
         </Button>
       </div>

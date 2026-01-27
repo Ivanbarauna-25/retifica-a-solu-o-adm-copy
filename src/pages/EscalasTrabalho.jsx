@@ -283,17 +283,19 @@ export default function EscalasTrabalhoPage() {
 
       {/* Modal de Formulário */}
       <Dialog open={isModalOpen} onOpenChange={(open) => { if (!open) { setIsModalOpen(false); setEscalaEditando(null); } }}>
-        <DialogContent className="max-w-2xl w-[96vw] max-h-[92vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-base">
+        <DialogContent className="max-w-2xl w-[96vw] max-h-[92vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-3 md:px-4 py-2.5 md:py-3 rounded-t-lg">
+            <DialogTitle className="text-xs md:text-base font-bold">
               {escalaEditando ? "Editar Escala" : "Nova Escala"}
             </DialogTitle>
           </DialogHeader>
-          <EscalaForm
-            escala={escalaEditando}
-            onSave={handleSalvar}
-            onCancel={() => { setIsModalOpen(false); setEscalaEditando(null); }}
-          />
+          <div className="flex-1 overflow-y-auto py-3 md:py-4">
+            <EscalaForm
+              escala={escalaEditando}
+              onSave={handleSalvar}
+              onCancel={() => { setIsModalOpen(false); setEscalaEditando(null); }}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </>
