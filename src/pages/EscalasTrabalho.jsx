@@ -107,19 +107,19 @@ export default function EscalasTrabalhoPage() {
   return (
     <>
       <div className="min-h-screen bg-slate-50">
-        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
           <div className="max-w-[1800px] mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
+                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg shadow-md">
                   <Clock className="w-4 h-4 md:w-6 md:h-6" />
                 </div>
                 <div>
                   <h1 className="text-sm md:text-xl font-bold">Escalas de Trabalho</h1>
-                  <p className="text-slate-400 text-[9px] md:text-xs">Gestão de horários e jornadas</p>
+                  <p className="text-slate-300 text-[9px] md:text-xs">Gestão de horários e jornadas</p>
                 </div>
               </div>
-              <Button onClick={openNova} className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10">
+              <Button onClick={openNova} className="gap-2 bg-white text-slate-800 hover:bg-slate-100 text-xs md:text-sm h-8 md:h-10 font-medium">
                 <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 Nova Escala
               </Button>
