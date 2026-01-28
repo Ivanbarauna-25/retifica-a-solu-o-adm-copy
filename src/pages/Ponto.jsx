@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter, Eye } from "lucide-react";
+import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter, Eye, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,7 @@ export default function PontoPage() {
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
   const [filtroDataFim, setFiltroDataFim] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -387,33 +388,50 @@ export default function PontoPage() {
         </div>
 
         <div className="max-w-[1800px] mx-auto px-1 md:px-4">
-          {/* Dashboard */}
-          <PontoDashboard 
-            registros={registros}
-            funcionarios={funcionarios}
-            ocorrencias={ocorrencias}
-            escalas={escalas}
-            funcionariosEscalas={funcionariosEscalas}
-          />
+          {/* Dashboard e Botão Calendário */}
+          <div className="flex gap-2 mb-3">
+            <div className="flex-1">
+              <PontoDashboard 
+                registros={registros}
+                funcionarios={funcionarios}
+                ocorrencias={ocorrencias}
+                dataInicio={filtroDataInicio}
+                dataFim={filtroDataFim}
+              />
+            </div>
+            <div className="flex-shrink-0">
+              <Button
+                variant="outline"
+                onClick={() => setMostrarCalendario(!mostrarCalendario)}
+                className={`gap-2 h-full min-h-[60px] px-3 ${mostrarCalendario ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-800 hover:bg-slate-100'} transition-all`}
+              >
+                <CalendarDays className="w-5 h-5" />
+                <span className="hidden xl:inline text-xs font-medium">
+                  {mostrarCalendario ? 'Ocultar' : 'Ver'}
+                </span>
+              </Button>
+            </div>
+          </div>
 
-          {/* Calendário + Tabela em Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
-            {/* Calendário - Sidebar (Compacto) */}
-            <div className="lg:col-span-1">
+          {/* Calendário Retrátil */}
+          {mostrarCalendario && (
+            <div className="mb-3">
               <CalendarioPonto
                 registros={registros}
+                funcionarios={funcionarios}
+                escalas={escalas}
                 funcionariosEscalas={funcionariosEscalas}
                 ocorrencias={ocorrencias}
-                funcionarioSelecionado={filtroFuncionario}
                 onDiaClicado={(data) => {
                   setFiltroDataInicio(data);
                   setFiltroDataFim(data);
                 }}
               />
             </div>
+          )}
 
-            {/* Tabela - Área Principal */}
-            <Card className="lg:col-span-3 shadow-sm">
+          {/* Tabela Principal */}
+          <Card className="shadow-sm">
             <CardContent className="p-3 md:p-6">
               {/* Filtros */}
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 md:p-5 mb-4 md:mb-6 border border-slate-200 shadow-sm">
@@ -672,8 +690,7 @@ export default function PontoPage() {
                 </div>
               </div>
             </CardContent>
-            </Card>
-          </div>
+          </Card>
         </div>
       </div>
 
