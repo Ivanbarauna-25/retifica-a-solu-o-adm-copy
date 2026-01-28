@@ -1,154 +1,151 @@
-import React, { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2, Clock, Users } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, Check, AlertTriangle, CheckCircle, X } from "lucide-react";
 
-export default function PontoDashboard({ registros, funcionarios, ocorrencias, escalas, funcionariosEscalas }) {
+export default function PontoDashboard({ registros, funcionarios, ocorrencias, dataInicio, dataFim }) {
+  const [mostrarFaltas, setMostrarFaltas] = useState(false);
+
   const metricas = useMemo(() => {
-    const hoje = new Date().toISOString().split('T')[0];
-    const inicioDiasAtras = new Date();
-    inicioDiasAtras.setDate(inicioDiasAtras.getDate() - 30);
-    const dataInicio = inicioDiasAtras.toISOString().split('T')[0];
-
-    const registrosUltimos30 = registros.filter(r => r.data >= dataInicio);
-    const gruposData = {};
+    const registrosData = {};
     
-    registrosUltimos30.forEach(r => {
+    registros.forEach(r => {
       const key = `${r.funcionario_id}_${r.data}`;
-      if (!gruposData[key]) gruposData[key] = { funcionario_id: r.funcionario_id, data: r.data, count: 0 };
-      gruposData[key].count++;
+      if (!registrosData[key]) registrosData[key] = { funcionario_id: r.funcionario_id, data: r.data, batidas: [] };
+      registrosData[key].batidas.push(r);
     });
 
-    const diasComPonto = Object.keys(gruposData).length;
-    const funcionariosAtivos = [...new Set(registrosUltimos30.map(r => r.funcionario_id))].length;
+    const diasRegistrados = Object.keys(registrosData).length;
+    const funcionariosComPonto = [...new Set(registros.map(r => r.funcionario_id))].length;
     
-    // Faltas não justificadas (sem batida e sem ocorrência)
-    const faltasNaoJustificadas = [];
-    for (const key in gruposData) {
-      const [funcId, data] = key.split('_');
-      const temOcorrencia = ocorrencias.some(o => o.funcionario_id === funcId && o.data === data);
-      const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcId);
+    // Calcular faltas
+    const funcionariosComFaltas = [];
+    funcionarios.forEach(func => {
+      let faltasCount = 0;
+      const keys = Object.keys(registrosData).filter(k => k.startsWith(func.id));
       
-      // Se tem escala, tem 0 batidas e sem ocorrência = falta
-      if (funcEscala && gruposData[key].count === 0 && !temOcorrencia) {
-        const func = funcionarios.find(f => f.id === funcId);
-        faltasNaoJustificadas.push({
-          funcionario_id: funcId,
-          nome: func?.nome || '-',
-          data
-        });
+      keys.forEach(key => {
+        const [, data] = key.split('_');
+        const temOcorrencia = ocorrencias.some(o => o.funcionario_id === func.id && o.data === data);
+        const batidas = registrosData[key].batidas.length;
+        
+        if (batidas === 0 && !temOcorrencia) {
+          faltasCount++;
+        }
+      });
+      
+      if (faltasCount > 0) {
+        funcionariosComFaltas.push({ id: func.id, nome: func.nome, faltas: faltasCount });
       }
-    }
+    });
 
-    // Espelhos aguardando validação (com registros mas sem análise completa)
-    const registrosData = new Set(registrosUltimos30.map(r => `${r.funcionario_id}_${r.data}`));
+    const totalFaltas = funcionariosComFaltas.reduce((sum, f) => sum + f.faltas, 0);
+    const regularizacao = funcionarios.length > 0 
+      ? Math.round((funcionariosComPonto / funcionarios.length) * 100) 
+      : 0;
 
     return {
-      diasComPonto,
-      funcionariosAtivos,
-      faltasNaoJustificadas: faltasNaoJustificadas.slice(0, 5),
-      percentualPonto: funcionarios.length > 0 
-        ? Math.round((funcionariosAtivos / funcionarios.length) * 100) 
-        : 0
+      diasRegistrados,
+      funcionariosComPonto,
+      faltasNaoJustificadas: totalFaltas,
+      funcionariosComFaltas: funcionariosComFaltas.slice(0, 10),
+      regularizacao
     };
-  }, [registros, funcionarios, ocorrencias, escalas, funcionariosEscalas]);
+  }, [registros, funcionarios, ocorrencias]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-      {/* Card: Dias com Ponto */}
-      <Card className="shadow-sm border-l-4 border-l-blue-500">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            Dias Registrados
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl md:text-3xl font-bold text-blue-600">{metricas.diasComPonto}</div>
-          <p className="text-xs text-slate-500 mt-1">Últimos 30 dias</p>
-        </CardContent>
-      </Card>
+    <>
+      <div className="grid grid-cols-4 gap-2 mb-3">
+        {/* Dias Registrados */}
+        <Card className="bg-white shadow-sm border-slate-200">
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-slate-100 p-1.5 rounded">
+                <Calendar className="w-3.5 h-3.5 text-slate-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] text-slate-500 leading-none mb-0.5">Dias</p>
+                <p className="text-base font-bold text-slate-900 leading-none">{metricas.diasRegistrados}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Card: Funcionários Ativos */}
-      <Card className="shadow-sm border-l-4 border-l-green-500">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Com Ponto
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl md:text-3xl font-bold text-green-600">
-            {metricas.funcionariosAtivos}/{funcionarios.length}
-          </div>
-          <p className="text-xs text-slate-500 mt-1">{metricas.percentualPonto}% regularizado</p>
-        </CardContent>
-      </Card>
+        {/* Com Ponto */}
+        <Card className="bg-white shadow-sm border-slate-200">
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-green-100 p-1.5 rounded">
+                <Check className="w-3.5 h-3.5 text-green-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] text-slate-500 leading-none mb-0.5">Presente</p>
+                <p className="text-base font-bold text-green-600 leading-none">{metricas.funcionariosComPonto}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Card: Alertas Críticos */}
-      <Card className="shadow-sm border-l-4 border-l-red-500">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" />
-            Faltas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl md:text-3xl font-bold text-red-600">
-            {metricas.faltasNaoJustificadas.length}
-          </div>
-          <p className="text-xs text-slate-500 mt-1">Não justificadas</p>
-        </CardContent>
-      </Card>
+        {/* Faltas */}
+        <Card className="bg-white shadow-sm border-slate-200">
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMostrarFaltas(!mostrarFaltas)}
+                className="bg-red-100 p-1.5 rounded hover:bg-red-200 transition-colors"
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+              </button>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] text-slate-500 leading-none mb-0.5">Faltas</p>
+                <p className="text-base font-bold text-red-600 leading-none">{metricas.faltasNaoJustificadas}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Card: Status Geral */}
-      <Card className="shadow-sm border-l-4 border-l-purple-500">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4" />
-            Status
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {metricas.percentualPonto >= 80 ? (
-            <>
-              <Badge className="bg-green-100 text-green-700 text-xs mb-2">✓ Normal</Badge>
-              <p className="text-xs text-slate-500">Sistema em dia</p>
-            </>
-          ) : metricas.percentualPonto >= 50 ? (
-            <>
-              <Badge className="bg-yellow-100 text-yellow-700 text-xs mb-2">⚠ Atenção</Badge>
-              <p className="text-xs text-slate-500">Há pendências</p>
-            </>
-          ) : (
-            <>
-              <Badge className="bg-red-100 text-red-700 text-xs mb-2">✗ Crítico</Badge>
-              <p className="text-xs text-slate-500">Muitas faltas</p>
-            </>
-          )}
-        </CardContent>
-      </Card>
+        {/* Status Geral */}
+        <Card className="bg-white shadow-sm border-slate-200">
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <div className={`p-1.5 rounded ${
+                metricas.regularizacao >= 90 ? "bg-green-100" : metricas.regularizacao >= 70 ? "bg-yellow-100" : "bg-red-100"
+              }`}>
+                <CheckCircle className={`w-3.5 h-3.5 ${
+                  metricas.regularizacao >= 90 ? "text-green-600" : metricas.regularizacao >= 70 ? "text-yellow-600" : "text-red-600"
+                }`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] text-slate-500 leading-none mb-0.5">Regular</p>
+                <p className={`text-base font-bold leading-none ${
+                  metricas.regularizacao >= 90 ? "text-green-600" : metricas.regularizacao >= 70 ? "text-yellow-600" : "text-red-600"
+                }`}>{metricas.regularizacao}%</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Card: Faltas Não Justificadas (expandido) */}
-      {metricas.faltasNaoJustificadas.length > 0 && (
-        <Card className="shadow-sm border-l-4 border-l-red-500 md:col-span-2 lg:col-span-4">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-slate-600">
-              ⚠️ Funcionários com Falta Não Justificada
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {metricas.faltasNaoJustificadas.map((falta, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-red-50 p-2 rounded text-xs border border-red-200">
-                  <span className="text-slate-700">{falta.nome}</span>
-                  <Badge variant="destructive" className="text-[10px]">{falta.data}</Badge>
+      {/* Lista Compacta de Faltas */}
+      {mostrarFaltas && metricas.faltasNaoJustificadas > 0 && (
+        <Card className="mb-3 shadow-sm bg-red-50 border-red-200">
+          <CardContent className="p-2">
+            <div className="flex items-center justify-between mb-1.5">
+              <h3 className="text-[10px] font-bold text-red-800">Com Faltas</h3>
+              <button onClick={() => setMostrarFaltas(false)} className="text-red-600 hover:text-red-800">
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {metricas.funcionariosComFaltas.map((func) => (
+                <div key={func.id} className="flex items-center justify-between bg-white rounded p-1.5 border border-red-100 text-[10px]">
+                  <span className="font-medium text-slate-700 truncate">{func.nome}</span>
+                  <span className="text-red-600 font-bold ml-2">{func.faltas}</span>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
       )}
-    </div>
+    </>
   );
 }
