@@ -634,29 +634,25 @@ export default function PontoPage() {
                                 )}
                                 <td className="px-3 py-2.5">
                                   {!naoEDiaTrabalho && (
-                                    <div className="flex gap-2 justify-center items-center">
-                                      <HistoricoAuditoria registro={grupo.batidas?.[0]} />
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
+                                    <div className="flex gap-1.5 justify-center items-center">
+                                      <button
                                         onClick={() => handleAbrirOcorrencia(grupo)}
-                                        className="h-8 px-3 hover:bg-blue-100 hover:text-blue-700 text-xs font-medium rounded-lg transition-all"
+                                        className="p-1.5 hover:bg-slate-100 rounded transition-colors group"
                                         title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
                                       >
                                         {ocorrencia ? (
-                                          <Badge className={`text-xs font-semibold cursor-pointer ${
-                                            ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700 border-purple-300" :
-                                            ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700 border-green-300" :
-                                            ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700 border-blue-300" :
-                                            ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700 border-cyan-300" :
-                                            "bg-yellow-100 text-yellow-700 border-yellow-300"
-                                          } border capitalize`}>
-                                            {ocorrencia.tipo}
-                                          </Badge>
+                                          <div className={`w-2 h-2 rounded-full ${
+                                            ocorrencia.tipo === "atestado" ? "bg-purple-500" :
+                                            ocorrencia.tipo === "abonado" ? "bg-green-500" :
+                                            ocorrencia.tipo === "folga" ? "bg-blue-500" :
+                                            ocorrencia.tipo === "ferias" ? "bg-cyan-500" :
+                                            "bg-yellow-500"
+                                          }`} />
                                         ) : (
-                                          <AlertTriangle className="h-4 w-4 text-orange-500" />
+                                          <div className="w-2 h-2 rounded-full border border-slate-300 group-hover:border-orange-500 group-hover:bg-orange-100" />
                                         )}
-                                      </Button>
+                                      </button>
+                                      <HistoricoAuditoria registro={grupo.batidas?.[0]} />
                                     </div>
                                   )}
                                 </td>
