@@ -420,17 +420,22 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
     }
   };
 
+  const [sucessoDialog, setSucessoDialog] = useState(null);
+
   const executarImportacao = async (novos) => {
     setSalvando(true);
+    setProgresso(0);
     try {
 
       const erros = [];
       let salvos = 0;
 
-      for (const registro of novos) {
+      for (let i = 0; i < novos.length; i++) {
+        const registro = novos[i];
         try {
           await base44.entities.PontoRegistro.create(registro);
           salvos++;
+          setProgresso(Math.round(((i + 1) / novos.length) * 100));
         } catch (err) {
           erros.push({
             registro,
@@ -449,14 +454,10 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         erros_detalhes: erros.length > 0 ? JSON.stringify(erros) : null
       });
 
-      toast({
-        title: "✅ Importação concluída",
-        description: `${salvos} registros salvos com sucesso`
+      setSucessoDialog({
+        salvos,
+        total: novos.length
       });
-
-      resetTudo();
-      if (onImportado) onImportado();
-      onClose();
 
     } catch (error) {
       console.error("Erro ao salvar:", error);
@@ -465,7 +466,6 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
         description: error?.message || "Falha ao salvar registros",
         variant: "destructive"
       });
-    } finally {
       setSalvando(false);
     }
   };
@@ -808,6 +808,7 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
              onClick={() => {
                confirmDialog?.callback(false);
              }}
+             disabled={salvando}
              className="flex-1 text-sm"
            >
              Cancelar
@@ -829,8 +830,71 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
              )}
            </Button>
          </div>
-       </DialogContent>
-      </Dialog>
-      </>
-      );
-      }
+         </DialogContent>
+         </Dialog>
+
+         {/* Dialog de Progresso */}
+         <Dialog open={salvando} onOpenChange={() => {}}>
+         <DialogContent className="max-w-md rounded-2xl border-2 border-slate-200 shadow-xl" hideCloseButton>
+         <DialogHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white -mx-6 -mt-6 px-6 py-4 rounded-t-2xl mb-4">
+           <DialogTitle className="text-lg flex items-center gap-2">
+             <Loader2 className="w-5 h-5 animate-spin" />
+             Importando Batidas
+           </DialogTitle>
+         </DialogHeader>
+
+         <div className="space-y-4 px-1">
+           <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+             <p className="text-sm text-blue-900 font-medium mb-3">
+               Aguarde enquanto importamos os registros...
+             </p>
+             <Progress value={progresso} className="h-3 mb-2" />
+             <p className="text-xs text-blue-700 text-center font-bold">
+               {progresso}%
+             </p>
+           </div>
+         </div>
+         </DialogContent>
+         </Dialog>
+
+         {/* Dialog de Sucesso */}
+         <Dialog open={!!sucessoDialog} onOpenChange={() => {}}>
+         <DialogContent className="max-w-md rounded-2xl border-2 border-green-200 shadow-xl" hideCloseButton>
+         <DialogHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white -mx-6 -mt-6 px-6 py-4 rounded-t-2xl mb-4">
+           <DialogTitle className="text-lg flex items-center gap-2">
+             <CheckCircle2 className="w-5 h-5" />
+             Importação Concluída
+           </DialogTitle>
+         </DialogHeader>
+
+         <div className="space-y-4 px-1">
+           <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+             <p className="text-sm text-green-900 font-medium mb-3">
+               ✅ Importação realizada com sucesso!
+             </p>
+             <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-green-100">
+               <span className="text-xs text-green-700">Registros importados</span>
+               <span className="text-2xl font-bold text-green-600">{sucessoDialog?.salvos}</span>
+             </div>
+           </div>
+         </div>
+
+         <div className="flex gap-3 pt-4 border-t">
+           <Button
+             onClick={() => {
+               setSucessoDialog(null);
+               setSalvando(false);
+               resetTudo();
+               if (onImportado) onImportado();
+               onClose();
+             }}
+             className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold text-sm"
+           >
+             OK
+           </Button>
+         </div>
+         </DialogContent>
+         </Dialog>
+         </>
+         );
+         }
