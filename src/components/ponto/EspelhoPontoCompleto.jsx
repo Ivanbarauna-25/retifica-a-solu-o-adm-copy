@@ -55,9 +55,9 @@ export default function EspelhoPontoDoc({
   }, [dataInicio, dataFim]);
 
   const funcEscala =
-    funcionariosEscalas?.find(f => f.funcionario_id === funcionario?.id) || null;
+    funcionariosEscalas.find(f => f.funcionario_id === funcionario?.id) || null;
   const escala =
-    escalas?.find(e => e.id === funcEscala?.escala_id) || null;
+    escalas.find(e => e.id === funcEscala?.escala_id) || null;
 
   const resumo = useMemo(() => {
     let trab = 0, esp = 0, pres = 0, aus = 0, just = 0;
@@ -113,31 +113,16 @@ export default function EspelhoPontoDoc({
           thead { display: table-header-group; }
           tr { page-break-inside: avoid; }
         }
-        @media screen {
-          .page {
-            max-width: 210mm;
-            margin: auto;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,.12);
-          }
-        }
       `}</style>
 
-      <div className="page">
+      <div className="max-w-[210mm] mx-auto bg-white">
         {/* CABEÇALHO */}
         <div className="bg-slate-900 text-white px-8 py-3 flex justify-between">
-          <div className="flex gap-4 items-center">
-            {configuracoes?.logo_url && (
-              <img src={configuracoes.logo_url} className="h-9 bg-white p-1 rounded" />
-            )}
-            <div>
-              <p className="text-sm font-bold uppercase">
-                {configuracoes?.nome_empresa}
-              </p>
-              <p className="text-[11px] text-slate-300">
-                CNPJ: {configuracoes?.cnpj}
-              </p>
-            </div>
+          <div>
+            <p className="font-bold uppercase">{configuracoes?.nome_empresa}</p>
+            <p className="text-[11px] text-slate-300">
+              CNPJ: {configuracoes?.cnpj} • {configuracoes?.endereco}
+            </p>
           </div>
           <div className="text-right text-[11px]">
             <p className="uppercase text-slate-300">Período</p>
@@ -159,9 +144,9 @@ export default function EspelhoPontoDoc({
           </div>
         </div>
 
-        {/* DADOS DO COLABORADOR */}
-        <div className="px-8 mb-6 text-[11px]">
-          <div className="grid grid-cols-4 gap-4 border-b border-slate-300 pb-4">
+        {/* DADOS */}
+        <div className="px-8 mb-6 text-[11px] border-b border-slate-300 pb-4">
+          <div className="grid grid-cols-4 gap-4">
             <div className="col-span-2">
               <span className="text-slate-500">Colaborador</span>
               <p className="font-bold">{funcionario?.nome}</p>
@@ -177,7 +162,7 @@ export default function EspelhoPontoDoc({
           </div>
         </div>
 
-        {/* REGISTROS */}
+        {/* TABELA */}
         <table className="w-full text-[11px] border-t border-b border-slate-800">
           <thead className="bg-slate-900 text-white">
             <tr>
@@ -200,7 +185,7 @@ export default function EspelhoPontoDoc({
                   <td className="p-2">{formatarData(data)}</td>
                   <td className="p-2 text-center">{dia}</td>
                   {[0,1,2,3].map(i => (
-                    <td key={i} className="p-2 text-center font-mono font-medium">
+                    <td key={i} className="p-2 text-center font-mono">
                       {formatarHora(bat[i]?.hora || bat[i]?.data_hora?.substring(11,16))}
                     </td>
                   ))}
