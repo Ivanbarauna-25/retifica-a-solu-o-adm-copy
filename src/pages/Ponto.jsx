@@ -4,18 +4,14 @@ import { createPageUrl } from "@/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Download, PlusCircle, Printer, RefreshCw } from "lucide-react";
+import { Calendar as CalendarIcon, Download, PlusCircle, Printer, RefreshCw, Edit2, AlertCircle, Eye } from "lucide-react";
 
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
 import PontoDashboard from "@/components/ponto/PontoDashboard";
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
-import HistoricoAuditoria from "@/components/ponto/HistoricoAuditoria";
 
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
@@ -26,8 +22,6 @@ export default function PontoPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [isImportarOpen, setIsImportarOpen] = useState(false);
-  const [ocorrenciaModal, setOcorrenciaModal] = useState(null);
-  const [isOcorrenciaModalOpen, setIsOcorrenciaModalOpen] = useState(false);
   const [visualizarGrupo, setVisualizarGrupo] = useState(null);
   const [isVisualizarOpen, setIsVisualizarOpen] = useState(false);
 
@@ -46,10 +40,10 @@ export default function PontoPage() {
     try {
       const [funcsData, registrosData, escalasData, funcEscalasData, ocorrenciasData] = await Promise.all([
         base44.entities.Funcionario.list(),
-        base44.entities.PontoRegistro.list("-data_hora", 2000),
+        base44.entities.PontoRegistro.list("-data_hora", 5000),
         base44.entities.EscalaTrabalho.list(),
         base44.entities.FuncionarioEscala.list(),
-        base44.entities.OcorrenciaPonto.list("-data", 1000)
+        base44.entities.OcorrenciaPonto.list("-data", 2000)
       ]);
 
       setFuncionarios((funcsData || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
@@ -73,6 +67,13 @@ export default function PontoPage() {
     fetchData();
   }, []);
 
+  const funcionariosMap = useMemo(() => {
+    return (funcionarios || []).reduce((acc, f) => {
+      acc[f.id] = f;
+      return acc;
+    }, {});
+  }, [funcionarios]);
+
   const filteredFuncionarios = useMemo(() => {
     if (!search) return funcionarios;
     const q = search.toLowerCase();
@@ -86,7 +87,6 @@ export default function PontoPage() {
       res = res.filter(r => r.funcionario_id === filtroFuncionario);
     }
     if (filtroStatus && filtroStatus !== "todos") {
-      // Exemplo: filtrar por registros inválidos/validos
       if (filtroStatus === "invalidos") res = res.filter(r => !r.valido);
       if (filtroStatus === "validos") res = res.filter(r => r.valido);
     }
@@ -97,7 +97,6 @@ export default function PontoPage() {
       res = res.filter(r => r.data <= filtroDataFim);
     }
 
-    // filtro de busca simples
     if (search) {
       const q = search.toLowerCase();
       res = res.filter(r => (r.nome_arquivo || "").toLowerCase().includes(q) || (r.raw_linha || "").toLowerCase().includes(q));
@@ -105,6 +104,54 @@ export default function PontoPage() {
 
     return res;
   }, [registros, filtroFuncionario, filtroDataInicio, filtroDataFim, filtroStatus, search]);
+
+  // Agrupa por funcionário -> data, para tabela com linhas por (nome, data)
+  const tableRows = useMemo(() => {
+    const map = {};
+    registrosFiltrados.forEach(r => {
+      const key = `${r.funcionario_id}__${r.data}`;
+      if (!map[key]) map[key] = { funcionario_id: r.funcionario_id, data: r.data, batidas: [] };
+      map[key].batidas.push(r);
+    });
+
+    const arr = Object.values(map);
+    arr.forEach(item => {
+      item.batidas.sort((a, b) => {
+        // tenta ordenar por data_hora, se inexistente usa hora
+        const aKey = (a.data_hora || a.hora || "").toString();
+        const bKey = (b.data_hora || b.hora || "").toString();
+        return aKey.localeCompare(bKey);
+      });
+    });
+
+    arr.sort((a, b) => {
+      const nomeA = (funcionariosMap[a.funcionario_id]?.nome || "").toLowerCase();
+      const nomeB = (funcionariosMap[b.funcionario_id]?.nome || "").toLowerCase();
+      if (nomeA !== nomeB) return nomeA.localeCompare(nomeB);
+      return b.data.localeCompare(a.data); // datas mais recentes primeiro
+    });
+
+    return arr;
+  }, [registrosFiltrados, funcionariosMap]);
+
+  const formatTime = (h) => {
+    if (!h) return "";
+    const s = h.toString();
+    // aceita "HH:mm:ss" ou "HH:mm" ou "HH:mm:ss.sss"
+    return s.length >= 5 ? s.slice(0,5) : s;
+  };
+
+  const batidasToSlots = (batidas) => {
+    // Retorna array de 4 slots: [1ª Ent, 1ª Saí, 2ª Ent, 2ª Saí]
+    const slots = ["", "", "", ""];
+    for (let i = 0; i < batidas.length && i < 4; i++) {
+      const b = batidas[i];
+      // preferir hora, depois data_hora
+      const hora = b.hora || (b.data_hora ? b.data_hora.split("T")[1] : "");
+      slots[i] = formatTime(hora);
+    }
+    return slots;
+  };
 
   const handleResetFilters = () => {
     setFiltroFuncionario("todos");
@@ -119,13 +166,40 @@ export default function PontoPage() {
     setIsVisualizarOpen(true);
   };
 
+  const handleJustificar = (row) => {
+    // abre modal de visualização/edição focado em ocorrências
+    openVisualizar(row);
+  };
+
+  const exportCsv = () => {
+    // Gera CSV simples com colunas: nome,cpf,data,1ent,1sai,2ent,2sai
+    if (!tableRows || tableRows.length === 0) {
+      toast({ title: "Nada para exportar", variant: "destructive" });
+      return;
+    }
+    const lines = [["Nome", "CPF", "Data", "1ª Ent.", "1ª Saí.", "2ª Ent.", "2ª Saí."]];
+    tableRows.forEach(r => {
+      const f = funcionariosMap[r.funcionario_id] || {};
+      const slots = batidasToSlots(r.batidas);
+      lines.push([f.nome || "", f.cpf || "", r.data, slots[0], slots[1], slots[2], slots[3]]);
+    });
+    const csv = lines.map(l => l.map(c => `"${(c||"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `registros-ponto-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="container mx-auto p-4">
-      {/* Cabeçalho com ações */}
+      {/* Cabeçalho */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4">
         <div>
           <h1 className="text-2xl font-extrabold">Ponto</h1>
-          <p className="text-sm text-slate-500">Visualize, valide e gere espelhos de ponto</p>
+          <p className="text-sm text-slate-500">Visualize, valide e trate registros de ponto</p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -218,7 +292,7 @@ export default function PontoPage() {
         </div>
       </div>
 
-      {/* Conteúdo principal: Calendário + Lista */}
+      {/* Conteúdo principal: Calendário + Tabela */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Calendário */}
         {mostrarCalendario && (
@@ -242,49 +316,72 @@ export default function PontoPage() {
           </div>
         )}
 
-        {/* Lista de registros por dia */}
-        <div className="lg:col-span-2 bg-white border rounded-lg p-4 shadow-sm">
+        {/* Tabela detalhada */}
+        <div className="lg:col-span-2 bg-white border rounded-lg p-4 shadow-sm overflow-x-auto">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold">Registros</h3>
+            <h3 className="text-lg font-semibold">Registros Detalhados</h3>
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => { /* implementar export CSV */ }}><Download className="w-4 h-4 mr-2" />Exportar CSV</Button>
+              <Button variant="outline" onClick={exportCsv}><Download className="w-4 h-4 mr-2" />Exportar CSV</Button>
               <Button onClick={() => navigate(createPageUrl("/espelho-ponto"))}><Printer className="w-4 h-4 mr-2" />Gerar Espelho</Button>
             </div>
           </div>
 
           {isLoading ? (
-            <div className="space-y-3">
-              {[1,2,3].map(i => (
-                <div key={i} className="animate-pulse h-14 bg-slate-100 rounded" />
+            <div className="space-y-2">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
               ))}
             </div>
-          ) : registrosFiltrados.length === 0 ? (
+          ) : tableRows.length === 0 ? (
             <div className="py-10 text-center text-slate-500">
               Nenhum registro encontrado para os filtros selecionados.
             </div>
           ) : (
-            <div className="space-y-3">
-              {/* Agrupar por data */}
-              {Object.entries(
-                registrosFiltrados.reduce((acc, r) => {
-                  acc[r.data] = acc[r.data] || { data: r.data, batidas: [] };
-                  acc[r.data].batidas.push(r);
-                  return acc;
-                }, {})
-              ).sort((a,b) => b[0].localeCompare(a[0])).map(([data, grupo]) => (
-                <div key={data} className="flex items-center justify-between p-3 border rounded hover:shadow-sm">
-                  <div>
-                    <div className="text-sm text-slate-500">{data}</div>
-                    <div className="font-medium">{grupo.batidas.length} marcação(ões)</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={() => openVisualizar(grupo)} aria-label={`Visualizar ${data}`}>
-                      Visualizar
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <table className="w-full text-sm border-collapse">
+              <thead className="bg-slate-100 sticky top-0">
+                <tr>
+                  <th className="text-left px-3 py-2 border-b">Colaborador</th>
+                  <th className="text-left px-3 py-2 border-b">CPF</th>
+                  <th className="text-left px-3 py-2 border-b">Data</th>
+                  <th className="text-center px-3 py-2 border-b">1ª Ent.</th>
+                  <th className="text-center px-3 py-2 border-b">1ª Saí.</th>
+                  <th className="text-center px-3 py-2 border-b">2ª Ent.</th>
+                  <th className="text-center px-3 py-2 border-b">2ª Saí.</th>
+                  <th className="text-right px-3 py-2 border-b">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((row) => {
+                  const funcionario = funcionariosMap[row.funcionario_id] || {};
+                  const slots = batidasToSlots(row.batidas);
+                  const ocorr = ocorrencias.find(o => o.funcionario_id === row.funcionario_id && o.data === row.data);
+                  return (
+                    <tr key={`${row.funcionario_id}_${row.data}`} className="hover:bg-slate-50">
+                      <td className="px-3 py-2 align-top">{funcionario.nome || "—"}</td>
+                      <td className="px-3 py-2 align-top font-mono text-xs">{funcionario.cpf || "—"}</td>
+                      <td className="px-3 py-2 align-top">{row.data}</td>
+                      <td className="text-center px-3 py-2 align-top">{slots[0] || "—"}</td>
+                      <td className="text-center px-3 py-2 align-top">{slots[1] || "—"}</td>
+                      <td className="text-center px-3 py-2 align-top">{slots[2] || "—"}</td>
+                      <td className="text-center px-3 py-2 align-top">{slots[3] || "—"}</td>
+                      <td className="px-3 py-2 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button size="sm" variant="ghost" onClick={() => openVisualizar(row)} aria-label={`Visualizar ${funcionario.nome} ${row.data}`}>
+                            <Eye className="w-4 h-4 mr-1" /> Visualizar
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => openVisualizar(row)} aria-label={`Editar ${funcionario.nome} ${row.data}`}>
+                            <Edit2 className="w-4 h-4 mr-1" /> Editar
+                          </Button>
+                          <Button size="sm" variant={ocorr ? "secondary" : "destructive"} onClick={() => handleJustificar(row)} aria-label={`Justificar ${funcionario.nome} ${row.data}`}>
+                            <AlertCircle className="w-4 h-4 mr-1" /> {ocorr ? "Ocorrência" : "Justificar"}
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
