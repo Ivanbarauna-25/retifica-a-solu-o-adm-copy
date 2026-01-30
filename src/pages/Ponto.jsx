@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
+
 import {
   CalendarDays,
   Upload,
-  Filter,
-  AlertTriangle,
   Eye,
+  AlertTriangle,
   Loader2,
   X
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,13 +21,11 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
 import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
-import OcorrenciaPontoModal from "@/components/ponto/OcorrenciaPontoModal";
 
 export default function PontoPage() {
   const { toast } = useToast();
@@ -35,8 +34,6 @@ export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [registros, setRegistros] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
-  const [escalas, setEscalas] = useState([]);
-  const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,9 +42,6 @@ export default function PontoPage() {
 
   const [visualizarGrupo, setVisualizarGrupo] = useState(null);
   const [isVisualizarOpen, setIsVisualizarOpen] = useState(false);
-
-  const [ocorrenciaModal, setOcorrenciaModal] = useState(null);
-  const [isOcorrenciaOpen, setIsOcorrenciaOpen] = useState(false);
 
   /* filtros */
   const hoje = new Date().toISOString().slice(0, 10);
@@ -59,25 +53,15 @@ export default function PontoPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [
-        f,
-        r,
-        o,
-        e,
-        fe
-      ] = await Promise.all([
+      const [f, r, o] = await Promise.all([
         base44.entities.Funcionario.list(),
         base44.entities.PontoRegistro.list("-data_hora", 5000),
-        base44.entities.OcorrenciaPonto.list("-data", 2000),
-        base44.entities.EscalaTrabalho.list(),
-        base44.entities.FuncionarioEscala.list()
+        base44.entities.OcorrenciaPonto.list("-data", 2000)
       ]);
 
       setFuncionarios(f || []);
       setRegistros(r || []);
       setOcorrencias(o || []);
-      setEscalas(e || []);
-      setFuncionariosEscalas(fe || []);
     } catch (err) {
       toast({
         title: "Erro",
@@ -116,10 +100,9 @@ export default function PontoPage() {
     registros.forEach(r => {
       if (!r.funcionario_id) return;
       const data = r.data || r.data_hora?.slice(0,10);
-      if (!map[`${r.funcionario_id}_${data}`]) {
-        map[`${r.funcionario_id}_${data}`] = [];
-      }
-      map[`${r.funcionario_id}_${data}`].push(r);
+      const key = `${r.funcionario_id}_${data}`;
+      if (!map[key]) map[key] = [];
+      map[key].push(r);
     });
 
     Object.values(map).forEach(lista =>
@@ -137,12 +120,14 @@ export default function PontoPage() {
     const result = [];
 
     funcionarios.forEach(func => {
-      dias.forEach(data => {
-        if (filtroFuncionario !== "todos" && filtroFuncionario !== func.id) return;
+      if (filtroFuncionario !== "todos" && filtroFuncionario !== func.id) return;
 
+      dias.forEach(data => {
         const key = `${func.id}_${data}`;
         const batidas = registrosAgrupados[key] || [];
-        const ocorr = ocorrencias.find(o => o.funcionario_id === func.id && o.data === data);
+        const ocorr = ocorrencias.find(
+          o => o.funcionario_id === func.id && o.data === data
+        );
 
         result.push({
           funcionario_id: func.id,
@@ -154,23 +139,37 @@ export default function PontoPage() {
     });
 
     return result;
-  }, [funcionarios, registrosAgrupados, ocorrencias, filtroFuncionario, filtroInicio, filtroFim]);
+  }, [
+    funcionarios,
+    registrosAgrupados,
+    ocorrencias,
+    filtroFuncionario,
+    filtroInicio,
+    filtroFim
+  ]);
 
   /* ===================== UI ===================== */
   return (
     <div className="min-h-screen bg-slate-50 px-3 py-4">
+
       {/* HEADER */}
       <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap gap-2 items-end">
         <div className="flex-1">
           <h1 className="text-lg font-bold">Controle de Ponto</h1>
-          <p className="text-xs text-slate-500">Gestão diária de batidas e ocorrências</p>
+          <p className="text-xs text-slate-500">
+            Gestão diária de batidas e ocorrências
+          </p>
         </div>
 
         <Button onClick={() => setIsImportarOpen(true)} className="gap-2">
           <Upload className="w-4 h-4" /> Importar
         </Button>
 
-        <Button variant="outline" onClick={() => setMostrarCalendario(!mostrarCalendario)} className="gap-2">
+        <Button
+          variant="outline"
+          onClick={() => setMostrarCalendario(!mostrarCalendario)}
+          className="gap-2"
+        >
           <CalendarDays className="w-4 h-4" /> Calendário
         </Button>
       </div>
@@ -190,20 +189,35 @@ export default function PontoPage() {
               </SelectContent>
             </Select>
           </div>
+
           <div>
             <Label>Início</Label>
-            <Input type="date" value={filtroInicio} onChange={e => setFiltroInicio(e.target.value)} />
+            <Input
+              type="date"
+              value={filtroInicio}
+              onChange={e => setFiltroInicio(e.target.value)}
+            />
           </div>
+
           <div>
             <Label>Fim</Label>
-            <Input type="date" value={filtroFim} onChange={e => setFiltroFim(e.target.value)} />
+            <Input
+              type="date"
+              value={filtroFim}
+              onChange={e => setFiltroFim(e.target.value)}
+            />
           </div>
+
           <div className="flex items-end">
-            <Button variant="outline" onClick={() => {
-              setFiltroInicio(hoje);
-              setFiltroFim(hoje);
-              setFiltroFuncionario("todos");
-            }} className="w-full gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setFiltroInicio(hoje);
+                setFiltroFim(hoje);
+                setFiltroFuncionario("todos");
+              }}
+              className="w-full gap-2"
+            >
               <X className="w-4 h-4" /> Limpar
             </Button>
           </div>
@@ -242,33 +256,46 @@ export default function PontoPage() {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={7} className="p-6 text-center">
-                  <Loader2 className="w-6 h-6 animate-spin mx-auto" />
-                </td></tr>
+                <tr>
+                  <td colSpan={7} className="p-6 text-center">
+                    <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                  </td>
+                </tr>
               ) : linhas.map((l,i) => {
                 const bat = l.batidas;
                 return (
-                  <tr key={i} className="border-b">
+                  <tr key={i} className="border-b hover:bg-slate-50">
                     <td className="p-2">{getNome(l.funcionario_id)}</td>
                     <td className="p-2 text-center">{l.data}</td>
+
                     {[0,1,2,3].map(n => (
                       <td key={n} className="p-2 text-center font-mono">
-                        {formatarHora(bat[n]?.hora || bat[n]?.data_hora?.slice(11,16))}
+                        {formatarHora(
+                          bat[n]?.hora || bat[n]?.data_hora?.slice(11,16)
+                        )}
                       </td>
                     ))}
+
                     <td className="p-2 text-center">
                       <div className="flex justify-center gap-2">
-                        <button onClick={() => {
-                          setVisualizarGrupo(l);
-                          setIsVisualizarOpen(true);
-                        }}>
-                          <Eye className="w-4 h-4 text-slate-600" />
+                        <button
+                          title="Visualizar"
+                          onClick={() => {
+                            setVisualizarGrupo(l);
+                            setIsVisualizarOpen(true);
+                          }}
+                        >
+                          <Eye className="w-4 h-4 text-slate-600 hover:text-blue-600" />
                         </button>
-                        <button onClick={() => {
-                          setOcorrenciaModal(l);
-                          setIsOcorrenciaOpen(true);
-                        }}>
-                          <AlertTriangle className="w-4 h-4 text-orange-600" />
+
+                        <button
+                          title="Tratar ocorrência"
+                          onClick={() => {
+                            setVisualizarGrupo(l);
+                            setIsVisualizarOpen(true);
+                          }}
+                        >
+                          <AlertTriangle className="w-4 h-4 text-orange-600 hover:text-orange-700" />
                         </button>
                       </div>
                     </td>
@@ -291,12 +318,6 @@ export default function PontoPage() {
         isOpen={isVisualizarOpen}
         grupo={visualizarGrupo}
         onClose={() => setIsVisualizarOpen(false)}
-      />
-
-      <OcorrenciaPontoModal
-        isOpen={isOcorrenciaOpen}
-        grupo={ocorrenciaModal}
-        onClose={() => setIsOcorrenciaOpen(false)}
         onSalvo={fetchData}
       />
     </div>
