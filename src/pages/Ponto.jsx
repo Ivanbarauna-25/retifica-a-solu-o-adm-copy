@@ -1,17 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { base44 } from "@/api/base44Client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Upload, X, Loader2, FileText, Clock, Wallet, AlertTriangle, CheckCircle, Filter, Eye, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Calendar as CalendarIcon, Download, PlusCircle, Printer, RefreshCw, Edit2, AlertCircle, Eye } from "lucide-react";
-
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
 import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
 import PontoDashboard from "@/components/ponto/PontoDashboard";
 import CalendarioPonto from "@/components/ponto/CalendarioPonto";
+import HistoricoAuditoria from "@/components/ponto/HistoricoAuditoria";
 
 export default function PontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
@@ -20,17 +25,18 @@ export default function PontoPage() {
   const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  
   const [isImportarOpen, setIsImportarOpen] = useState(false);
+  const [ocorrenciaModal, setOcorrenciaModal] = useState(null);
+  const [isOcorrenciaModalOpen, setIsOcorrenciaModalOpen] = useState(false);
   const [visualizarGrupo, setVisualizarGrupo] = useState(null);
   const [isVisualizarOpen, setIsVisualizarOpen] = useState(false);
-
+  
   const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
   const [filtroDataInicio, setFiltroDataInicio] = useState("");
   const [filtroDataFim, setFiltroDataFim] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
-  const [mostrarCalendario, setMostrarCalendario] = useState(true);
-  const [search, setSearch] = useState("");
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
 
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -40,10 +46,10 @@ export default function PontoPage() {
     try {
       const [funcsData, registrosData, escalasData, funcEscalasData, ocorrenciasData] = await Promise.all([
         base44.entities.Funcionario.list(),
-        base44.entities.PontoRegistro.list("-data_hora", 5000),
+        base44.entities.PontoRegistro.list("-data_hora", 2000),
         base44.entities.EscalaTrabalho.list(),
         base44.entities.FuncionarioEscala.list(),
-        base44.entities.OcorrenciaPonto.list("-data", 2000)
+        base44.entities.OcorrenciaPonto.list("-data", 1000)
       ]);
 
       setFuncionarios((funcsData || []).sort((a, b) => (a?.nome || "").localeCompare(b?.nome || "")));
@@ -67,328 +73,729 @@ export default function PontoPage() {
     fetchData();
   }, []);
 
-  const funcionariosMap = useMemo(() => {
-    return (funcionarios || []).reduce((acc, f) => {
-      acc[f.id] = f;
-      return acc;
-    }, {});
-  }, [funcionarios]);
+  // Agrupar batidas por funcionário + data
+  const registrosAgrupados = useMemo(() => {
+    const grupos = {};
+    
+    for (const reg of registros) {
+      if (!reg.funcionario_id || !reg.data) continue;
+      
+      const key = `${reg.funcionario_id}_${reg.data}`;
+      if (!grupos[key]) {
+        grupos[key] = {
+          funcionario_id: reg.funcionario_id,
+          data: reg.data,
+          batidas: []
+        };
+      }
+      grupos[key].batidas.push(reg);
+    }
+    
+    // Ordenar batidas dentro de cada dia
+    for (const key in grupos) {
+      grupos[key].batidas.sort((a, b) => {
+        const horaA = a.hora || a.data_hora?.substring(11, 19) || "00:00:00";
+        const horaB = b.hora || b.data_hora?.substring(11, 19) || "00:00:00";
+        return horaA.localeCompare(horaB);
+      });
+    }
+    
+    return Object.values(grupos);
+  }, [registros]);
 
-  const filteredFuncionarios = useMemo(() => {
-    if (!search) return funcionarios;
-    const q = search.toLowerCase();
-    return funcionarios.filter(f => (f.nome || "").toLowerCase().includes(q) || (f.cpf || "").includes(q));
-  }, [funcionarios, search]);
+  // Função para calcular saldo de horas (CORRIGIDA)
+  const calcularSaldoDia = (funcionarioId, data, batidas) => {
+    // Verificar se há ocorrência justificada
+    const ocorrenciaJustificada = ocorrencias.find(
+      o => o.funcionario_id === funcionarioId && 
+           o.data === data && 
+           ['atestado', 'abonado', 'folga', 'ferias'].includes(o.tipo)
+    );
+    
+    // Se justificado, considerar dia completo (sem débito)
+    if (ocorrenciaJustificada) {
+      return { saldo: 0, esperado: 0, trabalhado: 0, justificado: true };
+    }
+    
+    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    if (!funcEscala) return { saldo: 0, esperado: 0, trabalhado: 0 };
+    
+    const escala = escalas.find(e => e.id === funcEscala.escala_id);
+    if (!escala || !escala.carga_diaria_minutos) return { saldo: 0, esperado: 0, trabalhado: 0 };
+    
+    const totalEsperado = escala.carga_diaria_minutos;
+    
+    let totalTrabalhado = 0;
+    for (let i = 0; i < batidas.length; i += 2) {
+      if (!batidas[i + 1]) break;
+      const h1 = batidas[i].hora || batidas[i].data_hora?.substring(11, 19) || "00:00:00";
+      const h2 = batidas[i + 1].hora || batidas[i + 1].data_hora?.substring(11, 19) || "00:00:00";
+      
+      const [h1h, h1m] = h1.split(":").map(Number);
+      const [h2h, h2m] = h2.split(":").map(Number);
+      
+      const min1 = h1h * 60 + h1m;
+      const min2 = h2h * 60 + h2m;
+      
+      totalTrabalhado += (min2 - min1);
+    }
+    
+    // CORREÇÃO: Saldo = trabalhado - esperado (sem penalizar 2x)
+    return {
+      saldo: totalTrabalhado - totalEsperado,
+      esperado: totalEsperado,
+      trabalhado: totalTrabalhado,
+      justificado: false
+    };
+  };
+
+  // Verificar se é dia de trabalho na escala
+  const isDiaTrabalho = (funcionarioId, data) => {
+    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    if (!funcEscala) return true; // Se não tem escala, considera dia útil
+
+    const escala = escalas.find(e => e.id === funcEscala.escala_id);
+    if (!escala || !escala.dias_semana) return true;
+
+    const diaSemana = new Date(data + "T12:00:00").getDay();
+    const diaConfig = escala.dias_semana[diaSemana];
+    
+    return diaConfig?.ativo === true;
+  };
+
+  // Função para pegar batidas esperadas da escala (4 batidas padrão)
+  const getBatidasEsperadas = (funcionarioId, data) => {
+    const funcEscala = funcionariosEscalas.find(fe => fe.funcionario_id === funcionarioId);
+    if (!funcEscala) return ["08:00", "12:00", "13:00", "17:00"];
+    
+    const escala = escalas.find(e => e.id === funcEscala.escala_id);
+    if (!escala) return ["08:00", "12:00", "13:00", "17:00"];
+    
+    return [
+      escala.hora_entrada_prevista || "08:00",
+      escala.intervalo_inicio_previsto || "12:00",
+      escala.intervalo_fim_previsto || "13:00",
+      escala.hora_saida_prevista || "17:00"
+    ];
+  };
+
+  // Gerar todos os dias do período selecionado
+  const gerarTodasDatas = useMemo(() => {
+    if (filtroFuncionario === "todos") {
+      return [];
+    }
+
+    // Se não tem filtro de data, pegar mês atual completo
+    let dataInicio = filtroDataInicio;
+    let dataFim = filtroDataFim;
+    
+    if (!dataInicio && !dataFim) {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = hoje.getMonth();
+      dataInicio = new Date(ano, mes, 1).toISOString().split('T')[0];
+      dataFim = new Date(ano, mes + 1, 0).toISOString().split('T')[0];
+    } else if (!dataInicio && dataFim) {
+      const [ano, mes] = dataFim.split('-');
+      dataInicio = `${ano}-${mes}-01`;
+    } else if (dataInicio && !dataFim) {
+      const [ano, mes] = dataInicio.split('-');
+      const ultimoDia = new Date(parseInt(ano), parseInt(mes), 0).getDate();
+      dataFim = `${ano}-${mes}-${String(ultimoDia).padStart(2, '0')}`;
+    }
+
+    const datas = [];
+    let dataAtual = new Date(dataInicio + "T12:00:00");
+    const dataFinal = new Date(dataFim + "T12:00:00");
+
+    while (dataAtual <= dataFinal) {
+      const ano = dataAtual.getFullYear();
+      const mes = String(dataAtual.getMonth() + 1).padStart(2, "0");
+      const dia = String(dataAtual.getDate()).padStart(2, "0");
+      datas.push(`${ano}-${mes}-${dia}`);
+      dataAtual.setDate(dataAtual.getDate() + 1);
+    }
+
+    return datas;
+  }, [filtroDataInicio, filtroDataFim, filtroFuncionario]);
 
   const registrosFiltrados = useMemo(() => {
-    let res = registros || [];
+    // Se tem funcionário selecionado e período, gerar todos os dias
+    if (filtroFuncionario !== "todos" && gerarTodasDatas.length > 0) {
+      return gerarTodasDatas.map(data => {
+        const grupoExistente = registrosAgrupados.find(
+          g => g.funcionario_id === filtroFuncionario && g.data === data
+        );
 
-    if (filtroFuncionario && filtroFuncionario !== "todos") {
-      res = res.filter(r => r.funcionario_id === filtroFuncionario);
+        if (grupoExistente) {
+          return grupoExistente;
+        }
+
+        // Criar linha vazia para o dia
+        return {
+          funcionario_id: filtroFuncionario,
+          data: data,
+          batidas: []
+        };
+      }).sort((a, b) => b.data.localeCompare(a.data));
     }
-    if (filtroStatus && filtroStatus !== "todos") {
-      if (filtroStatus === "invalidos") res = res.filter(r => !r.valido);
-      if (filtroStatus === "validos") res = res.filter(r => r.valido);
-    }
-    if (filtroDataInicio) {
-      res = res.filter(r => r.data >= filtroDataInicio);
-    }
-    if (filtroDataFim) {
-      res = res.filter(r => r.data <= filtroDataFim);
-    }
 
-    if (search) {
-      const q = search.toLowerCase();
-      res = res.filter(r => (r.nome_arquivo || "").toLowerCase().includes(q) || (r.raw_linha || "").toLowerCase().includes(q));
-    }
+    // Filtro normal (sem preencher dias vazios)
+    return registrosAgrupados.filter((grupo) => {
+      const passaFunc = filtroFuncionario === "todos" || grupo.funcionario_id === filtroFuncionario;
+      const passaDataInicio = !filtroDataInicio || grupo.data >= filtroDataInicio;
+      const passaDataFim = !filtroDataFim || grupo.data <= filtroDataFim;
+      
+      return passaFunc && passaDataInicio && passaDataFim;
+    }).sort((a, b) => b.data.localeCompare(a.data));
+  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim, gerarTodasDatas]);
 
-    return res;
-  }, [registros, filtroFuncionario, filtroDataInicio, filtroDataFim, filtroStatus, search]);
-
-  // Agrupa por funcionário -> data, para tabela com linhas por (nome, data)
-  const tableRows = useMemo(() => {
-    const map = {};
-    registrosFiltrados.forEach(r => {
-      const key = `${r.funcionario_id}__${r.data}`;
-      if (!map[key]) map[key] = { funcionario_id: r.funcionario_id, data: r.data, batidas: [] };
-      map[key].batidas.push(r);
-    });
-
-    const arr = Object.values(map);
-    arr.forEach(item => {
-      item.batidas.sort((a, b) => {
-        // tenta ordenar por data_hora, se inexistente usa hora
-        const aKey = (a.data_hora || a.hora || "").toString();
-        const bKey = (b.data_hora || b.hora || "").toString();
-        return aKey.localeCompare(bKey);
-      });
-    });
-
-    arr.sort((a, b) => {
-      const nomeA = (funcionariosMap[a.funcionario_id]?.nome || "").toLowerCase();
-      const nomeB = (funcionariosMap[b.funcionario_id]?.nome || "").toLowerCase();
-      if (nomeA !== nomeB) return nomeA.localeCompare(nomeB);
-      return b.data.localeCompare(a.data); // datas mais recentes primeiro
-    });
-
-    return arr;
-  }, [registrosFiltrados, funcionariosMap]);
-
-  const formatTime = (h) => {
-    if (!h) return "";
-    const s = h.toString();
-    // aceita "HH:mm:ss" ou "HH:mm" ou "HH:mm:ss.sss"
-    return s.length >= 5 ? s.slice(0,5) : s;
-  };
-
-  const batidasToSlots = (batidas) => {
-    // Retorna array de 4 slots: [1ª Ent, 1ª Saí, 2ª Ent, 2ª Saí]
-    const slots = ["", "", "", ""];
-    for (let i = 0; i < batidas.length && i < 4; i++) {
-      const b = batidas[i];
-      // preferir hora, depois data_hora
-      const hora = b.hora || (b.data_hora ? b.data_hora.split("T")[1] : "");
-      slots[i] = formatTime(hora);
-    }
-    return slots;
-  };
-
-  const handleResetFilters = () => {
+  const limparFiltros = () => {
     setFiltroFuncionario("todos");
     setFiltroDataInicio("");
     setFiltroDataFim("");
     setFiltroStatus("todos");
-    setSearch("");
   };
 
-  const openVisualizar = (grupo) => {
-    setVisualizarGrupo(grupo);
-    setIsVisualizarOpen(true);
+  const handleAbrirOcorrencia = (grupo) => {
+    const ocorrenciaExistente = ocorrencias.find(
+      o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data
+    );
+    
+    setOcorrenciaModal({
+      funcionario_id: grupo.funcionario_id,
+      data: grupo.data,
+      tipo: ocorrenciaExistente?.tipo || "justificativa",
+      descricao: ocorrenciaExistente?.descricao || "",
+      ocorrencia_id: ocorrenciaExistente?.id || null
+    });
+    setIsOcorrenciaModalOpen(true);
   };
 
-  const handleJustificar = (row) => {
-    // abre modal de visualização/edição focado em ocorrências
-    openVisualizar(row);
-  };
-
-  const exportCsv = () => {
-    // Gera CSV simples com colunas: nome,cpf,data,1ent,1sai,2ent,2sai
-    if (!tableRows || tableRows.length === 0) {
-      toast({ title: "Nada para exportar", variant: "destructive" });
+  const handleSalvarOcorrencia = async () => {
+    if (!ocorrenciaModal) return;
+    
+    if (!ocorrenciaModal.descricao?.trim()) {
+      toast({
+        title: "Atenção",
+        description: "Por favor, informe uma descrição/justificativa.",
+        variant: "destructive"
+      });
       return;
     }
-    const lines = [["Nome", "CPF", "Data", "1ª Ent.", "1ª Saí.", "2ª Ent.", "2ª Saí."]];
-    tableRows.forEach(r => {
-      const f = funcionariosMap[r.funcionario_id] || {};
-      const slots = batidasToSlots(r.batidas);
-      lines.push([f.nome || "", f.cpf || "", r.data, slots[0], slots[1], slots[2], slots[3]]);
-    });
-    const csv = lines.map(l => l.map(c => `"${(c||"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `registros-ponto-${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    
+    try {
+      if (ocorrenciaModal.ocorrencia_id) {
+        await base44.entities.OcorrenciaPonto.update(ocorrenciaModal.ocorrencia_id, {
+          tipo: ocorrenciaModal.tipo,
+          descricao: ocorrenciaModal.descricao
+        });
+      } else {
+        await base44.entities.OcorrenciaPonto.create({
+          funcionario_id: ocorrenciaModal.funcionario_id,
+          data: ocorrenciaModal.data,
+          tipo: ocorrenciaModal.tipo,
+          descricao: ocorrenciaModal.descricao,
+          status: "aprovado"
+        });
+      }
+      
+      toast({
+        title: "✅ Sucesso",
+        description: "Ocorrência salva com sucesso"
+      });
+      setIsOcorrenciaModalOpen(false);
+      setOcorrenciaModal(null);
+      fetchData();
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar a ocorrência",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const getFuncionarioNome = (funcionarioId) => {
+    const func = funcionarios.find(f => f.id === funcionarioId);
+    return func?.nome || "-";
+  };
+
+  const formatarData = (data) => {
+    if (!data) return "-";
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  const formatarHora = (hora) => {
+    if (!hora) return "00:00";
+    return hora.substring(0, 5);
+  };
+
+  const minToHHmm = (min) => {
+    if (!min || min === 0) return "00:00";
+    const h = Math.floor(Math.abs(min) / 60);
+    const m = Math.abs(min) % 60;
+    const sinal = min < 0 ? "-" : "+";
+    return `${sinal}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   };
 
   return (
-    <div className="container mx-auto p-4">
-      {/* Cabeçalho */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4">
-        <div>
-          <h1 className="text-2xl font-extrabold">Ponto</h1>
-          <p className="text-sm text-slate-500">Visualize, valide e trate registros de ponto</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setIsImportarOpen(true)} aria-label="Importar registros">
-            <PlusCircle className="mr-2 w-4 h-4" /> Importar
-          </Button>
-
-          <Button onClick={() => navigate(createPageUrl("/espelho-ponto"))} aria-label="Ir para espelho">
-            <Printer className="mr-2 w-4 h-4" /> Espelho
-          </Button>
-
-          <Button variant="ghost" onClick={() => { fetchData(); toast({ title: "Atualizando", description: "Recarregando dados..." }); }} aria-label="Atualizar">
-            <RefreshCw className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Filtros + Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        {/* Painel de filtros */}
-        <div className="lg:col-span-1 bg-white border rounded-lg p-4 shadow-sm">
-          <h2 className="text-sm font-semibold mb-3">Filtros</h2>
-
-          <div className="space-y-3">
-            <div>
-              <Label htmlFor="funcionario">Colaborador</Label>
-              <Select value={filtroFuncionario} onValueChange={(v) => setFiltroFuncionario(v)} aria-label="Selecionar colaborador">
-                <SelectTrigger id="funcionario" className="w-full">
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {filteredFuncionarios.map(f => (
-                    <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <Label htmlFor="dataInicio">Início</Label>
-                <Input id="dataInicio" type="date" value={filtroDataInicio} onChange={(e) => setFiltroDataInicio(e.target.value)} />
+    <>
+      <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
+          <div className="max-w-[1800px] mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg shadow-md">
+                  <Clock className="w-4 h-4 md:w-6 md:h-6" />
+                </div>
+                <div>
+                  <h1 className="text-sm md:text-xl font-bold">Controle de Ponto</h1>
+                  <p className="text-slate-300 text-[9px] md:text-xs">Gerenciar batidas individuais - Abonar, Justificar, Editar</p>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="dataFim">Fim</Label>
-                <Input id="dataFim" type="date" value={filtroDataFim} onChange={(e) => setFiltroDataFim(e.target.value)} />
+              <div className="flex flex-wrap gap-1.5 md:gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsImportarOpen(true)}
+                  className="gap-1.5 bg-white text-slate-800 hover:bg-slate-100 text-[10px] md:text-xs h-8 md:h-10 font-medium"
+                >
+                  <Upload className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  <span className="hidden sm:inline">Importar</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(createPageUrl("EscalasTrabalho"))}
+                  className="gap-1.5 bg-white text-slate-800 hover:bg-slate-100 text-[10px] md:text-xs h-8 md:h-10 font-medium"
+                >
+                  <Clock className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  <span className="hidden sm:inline">Escalas</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(createPageUrl("BancoHoras"))}
+                  className="gap-1.5 bg-white text-slate-800 hover:bg-slate-100 text-[10px] md:text-xs h-8 md:h-10 font-medium"
+                >
+                  <Wallet className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                  <span className="hidden sm:inline">Banco Horas</span>
+                </Button>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={filtroStatus} onValueChange={(v) => setFiltroStatus(v)}>
-                <SelectTrigger id="status" className="w-full">
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  <SelectItem value="validos">Válidos</SelectItem>
-                  <SelectItem value="invalidos">Inválidos</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+          {/* Dashboard e Botão Calendário */}
+          <div className="flex gap-2 mb-3">
+            <div className="flex-1">
+              <PontoDashboard 
+                registros={registros}
+                funcionarios={funcionarios}
+                ocorrencias={ocorrencias}
+                dataInicio={filtroDataInicio}
+                dataFim={filtroDataFim}
+              />
             </div>
-
-            <div>
-              <Label htmlFor="q">Pesquisar</Label>
-              <Input id="q" placeholder="arquivo, linha ou texto..." value={search} onChange={(e) => setSearch(e.target.value)} />
-            </div>
-
-            <div className="flex gap-2 mt-2">
-              <Button onClick={() => setMostrarCalendario(!mostrarCalendario)} variant="ghost" className="flex-1" aria-pressed={mostrarCalendario}>
-                <CalendarIcon className="mr-2 w-4 h-4" /> {mostrarCalendario ? "Ocultar calendário" : "Mostrar calendário"}
-              </Button>
-              <Button variant="secondary" onClick={handleResetFilters} className="flex-1" aria-label="Limpar filtros">
-                <RefreshCw className="mr-2 w-4 h-4" /> Limpar
+            <div className="flex-shrink-0">
+              <Button
+                variant="outline"
+                onClick={() => setMostrarCalendario(!mostrarCalendario)}
+                className={`gap-2 h-full min-h-[60px] px-3 ${mostrarCalendario ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-white text-slate-800 hover:bg-slate-100'} transition-all`}
+              >
+                <CalendarDays className="w-5 h-5" />
+                <span className="hidden xl:inline text-xs font-medium">
+                  {mostrarCalendario ? 'Ocultar' : 'Ver'}
+                </span>
               </Button>
             </div>
           </div>
-        </div>
 
-        {/* Dashboard (ocupa 2 colunas em lg) */}
-        <div className="lg:col-span-2">
-          <PontoDashboard
-            registros={registrosFiltrados}
-            funcionarios={funcionarios}
-            ocorrencias={ocorrencias}
-            dataInicio={filtroDataInicio}
-            dataFim={filtroDataFim}
-          />
-        </div>
-      </div>
-
-      {/* Conteúdo principal: Calendário + Tabela */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Calendário */}
-        {mostrarCalendario && (
-          <div className="lg:col-span-1 bg-white border rounded-lg p-4 shadow-sm">
-            <CalendarioPonto
-              registros={registrosFiltrados}
-              funcionariosEscalas={funcionariosEscalas}
-              ocorrencias={ocorrencias}
-              funcionarioSelecionado={filtroFuncionario}
-              onDiaClicado={(data, grupo) => openVisualizar(grupo)}
-            />
-
-            {/* Legenda */}
-            <div className="mt-3 text-sm text-slate-600">
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-2"><span className="w-3 h-3 bg-green-300 rounded-full border" /> Com ponto</span>
-                <span className="inline-flex items-center gap-2"><span className="w-3 h-3 bg-gray-300 rounded-full border" /> Justificado</span>
-                <span className="inline-flex items-center gap-2"><span className="w-3 h-3 bg-yellow-200 rounded-full border" /> Pendência</span>
-              </div>
+          {/* Calendário Retrátil */}
+          {mostrarCalendario && (
+            <div className="mb-3">
+              <CalendarioPonto
+                registros={registros}
+                funcionarios={funcionarios}
+                escalas={escalas}
+                funcionariosEscalas={funcionariosEscalas}
+                ocorrencias={ocorrencias}
+                onDiaClicado={(data) => {
+                  setFiltroDataInicio(data);
+                  setFiltroDataFim(data);
+                }}
+              />
             </div>
-          </div>
-        )}
-
-        {/* Tabela detalhada */}
-        <div className="lg:col-span-2 bg-white border rounded-lg p-4 shadow-sm overflow-x-auto">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold">Registros Detalhados</h3>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={exportCsv}><Download className="w-4 h-4 mr-2" />Exportar CSV</Button>
-              <Button onClick={() => navigate(createPageUrl("/espelho-ponto"))}><Printer className="w-4 h-4 mr-2" />Gerar Espelho</Button>
-            </div>
-          </div>
-
-          {isLoading ? (
-            <div className="space-y-2">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="h-12 rounded bg-slate-100 animate-pulse" />
-              ))}
-            </div>
-          ) : tableRows.length === 0 ? (
-            <div className="py-10 text-center text-slate-500">
-              Nenhum registro encontrado para os filtros selecionados.
-            </div>
-          ) : (
-            <table className="w-full text-sm border-collapse">
-              <thead className="bg-slate-100 sticky top-0">
-                <tr>
-                  <th className="text-left px-3 py-2 border-b">Colaborador</th>
-                  <th className="text-left px-3 py-2 border-b">CPF</th>
-                  <th className="text-left px-3 py-2 border-b">Data</th>
-                  <th className="text-center px-3 py-2 border-b">1ª Ent.</th>
-                  <th className="text-center px-3 py-2 border-b">1ª Saí.</th>
-                  <th className="text-center px-3 py-2 border-b">2ª Ent.</th>
-                  <th className="text-center px-3 py-2 border-b">2ª Saí.</th>
-                  <th className="text-right px-3 py-2 border-b">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tableRows.map((row) => {
-                  const funcionario = funcionariosMap[row.funcionario_id] || {};
-                  const slots = batidasToSlots(row.batidas);
-                  const ocorr = ocorrencias.find(o => o.funcionario_id === row.funcionario_id && o.data === row.data);
-                  return (
-                    <tr key={`${row.funcionario_id}_${row.data}`} className="hover:bg-slate-50">
-                      <td className="px-3 py-2 align-top">{funcionario.nome || "—"}</td>
-                      <td className="px-3 py-2 align-top font-mono text-xs">{funcionario.cpf || "—"}</td>
-                      <td className="px-3 py-2 align-top">{row.data}</td>
-                      <td className="text-center px-3 py-2 align-top">{slots[0] || "—"}</td>
-                      <td className="text-center px-3 py-2 align-top">{slots[1] || "—"}</td>
-                      <td className="text-center px-3 py-2 align-top">{slots[2] || "—"}</td>
-                      <td className="text-center px-3 py-2 align-top">{slots[3] || "—"}</td>
-                      <td className="px-3 py-2 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button size="sm" variant="ghost" onClick={() => openVisualizar(row)} aria-label={`Visualizar ${funcionario.nome} ${row.data}`}>
-                            <Eye className="w-4 h-4 mr-1" /> Visualizar
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={() => openVisualizar(row)} aria-label={`Editar ${funcionario.nome} ${row.data}`}>
-                            <Edit2 className="w-4 h-4 mr-1" /> Editar
-                          </Button>
-                          <Button size="sm" variant={ocorr ? "secondary" : "destructive"} onClick={() => handleJustificar(row)} aria-label={`Justificar ${funcionario.nome} ${row.data}`}>
-                            <AlertCircle className="w-4 h-4 mr-1" /> {ocorr ? "Ocorrência" : "Justificar"}
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           )}
+
+          {/* Tabela Principal */}
+          <Card className="shadow-sm">
+            <CardContent className="p-3 md:p-6">
+              {/* Filtros */}
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 md:p-5 mb-4 md:mb-6 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <Filter className="w-4 h-4 text-slate-600" />
+                  <h3 className="text-xs md:text-sm font-semibold text-slate-700">Filtros</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Funcionário</Label>
+                    <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+                      <SelectTrigger className="text-xs md:text-sm h-8 md:h-9 bg-white">
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        {funcionarios.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Data Início</Label>
+                    <Input
+                      type="date"
+                      value={filtroDataInicio}
+                      onChange={(e) => setFiltroDataInicio(e.target.value)}
+                      className="text-xs md:text-sm h-8 md:h-9 bg-white"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Data Fim</Label>
+                    <Input
+                      type="date"
+                      value={filtroDataFim}
+                      onChange={(e) => setFiltroDataFim(e.target.value)}
+                      className="text-xs md:text-sm h-8 md:h-9 bg-white"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Status</Label>
+                    <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                      <SelectTrigger className="text-xs md:text-sm h-8 md:h-9 bg-white">
+                        <SelectValue placeholder="Todos" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="abonado">Abonado</SelectItem>
+                        <SelectItem value="com_justificativa">Com Justificativa</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1.5 flex items-end">
+                    <Button
+                      variant="outline"
+                      onClick={limparFiltros}
+                      className="w-full gap-2 text-xs md:text-sm h-8 md:h-9"
+                    >
+                      <X className="w-3 h-3 md:w-4 md:h-4" />
+                      Limpar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tabela de Ponto por Dia */}
+              <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <div className="max-h-[calc(100vh-350px)] overflow-y-auto">
+                    <table className="w-full">
+                      <thead className="bg-gradient-to-r from-slate-800 to-slate-700 sticky top-0 z-10">
+                        <tr>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-left whitespace-nowrap">Funcionário</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Data</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">1ª Entrada</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">2ª Saída</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">3ª Entrada</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">4ª Saída</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Faltou</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Saldo</th>
+                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {isLoading ? (
+                          <tr>
+                            <td colSpan={9} className="text-center py-12">
+                              <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
+                            </td>
+                          </tr>
+                        ) : registrosFiltrados.length === 0 ? (
+                          <tr>
+                            <td colSpan={9} className="text-center py-12">
+                              <div className="flex flex-col items-center gap-3">
+                                <FileText className="w-16 h-16 text-slate-300" />
+                                <p className="text-slate-500 text-xs md:text-sm font-medium">Nenhum registro encontrado</p>
+                                <p className="text-slate-400 text-[10px] md:text-xs">Importe batidas ou ajuste os filtros</p>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          registrosFiltrados.map((grupo, idx) => {
+                            const batidasEsperadas = getBatidasEsperadas(grupo.funcionario_id, grupo.data);
+                            const saldoDia = calcularSaldoDia(grupo.funcionario_id, grupo.data, grupo.batidas);
+                            const ocorrencia = ocorrencias.find(o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data);
+                            const diaTrabalho = isDiaTrabalho(grupo.funcionario_id, grupo.data);
+                            
+                            // Ordenar batidas cronologicamente
+                            const batidasOrdenadas = [...grupo.batidas].sort((a, b) => {
+                              const horaA = a.hora || a.data_hora?.substring(11, 19) || "00:00:00";
+                              const horaB = b.hora || b.data_hora?.substring(11, 19) || "00:00:00";
+                              return horaA.localeCompare(horaB);
+                            });
+                            
+                            // Exibir batidas na ordem cronológica (1ª, 2ª, 3ª, 4ª)
+                            const batidas = ["", "", "", ""];
+                            for (let i = 0; i < batidasOrdenadas.length && i < 4; i++) {
+                              const horaBatida = batidasOrdenadas[i].hora || batidasOrdenadas[i].data_hora?.substring(11, 19) || "00:00:00";
+                              batidas[i] = formatarHora(horaBatida);
+                            }
+                            
+                            // Se não é dia de trabalho e não tem batidas
+                            const naoEDiaTrabalho = !diaTrabalho && grupo.batidas.length === 0;
+                            
+                            // Identificar quais batidas faltaram
+                            const faltantes = [];
+                            if (!naoEDiaTrabalho && !ocorrencia) {
+                              for (let i = 0; i < 4; i++) {
+                                if (!batidas[i] || batidas[i] === "") {
+                                  faltantes.push(i + 1);
+                                }
+                              }
+                            }
+                            
+                            return (
+                              <tr key={idx} className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${naoEDiaTrabalho ? 'bg-slate-50' : ''}`}>
+                                <td className="px-3 py-2.5 text-slate-900 font-medium text-xs">
+                                  {getFuncionarioNome(grupo.funcionario_id)}
+                                </td>
+                                <td className="px-3 py-2.5 text-center">
+                                  <span className="text-slate-900 font-semibold text-xs">{formatarData(grupo.data)}</span>
+                                </td>
+                                {naoEDiaTrabalho ? (
+                                  <>
+                                    <td colSpan={4} className="px-3 py-2.5 text-center">
+                                      <Badge className="bg-slate-100 text-slate-700 text-xs border border-slate-300">
+                                        FOLGA/FINAL DE SEMANA
+                                      </Badge>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className="text-slate-400 text-xs">-</span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <Badge className="bg-blue-100 text-blue-700 text-xs font-semibold">
+                                        OK
+                                      </Badge>
+                                    </td>
+                                  </>
+                                ) : (
+                                  <>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[0] || "-"}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[1] || "-"}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[2] || "-"}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      <span className={`font-mono font-semibold text-xs ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
+                                        {batidas[3] || "-"}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      {ocorrencia ? (
+                                        <Badge className={`text-xs font-semibold ${
+                                          ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700 border-purple-300" :
+                                          ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700 border-green-300" :
+                                          ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700 border-blue-300" :
+                                          ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700 border-cyan-300" :
+                                          "bg-yellow-100 text-yellow-700 border-yellow-300"
+                                        } border capitalize`}>
+                                          {ocorrencia.tipo}
+                                        </Badge>
+                                      ) : faltantes.length > 0 ? (
+                                        <Badge className="bg-red-100 text-red-700 border border-red-300 text-xs font-bold">
+                                          {faltantes.join(", ")}ª
+                                        </Badge>
+                                      ) : (
+                                        <span className="text-slate-400 text-xs">-</span>
+                                      )}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                      {saldoDia.justificado ? (
+                                        <Badge className="bg-blue-100 text-blue-700 border border-blue-300 text-xs font-semibold">
+                                          OK
+                                        </Badge>
+                                      ) : (
+                                        <span className={`font-mono font-bold text-xs ${saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                          {minToHHmm(saldoDia.saldo)}
+                                        </span>
+                                      )}
+                                    </td>
+                                  </>
+                                )}
+                                <td className="px-3 py-2.5">
+                                  {!naoEDiaTrabalho && (
+                                    <div className="flex gap-1.5 justify-center items-center">
+                                      <button
+                                        onClick={() => handleAbrirOcorrencia(grupo)}
+                                        className="p-1.5 hover:bg-slate-100 rounded transition-colors group"
+                                        title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
+                                      >
+                                        {ocorrencia ? (
+                                          <div className={`w-2 h-2 rounded-full ${
+                                            ocorrencia.tipo === "atestado" ? "bg-purple-500" :
+                                            ocorrencia.tipo === "abonado" ? "bg-green-500" :
+                                            ocorrencia.tipo === "folga" ? "bg-blue-500" :
+                                            ocorrencia.tipo === "ferias" ? "bg-cyan-500" :
+                                            "bg-yellow-500"
+                                          }`} />
+                                        ) : (
+                                          <div className="w-2 h-2 rounded-full border border-slate-300 group-hover:border-orange-500 group-hover:bg-orange-100" />
+                                        )}
+                                      </button>
+                                      <HistoricoAuditoria registro={grupo.batidas?.[0]} />
+                                    </div>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="text-xs md:text-sm text-slate-600">
+                  <strong>{registrosFiltrados.length}</strong> dia(s) de ponto
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      {/* Modais */}
-      <ImportarPontoModal isOpen={isImportarOpen} onClose={() => setIsImportarOpen(false)} onImport={() => { fetchData(); setIsImportarOpen(false); }} />
-      <VisualizarRegistroDiaModal isOpen={isVisualizarOpen} onClose={() => setIsVisualizarOpen(false)} grupo={visualizarGrupo} onSalvo={() => fetchData()} />
-    </div>
+      {/* Modal: Importar Ponto */}
+      <ImportarPontoModal
+        isOpen={isImportarOpen}
+        onClose={() => setIsImportarOpen(false)}
+        onImportado={fetchData}
+      />
+
+      {/* Modal: Visualizar Registro do Dia */}
+      <VisualizarRegistroDiaModal
+        isOpen={isVisualizarOpen}
+        onClose={() => {
+          setIsVisualizarOpen(false);
+          setVisualizarGrupo(null);
+        }}
+        grupo={visualizarGrupo}
+        onSalvo={fetchData}
+      />
+
+      {/* Modal: Ocorrência/Justificativa */}
+      <Dialog open={isOcorrenciaModalOpen} onOpenChange={setIsOcorrenciaModalOpen}>
+        <DialogContent className="max-w-[95vw] md:max-w-lg rounded-xl p-0 gap-0 flex flex-col max-h-[92vh]">
+          <DialogHeader className="flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white px-3 md:px-5 py-2.5 md:py-3.5 rounded-t-xl">
+            <DialogTitle className="text-xs md:text-base font-bold flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 md:w-5 md:h-5" />
+              Gerenciar Ocorrência
+            </DialogTitle>
+          </DialogHeader>
+          {ocorrenciaModal && (
+            <div className="flex-1 overflow-y-auto space-y-3 md:space-y-4 px-3 md:px-5 py-3 md:py-4">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 p-3 rounded-lg border border-slate-200">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] md:text-xs text-slate-600 font-medium">Funcionário:</span>
+                    <span className="text-xs md:text-sm text-slate-900 font-bold">{getFuncionarioNome(ocorrenciaModal.funcionario_id)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] md:text-xs text-slate-600 font-medium">Data:</span>
+                    <span className="text-xs md:text-sm text-slate-900 font-bold">{formatarData(ocorrenciaModal.data)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 md:space-y-2">
+                <Label className="text-[10px] md:text-xs font-bold text-slate-700">Tipo de Ação *</Label>
+                <Select
+                  value={ocorrenciaModal.tipo}
+                  onValueChange={(value) => setOcorrenciaModal({...ocorrenciaModal, tipo: value, descricao: ocorrenciaModal.descricao || ''})}
+                >
+                  <SelectTrigger className="text-xs md:text-sm h-9 md:h-10">
+                    <SelectValue placeholder="Selecionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="atestado">🏥 Atestado</SelectItem>
+                    <SelectItem value="abonado">✅ Abonado</SelectItem>
+                    <SelectItem value="folga">🏖️ Folga</SelectItem>
+                    <SelectItem value="ferias">🌴 Férias</SelectItem>
+                    <SelectItem value="justificativa">📝 Justificativa</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5 md:space-y-2">
+                <Label className="text-[10px] md:text-xs font-bold text-slate-700">Descrição/Justificativa *</Label>
+                <Textarea
+                  value={ocorrenciaModal.descricao || ''}
+                  onChange={(e) => setOcorrenciaModal({...ocorrenciaModal, descricao: e.target.value})}
+                  placeholder="Ex: Atestado médico, reunião externa, feriado local, etc..."
+                  rows={4}
+                  className="text-xs md:text-sm resize-none"
+                />
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-2.5 md:p-3 rounded-lg border border-blue-300">
+                <p className="text-[9px] md:text-xs text-blue-900 font-medium leading-relaxed">
+                  <strong>📋 Importante:</strong> As batidas originais do relógio nunca são alteradas. 
+                  Esta ação apenas registra a justificativa/abono para fins de gestão e cálculo de horas.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex-shrink-0 border-t bg-slate-50 px-3 md:px-5 py-2.5 md:py-3 rounded-b-xl flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsOcorrenciaModalOpen(false);
+                setOcorrenciaModal(null);
+              }}
+              className="flex-1 text-[10px] md:text-xs h-8 md:h-9 font-medium"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSalvarOcorrencia}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-[10px] md:text-xs h-8 md:h-9 gap-2 font-medium"
+            >
+              <CheckCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              Salvar Ação
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
