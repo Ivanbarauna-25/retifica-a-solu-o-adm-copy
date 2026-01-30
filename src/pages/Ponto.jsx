@@ -1,48 +1,64 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import {
-  Clock,
+  CalendarDays,
+  Upload,
+  Filter,
   AlertTriangle,
-  CheckCircle,
-  PlusCircle,
-  Eye
+  Eye,
+  Loader2,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
 
-/* =========================
-   HELPERS
-========================= */
-const formatarHora = (h) => (h ? h.substring(0, 5) : "—");
-const formatarData = (d) => {
-  if (!d) return "—";
-  const [y, m, dia] = d.split("-");
-  return `${dia}/${m}/${y}`;
-};
-const minToHHmm = (min) => {
-  const h = Math.floor(Math.abs(min) / 60);
-  const m = Math.abs(min) % 60;
-  const s = min < 0 ? "-" : "+";
-  return `${s}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-};
+import ImportarPontoModal from "@/components/ponto/ImportarPontoModal";
+import CalendarioPonto from "@/components/ponto/CalendarioPonto";
+import VisualizarRegistroDiaModal from "@/components/ponto/VisualizarRegistroDiaModal";
+import OcorrenciaPontoModal from "@/components/ponto/OcorrenciaPontoModal";
 
-/* =========================
-   PAGE
-========================= */
 export default function PontoPage() {
+  const { toast } = useToast();
+
+  /* ===================== STATES ===================== */
   const [funcionarios, setFuncionarios] = useState([]);
   const [registros, setRegistros] = useState([]);
   const [ocorrencias, setOcorrencias] = useState([]);
   const [escalas, setEscalas] = useState([]);
-  const [funcEscalas, setFuncEscalas] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
 
-  /* =========================
-     LOAD DATA
-  ========================= */
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [isImportarOpen, setIsImportarOpen] = useState(false);
+
+  const [visualizarGrupo, setVisualizarGrupo] = useState(null);
+  const [isVisualizarOpen, setIsVisualizarOpen] = useState(false);
+
+  const [ocorrenciaModal, setOcorrenciaModal] = useState(null);
+  const [isOcorrenciaOpen, setIsOcorrenciaOpen] = useState(false);
+
+  /* filtros */
+  const hoje = new Date().toISOString().slice(0, 10);
+  const [filtroFuncionario, setFiltroFuncionario] = useState("todos");
+  const [filtroInicio, setFiltroInicio] = useState(hoje);
+  const [filtroFim, setFiltroFim] = useState(hoje);
+
+  /* ===================== FETCH ===================== */
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
       const [
         f,
         r,
@@ -61,180 +77,228 @@ export default function PontoPage() {
       setRegistros(r || []);
       setOcorrencias(o || []);
       setEscalas(e || []);
-      setFuncEscalas(fe || []);
-      setLoading(false);
-    })();
+      setFuncionariosEscalas(fe || []);
+    } catch (err) {
+      toast({
+        title: "Erro",
+        description: "Falha ao carregar dados do ponto",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
-  /* =========================
-     GERAR DIAS (MÊS ATUAL)
-  ========================= */
-  const diasMes = useMemo(() => {
-    const hoje = new Date();
-    const ano = hoje.getFullYear();
-    const mes = hoje.getMonth();
-    const ultimo = new Date(ano, mes + 1, 0).getDate();
-    return Array.from({ length: ultimo }).map((_, i) => {
-      const d = String(i + 1).padStart(2, "0");
-      const m = String(mes + 1).padStart(2, "0");
-      return `${ano}-${m}-${d}`;
-    });
-  }, []);
+  /* ===================== HELPERS ===================== */
+  const getNome = (id) =>
+    funcionarios.find(f => f.id === id)?.nome || "-";
 
-  /* =========================
-     AGRUPAR POR FUNC + DIA
-  ========================= */
-  const linhas = useMemo(() => {
-    const mapa = {};
+  const formatarHora = (h) => h ? h.substring(0,5) : "-";
 
-    for (const f of funcionarios) {
-      for (const d of diasMes) {
-        mapa[`${f.id}_${d}`] = {
-          funcionario: f,
-          data: d,
-          batidas: []
-        };
+  const gerarDias = (inicio, fim) => {
+    const arr = [];
+    let d = new Date(inicio + "T12:00");
+    const f = new Date(fim + "T12:00");
+    while (d <= f) {
+      arr.push(d.toISOString().slice(0,10));
+      d.setDate(d.getDate()+1);
+    }
+    return arr;
+  };
+
+  /* ===================== AGRUPAMENTO ===================== */
+  const registrosAgrupados = useMemo(() => {
+    const map = {};
+    registros.forEach(r => {
+      if (!r.funcionario_id) return;
+      const data = r.data || r.data_hora?.slice(0,10);
+      if (!map[`${r.funcionario_id}_${data}`]) {
+        map[`${r.funcionario_id}_${data}`] = [];
       }
-    }
+      map[`${r.funcionario_id}_${data}`].push(r);
+    });
 
-    for (const r of registros) {
-      if (!r.funcionario_id || !r.data) continue;
-      const k = `${r.funcionario_id}_${r.data}`;
-      if (mapa[k]) mapa[k].batidas.push(r);
-    }
-
-    Object.values(mapa).forEach(l =>
-      l.batidas.sort((a, b) =>
+    Object.values(map).forEach(lista =>
+      lista.sort((a,b) =>
         (a.hora || a.data_hora).localeCompare(b.hora || b.data_hora)
       )
     );
 
-    return Object.values(mapa);
-  }, [funcionarios, registros, diasMes]);
+    return map;
+  }, [registros]);
 
-  /* =========================
-     SALDO
-  ========================= */
-  const calcularSaldo = (linha) => {
-    const ocorr = ocorrencias.find(
-      o => o.funcionario_id === linha.funcionario.id && o.data === linha.data
-    );
+  /* ===================== LINHAS ===================== */
+  const linhas = useMemo(() => {
+    const dias = gerarDias(filtroInicio, filtroFim);
+    const result = [];
 
-    if (ocorr && ["atestado", "folga", "abonado", "ferias"].includes(ocorr.tipo)) {
-      return { saldo: 0, justificado: true };
-    }
+    funcionarios.forEach(func => {
+      dias.forEach(data => {
+        if (filtroFuncionario !== "todos" && filtroFuncionario !== func.id) return;
 
-    const fe = funcEscalas.find(f => f.funcionario_id === linha.funcionario.id);
-    const esc = fe && escalas.find(e => e.id === fe.escala_id);
-    const esperado = esc?.carga_diaria_minutos || 480;
+        const key = `${func.id}_${data}`;
+        const batidas = registrosAgrupados[key] || [];
+        const ocorr = ocorrencias.find(o => o.funcionario_id === func.id && o.data === data);
 
-    let trab = 0;
-    for (let i = 0; i < linha.batidas.length; i += 2) {
-      if (!linha.batidas[i + 1]) break;
-      const h1 = linha.batidas[i].hora || linha.batidas[i].data_hora.substring(11, 16);
-      const h2 = linha.batidas[i + 1].hora || linha.batidas[i + 1].data_hora.substring(11, 16);
-      const [a, b] = h1.split(":").map(Number);
-      const [c, d] = h2.split(":").map(Number);
-      trab += (c * 60 + d) - (a * 60 + b);
-    }
+        result.push({
+          funcionario_id: func.id,
+          data,
+          batidas,
+          ocorrencia: ocorr
+        });
+      });
+    });
 
-    return { saldo: trab - esperado, justificado: false };
-  };
+    return result;
+  }, [funcionarios, registrosAgrupados, ocorrencias, filtroFuncionario, filtroInicio, filtroFim]);
 
-  /* =========================
-     RENDER
-  ========================= */
+  /* ===================== UI ===================== */
   return (
-    <div className="p-4 bg-slate-50 min-h-screen">
-      <div className="flex items-center gap-3 mb-4">
-        <Clock className="w-6 h-6 text-slate-700" />
-        <h1 className="text-xl font-bold text-slate-800">Controle de Ponto</h1>
+    <div className="min-h-screen bg-slate-50 px-3 py-4">
+      {/* HEADER */}
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex flex-wrap gap-2 items-end">
+        <div className="flex-1">
+          <h1 className="text-lg font-bold">Controle de Ponto</h1>
+          <p className="text-xs text-slate-500">Gestão diária de batidas e ocorrências</p>
+        </div>
+
+        <Button onClick={() => setIsImportarOpen(true)} className="gap-2">
+          <Upload className="w-4 h-4" /> Importar
+        </Button>
+
+        <Button variant="outline" onClick={() => setMostrarCalendario(!mostrarCalendario)} className="gap-2">
+          <CalendarDays className="w-4 h-4" /> Calendário
+        </Button>
       </div>
 
-      <div className="overflow-x-auto bg-white border rounded-lg shadow-sm">
-        <table className="w-full text-xs">
-          <thead className="bg-slate-800 text-white">
-            <tr>
-              <th className="px-3 py-2 text-left">Funcionário</th>
-              <th className="px-3 py-2 text-center">Data</th>
-              <th className="px-2 py-2 text-center">1ª</th>
-              <th className="px-2 py-2 text-center">2ª</th>
-              <th className="px-2 py-2 text-center">3ª</th>
-              <th className="px-2 py-2 text-center">4ª</th>
-              <th className="px-2 py-2 text-center">Saldo</th>
-              <th className="px-2 py-2 text-center">Ações</th>
-            </tr>
-          </thead>
+      {/* FILTROS */}
+      <Card className="mb-4">
+        <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-3 p-4">
+          <div>
+            <Label>Funcionário</Label>
+            <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                {funcionarios.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Início</Label>
+            <Input type="date" value={filtroInicio} onChange={e => setFiltroInicio(e.target.value)} />
+          </div>
+          <div>
+            <Label>Fim</Label>
+            <Input type="date" value={filtroFim} onChange={e => setFiltroFim(e.target.value)} />
+          </div>
+          <div className="flex items-end">
+            <Button variant="outline" onClick={() => {
+              setFiltroInicio(hoje);
+              setFiltroFim(hoje);
+              setFiltroFuncionario("todos");
+            }} className="w-full gap-2">
+              <X className="w-4 h-4" /> Limpar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-          <tbody>
-            {loading && (
+      {/* CALENDÁRIO */}
+      {mostrarCalendario && (
+        <div className="mb-4">
+          <CalendarioPonto
+            registros={registros}
+            funcionarios={funcionarios}
+            ocorrencias={ocorrencias}
+            onDiaClicado={(d) => {
+              setFiltroInicio(d);
+              setFiltroFim(d);
+            }}
+          />
+        </div>
+      )}
+
+      {/* TABELA */}
+      <Card>
+        <CardContent className="p-0 overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="bg-slate-800 text-white sticky top-0">
               <tr>
-                <td colSpan={8} className="py-10 text-center">
-                  Carregando…
-                </td>
+                <th className="p-2 text-left">Funcionário</th>
+                <th className="p-2 text-center">Data</th>
+                <th className="p-2 text-center">1ª</th>
+                <th className="p-2 text-center">2ª</th>
+                <th className="p-2 text-center">3ª</th>
+                <th className="p-2 text-center">4ª</th>
+                <th className="p-2 text-center">Ações</th>
               </tr>
-            )}
-
-            {!loading &&
-              linhas.map((l, idx) => {
-                const saldo = calcularSaldo(l);
-                const extras = l.batidas.length > 4 ? l.batidas.length - 4 : 0;
-                const bat = ["", "", "", ""];
-                l.batidas.slice(0, 4).forEach((b, i) => {
-                  bat[i] = formatarHora(b.hora || b.data_hora.substring(11, 16));
-                });
-
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr><td colSpan={7} className="p-6 text-center">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto" />
+                </td></tr>
+              ) : linhas.map((l,i) => {
+                const bat = l.batidas;
                 return (
-                  <tr
-                    key={idx}
-                    className="border-b hover:bg-slate-50"
-                  >
-                    <td className="px-3 py-2 font-medium">
-                      {l.funcionario.nome}
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      {formatarData(l.data)}
-                    </td>
-
-                    {bat.map((h, i) => (
-                      <td key={i} className="px-2 py-2 text-center font-mono">
-                        {h || <span className="text-red-500">—</span>}
+                  <tr key={i} className="border-b">
+                    <td className="p-2">{getNome(l.funcionario_id)}</td>
+                    <td className="p-2 text-center">{l.data}</td>
+                    {[0,1,2,3].map(n => (
+                      <td key={n} className="p-2 text-center font-mono">
+                        {formatarHora(bat[n]?.hora || bat[n]?.data_hora?.slice(11,16))}
                       </td>
                     ))}
-
-                    <td className="px-2 py-2 text-center">
-                      {extras > 0 && (
-                        <Badge variant="secondary">+{extras}</Badge>
-                      )}
-                    </td>
-
-                    <td className="px-2 py-2 text-center">
-                      {saldo.justificado ? (
-                        <Badge className="bg-blue-100 text-blue-700">OK</Badge>
-                      ) : (
-                        <span
-                          className={`font-mono font-bold ${
-                            saldo.saldo >= 0 ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {minToHHmm(saldo.saldo)}
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="px-2 py-2 text-center">
+                    <td className="p-2 text-center">
                       <div className="flex justify-center gap-2">
-                        <Eye className="w-4 h-4 text-slate-500 cursor-pointer" />
-                        <PlusCircle className="w-4 h-4 text-blue-600 cursor-pointer" />
-                        <AlertTriangle className="w-4 h-4 text-amber-600 cursor-pointer" />
+                        <button onClick={() => {
+                          setVisualizarGrupo(l);
+                          setIsVisualizarOpen(true);
+                        }}>
+                          <Eye className="w-4 h-4 text-slate-600" />
+                        </button>
+                        <button onClick={() => {
+                          setOcorrenciaModal(l);
+                          setIsOcorrenciaOpen(true);
+                        }}>
+                          <AlertTriangle className="w-4 h-4 text-orange-600" />
+                        </button>
                       </div>
                     </td>
                   </tr>
                 );
               })}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+
+      {/* MODAIS */}
+      <ImportarPontoModal
+        isOpen={isImportarOpen}
+        onClose={() => setIsImportarOpen(false)}
+        onImportado={fetchData}
+      />
+
+      <VisualizarRegistroDiaModal
+        isOpen={isVisualizarOpen}
+        grupo={visualizarGrupo}
+        onClose={() => setIsVisualizarOpen(false)}
+      />
+
+      <OcorrenciaPontoModal
+        isOpen={isOcorrenciaOpen}
+        grupo={ocorrenciaModal}
+        onClose={() => setIsOcorrenciaOpen(false)}
+        onSalvo={fetchData}
+      />
     </div>
   );
 }
