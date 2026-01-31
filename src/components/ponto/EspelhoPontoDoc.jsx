@@ -29,7 +29,7 @@ export default function EspelhoPontoDoc({
     return `${min < 0 ? "-" : ""}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   };
 
-  /* ================= AGRUPAR REGISTROS ================= */
+  /* ================= REGISTROS POR DATA ================= */
   const registrosPorData = useMemo(() => {
     const map = {};
     registros.forEach(r => {
@@ -64,37 +64,52 @@ export default function EspelhoPontoDoc({
   );
   const escala = escalas.find(e => e.id === funcEscala?.escala_id);
 
-  /* ================= RESUMO ================= */
+  /* ================= RESUMO CORRIGIDO ================= */
   const resumo = useMemo(() => {
-    let trab = 0, esp = 0, pres = 0, aus = 0, just = 0;
+    let pres = 0;
+    let aus = 0;
+    let just = 0;
+    let trab = 0;
+    let esp = 0;
 
     datasPeriodo.forEach(data => {
-      const batidas = registrosPorData[data] || [];
-      const ocorr = ocorrencias.find(o => o.data === data);
+      if (!escala) return;
+
       const diaSemana = new Date(data + "T12").getDay();
       const diaEscala = diaSemana === 0 ? 7 : diaSemana;
 
-      if (escala?.dias_semana &&
-          !escala.dias_semana.split(",").includes(String(diaEscala))) return;
+      if (
+        escala.dias_semana &&
+        !escala.dias_semana.split(",").includes(String(diaEscala))
+      ) {
+        return; // fora da escala → não conta
+      }
 
-      if (ocorr && ["atestado","abonado","ferias","folga"].includes(ocorr.tipo)) {
+      const batidas = registrosPorData[data] || [];
+      const ocorr = ocorrencias.find(o => o.data === data);
+
+      // Justificativas
+      if (ocorr && ["atestado", "abonado", "ferias", "folga"].includes(ocorr.tipo)) {
         just++;
+        esp += escala.carga_diaria_minutos || 480;
         return;
       }
 
-      let minutos = 0;
-      for (let i = 0; i < batidas.length - 1; i += 2) {
-        const h1 = batidas[i].hora || batidas[i].data_hora.substring(11,16);
-        const h2 = batidas[i+1].hora || batidas[i+1].data_hora.substring(11,16);
-        const [h1h,h1m] = h1.split(":").map(Number);
-        const [h2h,h2m] = h2.split(":").map(Number);
-        minutos += (h2h*60+h2m)-(h1h*60+h1m);
-      }
-
-      esp += escala?.carga_diaria_minutos || 480;
+      // Carga esperada
+      esp += escala.carga_diaria_minutos || 480;
 
       if (batidas.length >= 2) {
         pres++;
+
+        let minutos = 0;
+        for (let i = 0; i < batidas.length - 1; i += 2) {
+          const h1 = batidas[i].hora || batidas[i].data_hora.substring(11, 16);
+          const h2 = batidas[i + 1].hora || batidas[i + 1].data_hora.substring(11, 16);
+          const [h1h, h1m] = h1.split(":").map(Number);
+          const [h2h, h2m] = h2.split(":").map(Number);
+          minutos += (h2h * 60 + h2m) - (h1h * 60 + h1m);
+        }
+
         trab += minutos;
       } else {
         aus++;
@@ -120,7 +135,7 @@ export default function EspelhoPontoDoc({
           * { print-color-adjust: exact; }
           .no-print { display: none !important; }
           thead { display: table-header-group; }
-          tr { page-break-inside: avoid; }
+          tr, tbody tr { page-break-inside: avoid; }
         }
       `}</style>
 
@@ -145,7 +160,9 @@ export default function EspelhoPontoDoc({
         {/* TÍTULO */}
         <div className="text-center my-8">
           <div className="inline-block border border-slate-800 px-10 py-3">
-            <h2 className="text-3xl font-extrabold">ESPELHO DE PONTO</h2>
+            <h2 className="text-3xl font-extrabold tracking-wide">
+              ESPELHO DE PONTO
+            </h2>
             <p className="text-[11px] text-slate-600">
               Registro oficial de jornada – Portaria MTE nº 671/2021
             </p>
@@ -172,7 +189,7 @@ export default function EspelhoPontoDoc({
 
         {/* TABELA */}
         <table className="w-full text-[11px] border-t border-b border-slate-800">
-          <thead className="bg-slate-900 text-white">
+          <thead className="bg-slate-800 text-white">
             <tr>
               <th className="p-2 text-left">Data</th>
               <th className="p-2 text-center">Dia</th>
@@ -186,6 +203,7 @@ export default function EspelhoPontoDoc({
           <tbody>
             {datasPeriodo.map(data => {
               const bat = registrosPorData[data] || [];
+              const ocorr = ocorrencias.find(o => o.data === data);
               const dia = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"]
                 [new Date(data+"T12").getDay()];
               return (
@@ -197,7 +215,9 @@ export default function EspelhoPontoDoc({
                       {formatarHora(bat[i]?.hora || bat[i]?.data_hora?.substring(11,16))}
                     </td>
                   ))}
-                  <td className="p-2"></td>
+                  <td className="p-2 text-[10px]">
+                    {ocorr?.descricao || ""}
+                  </td>
                 </tr>
               );
             })}
@@ -225,14 +245,19 @@ export default function EspelhoPontoDoc({
         </div>
 
         {/* ASSINATURAS */}
-        <div className="grid grid-cols-2 gap-10 px-8 mt-20 text-[11px]">
-          {[funcionario?.nome, departamentoResponsavel?.nome].map((n,i)=>(
-            <div key={i}>
-              <p className="font-bold">{n || " "}</p>
+        <div className={`grid ${departamentoResponsavel ? "grid-cols-2" : "grid-cols-1"} gap-10 px-8 mt-20 text-[11px]`}>
+          <div>
+            <p className="font-bold">{funcionario?.nome}</p>
+            <div className="border-b h-10 my-2"></div>
+            <p>Assinatura</p>
+          </div>
+          {departamentoResponsavel && (
+            <div>
+              <p className="font-bold">{departamentoResponsavel?.nome}</p>
               <div className="border-b h-10 my-2"></div>
               <p>Assinatura</p>
             </div>
-          ))}
+          )}
         </div>
 
         {/* RODAPÉ */}
