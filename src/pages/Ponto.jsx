@@ -511,12 +511,12 @@ export default function PontoPage() {
                     >
                       <X className="w-3 h-3 md:w-4 md:h-4" />
                       Limpar
-                      </Button>
-                    </div>
+                    </Button>
                   </div>
-                </div>
-              )}
-              </div>
+                  </div>
+                  </div>
+                  )}
+                  </div>
 
               {/* Tabela de Ponto por Dia */}
               <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
