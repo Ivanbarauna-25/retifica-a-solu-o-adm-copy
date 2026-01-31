@@ -519,24 +519,24 @@ export default function PontoPage() {
                   </div>
 
               {/* Tabela de Ponto por Dia */}
-              <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm">
+              <div className="rounded-lg border border-slate-200 overflow-hidden shadow-sm bg-white">
                 <div className="overflow-x-auto">
                   <div className="max-h-[calc(100vh-350px)] overflow-y-auto">
-                    <table className="w-full">
-                      <thead className="bg-gradient-to-r from-slate-800 to-slate-700 sticky top-0 z-10">
+                    <table className="w-full border-collapse">
+                      <thead className="bg-slate-800 sticky top-0 z-10">
                         <tr>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-left whitespace-nowrap">Funcionário</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Data</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">1ª Entrada</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">2ª Saída</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">3ª Entrada</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">4ª Saída</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Faltou</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Saldo</th>
-                          <th className="text-white text-xs font-bold px-3 py-2.5 text-center whitespace-nowrap">Ações</th>
+                          <th className="text-white text-[11px] font-semibold px-4 py-3 text-left whitespace-nowrap border-b-2 border-slate-700">Funcionário</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">Data</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">1ª Ent.</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">1ª Saí.</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">2ª Ent.</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">2ª Saí.</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">Situação</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">Saldo</th>
+                          <th className="text-white text-[11px] font-semibold px-3 py-3 text-center whitespace-nowrap border-b-2 border-slate-700">Ações</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-slate-100">
                         {isLoading ? (
                           <tr>
                             <td colSpan={9} className="text-center py-12">
@@ -588,104 +588,93 @@ export default function PontoPage() {
                             }
                             
                             return (
-                              <tr key={idx} className={`border-b border-slate-200 hover:bg-slate-50 transition-colors ${naoEDiaTrabalho ? 'bg-slate-50' : ''}`}>
-                                <td className="px-3 py-2.5 text-slate-900 font-medium text-xs">
+                              <tr key={idx} className={`hover:bg-slate-50 transition-colors ${
+                                naoEDiaTrabalho ? 'bg-slate-50' : idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/30'
+                              }`}>
+                                <td className="px-4 py-3 text-slate-900 font-medium text-xs border-r border-slate-100">
                                   {getFuncionarioNome(grupo.funcionario_id)}
                                 </td>
-                                <td className="px-3 py-2.5 text-center">
-                                  <span className="text-slate-900 font-semibold text-xs">{formatarData(grupo.data)}</span>
+                                <td className="px-3 py-3 text-center border-r border-slate-100">
+                                  <span className="text-slate-700 font-medium text-xs">{formatarData(grupo.data)}</span>
                                 </td>
                                 {naoEDiaTrabalho ? (
                                   <>
-                                    <td colSpan={4} className="px-3 py-2.5 text-center">
-                                      <Badge className="bg-slate-100 text-slate-700 text-xs border border-slate-300">
-                                        FOLGA/FINAL DE SEMANA
+                                    <td colSpan={4} className="px-3 py-3 text-center border-r border-slate-100">
+                                      <span className="text-slate-400 text-xs">—</span>
+                                    </td>
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
+                                      <Badge className="bg-slate-100 text-slate-600 text-[10px] font-medium border-0">
+                                        Folga
                                       </Badge>
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
-                                      <span className="text-slate-400 text-xs">-</span>
-                                    </td>
-                                    <td className="px-3 py-2.5 text-center">
-                                      <Badge className="bg-blue-100 text-blue-700 text-xs font-semibold">
-                                        OK
-                                      </Badge>
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
+                                      <span className="text-slate-400 text-xs">—</span>
                                     </td>
                                   </>
                                 ) : (
                                   <>
-                                    <td className="px-3 py-2.5 text-center">
-                                      <span className={`font-mono font-semibold text-xs ${!batidas[0] || batidas[0] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
-                                        {batidas[0] || "-"}
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
+                                      <span className={`font-mono text-xs ${!batidas[0] ? "text-slate-300" : "text-slate-900 font-semibold"}`}>
+                                        {batidas[0] || "—"}
                                       </span>
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
-                                      <span className={`font-mono font-semibold text-xs ${!batidas[1] || batidas[1] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
-                                        {batidas[1] || "-"}
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
+                                      <span className={`font-mono text-xs ${!batidas[1] ? "text-slate-300" : "text-slate-900 font-semibold"}`}>
+                                        {batidas[1] || "—"}
                                       </span>
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
-                                      <span className={`font-mono font-semibold text-xs ${!batidas[2] || batidas[2] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
-                                        {batidas[2] || "-"}
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
+                                      <span className={`font-mono text-xs ${!batidas[2] ? "text-slate-300" : "text-slate-900 font-semibold"}`}>
+                                        {batidas[2] || "—"}
                                       </span>
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
-                                      <span className={`font-mono font-semibold text-xs ${!batidas[3] || batidas[3] === "" ? "text-red-500" : "text-slate-900 bg-slate-50 px-2 py-1 rounded"}`}>
-                                        {batidas[3] || "-"}
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
+                                      <span className={`font-mono text-xs ${!batidas[3] ? "text-slate-300" : "text-slate-900 font-semibold"}`}>
+                                        {batidas[3] || "—"}
                                       </span>
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
                                       {ocorrencia ? (
-                                        <Badge className={`text-xs font-semibold ${
-                                          ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700 border-purple-300" :
-                                          ocorrencia.tipo === "abonado" ? "bg-green-100 text-green-700 border-green-300" :
-                                          ocorrencia.tipo === "folga" ? "bg-blue-100 text-blue-700 border-blue-300" :
-                                          ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700 border-cyan-300" :
-                                          "bg-yellow-100 text-yellow-700 border-yellow-300"
-                                        } border capitalize`}>
+                                        <Badge className={`text-[10px] font-medium border-0 ${
+                                          ocorrencia.tipo === "atestado" ? "bg-purple-100 text-purple-700" :
+                                          ocorrencia.tipo === "abonado" ? "bg-blue-100 text-blue-700" :
+                                          ocorrencia.tipo === "folga" ? "bg-slate-100 text-slate-700" :
+                                          ocorrencia.tipo === "ferias" ? "bg-cyan-100 text-cyan-700" :
+                                          "bg-yellow-100 text-yellow-700"
+                                        } capitalize`}>
                                           {ocorrencia.tipo}
                                         </Badge>
                                       ) : faltantes.length > 0 ? (
-                                        <Badge className="bg-red-100 text-red-700 border border-red-300 text-xs font-bold">
-                                          {faltantes.join(", ")}ª
+                                        <Badge className="bg-red-50 text-red-700 text-[10px] font-semibold border-0">
+                                          Falta
                                         </Badge>
                                       ) : (
-                                        <span className="text-slate-400 text-xs">-</span>
+                                        <Badge className="bg-green-50 text-green-700 text-[10px] font-medium border-0">
+                                          Presente
+                                        </Badge>
                                       )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
+                                    <td className="px-3 py-3 text-center border-r border-slate-100">
                                       {saldoDia.justificado ? (
-                                        <Badge className="bg-blue-100 text-blue-700 border border-blue-300 text-xs font-semibold">
-                                          OK
-                                        </Badge>
+                                        <span className="text-slate-400 text-xs">—</span>
                                       ) : (
-                                        <span className={`font-mono font-bold text-xs ${saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}`}>
+                                        <span className={`font-mono font-semibold text-xs ${saldoDia.saldo >= 0 ? "text-green-600" : "text-red-600"}`}>
                                           {minToHHmm(saldoDia.saldo)}
                                         </span>
                                       )}
                                     </td>
                                   </>
                                 )}
-                                <td className="px-3 py-2.5">
+                                <td className="px-3 py-3">
                                   {!naoEDiaTrabalho && (
-                                    <div className="flex gap-1.5 justify-center items-center">
+                                    <div className="flex gap-2 justify-center items-center">
                                       <button
                                         onClick={() => handleAbrirOcorrencia(grupo)}
-                                        className="p-1.5 hover:bg-slate-100 rounded transition-colors group"
-                                        title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
+                                        className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
+                                        title={ocorrencia ? "Ver Ocorrência" : "Adicionar Ocorrência"}
                                       >
-                                        {ocorrencia ? (
-                                          <div className={`w-2 h-2 rounded-full ${
-                                            ocorrencia.tipo === "atestado" ? "bg-purple-500" :
-                                            ocorrencia.tipo === "abonado" ? "bg-green-500" :
-                                            ocorrencia.tipo === "folga" ? "bg-blue-500" :
-                                            ocorrencia.tipo === "ferias" ? "bg-cyan-500" :
-                                            "bg-yellow-500"
-                                          }`} />
-                                        ) : (
-                                          <div className="w-2 h-2 rounded-full border border-slate-300 group-hover:border-orange-500 group-hover:bg-orange-100" />
-                                        )}
+                                        <Eye className="w-4 h-4 text-slate-400 hover:text-slate-600" />
                                       </button>
-                                      <HistoricoAuditoria registro={grupo.batidas?.[0]} />
                                     </div>
                                   )}
                                 </td>

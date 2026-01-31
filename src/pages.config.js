@@ -65,6 +65,7 @@ import Dashboard from './pages/Dashboard';
 import Departamentos from './pages/Departamentos';
 import EPIs from './pages/EPIs';
 import EscalasTrabalho from './pages/EscalasTrabalho';
+import EspelhoPonto from './pages/EspelhoPonto';
 import Estoque from './pages/Estoque';
 import FichaCandidato from './pages/FichaCandidato';
 import FichaFuncionario from './pages/FichaFuncionario';
@@ -75,6 +76,7 @@ import FormasPagamento from './pages/FormasPagamento';
 import FormularioOS from './pages/FormularioOS';
 import FormularioOrcamento from './pages/FormularioOrcamento';
 import Fornecedores from './pages/Fornecedores';
+import Funcionarios from './pages/Funcionarios';
 import GerenciarErros from './pages/GerenciarErros';
 import GestaoRH from './pages/GestaoRH';
 import GestaoUsuarios from './pages/GestaoUsuarios';
@@ -91,6 +93,7 @@ import Orcamentos from './pages/Orcamentos';
 import OrdensServico from './pages/OrdensServico';
 import Patrimonio from './pages/Patrimonio';
 import PlanoContas from './pages/PlanoContas';
+import Ponto from './pages/Ponto';
 import Relatorio13Salario from './pages/Relatorio13Salario';
 import RelatorioAdiantamentos from './pages/RelatorioAdiantamentos';
 import RelatorioContasPagar from './pages/RelatorioContasPagar';
@@ -109,9 +112,6 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
-import Funcionarios from './pages/Funcionarios';
-import Ponto from './pages/Ponto';
-import EspelhoPonto from './pages/EspelhoPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -134,6 +134,7 @@ export const PAGES = {
     "Departamentos": Departamentos,
     "EPIs": EPIs,
     "EscalasTrabalho": EscalasTrabalho,
+    "EspelhoPonto": EspelhoPonto,
     "Estoque": Estoque,
     "FichaCandidato": FichaCandidato,
     "FichaFuncionario": FichaFuncionario,
@@ -144,6 +145,7 @@ export const PAGES = {
     "FormularioOS": FormularioOS,
     "FormularioOrcamento": FormularioOrcamento,
     "Fornecedores": Fornecedores,
+    "Funcionarios": Funcionarios,
     "GerenciarErros": GerenciarErros,
     "GestaoRH": GestaoRH,
     "GestaoUsuarios": GestaoUsuarios,
@@ -160,6 +162,7 @@ export const PAGES = {
     "OrdensServico": OrdensServico,
     "Patrimonio": Patrimonio,
     "PlanoContas": PlanoContas,
+    "Ponto": Ponto,
     "Relatorio13Salario": Relatorio13Salario,
     "RelatorioAdiantamentos": RelatorioAdiantamentos,
     "RelatorioContasPagar": RelatorioContasPagar,
@@ -178,9 +181,6 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
-    "Funcionarios": Funcionarios,
-    "Ponto": Ponto,
-    "EspelhoPonto": EspelhoPonto,
 }
 
 export const pagesConfig = {
