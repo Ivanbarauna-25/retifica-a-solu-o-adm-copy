@@ -435,12 +435,24 @@ export default function PontoPage() {
           <Card className="shadow-sm">
             <CardContent className="p-3 md:p-6">
               {/* Filtros */}
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 md:p-5 mb-4 md:mb-6 border border-slate-200 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Filter className="w-4 h-4 text-slate-600" />
-                  <h3 className="text-xs md:text-sm font-semibold text-slate-700">Filtros</h3>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="mb-4 md:mb-6">
+                <button
+                  onClick={() => setMostrarFiltros(!mostrarFiltros)}
+                  className="flex items-center gap-2 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-colors w-full md:w-auto"
+                >
+                  <Filter className="w-4 h-4" />
+                  <span className="text-xs md:text-sm font-semibold">
+                    {mostrarFiltros ? 'Ocultar Filtros' : 'Exibir Filtros'}
+                  </span>
+                </button>
+
+                {mostrarFiltros && (
+                  <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-3 md:p-5 mt-3 border border-slate-200 shadow-sm">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Filter className="w-4 h-4 text-slate-600" />
+                      <h3 className="text-xs md:text-sm font-semibold text-slate-700">Filtros</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-[10px] md:text-xs font-semibold text-slate-600">Funcionário</Label>
                     <Select value={filtroFuncionario} onValueChange={setFiltroFuncionario}>
@@ -499,7 +511,7 @@ export default function PontoPage() {
                     >
                       <X className="w-3 h-3 md:w-4 md:h-4" />
                       Limpar
-                    </Button>
+                      </Button>
                     </div>
                   </div>
                 </div>

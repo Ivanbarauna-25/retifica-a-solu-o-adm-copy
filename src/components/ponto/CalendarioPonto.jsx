@@ -12,6 +12,7 @@ export default function CalendarioPonto({
   onDiaClicado 
 }) {
   const [mes, setMes] = React.useState(new Date());
+  const [dataSelecionada, setDataSelecionada] = React.useState(null);
 
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -98,6 +99,19 @@ export default function CalendarioPonto({
   const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
   const diaSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
 
+  const formatarData = (data) => {
+    if (!data) return "";
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  const handleDefinir = () => {
+    if (dataSelecionada && onDiaClicado) {
+      onDiaClicado(dataSelecionada);
+      setDataSelecionada(null);
+    }
+  };
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="pb-2 md:pb-3 px-2 md:px-6 py-3 md:py-4">
@@ -164,12 +178,15 @@ export default function CalendarioPonto({
 
             const dataStr = `${mes.getFullYear()}-${String(mes.getMonth() + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
             const status = getStatusDia(dia);
+            const hoje = new Date().toISOString().substring(0, 10);
 
             return (
               <button
                 key={dia}
-                onClick={() => onDiaClicado?.(dataStr)}
-                className={`aspect-square min-h-[32px] md:min-h-[40px] flex items-center justify-center rounded border-2 text-xs md:text-sm font-semibold transition-colors hover:shadow-md active:scale-95 cursor-pointer ${status.class}`}
+                onClick={() => setDataSelecionada(dataStr)}
+                className={`aspect-square min-h-[32px] md:min-h-[40px] flex items-center justify-center rounded border-2 text-xs md:text-sm font-semibold transition-colors hover:shadow-md active:scale-95 cursor-pointer ${status.class} ${
+                  dataSelecionada === dataStr ? 'ring-2 ring-blue-500 ring-offset-1' : ''
+                } ${hoje === dataStr ? 'ring-2 ring-slate-400 ring-offset-1' : ''}`}
                 title={dataStr}
               >
                 <div className="flex flex-col items-center">
@@ -180,6 +197,16 @@ export default function CalendarioPonto({
             );
           })}
         </div>
+
+        {/* Botão Definir */}
+        {dataSelecionada && (
+          <button
+            onClick={handleDefinir}
+            className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold transition-colors"
+          >
+            Definir Data: {formatarData(dataSelecionada)}
+          </button>
+        )}
       </CardContent>
     </Card>
   );
