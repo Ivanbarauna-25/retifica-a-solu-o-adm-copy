@@ -723,13 +723,13 @@ export default function FuncionariosPage() {
                             </Button>
 
                             {(canEditFunc || canDeleteFunc) && (
-                              <DropdownMenu>
+                              <DropdownMenu modal={false}>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="icon" className="h-8 w-8">
                                     <MoreVertical className="w-4 h-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
+                                <DropdownMenuContent align="end" className="z-[9999]" sideOffset={5}>
                                   {canEditFunc && (
                                     <>
                                       <DropdownMenuItem onClick={() => openFormForEdit(funcionario)}>
