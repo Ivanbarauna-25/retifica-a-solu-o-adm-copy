@@ -29,7 +29,7 @@ export default function EspelhoPontoDoc({
     return `${min < 0 ? "-" : ""}${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   };
 
-  /* ================= REGISTROS POR DATA ================= */
+  /* ================= AGRUPAR REGISTROS ================= */
   const registrosPorData = useMemo(() => {
     const map = {};
     registros.forEach(r => {
@@ -38,11 +38,13 @@ export default function EspelhoPontoDoc({
       map[data] = map[data] || [];
       map[data].push(r);
     });
+
     Object.values(map).forEach(lista =>
       lista.sort((a, b) =>
         (a.hora || a.data_hora).localeCompare(b.hora || b.data_hora)
       )
     );
+
     return map;
   }, [registros]);
 
@@ -64,52 +66,39 @@ export default function EspelhoPontoDoc({
   );
   const escala = escalas.find(e => e.id === funcEscala?.escala_id);
 
-  /* ================= RESUMO CORRIGIDO ================= */
+  /* ================= RESUMO ================= */
   const resumo = useMemo(() => {
-    let pres = 0;
-    let aus = 0;
-    let just = 0;
-    let trab = 0;
-    let esp = 0;
+    let pres = 0, aus = 0, just = 0, trab = 0, esp = 0;
 
     datasPeriodo.forEach(data => {
-      if (!escala) return;
-
+      const batidas = registrosPorData[data] || [];
+      const ocorr = ocorrencias.find(o => o.data === data);
       const diaSemana = new Date(data + "T12").getDay();
       const diaEscala = diaSemana === 0 ? 7 : diaSemana;
 
       if (
-        escala.dias_semana &&
+        escala?.dias_semana &&
         !escala.dias_semana.split(",").includes(String(diaEscala))
-      ) {
-        return; // fora da escala → não conta
-      }
+      ) return;
 
-      const batidas = registrosPorData[data] || [];
-      const ocorr = ocorrencias.find(o => o.data === data);
-
-      // Justificativas
-      if (ocorr && ["atestado", "abonado", "ferias", "folga"].includes(ocorr.tipo)) {
+      if (ocorr && ["atestado","abonado","ferias","folga"].includes((ocorr.tipo || "").toLowerCase())) {
         just++;
-        esp += escala.carga_diaria_minutos || 480;
         return;
       }
 
-      // Carga esperada
-      esp += escala.carga_diaria_minutos || 480;
+      let minutos = 0;
+      for (let i = 0; i < batidas.length - 1; i += 2) {
+        const h1 = batidas[i].hora || batidas[i].data_hora.substring(11,16);
+        const h2 = batidas[i+1].hora || batidas[i+1].data_hora.substring(11,16);
+        const [h1h,h1m] = h1.split(":").map(Number);
+        const [h2h,h2m] = h2.split(":").map(Number);
+        minutos += (h2h*60+h2m)-(h1h*60+h1m);
+      }
+
+      esp += escala?.carga_diaria_minutos || 0;
 
       if (batidas.length >= 2) {
         pres++;
-
-        let minutos = 0;
-        for (let i = 0; i < batidas.length - 1; i += 2) {
-          const h1 = batidas[i].hora || batidas[i].data_hora.substring(11, 16);
-          const h2 = batidas[i + 1].hora || batidas[i + 1].data_hora.substring(11, 16);
-          const [h1h, h1m] = h1.split(":").map(Number);
-          const [h2h, h2m] = h2.split(":").map(Number);
-          minutos += (h2h * 60 + h2m) - (h1h * 60 + h1m);
-        }
-
         trab += minutos;
       } else {
         aus++;
@@ -120,8 +109,6 @@ export default function EspelhoPontoDoc({
       pres,
       aus,
       just,
-      trab: minToHHmm(trab),
-      esp: minToHHmm(esp),
       saldo: minToHHmm(trab - esp)
     };
   }, [datasPeriodo, registrosPorData, ocorrencias, escala]);
@@ -135,14 +122,14 @@ export default function EspelhoPontoDoc({
           * { print-color-adjust: exact; }
           .no-print { display: none !important; }
           thead { display: table-header-group; }
-          tr, tbody tr { page-break-inside: avoid; }
+          tr { page-break-inside: avoid; }
         }
       `}</style>
 
       <div className="max-w-[210mm] mx-auto">
 
         {/* CABEÇALHO */}
-        <div className="bg-slate-900 text-white px-8 py-4 flex justify-between">
+        <div className="bg-slate-900 text-white px-6 py-3 flex justify-between">
           <div>
             <p className="font-bold uppercase">{configuracoes?.nome_empresa}</p>
             <p className="text-[11px] text-slate-300">
@@ -158,11 +145,9 @@ export default function EspelhoPontoDoc({
         </div>
 
         {/* TÍTULO */}
-        <div className="text-center my-8">
-          <div className="inline-block border border-slate-800 px-10 py-3">
-            <h2 className="text-3xl font-extrabold tracking-wide">
-              ESPELHO DE PONTO
-            </h2>
+        <div className="text-center my-5">
+          <div className="inline-block border border-slate-800 px-8 py-2">
+            <h2 className="text-2xl font-bold tracking-wide">ESPELHO DE PONTO</h2>
             <p className="text-[11px] text-slate-600">
               Registro oficial de jornada – Portaria MTE nº 671/2021
             </p>
@@ -170,8 +155,8 @@ export default function EspelhoPontoDoc({
         </div>
 
         {/* DADOS */}
-        <div className="px-8 text-[11px] mb-6">
-          <div className="grid grid-cols-4 gap-4 border-b pb-4">
+        <div className="px-6 text-[11px] mb-4">
+          <div className="grid grid-cols-4 gap-4 border-b pb-3">
             <div className="col-span-2">
               <span className="text-slate-500">Colaborador</span>
               <p className="font-bold">{funcionario?.nome}</p>
@@ -189,7 +174,7 @@ export default function EspelhoPontoDoc({
 
         {/* TABELA */}
         <table className="w-full text-[11px] border-t border-b border-slate-800">
-          <thead className="bg-slate-800 text-white">
+          <thead className="bg-slate-900 text-white uppercase tracking-wide">
             <tr>
               <th className="p-2 text-left">Data</th>
               <th className="p-2 text-center">Dia</th>
@@ -203,7 +188,6 @@ export default function EspelhoPontoDoc({
           <tbody>
             {datasPeriodo.map(data => {
               const bat = registrosPorData[data] || [];
-              const ocorr = ocorrencias.find(o => o.data === data);
               const dia = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"]
                 [new Date(data+"T12").getDay()];
               return (
@@ -215,17 +199,15 @@ export default function EspelhoPontoDoc({
                       {formatarHora(bat[i]?.hora || bat[i]?.data_hora?.substring(11,16))}
                     </td>
                   ))}
-                  <td className="p-2 text-[10px]">
-                    {ocorr?.descricao || ""}
-                  </td>
+                  <td className="p-2"></td>
                 </tr>
               );
             })}
           </tbody>
         </table>
 
-        {/* APURAÇÃO */}
-        <div className="px-8 mt-6">
+        {/* RESUMO */}
+        <div className="px-6 mt-4">
           <table className="w-full border text-[11px]">
             <tbody>
               <tr>
@@ -245,19 +227,20 @@ export default function EspelhoPontoDoc({
         </div>
 
         {/* ASSINATURAS */}
-        <div className={`grid ${departamentoResponsavel ? "grid-cols-2" : "grid-cols-1"} gap-10 px-8 mt-20 text-[11px]`}>
-          <div>
-            <p className="font-bold">{funcionario?.nome}</p>
-            <div className="border-b h-10 my-2"></div>
-            <p>Assinatura</p>
+        <div className="grid grid-cols-2 gap-12 px-6 mt-20 text-[11px]">
+          <div className="text-center">
+            <div className="border-b border-slate-700 h-10 mb-2"></div>
+            <p className="font-bold uppercase">{funcionario?.nome}</p>
+            <p className="text-[10px] text-slate-500">Colaborador</p>
           </div>
-          {departamentoResponsavel && (
-            <div>
-              <p className="font-bold">{departamentoResponsavel?.nome}</p>
-              <div className="border-b h-10 my-2"></div>
-              <p>Assinatura</p>
-            </div>
-          )}
+
+          <div className="text-center">
+            <div className="border-b border-slate-700 h-10 mb-2"></div>
+            <p className="font-bold uppercase">
+              {departamentoResponsavel?.nome || configuracoes?.nome_empresa}
+            </p>
+            <p className="text-[10px] text-slate-500">Responsável / Empresa</p>
+          </div>
         </div>
 
         {/* RODAPÉ */}
