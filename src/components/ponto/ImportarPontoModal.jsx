@@ -717,7 +717,11 @@ export default function ImportarPontoModal({ isOpen, onClose, onImportado }) {
                                 onValueChange={(value) => handleEditRegistro(idx, 'funcionario_id', value)}
                               >
                                 <SelectTrigger className="h-8 md:h-9 text-[10px] md:text-xs border-2 border-slate-300 bg-white rounded-lg font-medium hover:border-blue-500 transition-colors">
-                                  <SelectValue placeholder={reg.nome_arquivo ? `📋 ${reg.nome_arquivo}` : "Selecionar funcionário..."} />
+                                  <SelectValue>
+                                    {reg.funcionario_id 
+                                      ? funcionarios.find(f => f.id === reg.funcionario_id)?.nome || "Funcionário não encontrado"
+                                      : (reg.nome_arquivo ? `📋 ${reg.nome_arquivo}` : "Selecionar funcionário...")}
+                                  </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
                                   {funcionarios.map((f) => (

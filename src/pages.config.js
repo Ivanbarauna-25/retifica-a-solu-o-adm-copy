@@ -1,3 +1,52 @@
+/**
+ * pages.config.js - Page routing configuration
+ * 
+ * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
+ * Pages are auto-registered when you create files in the ./pages/ folder.
+ * 
+ * THE ONLY EDITABLE VALUE: mainPage
+ * This controls which page is the landing page (shown when users visit the app).
+ * 
+ * Example file structure:
+ * 
+ *   import HomePage from './pages/HomePage';
+ *   import Dashboard from './pages/Dashboard';
+ *   import Settings from './pages/Settings';
+ *   
+ *   export const PAGES = {
+ *       "HomePage": HomePage,
+ *       "Dashboard": Dashboard,
+ *       "Settings": Settings,
+ *   }
+ *   
+ *   export const pagesConfig = {
+ *       mainPage: "HomePage",
+ *       Pages: PAGES,
+ *   };
+ * 
+ * Example with Layout (wraps all pages):
+ *
+ *   import Home from './pages/Home';
+ *   import Settings from './pages/Settings';
+ *   import __Layout from './Layout.jsx';
+ *
+ *   export const PAGES = {
+ *       "Home": Home,
+ *       "Settings": Settings,
+ *   }
+ *
+ *   export const pagesConfig = {
+ *       mainPage: "Home",
+ *       Pages: PAGES,
+ *       Layout: __Layout,
+ *   };
+ *
+ * To change the main page from HomePage to Dashboard, use find_replace:
+ *   Old: mainPage: "HomePage",
+ *   New: mainPage: "Dashboard",
+ *
+ * The mainPage value must match a key in the PAGES object exactly.
+ */
 import Adiantamentos from './pages/Adiantamentos';
 import BancoHoras from './pages/BancoHoras';
 import Cargos from './pages/Cargos';
@@ -16,7 +65,6 @@ import Dashboard from './pages/Dashboard';
 import Departamentos from './pages/Departamentos';
 import EPIs from './pages/EPIs';
 import EscalasTrabalho from './pages/EscalasTrabalho';
-import EspelhoPonto from './pages/EspelhoPonto';
 import Estoque from './pages/Estoque';
 import FichaCandidato from './pages/FichaCandidato';
 import FichaFuncionario from './pages/FichaFuncionario';
@@ -27,7 +75,6 @@ import FormasPagamento from './pages/FormasPagamento';
 import FormularioOS from './pages/FormularioOS';
 import FormularioOrcamento from './pages/FormularioOrcamento';
 import Fornecedores from './pages/Fornecedores';
-import Funcionarios from './pages/Funcionarios';
 import GerenciarErros from './pages/GerenciarErros';
 import GestaoRH from './pages/GestaoRH';
 import GestaoUsuarios from './pages/GestaoUsuarios';
@@ -44,7 +91,6 @@ import Orcamentos from './pages/Orcamentos';
 import OrdensServico from './pages/OrdensServico';
 import Patrimonio from './pages/Patrimonio';
 import PlanoContas from './pages/PlanoContas';
-import Ponto from './pages/Ponto';
 import Relatorio13Salario from './pages/Relatorio13Salario';
 import RelatorioAdiantamentos from './pages/RelatorioAdiantamentos';
 import RelatorioContasPagar from './pages/RelatorioContasPagar';
@@ -63,6 +109,9 @@ import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
+import Funcionarios from './pages/Funcionarios';
+import Ponto from './pages/Ponto';
+import EspelhoPonto from './pages/EspelhoPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -85,7 +134,6 @@ export const PAGES = {
     "Departamentos": Departamentos,
     "EPIs": EPIs,
     "EscalasTrabalho": EscalasTrabalho,
-    "EspelhoPonto": EspelhoPonto,
     "Estoque": Estoque,
     "FichaCandidato": FichaCandidato,
     "FichaFuncionario": FichaFuncionario,
@@ -96,7 +144,6 @@ export const PAGES = {
     "FormularioOS": FormularioOS,
     "FormularioOrcamento": FormularioOrcamento,
     "Fornecedores": Fornecedores,
-    "Funcionarios": Funcionarios,
     "GerenciarErros": GerenciarErros,
     "GestaoRH": GestaoRH,
     "GestaoUsuarios": GestaoUsuarios,
@@ -113,7 +160,6 @@ export const PAGES = {
     "OrdensServico": OrdensServico,
     "Patrimonio": Patrimonio,
     "PlanoContas": PlanoContas,
-    "Ponto": Ponto,
     "Relatorio13Salario": Relatorio13Salario,
     "RelatorioAdiantamentos": RelatorioAdiantamentos,
     "RelatorioContasPagar": RelatorioContasPagar,
@@ -132,6 +178,9 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
+    "Funcionarios": Funcionarios,
+    "Ponto": Ponto,
+    "EspelhoPonto": EspelhoPonto,
 }
 
 export const pagesConfig = {

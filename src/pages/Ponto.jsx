@@ -37,6 +37,7 @@ export default function PontoPage() {
   const [filtroDataFim, setFiltroDataFim] = useState("");
   const [filtroStatus, setFiltroStatus] = useState("todos");
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
 
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -499,8 +500,10 @@ export default function PontoPage() {
                       <X className="w-3 h-3 md:w-4 md:h-4" />
                       Limpar
                     </Button>
+                    </div>
                   </div>
                 </div>
+              )}
               </div>
 
               {/* Tabela de Ponto por Dia */}
