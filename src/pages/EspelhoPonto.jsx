@@ -166,7 +166,10 @@ export default function EspelhoPontoPage() {
                 ← Voltar
               </Button>
               <Button
-                onClick={() => window.print()}
+                onClick={() => {
+                  const url = `/EspelhoPontoPrint?funcionario=${funcionarioSelecionado}&inicio=${dataInicio}&fim=${dataFim}`;
+                  window.open(url, '_blank');
+                }}
                 className="bg-green-600 hover:bg-green-700 text-white gap-2"
               >
                 <Printer className="w-4 h-4" />

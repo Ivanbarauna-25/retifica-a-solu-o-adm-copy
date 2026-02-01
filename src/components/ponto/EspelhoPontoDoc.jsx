@@ -66,7 +66,9 @@ export default function EspelhoPontoDoc({
       const dia = new Date(data + "T12:00").getDay();
       const diaEscala = dia === 0 ? 7 : dia;
 
-      if (escala?.dias_semana && !escala.dias_semana.split(",").includes(String(diaEscala))) return;
+      // Verificar se é dia de trabalho na escala
+      const escalaAtiva = escala?.dias_semana?.[dia]?.ativo;
+      if (escala?.dias_semana && escalaAtiva === false) return;
 
       if (ocorr && ["atestado", "ferias", "abonado", "folga"].includes(ocorr.tipo)) {
         just++;
@@ -75,15 +77,23 @@ export default function EspelhoPontoDoc({
 
       let minutos = 0;
       for (let i = 0; i < batidas.length - 1; i += 2) {
-        const [h1, m1] = (batidas[i].hora || batidas[i].data_hora.substring(11, 16)).split(":");
-        const [h2, m2] = (batidas[i + 1].hora || batidas[i + 1].data_hora.substring(11, 16)).split(":");
-        minutos += (h2 * 60 + +m2) - (h1 * 60 + +m1);
+        if (!batidas[i + 1]) break; // Sem par completo
+        const h1 = batidas[i].hora || batidas[i].data_hora.substring(11, 16);
+        const h2 = batidas[i + 1].hora || batidas[i + 1].data_hora.substring(11, 16);
+        const [h1h, h1m] = h1.split(":").map(Number);
+        const [h2h, h2m] = h2.split(":").map(Number);
+        minutos += (h2h * 60 + h2m) - (h1h * 60 + h1m);
       }
 
-      if (batidas.length >= 2) {
+      // Considerar presente se tem pelo menos 1 par de batidas (entrada + saída)
+      if (batidas.length >= 2 && minutos > 0) {
         pres++;
         trab += minutos;
+      } else if (batidas.length > 0) {
+        // Tem batidas mas incompletas
+        aus++;
       } else {
+        // Sem batidas
         aus++;
       }
 
