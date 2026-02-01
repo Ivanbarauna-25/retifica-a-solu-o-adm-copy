@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Printer, Download } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import EspelhoPontoDoc from "@/components/ponto/EspelhoPontoDoc.jsx";
 
 export default function EspelhoPontoPage() {
@@ -22,6 +24,7 @@ export default function EspelhoPontoPage() {
   const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -98,6 +101,28 @@ export default function EspelhoPontoPage() {
     ? funcionarios.find(f => f.id === departamento.responsavel_id) 
     : null;
 
+  const handleImprimir = () => {
+    const cargosMap = JSON.parse(sessionStorage.getItem('cargosMap') || '{}');
+    const dados = {
+      funcionario,
+      dataInicio,
+      dataFim,
+      registros,
+      ocorrencias,
+      configuracoes,
+      escalas,
+      funcionariosEscalas,
+      cargos: cargosMap,
+      departamentoResponsavel
+    };
+    
+    // Salvar no sessionStorage como fallback
+    sessionStorage.setItem('espelhoPontoPrint', JSON.stringify(dados));
+    
+    // Abrir nova aba
+    window.open(createPageUrl('EspelhoPontoPrint'), '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-2 md:p-6">
       <div className="max-w-7xl mx-auto">
@@ -166,10 +191,7 @@ export default function EspelhoPontoPage() {
                 ← Voltar
               </Button>
               <Button
-                onClick={() => {
-                  const url = `/EspelhoPontoPrint?funcionario=${funcionarioSelecionado}&inicio=${dataInicio}&fim=${dataFim}`;
-                  window.open(url, '_blank');
-                }}
+                onClick={handleImprimir}
                 className="bg-green-600 hover:bg-green-700 text-white gap-2"
               >
                 <Printer className="w-4 h-4" />
