@@ -388,7 +388,7 @@ export default function PontoPage() {
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+        <div className="max-w-[2400px] mx-auto px-1 md:px-4">
           {/* Dashboard e Botão Calendário */}
           <div className="flex gap-2 mb-3">
             <div className="flex-1">
