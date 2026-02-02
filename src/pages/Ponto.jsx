@@ -346,8 +346,8 @@ export default function PontoPage() {
     <>
       <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
-          <div className="max-w-[1800px] mx-auto">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-2 md:px-4 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-none md:rounded-lg mx-0">
+          <div className="max-w-full mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg shadow-md">
@@ -388,7 +388,7 @@ export default function PontoPage() {
           </div>
         </div>
 
-        <div className="max-w-[2400px] mx-auto px-1 md:px-4">
+        <div className="max-w-full mx-auto px-1 md:px-2">
           {/* Dashboard e Botão Calendário */}
           <div className="flex gap-2 mb-3">
             <div className="flex-1">
