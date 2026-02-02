@@ -441,7 +441,8 @@ export default function Layout({ children, currentPageName }) {
   currentPageName === 'Relatorio13Salario' ||
   currentPageName === 'RelatorioOS' ||
   currentPageName === 'TermoRecebimentoEPI' ||
-  currentPageName === 'RelatorioCotacaoEPI') {
+  currentPageName === 'RelatorioCotacaoEPI' ||
+  currentPageName === 'EspelhoPontoPrint') {
     return <>{children}</>;
   }
 
