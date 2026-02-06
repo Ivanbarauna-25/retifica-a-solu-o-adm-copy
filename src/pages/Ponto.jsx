@@ -42,6 +42,12 @@ export default function PontoPage() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Função auxiliar (definida antes dos useMemo)
+  const getFuncionarioNome = (funcionarioId) => {
+    const func = funcionarios.find(f => f.id === funcionarioId);
+    return func?.nome || "-";
+  };
+
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -221,9 +227,11 @@ export default function PontoPage() {
   }, [filtroDataInicio, filtroDataFim, filtroFuncionario]);
 
   const registrosFiltrados = useMemo(() => {
+    let resultado = [];
+
     // Se tem funcionário selecionado e período, gerar todos os dias
     if (filtroFuncionario !== "todos" && gerarTodasDatas.length > 0) {
-      return gerarTodasDatas.map(data => {
+      resultado = gerarTodasDatas.map(data => {
         const grupoExistente = registrosAgrupados.find(
           g => g.funcionario_id === filtroFuncionario && g.data === data
         );
@@ -240,9 +248,8 @@ export default function PontoPage() {
         };
       }).sort((a, b) => b.data.localeCompare(a.data));
     }
-
     // Se tem período definido mas filtro é "todos", gerar para TODOS os funcionários
-    if (filtroFuncionario === "todos" && (filtroDataInicio || filtroDataFim)) {
+    else if (filtroFuncionario === "todos" && (filtroDataInicio || filtroDataFim)) {
       // Determinar período
       let dataInicio = filtroDataInicio;
       let dataFim = filtroDataFim;
@@ -270,7 +277,6 @@ export default function PontoPage() {
       }
 
       // Gerar linhas para TODOS os funcionários em TODAS as datas
-      const resultado = [];
       const funcionariosAtivos = funcionarios.filter(f => 
         f.status === 'ativo' || f.status === 'experiencia'
       );
@@ -294,7 +300,7 @@ export default function PontoPage() {
         }
       }
 
-      return resultado.sort((a, b) => {
+      resultado.sort((a, b) => {
         // Ordenar por data DESC, depois por nome do funcionário
         const dataCmp = b.data.localeCompare(a.data);
         if (dataCmp !== 0) return dataCmp;
@@ -303,16 +309,68 @@ export default function PontoPage() {
         return nomeA.localeCompare(nomeB);
       });
     }
-
     // Filtro normal (sem preencher dias vazios)
-    return registrosAgrupados.filter((grupo) => {
-      const passaFunc = filtroFuncionario === "todos" || grupo.funcionario_id === filtroFuncionario;
-      const passaDataInicio = !filtroDataInicio || grupo.data >= filtroDataInicio;
-      const passaDataFim = !filtroDataFim || grupo.data <= filtroDataFim;
-      
-      return passaFunc && passaDataInicio && passaDataFim;
-    }).sort((a, b) => b.data.localeCompare(a.data));
-  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim, gerarTodasDatas, funcionarios]);
+    else {
+      resultado = registrosAgrupados.filter((grupo) => {
+        const passaFunc = filtroFuncionario === "todos" || grupo.funcionario_id === filtroFuncionario;
+        const passaDataInicio = !filtroDataInicio || grupo.data >= filtroDataInicio;
+        const passaDataFim = !filtroDataFim || grupo.data <= filtroDataFim;
+        
+        return passaFunc && passaDataInicio && passaDataFim;
+      }).sort((a, b) => b.data.localeCompare(a.data));
+    }
+
+    // APLICAR FILTRO DE STATUS
+    if (filtroStatus !== "todos") {
+      resultado = resultado.filter((grupo) => {
+        const ocorrencia = ocorrencias.find(
+          o => o.funcionario_id === grupo.funcionario_id && o.data === grupo.data
+        );
+        const diaTrabalho = isDiaTrabalho(grupo.funcionario_id, grupo.data);
+        const naoEDiaTrabalho = !diaTrabalho && grupo.batidas.length === 0;
+
+        // Identificar status do registro
+        if (naoEDiaTrabalho) {
+          return filtroStatus === "folga";
+        }
+        
+        if (ocorrencia) {
+          if (ocorrencia.tipo === "abonado") {
+            return filtroStatus === "abonado";
+          }
+          return filtroStatus === "com_justificativa";
+        }
+
+        // Verificar se tem faltas (batidas incompletas)
+        const batidasOrdenadas = [...grupo.batidas].sort((a, b) => {
+          const horaA = a.hora || a.data_hora?.substring(11, 19) || "00:00:00";
+          const horaB = b.hora || b.data_hora?.substring(11, 19) || "00:00:00";
+          return horaA.localeCompare(horaB);
+        });
+
+        const batidas = ["", "", "", ""];
+        for (let i = 0; i < batidasOrdenadas.length && i < 4; i++) {
+          const horaBatida = batidasOrdenadas[i].hora || batidasOrdenadas[i].data_hora?.substring(11, 19) || "00:00:00";
+          batidas[i] = horaBatida.substring(0, 5);
+        }
+
+        const faltantes = [];
+        for (let i = 0; i < 4; i++) {
+          if (!batidas[i] || batidas[i] === "") {
+            faltantes.push(i + 1);
+          }
+        }
+
+        if (faltantes.length > 0) {
+          return filtroStatus === "falta";
+        }
+
+        return filtroStatus === "normal";
+      });
+    }
+
+    return resultado;
+  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim, filtroStatus, gerarTodasDatas, funcionarios, ocorrencias]);
 
   const limparFiltros = () => {
     setFiltroFuncionario("todos");
@@ -379,11 +437,6 @@ export default function PontoPage() {
         variant: "destructive"
       });
     }
-  };
-
-  const getFuncionarioNome = (funcionarioId) => {
-    const func = funcionarios.find(f => f.id === funcionarioId);
-    return func?.nome || "-";
   };
 
   const formatarData = (data) => {
@@ -559,9 +612,11 @@ export default function PontoPage() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="todos">Todos</SelectItem>
-                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="normal">Normal (Completo)</SelectItem>
+                        <SelectItem value="falta">Falta (Incompleto)</SelectItem>
                         <SelectItem value="abonado">Abonado</SelectItem>
                         <SelectItem value="com_justificativa">Com Justificativa</SelectItem>
+                        <SelectItem value="folga">Folga</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -729,17 +784,29 @@ export default function PontoPage() {
                                   </>
                                 )}
                                 <td className="px-3 py-3">
-                                  {!naoEDiaTrabalho && (
-                                    <div className="flex gap-2 justify-center items-center">
+                                  <div className="flex gap-2 justify-center items-center">
+                                    {grupo.batidas.length > 0 && (
+                                      <button
+                                        onClick={() => {
+                                          setVisualizarGrupo(grupo);
+                                          setIsVisualizarOpen(true);
+                                        }}
+                                        className="p-1.5 hover:bg-blue-100 rounded-md transition-colors"
+                                        title="Visualizar Detalhes"
+                                      >
+                                        <Eye className="w-4 h-4 text-blue-500 hover:text-blue-700" />
+                                      </button>
+                                    )}
+                                    {!naoEDiaTrabalho && (
                                       <button
                                         onClick={() => handleAbrirOcorrencia(grupo)}
-                                        className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
-                                        title={ocorrencia ? "Ver Ocorrência" : "Adicionar Ocorrência"}
+                                        className="p-1.5 hover:bg-amber-100 rounded-md transition-colors"
+                                        title={ocorrencia ? "Editar Ocorrência" : "Adicionar Ocorrência"}
                                       >
-                                        <Eye className="w-4 h-4 text-slate-400 hover:text-slate-600" />
+                                        <AlertTriangle className="w-4 h-4 text-amber-500 hover:text-amber-700" />
                                       </button>
-                                    </div>
-                                  )}
+                                    )}
+                                  </div>
                                 </td>
                               </tr>
                             );
