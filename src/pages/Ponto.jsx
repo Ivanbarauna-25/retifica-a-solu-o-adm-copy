@@ -241,6 +241,69 @@ export default function PontoPage() {
       }).sort((a, b) => b.data.localeCompare(a.data));
     }
 
+    // Se tem período definido mas filtro é "todos", gerar para TODOS os funcionários
+    if (filtroFuncionario === "todos" && (filtroDataInicio || filtroDataFim)) {
+      // Determinar período
+      let dataInicio = filtroDataInicio;
+      let dataFim = filtroDataFim;
+      
+      if (!dataInicio && dataFim) {
+        const [ano, mes] = dataFim.split('-');
+        dataInicio = `${ano}-${mes}-01`;
+      } else if (dataInicio && !dataFim) {
+        const [ano, mes] = dataInicio.split('-');
+        const ultimoDia = new Date(parseInt(ano), parseInt(mes), 0).getDate();
+        dataFim = `${ano}-${mes}-${String(ultimoDia).padStart(2, '0')}`;
+      }
+
+      // Gerar todas as datas do período
+      const datas = [];
+      let dataAtual = new Date(dataInicio + "T12:00:00");
+      const dataFinal = new Date(dataFim + "T12:00:00");
+
+      while (dataAtual <= dataFinal) {
+        const ano = dataAtual.getFullYear();
+        const mes = String(dataAtual.getMonth() + 1).padStart(2, "0");
+        const dia = String(dataAtual.getDate()).padStart(2, "0");
+        datas.push(`${ano}-${mes}-${dia}`);
+        dataAtual.setDate(dataAtual.getDate() + 1);
+      }
+
+      // Gerar linhas para TODOS os funcionários em TODAS as datas
+      const resultado = [];
+      const funcionariosAtivos = funcionarios.filter(f => 
+        f.status === 'ativo' || f.status === 'experiencia'
+      );
+
+      for (const func of funcionariosAtivos) {
+        for (const data of datas) {
+          const grupoExistente = registrosAgrupados.find(
+            g => g.funcionario_id === func.id && g.data === data
+          );
+
+          if (grupoExistente) {
+            resultado.push(grupoExistente);
+          } else {
+            // Criar linha vazia para o dia
+            resultado.push({
+              funcionario_id: func.id,
+              data: data,
+              batidas: []
+            });
+          }
+        }
+      }
+
+      return resultado.sort((a, b) => {
+        // Ordenar por data DESC, depois por nome do funcionário
+        const dataCmp = b.data.localeCompare(a.data);
+        if (dataCmp !== 0) return dataCmp;
+        const nomeA = getFuncionarioNome(a.funcionario_id);
+        const nomeB = getFuncionarioNome(b.funcionario_id);
+        return nomeA.localeCompare(nomeB);
+      });
+    }
+
     // Filtro normal (sem preencher dias vazios)
     return registrosAgrupados.filter((grupo) => {
       const passaFunc = filtroFuncionario === "todos" || grupo.funcionario_id === filtroFuncionario;
@@ -249,7 +312,7 @@ export default function PontoPage() {
       
       return passaFunc && passaDataInicio && passaDataFim;
     }).sort((a, b) => b.data.localeCompare(a.data));
-  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim, gerarTodasDatas]);
+  }, [registrosAgrupados, filtroFuncionario, filtroDataInicio, filtroDataFim, gerarTodasDatas, funcionarios]);
 
   const limparFiltros = () => {
     setFiltroFuncionario("todos");
