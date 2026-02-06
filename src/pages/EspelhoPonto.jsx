@@ -12,7 +12,7 @@ import EspelhoPontoDoc from "@/components/ponto/EspelhoPontoDoc.jsx";
 
 export default function EspelhoPontoPage() {
   const [funcionarios, setFuncionarios] = useState([]);
-  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState("todos");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
   const [registros, setRegistros] = useState([]);
@@ -23,6 +23,7 @@ export default function EspelhoPontoPage() {
   const [escalas, setEscalas] = useState([]);
   const [funcionariosEscalas, setFuncionariosEscalas] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
+  const [funcionariosSelecionados, setFuncionariosSelecionados] = useState([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -64,28 +65,36 @@ export default function EspelhoPontoPage() {
 
     setIsLoading(true);
     try {
-      const [regsData, ocorrenciasData] = await Promise.all([
-        base44.entities.PontoRegistro.filter({
-          funcionario_id: funcionarioSelecionado
-        }, "-data_hora", 2000),
-        base44.entities.OcorrenciaPonto.filter({
-          funcionario_id: funcionarioSelecionado
-        }, "-data", 1000)
+      // Se for "todos", buscar todos os funcionários ativos
+      let funcionariosParaGerar = [];
+      if (funcionarioSelecionado === "todos") {
+        funcionariosParaGerar = funcionarios.filter(f => 
+          f.status === 'ativo' || f.status === 'experiencia'
+        );
+      } else {
+        const func = funcionarios.find(f => f.id === funcionarioSelecionado);
+        if (func) funcionariosParaGerar = [func];
+      }
+
+      if (funcionariosParaGerar.length === 0) {
+        toast({
+          title: "Atenção",
+          description: "Nenhum funcionário ativo encontrado",
+          variant: "destructive"
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Buscar todos os registros e ocorrências de uma vez
+      const [todosRegs, todasOcorrencias] = await Promise.all([
+        base44.entities.PontoRegistro.list("-data_hora", 5000),
+        base44.entities.OcorrenciaPonto.list("-data", 2000)
       ]);
 
-      // Filtrar localmente por data para evitar problemas de timezone
-      const registrosFiltrados = (regsData || []).filter(reg => {
-        if (!reg.data_hora) return false;
-        const data = reg.data_hora.substring(0, 10);
-        return data >= dataInicio && data <= dataFim;
-      });
-      
-      const ocorrenciasFiltradas = (ocorrenciasData || []).filter(ocor => {
-        return ocor.data >= dataInicio && ocor.data <= dataFim;
-      });
-
-      setRegistros(registrosFiltrados);
-      setOcorrencias(ocorrenciasFiltradas);
+      setRegistros(todosRegs || []);
+      setOcorrencias(todasOcorrencias || []);
+      setFuncionariosSelecionados(funcionariosParaGerar);
       setMostrarEspelho(true);
     } catch (error) {
       console.error("Erro:", error);
@@ -95,20 +104,24 @@ export default function EspelhoPontoPage() {
     }
   };
 
-  const funcionario = funcionarios.find(f => f.id === funcionarioSelecionado);
-  const departamento = funcionario ? departamentos.find(d => d.id === funcionario.departamento_id) : null;
-  const departamentoResponsavel = departamento?.responsavel_id 
-    ? funcionarios.find(f => f.id === departamento.responsavel_id) 
-    : null;
-
-  const handleImprimir = () => {
+  const handleImprimir = (funcionarioId) => {
     const cargosMap = JSON.parse(sessionStorage.getItem('cargosMap') || '{}');
+    const funcionario = funcionarios.find(f => f.id === funcionarioId);
+    const departamento = funcionario ? departamentos.find(d => d.id === funcionario.departamento_id) : null;
+    const departamentoResponsavel = departamento?.responsavel_id 
+      ? funcionarios.find(f => f.id === departamento.responsavel_id) 
+      : null;
+
+    // Filtrar registros e ocorrências para o funcionário específico
+    const registrosFuncionario = registros.filter(r => r.funcionario_id === funcionarioId);
+    const ocorrenciasFuncionario = ocorrencias.filter(o => o.funcionario_id === funcionarioId);
+
     const dados = {
       funcionario,
       dataInicio,
       dataFim,
-      registros,
-      ocorrencias,
+      registros: registrosFuncionario,
+      ocorrencias: ocorrenciasFuncionario,
       configuracoes,
       escalas,
       funcionariosEscalas,
@@ -123,6 +136,14 @@ export default function EspelhoPontoPage() {
     window.open(createPageUrl('EspelhoPontoPrint'), '_blank');
   };
 
+  const handleImprimirTodos = () => {
+    funcionariosSelecionados.forEach((func, index) => {
+      setTimeout(() => {
+        handleImprimir(func.id);
+      }, index * 500); // Delay para evitar conflitos
+    });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 p-2 md:p-6">
       <div className="max-w-7xl mx-auto">
@@ -134,13 +155,16 @@ export default function EspelhoPontoPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">Funcionário</Label>
-                <Select value={funcionarioSelecionado || ""} onValueChange={setFuncionarioSelecionado}>
+                <Select value={funcionarioSelecionado || "todos"} onValueChange={setFuncionarioSelecionado}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar...">
-                      {funcionarioSelecionado ? funcionarios.find(f => f.id === funcionarioSelecionado)?.nome : "Selecionar..."}
+                      {funcionarioSelecionado === "todos" 
+                        ? "📋 Todos os Funcionários" 
+                        : funcionarios.find(f => f.id === funcionarioSelecionado)?.nome || "Selecionar..."}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="todos">📋 Todos os Funcionários</SelectItem>
                     {funcionarios.map(f => (
                       <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
                     ))}
@@ -182,7 +206,7 @@ export default function EspelhoPontoPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button
                 onClick={() => setMostrarEspelho(false)}
                 variant="outline"
@@ -190,28 +214,57 @@ export default function EspelhoPontoPage() {
               >
                 ← Voltar
               </Button>
-              <Button
-                onClick={handleImprimir}
-                className="bg-green-600 hover:bg-green-700 text-white gap-2"
-              >
-                <Printer className="w-4 h-4" />
-                Imprimir
-              </Button>
+              {funcionariosSelecionados.length > 1 ? (
+                <Button
+                  onClick={handleImprimirTodos}
+                  className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  Imprimir Todos ({funcionariosSelecionados.length})
+                </Button>
+              ) : null}
             </div>
 
-            <EspelhoPontoDoc
-              funcionario={funcionario}
-              registros={registros}
-              ocorrencias={ocorrencias}
-              dataInicio={dataInicio}
-              dataFim={dataFim}
-              configuracoes={configuracoes}
-              escalas={escalas}
-              funcionariosEscalas={funcionariosEscalas}
-              cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
-              departamento={departamento}
-              departamentoResponsavel={departamentoResponsavel}
-            />
+            <div className="space-y-8">
+              {funcionariosSelecionados.map((func) => {
+                const registrosFuncionario = registros.filter(r => r.funcionario_id === func.id);
+                const ocorrenciasFuncionario = ocorrencias.filter(o => o.funcionario_id === func.id);
+                const departamento = departamentos.find(d => d.id === func.departamento_id);
+                const departamentoResponsavel = departamento?.responsavel_id 
+                  ? funcionarios.find(f => f.id === departamento.responsavel_id) 
+                  : null;
+
+                return (
+                  <div key={func.id} className="bg-white rounded-xl shadow-lg p-4 relative">
+                    {funcionariosSelecionados.length > 1 && (
+                      <div className="flex justify-end mb-2">
+                        <Button
+                          onClick={() => handleImprimir(func.id)}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white gap-2"
+                        >
+                          <Printer className="w-3 h-3" />
+                          Imprimir
+                        </Button>
+                      </div>
+                    )}
+                    <EspelhoPontoDoc
+                      funcionario={func}
+                      registros={registrosFuncionario}
+                      ocorrencias={ocorrenciasFuncionario}
+                      dataInicio={dataInicio}
+                      dataFim={dataFim}
+                      configuracoes={configuracoes}
+                      escalas={escalas}
+                      funcionariosEscalas={funcionariosEscalas}
+                      cargos={JSON.parse(sessionStorage.getItem('cargosMap') || '{}')}
+                      departamento={departamento}
+                      departamentoResponsavel={departamentoResponsavel}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
