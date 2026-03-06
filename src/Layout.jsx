@@ -17,7 +17,6 @@ import {
   Timer,
   Wallet,
   CalendarCheck,
-  Truck,
   ShoppingCart,
   Banknote,
   FileText,
@@ -33,7 +32,6 @@ import {
   CreditCard,
   ArrowRightLeft,
   Tags,
-  AlertTriangle,
   Shield,
   HardHat } from
 "lucide-react";
@@ -64,7 +62,6 @@ import {
   DropdownMenuSeparator } from
 "@/components/ui/dropdown-menu";
 import { Toaster } from "@/components/ui/toaster";
-import { motion } from "framer-motion";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 // Componente de Transição de Página Simplificado
