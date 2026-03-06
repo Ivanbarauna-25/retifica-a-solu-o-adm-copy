@@ -52,7 +52,6 @@ import BancoHoras from './pages/BancoHoras';
 import Cargos from './pages/Cargos';
 import Categorias from './pages/Categorias';
 import Clientes from './pages/Clientes';
-import CodeFixReview from './pages/CodeFixReview';
 import CondicoesPagamento from './pages/CondicoesPagamento';
 import Configuracoes from './pages/Configuracoes';
 import ContasBancarias from './pages/ContasBancarias';
@@ -78,14 +77,12 @@ import FormularioOS from './pages/FormularioOS';
 import FormularioOrcamento from './pages/FormularioOrcamento';
 import Fornecedores from './pages/Fornecedores';
 import Funcionarios from './pages/Funcionarios';
-import GerenciarErros from './pages/GerenciarErros';
 import GestaoRH from './pages/GestaoRH';
 import GestaoUsuarios from './pages/GestaoUsuarios';
 import Home from './pages/Home';
 import ImprimirOS from './pages/ImprimirOS';
 import MatrizPermissoes from './pages/MatrizPermissoes';
 import MeuPerfil from './pages/MeuPerfil';
-import MonitoramentoAgente from './pages/MonitoramentoAgente';
 import Motores from './pages/Motores';
 import MovimentacaoFinanceira from './pages/MovimentacaoFinanceira';
 import NotasFiscais from './pages/NotasFiscais';
@@ -109,7 +106,6 @@ import RelatorioOS from './pages/RelatorioOS';
 import RelatorioOrcamentos from './pages/RelatorioOrcamentos';
 import Servicos from './pages/Servicos';
 import Tarefas from './pages/Tarefas';
-import TarefasCodeFix from './pages/TarefasCodeFix';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
@@ -122,7 +118,6 @@ export const PAGES = {
     "Cargos": Cargos,
     "Categorias": Categorias,
     "Clientes": Clientes,
-    "CodeFixReview": CodeFixReview,
     "CondicoesPagamento": CondicoesPagamento,
     "Configuracoes": Configuracoes,
     "ContasBancarias": ContasBancarias,
@@ -148,14 +143,12 @@ export const PAGES = {
     "FormularioOrcamento": FormularioOrcamento,
     "Fornecedores": Fornecedores,
     "Funcionarios": Funcionarios,
-    "GerenciarErros": GerenciarErros,
     "GestaoRH": GestaoRH,
     "GestaoUsuarios": GestaoUsuarios,
     "Home": Home,
     "ImprimirOS": ImprimirOS,
     "MatrizPermissoes": MatrizPermissoes,
     "MeuPerfil": MeuPerfil,
-    "MonitoramentoAgente": MonitoramentoAgente,
     "Motores": Motores,
     "MovimentacaoFinanceira": MovimentacaoFinanceira,
     "NotasFiscais": NotasFiscais,
@@ -179,7 +172,6 @@ export const PAGES = {
     "RelatorioOrcamentos": RelatorioOrcamentos,
     "Servicos": Servicos,
     "Tarefas": Tarefas,
-    "TarefasCodeFix": TarefasCodeFix,
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
