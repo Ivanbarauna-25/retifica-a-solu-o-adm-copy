@@ -554,7 +554,7 @@ export default function OrcamentosPage() {
                             {formatCurrency(orcamento.valor_total || 0)}
                           </TableCell>
                           <TableCell className="mx-auto pr-1 pl-2 align-middle [&:has([role=checkbox])]:pr-0 md:py-3 hidden sm:table-cell">
-                            <Badge className="bg-slate-50 text-slate-950 mx-auto px-1.5 py-0.5 text-xs font-semibold rounded-full inline-flex items-center border transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent hover:bg-primary/80 md:text-xs md:px-2">
+                            <Badge className={`${statusConfig[orcamento.status] || 'bg-gray-100 text-gray-800'} text-xs font-semibold px-2 py-0.5 border-0`}>
                               {statusLabels[orcamento.status]}
                             </Badge>
                           </TableCell>
