@@ -1,176 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import StandardModal, { FieldGrid, ModalField } from '@/components/ui/StandardModal';
+import { TrendingUp, FileText, DollarSign } from 'lucide-react';
 
 export default function ContasReceberForm({ conta, clientes, ordensServico, planoContas, onSave, onClose }) {
   const [formData, setFormData] = useState({
-    cliente_id: '',
-    plano_contas_id: '',
-    ordem_servico_id: '',
-    descricao: '',
-    numero_documento: '',
-    data_vencimento: '',
-    data_recebimento: '',
-    competencia: '',
-    valor_original: '',
-    valor_recebido: '',
-    juros_multa: '0',
-    desconto: '0',
-    status: 'pendente',
-    observacoes: ''
+    cliente_id: '', plano_contas_id: '', ordem_servico_id: '', descricao: '',
+    numero_documento: '', data_vencimento: '', data_recebimento: '', competencia: '',
+    valor_original: '', valor_recebido: '', juros_multa: '0', desconto: '0',
+    status: 'pendente', observacoes: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (conta) {
-      setFormData({ ...conta });
-    }
-  }, [conta]);
+  useEffect(() => { if (conta) setFormData({ ...conta }); }, [conta]);
 
   useEffect(() => {
     if (formData.data_vencimento && !formData.competencia) {
       const data = new Date(formData.data_vencimento + 'T00:00:00');
-      const competencia = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
-      setFormData(prev => ({ ...prev, competencia }));
+      setFormData(prev => ({
+        ...prev,
+        competencia: `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`
+      }));
     }
   }, [formData.data_vencimento]);
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
-  };
+  const set = (field) => (val) =>
+    setFormData(prev => ({ ...prev, [field]: val?.target ? val.target.value : val }));
 
-  const handleSelectChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSaving(true);
+    await onSave(formData);
+    setIsSaving(false);
   };
 
-  const contasReceita = planoContas.filter(conta => conta.tipo === 'receita' && conta.ativa);
+  const contasReceita = planoContas.filter(c => c.tipo === 'receita' && c.ativa);
 
-  return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto text-black">
-        <DialogHeader>
-          <DialogTitle className="text-black">{conta ? 'Editar' : 'Nova'} Conta a Receber</DialogTitle>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cliente_id" className="text-black">Cliente *</Label>
-              <Select value={formData.cliente_id} onValueChange={(value) => handleSelectChange('cliente_id', value)}>
-                <SelectTrigger className="text-black">
-                  <SelectValue placeholder="Selecione o cliente" />
-                </SelectTrigger>
+  const tabs = [
+    {
+      value: 'geral',
+      label: 'Dados Gerais',
+      icon: FileText,
+      content: (
+        <div className="space-y-4">
+          <FieldGrid cols={2}>
+            <ModalField label="Cliente">
+              <Select value={formData.cliente_id} onValueChange={set('cliente_id')}>
+                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                 <SelectContent>
-                  {clientes.map(cliente => (
-                    <SelectItem key={cliente.id} value={cliente.id}>
-                      {cliente.nome}
-                    </SelectItem>
-                  ))}
+                  {clientes.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
                 </SelectContent>
               </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="plano_contas_id" className="text-black">Categoria *</Label>
-              <Select value={formData.plano_contas_id} onValueChange={(value) => handleSelectChange('plano_contas_id', value)}>
-                <SelectTrigger className="text-black">
-                  <SelectValue placeholder="Selecione a categoria" />
-                </SelectTrigger>
+            </ModalField>
+            <ModalField label="Categoria">
+              <Select value={formData.plano_contas_id} onValueChange={set('plano_contas_id')}>
+                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
                 <SelectContent>
-                  {contasReceita.map(conta => (
-                    <SelectItem key={conta.id} value={conta.id}>
-                      {conta.codigo} - {conta.nome}
-                    </SelectItem>
-                  ))}
+                  {contasReceita.map(c => <SelectItem key={c.id} value={c.id}>{c.codigo} - {c.nome}</SelectItem>)}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </ModalField>
+          </FieldGrid>
 
-          <div className="space-y-2">
-            <Label htmlFor="ordem_servico_id" className="text-black">Ordem de Serviço (opcional)</Label>
-            <Select value={formData.ordem_servico_id} onValueChange={(value) => handleSelectChange('ordem_servico_id', value)}>
-              <SelectTrigger className="text-black">
-                <SelectValue placeholder="Selecione a OS (opcional)" />
-              </SelectTrigger>
+          <ModalField label="OS Relacionada">
+            <Select value={formData.ordem_servico_id || ''} onValueChange={set('ordem_servico_id')}>
+              <SelectTrigger><SelectValue placeholder="Nenhuma OS (opcional)" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value={null}>Nenhuma OS</SelectItem>
                 {ordensServico.map(os => (
-                  <SelectItem key={os.id} value={os.id}>
-                    {os.numero_os} - {os.descricao}
-                  </SelectItem>
+                  <SelectItem key={os.id} value={os.id}>{os.numero_os}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </ModalField>
 
-          <div className="space-y-2">
-            <Label htmlFor="descricao" className="text-black">Descrição *</Label>
-            <Input id="descricao" value={formData.descricao} onChange={handleChange} required className="text-black" />
-          </div>
+          <ModalField label="Descrição" required>
+            <Input value={formData.descricao} onChange={set('descricao')} required />
+          </ModalField>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="numero_documento" className="text-black">Número do Documento</Label>
-              <Input id="numero_documento" value={formData.numero_documento} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="data_vencimento" className="text-black">Data de Vencimento *</Label>
-              <Input id="data_vencimento" type="date" value={formData.data_vencimento} onChange={handleChange} required className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="competencia" className="text-black">Competência *</Label>
-              <Input 
-                id="competencia" 
-                type="month" 
-                value={formData.competencia} 
-                onChange={handleChange} 
-                required 
-                placeholder="AAAA-MM"
-                className="text-black"
-              />
-            </div>
-          </div>
+          <FieldGrid cols={3}>
+            <ModalField label="Nº Documento">
+              <Input value={formData.numero_documento} onChange={set('numero_documento')} />
+            </ModalField>
+            <ModalField label="Vencimento" required>
+              <Input type="date" value={formData.data_vencimento} onChange={set('data_vencimento')} required />
+            </ModalField>
+            <ModalField label="Competência" required>
+              <Input type="month" value={formData.competencia} onChange={set('competencia')} required />
+            </ModalField>
+          </FieldGrid>
+        </div>
+      )
+    },
+    {
+      value: 'valores',
+      label: 'Valores',
+      icon: DollarSign,
+      content: (
+        <div className="space-y-4">
+          <FieldGrid cols={3}>
+            <ModalField label="Valor Original" required>
+              <Input type="number" step="0.01" value={formData.valor_original} onChange={set('valor_original')} required />
+            </ModalField>
+            <ModalField label="Juros/Multa">
+              <Input type="number" step="0.01" value={formData.juros_multa} onChange={set('juros_multa')} />
+            </ModalField>
+            <ModalField label="Desconto">
+              <Input type="number" step="0.01" value={formData.desconto} onChange={set('desconto')} />
+            </ModalField>
+          </FieldGrid>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="valor_original" className="text-black">Valor Original *</Label>
-              <Input id="valor_original" type="number" step="0.01" value={formData.valor_original} onChange={handleChange} required className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="juros_multa" className="text-black">Juros/Multa</Label>
-              <Input id="juros_multa" type="number" step="0.01" value={formData.juros_multa} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="desconto" className="text-black">Desconto</Label>
-              <Input id="desconto" type="number" step="0.01" value={formData.desconto} onChange={handleChange} className="text-black" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="valor_recebido" className="text-black">Valor Recebido</Label>
-              <Input id="valor_recebido" type="number" step="0.01" value={formData.valor_recebido} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="data_recebimento" className="text-black">Data do Recebimento</Label>
-              <Input id="data_recebimento" type="date" value={formData.data_recebimento} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status" className="text-black">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => handleSelectChange('status', value)}>
-                <SelectTrigger className="text-black">
-                  <SelectValue />
-                </SelectTrigger>
+          <FieldGrid cols={3}>
+            <ModalField label="Valor Recebido">
+              <Input type="number" step="0.01" value={formData.valor_recebido} onChange={set('valor_recebido')} />
+            </ModalField>
+            <ModalField label="Data Recebimento">
+              <Input type="date" value={formData.data_recebimento} onChange={set('data_recebimento')} />
+            </ModalField>
+            <ModalField label="Status">
+              <Select value={formData.status} onValueChange={set('status')}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="recebido">Recebido</SelectItem>
@@ -178,20 +129,31 @@ export default function ContasReceberForm({ conta, clientes, ordensServico, plan
                   <SelectItem value="cancelado">Cancelado</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </ModalField>
+          </FieldGrid>
 
-          <div className="space-y-2">
-            <Label htmlFor="observacoes" className="text-black">Observações</Label>
-            <Textarea id="observacoes" value={formData.observacoes} onChange={handleChange} rows={3} className="text-black" />
-          </div>
+          <ModalField label="Observações">
+            <Textarea value={formData.observacoes} onChange={set('observacoes')} rows={3} className="resize-none" />
+          </ModalField>
+        </div>
+      )
+    }
+  ];
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
-            <Button type="submit">Salvar</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+  return (
+    <StandardModal
+      open={true}
+      onClose={onClose}
+      title={conta ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
+      subtitle="Preencha os dados da conta"
+      icon={TrendingUp}
+      size="lg"
+      tabs={tabs}
+      activeTab="geral"
+      onTabChange={() => {}}
+      onSave={handleSubmit}
+      isSaving={isSaving}
+      onSubmit={handleSubmit}
+    />
   );
 }

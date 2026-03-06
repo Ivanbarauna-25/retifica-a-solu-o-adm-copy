@@ -1,179 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { CreditCard } from 'lucide-react';
+import StandardModal, { ModalSection, FieldGrid, ModalField } from '@/components/ui/StandardModal';
+import { CreditCard, FileText, DollarSign } from 'lucide-react';
 
 export default function ContasPagarForm({ conta, fornecedores, planoContas, onSave, onClose }) {
   const [formData, setFormData] = useState({
-    fornecedor_id: '',
-    plano_contas_id: '',
-    descricao: '',
-    numero_documento: '',
-    data_vencimento: '',
-    data_pagamento: '',
-    competencia: '',
-    valor_original: '',
-    valor_pago: '',
-    juros_multa: '0',
-    desconto: '0',
-    status: 'pendente',
-    observacoes: ''
+    fornecedor_id: '', plano_contas_id: '', descricao: '', numero_documento: '',
+    data_vencimento: '', data_pagamento: '', competencia: '',
+    valor_original: '', valor_pago: '', juros_multa: '0', desconto: '0',
+    status: 'pendente', observacoes: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (conta) {
-      setFormData({ ...conta });
-    }
-  }, [conta]);
+  useEffect(() => { if (conta) setFormData({ ...conta }); }, [conta]);
 
   useEffect(() => {
     if (formData.data_vencimento && !formData.competencia) {
       const data = new Date(formData.data_vencimento + 'T00:00:00');
-      const competencia = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
-      setFormData(prev => ({ ...prev, competencia }));
+      setFormData(prev => ({
+        ...prev,
+        competencia: `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`
+      }));
     }
   }, [formData.data_vencimento]);
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
-  };
+  const set = (field) => (e) => setFormData(prev => ({ ...prev, [field]: e.target?.value ?? e }));
 
-  const handleSelectChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
+    setIsSaving(true);
+    await onSave(formData);
+    setIsSaving(false);
   };
 
-  const contasDespesa = planoContas.filter(conta => conta.tipo === 'despesa' && conta.ativa);
+  const contasDespesa = planoContas.filter(c => c.tipo === 'despesa' && c.ativa);
 
-  return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-0 bg-white border border-slate-200 rounded-xl">
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-b border-slate-700">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-              <CreditCard className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold">{conta ? 'Editar' : 'Nova'} Conta a Pagar</h2>
-              <p className="text-xs text-slate-300 mt-0.5">Preencha os dados da conta</p>
-            </div>
-          </DialogTitle>
-        </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="p-6 bg-slate-100/50 space-y-4">
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="bg-slate-100 border-b border-slate-200 px-4 py-3">
-              <h3 className="font-bold text-slate-800 text-sm">Dados Gerais</h3>
-            </div>
-            <div className="p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fornecedor_id" className="text-sm font-semibold text-slate-700">Fornecedor *</Label>
-                  <Select value={formData.fornecedor_id} onValueChange={(value) => handleSelectChange('fornecedor_id', value)}>
-                    <SelectTrigger className="text-black">
-                      <SelectValue placeholder="Selecione o fornecedor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {fornecedores.map(fornecedor => (
-                        <SelectItem key={fornecedor.id} value={fornecedor.id}>
-                          {fornecedor.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="plano_contas_id" className="text-sm font-semibold text-slate-700">Categoria *</Label>
-                  <Select value={formData.plano_contas_id} onValueChange={(value) => handleSelectChange('plano_contas_id', value)}>
-                    <SelectTrigger className="text-black">
-                      <SelectValue placeholder="Selecione a categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {contasDespesa.map(conta => (
-                        <SelectItem key={conta.id} value={conta.id}>
-                          {conta.codigo} - {conta.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+  const tabs = [
+    {
+      value: 'geral',
+      label: 'Dados Gerais',
+      icon: FileText,
+      content: (
+        <div className="space-y-4">
+          <FieldGrid cols={2}>
+            <ModalField label="Fornecedor">
+              <Select value={formData.fornecedor_id} onValueChange={set('fornecedor_id')}>
+                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent>
+                  {fornecedores.map(f => <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </ModalField>
+            <ModalField label="Categoria">
+              <Select value={formData.plano_contas_id} onValueChange={set('plano_contas_id')}>
+                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                <SelectContent>
+                  {contasDespesa.map(c => <SelectItem key={c.id} value={c.id}>{c.codigo} - {c.nome}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </ModalField>
+            <ModalField label="Descrição" required colSpan={2}>
+              <Input value={formData.descricao} onChange={set('descricao')} required />
+            </ModalField>
+          </FieldGrid>
 
-              <div className="space-y-2">
-                <Label htmlFor="descricao" className="text-sm font-semibold text-slate-700">Descrição *</Label>
-                <Input id="descricao" value={formData.descricao} onChange={handleChange} required className="text-black" />
-              </div>
-            </div>
-          </div>
+          <FieldGrid cols={3}>
+            <ModalField label="Nº Documento">
+              <Input value={formData.numero_documento} onChange={set('numero_documento')} />
+            </ModalField>
+            <ModalField label="Vencimento" required>
+              <Input type="date" value={formData.data_vencimento} onChange={set('data_vencimento')} required />
+            </ModalField>
+            <ModalField label="Competência" required>
+              <Input type="month" value={formData.competencia} onChange={set('competencia')} required />
+            </ModalField>
+          </FieldGrid>
+        </div>
+      )
+    },
+    {
+      value: 'valores',
+      label: 'Valores',
+      icon: DollarSign,
+      content: (
+        <div className="space-y-4">
+          <FieldGrid cols={3}>
+            <ModalField label="Valor Original" required>
+              <Input type="number" step="0.01" value={formData.valor_original} onChange={set('valor_original')} required />
+            </ModalField>
+            <ModalField label="Juros/Multa">
+              <Input type="number" step="0.01" value={formData.juros_multa} onChange={set('juros_multa')} />
+            </ModalField>
+            <ModalField label="Desconto">
+              <Input type="number" step="0.01" value={formData.desconto} onChange={set('desconto')} />
+            </ModalField>
+          </FieldGrid>
 
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-            <div className="bg-slate-100 border-b border-slate-200 px-4 py-3">
-              <h3 className="font-bold text-slate-800 text-sm">Valores e Datas</h3>
-            </div>
-            <div className="p-4 space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="numero_documento" className="text-black">Número do Documento</Label>
-              <Input id="numero_documento" value={formData.numero_documento} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="data_vencimento" className="text-black">Data de Vencimento *</Label>
-              <Input id="data_vencimento" type="date" value={formData.data_vencimento} onChange={handleChange} required className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="competencia" className="text-black">Competência *</Label>
-              <Input 
-                id="competencia" 
-                type="month" 
-                value={formData.competencia} 
-                onChange={handleChange} 
-                required 
-                placeholder="AAAA-MM"
-                className="text-black"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="valor_original" className="text-black">Valor Original *</Label>
-              <Input id="valor_original" type="number" step="0.01" value={formData.valor_original} onChange={handleChange} required className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="juros_multa" className="text-black">Juros/Multa</Label>
-              <Input id="juros_multa" type="number" step="0.01" value={formData.juros_multa} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="desconto" className="text-black">Desconto</Label>
-              <Input id="desconto" type="number" step="0.01" value={formData.desconto} onChange={handleChange} className="text-black" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="valor_pago" className="text-black">Valor Pago</Label>
-              <Input id="valor_pago" type="number" step="0.01" value={formData.valor_pago} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="data_pagamento" className="text-black">Data do Pagamento</Label>
-              <Input id="data_pagamento" type="date" value={formData.data_pagamento} onChange={handleChange} className="text-black" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status" className="text-black">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => handleSelectChange('status', value)}>
-                <SelectTrigger className="text-black">
-                  <SelectValue />
-                </SelectTrigger>
+          <FieldGrid cols={3}>
+            <ModalField label="Valor Pago">
+              <Input type="number" step="0.01" value={formData.valor_pago} onChange={set('valor_pago')} />
+            </ModalField>
+            <ModalField label="Data Pagamento">
+              <Input type="date" value={formData.data_pagamento} onChange={set('data_pagamento')} />
+            </ModalField>
+            <ModalField label="Status">
+              <Select value={formData.status} onValueChange={set('status')}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pendente">Pendente</SelectItem>
                   <SelectItem value="pago">Pago</SelectItem>
@@ -181,22 +116,31 @@ export default function ContasPagarForm({ conta, fornecedores, planoContas, onSa
                   <SelectItem value="cancelado">Cancelado</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-          </div>
+            </ModalField>
+          </FieldGrid>
 
-          <div className="space-y-2">
-            <Label htmlFor="observacoes" className="text-sm font-semibold text-slate-700">Observações</Label>
-            <Textarea id="observacoes" value={formData.observacoes} onChange={handleChange} rows={3} className="text-black" />
-          </div>
-          </div>
-          </div>
+          <ModalField label="Observações">
+            <Textarea value={formData.observacoes} onChange={set('observacoes')} rows={3} className="resize-none" />
+          </ModalField>
+        </div>
+      )
+    }
+  ];
 
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-            <Button type="button" variant="outline" onClick={onClose} className="border-slate-300 text-slate-700 hover:bg-slate-50">Cancelar</Button>
-            <Button type="submit" className="bg-slate-800 hover:bg-slate-900 text-white">Salvar</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+  return (
+    <StandardModal
+      open={true}
+      onClose={onClose}
+      title={conta ? 'Editar Conta a Pagar' : 'Nova Conta a Pagar'}
+      subtitle="Preencha os dados da conta"
+      icon={CreditCard}
+      size="lg"
+      tabs={tabs}
+      activeTab="geral"
+      onTabChange={() => {}}
+      onSave={handleSubmit}
+      isSaving={isSaving}
+      onSubmit={handleSubmit}
+    />
   );
 }
