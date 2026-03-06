@@ -448,21 +448,21 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
             {/* ---------- */}
 
             <Tabs defaultValue="pessoal" className="flex-1 overflow-hidden flex flex-col px-3 md:px-6 mt-2 md:mt-4">
-              <TabsList className="grid grid-cols-5 bg-slate-100 p-0.5 md:p-1 rounded-lg mb-2 md:mb-4 h-auto">
-                <TabsTrigger value="pessoal" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
-                  <User className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Pessoal</span><span className="sm:hidden">Pessoal</span>
+              <TabsList className="grid grid-cols-5 gap-0.5 bg-slate-100 p-1 rounded-lg mb-3 md:mb-4 h-auto">
+                <TabsTrigger value="pessoal" className="text-[10px] md:text-xs font-medium py-1.5 px-1 rounded-md flex items-center justify-center gap-1 data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                  <User className="w-3 h-3 flex-shrink-0" /><span className="truncate">Pessoal</span>
                 </TabsTrigger>
-                <TabsTrigger value="profissional" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
-                  <Briefcase className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Profissional</span><span className="sm:hidden">Prof.</span>
+                <TabsTrigger value="profissional" className="text-[10px] md:text-xs font-medium py-1.5 px-1 rounded-md flex items-center justify-center gap-1 data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                  <Briefcase className="w-3 h-3 flex-shrink-0" /><span className="truncate hidden sm:inline">Prof.</span>
                 </TabsTrigger>
-                <TabsTrigger value="endereco" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
-                  <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Endereço</span><span className="sm:hidden">End.</span>
+                <TabsTrigger value="endereco" className="text-[10px] md:text-xs font-medium py-1.5 px-1 rounded-md flex items-center justify-center gap-1 data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                  <MapPin className="w-3 h-3 flex-shrink-0" /><span className="truncate hidden sm:inline">End.</span>
                 </TabsTrigger>
-                <TabsTrigger value="bancario" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
-                  <CreditCard className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Bancário</span><span className="sm:hidden">Banco</span>
+                <TabsTrigger value="bancario" className="text-[10px] md:text-xs font-medium py-1.5 px-1 rounded-md flex items-center justify-center gap-1 data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                  <CreditCard className="w-3 h-3 flex-shrink-0" /><span className="truncate hidden sm:inline">Banco</span>
                 </TabsTrigger>
-                <TabsTrigger value="acesso" className="text-[10px] md:text-xs flex flex-col md:flex-row items-center gap-0.5 md:gap-1.5 py-1.5 md:py-2 px-1">
-                  <Settings className="w-3 h-3 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Acesso</span><span className="sm:hidden">Acesso</span>
+                <TabsTrigger value="acesso" className="text-[10px] md:text-xs font-medium py-1.5 px-1 rounded-md flex items-center justify-center gap-1 data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                  <Settings className="w-3 h-3 flex-shrink-0" /><span className="truncate hidden sm:inline">Acesso</span>
                 </TabsTrigger>
               </TabsList>
 
