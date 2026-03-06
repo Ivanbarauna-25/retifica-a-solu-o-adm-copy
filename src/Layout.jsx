@@ -168,16 +168,6 @@ const navigationGroups = [
 
 },
 {
-  group: "DESENVOLVEDOR",
-  icon: Activity,
-  items: [
-  { title: "Gerenciar Erros", url: "GerenciarErros", icon: AlertTriangle, module: "dev" },
-  { title: "Tarefas CodeFix", url: "TarefasCodeFix", icon: ClipboardList, module: "dev" },
-  { title: "Monitoramento", url: "MonitoramentoAgente", icon: Activity, module: "dev" }],
-
-  requireAdmin: true
-},
-{
   group: "ADMINISTRAÇÃO",
   icon: Settings,
   items: [

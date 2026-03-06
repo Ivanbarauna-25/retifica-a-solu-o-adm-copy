@@ -22,7 +22,6 @@ const mobileNavGroups = [
   { key: 'rh', label: 'RH', icon: Users, group: 'RECURSOS HUMANOS' },
   { key: 'compras', label: 'Compras', icon: ShoppingCart, group: 'COMPRAS E SUPRIMENTOS' },
   { key: 'financeiro', label: 'Financeiro', icon: Banknote, group: 'FINANCEIRO' },
-  { key: 'dev', label: 'Dev', icon: Activity, group: 'DESENVOLVEDOR', requireAdmin: true },
   { key: 'admin', label: 'Admin', icon: Settings, group: 'ADMINISTRAÇÃO' }
 ];
 
