@@ -364,27 +364,15 @@ export default function OrdemServicoForm({
           <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto p-3 md:p-5">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg md:rounded-xl grid grid-cols-3 gap-1 mb-3 md:mb-5 sticky top-0 z-30 shadow-sm">
-                  <TabsTrigger 
-                    value="geral" 
-                    className="rounded-md md:rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1 md:gap-1.5"
-                  >
-                    <Info className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                    <span className="hidden sm:inline">Dados</span>
+                <TabsList className="grid grid-cols-3 gap-0.5 bg-slate-100 p-1 rounded-lg mb-3 md:mb-4 h-auto sticky top-0 z-10">
+                  <TabsTrigger value="geral" className="text-[11px] md:text-xs font-medium py-1.5 px-2 rounded-md flex items-center gap-1 justify-center data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                    <Info className="w-3 h-3" /><span>Dados</span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="itens" 
-                    className="rounded-md md:rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1 md:gap-1.5"
-                  >
-                    <Package className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                    Itens ({formData.itens.length})
+                  <TabsTrigger value="itens" className="text-[11px] md:text-xs font-medium py-1.5 px-2 rounded-md flex items-center gap-1 justify-center data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                    <Package className="w-3 h-3" />Itens ({formData.itens.length})
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="observacoes" 
-                    className="rounded-md md:rounded-lg bg-slate-100 text-slate-600 data-[state=active]:bg-slate-700 data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-slate-50 font-medium text-[10px] md:text-xs py-1.5 md:py-2 transition-all flex items-center justify-center gap-1 md:gap-1.5"
-                  >
-                    <FileText className="w-3 h-3 md:w-3.5 md:h-3.5" />
-                    <span className="hidden sm:inline">Obs</span>
+                  <TabsTrigger value="observacoes" className="text-[11px] md:text-xs font-medium py-1.5 px-2 rounded-md flex items-center gap-1 justify-center data-[state=active]:bg-slate-800 data-[state=active]:text-white">
+                    <FileText className="w-3 h-3" /><span>Obs.</span>
                   </TabsTrigger>
                 </TabsList>
 
