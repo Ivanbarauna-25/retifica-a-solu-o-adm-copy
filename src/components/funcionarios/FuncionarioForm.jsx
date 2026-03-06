@@ -1028,17 +1028,17 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
               </div>
             </Tabs>
 
-            <DialogFooter className="gap-2 md:gap-3 px-3 md:px-6 py-3 md:py-4 border-t border-slate-200 bg-slate-50 rounded-b-lg flex-col-reverse sm:flex-row">
-              <Button type="button" variant="outline" onClick={onClose} className="border-2 border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold px-4 md:px-6 w-full sm:w-auto text-sm" disabled={isLoading}>
+            {/* Footer padronizado */}
+            <div className="flex items-center justify-end gap-2 px-4 md:px-6 py-3 border-t border-slate-200 bg-slate-50 rounded-b-xl flex-shrink-0">
+              <Button type="button" variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700 hover:bg-slate-100" disabled={isLoading}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 md:px-6 w-full sm:w-auto text-sm" disabled={isLoading}>
-                {isLoading ?
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> :
-                  null}
+              <Button type="submit" className="h-9 px-4 text-sm bg-slate-800 hover:bg-slate-700 text-white gap-2" disabled={isLoading}>
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {funcionario ? 'Salvar' : 'Cadastrar'}
               </Button>
-            </DialogFooter>
+            </div>
+            {/* ---------- */}
           </form>
         </DialogContent>
       </Dialog>
