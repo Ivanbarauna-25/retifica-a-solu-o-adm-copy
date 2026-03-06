@@ -566,6 +566,26 @@ body {
   @apply animate-pulse bg-slate-200 rounded;
 }
 
+/* ── StandardModal: esconder X padrão do shadcn ────────────────────── */
+[data-custom-modal="true"] > button[class*="absolute"][class*="right-"] {
+  display: none !important;
+}
+
+/* ── Inputs dentro de modais: padrão visual ─────────────────────────── */
+.standard-modal-content input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.standard-modal-content select,
+.standard-modal-content textarea {
+  background-color: #ffffff;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+.standard-modal-content input:focus,
+.standard-modal-content select:focus,
+.standard-modal-content textarea:focus {
+  border-color: #1e293b;
+  box-shadow: 0 0 0 2px rgba(30,41,59,0.12);
+}
+
 /* Print styles */
 @media print {
   .no-print {
