@@ -802,44 +802,23 @@ export default function OrdemServicoForm({
               </Tabs>
             </div>
 
-            <DialogFooter className="modern-modal-footer px-3 md:px-5 py-2.5 md:py-3.5 border-t border-slate-200 bg-slate-50 flex-shrink-0">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between w-full gap-2">
-                <div className="flex items-center gap-2 bg-slate-100 px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-slate-200">
-                   <p className="text-[10px] md:text-xs font-medium text-slate-500">Total</p>
-                   <p className="text-sm md:text-base font-bold text-slate-900">{formatCurrency(formData.valor_total)}</p>
-                </div>
-                
-                <div className="flex gap-1.5 md:gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onClose}
-                    disabled={isSaving}
-                    className="bg-slate-800 text-white hover:bg-slate-700 font-semibold flex items-center gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-3 md:px-4"
-                  >
-                    <X className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSaving}
-                    className="bg-slate-800 hover:bg-slate-700 text-white rounded-lg px-3 md:px-5 flex items-center gap-1 md:gap-2 font-semibold h-8 md:h-9 text-xs md:text-sm"
-                  >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 md:w-4 md:h-4 animate-spin" />
-                        Salvando...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                        {isEditing ? 'Salvar' : 'Criar'}
-                      </>
-                    )}
-                  </Button>
-                </div>
+            {/* Footer padronizado */}
+            <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-3 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+              <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 rounded-lg">
+                <span className="text-xs font-medium text-slate-500">Total</span>
+                <span className="text-sm md:text-base font-bold text-slate-900">{formatCurrency(formData.valor_total)}</span>
               </div>
-            </DialogFooter>
+              <div className="flex items-center gap-2">
+                <Button type="button" variant="outline" onClick={onClose} disabled={isSaving} className="h-9 px-4 text-sm border-slate-300 text-slate-700 hover:bg-slate-100">
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={isSaving} className="h-9 px-4 text-sm bg-slate-800 hover:bg-slate-700 text-white gap-2">
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  {isSaving ? 'Salvando...' : isEditing ? 'Salvar' : 'Criar OS'}
+                </Button>
+              </div>
+            </div>
+            {/* ────────── */}
           </form>
         )}
       </DialogContent>
