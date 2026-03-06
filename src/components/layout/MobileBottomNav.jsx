@@ -9,7 +9,6 @@ import {
   Users,
   ShoppingCart,
   Banknote,
-  Activity,
   Settings,
   X,
   ChevronUp

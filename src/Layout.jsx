@@ -34,7 +34,6 @@ import {
   ArrowRightLeft,
   Tags,
   AlertTriangle,
-  Activity,
   Shield,
   HardHat } from
 "lucide-react";
