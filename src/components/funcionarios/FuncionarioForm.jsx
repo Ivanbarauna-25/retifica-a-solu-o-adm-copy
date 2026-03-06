@@ -11,7 +11,7 @@ import { base44 } from '@/api/base44Client';
 import { useToast } from '@/components/ui/use-toast';
 import UFS from '@/components/constants/ufs';
 import SmartInput from '@/components/SmartInput';
-import { Search, Loader2, Check, ChevronsUpDown, User, Briefcase, MapPin, CreditCard, DollarSign, Settings, CheckCircle2, Mail, Phone } from 'lucide-react';
+import { Search, Loader2, Check, ChevronsUpDown, User, Briefcase, MapPin, CreditCard, DollarSign, Settings, CheckCircle2, Mail, Phone, Save, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Command,
