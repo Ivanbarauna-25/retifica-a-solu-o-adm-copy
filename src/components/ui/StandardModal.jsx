@@ -207,8 +207,8 @@ export default function StandardModal({
           sizeMap[size] || sizeMap.md,
           className
         )}
-        // Remove o X padrão do shadcn
-        hideCloseButton
+        // Esconder o X padrão via CSS no globals
+        data-custom-modal="true"
       >
         {onSubmit ? (
           <form onSubmit={onSubmit} className="flex flex-col h-full overflow-hidden">
