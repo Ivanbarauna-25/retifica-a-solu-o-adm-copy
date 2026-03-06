@@ -331,7 +331,7 @@ export default function OrdemServicoForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[96vw] md:w-[90vw] lg:max-w-4xl max-h-[88vh] modern-modal">
+      <DialogContent className="w-[calc(100vw-1rem)] md:w-auto lg:max-w-4xl max-h-[92vh] md:max-h-[88vh] p-0 gap-0 flex flex-col rounded-xl border-0 overflow-hidden">
         <DialogHeader className="modern-modal-header">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
