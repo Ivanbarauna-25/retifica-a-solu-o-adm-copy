@@ -332,43 +332,26 @@ export default function OrdemServicoForm({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100vw-1rem)] md:w-auto lg:max-w-4xl max-h-[92vh] md:max-h-[88vh] p-0 gap-0 flex flex-col rounded-xl border-0 overflow-hidden">
-        <DialogHeader className="modern-modal-header">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 md:gap-3 min-w-0">
-              <div className="h-8 w-8 md:h-11 md:w-11 rounded-lg md:rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center flex-shrink-0">
-                <Wrench className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <div className="min-w-0">
-                <DialogTitle className="text-sm md:text-base font-semibold text-white truncate">
-                  {isEditing ? `Editar ${formData.numero_os}` : 'Nova OS'}
-                </DialogTitle>
-                <p className="text-[10px] md:text-xs text-slate-300 mt-0.5 hidden sm:block truncate">
-                  {isEditing ? 'Atualize os dados' : 'Preencha os dados'}
-                </p>
-              </div>
+        {/* Header padronizado */}
+        <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-3 md:py-4 bg-slate-800 rounded-t-xl flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Wrench className="w-5 h-5 text-white" />
             </div>
-            
-            {/* Botões no header (mobile) */}
-            <div className="modern-modal-header-actions">
-              <Button
-                type="button"
-                onClick={onClose}
-                disabled={isSaving}
-                className="bg-transparent border border-white/30 text-white hover:bg-white/10"
-              >
-                <X className="w-3.5 h-3.5" />
-              </Button>
-              <Button
-                type="submit"
-                onClick={handleSalvar}
-                disabled={isSaving}
-                className="bg-white text-slate-800 hover:bg-slate-100"
-              >
-                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-              </Button>
+            <div className="min-w-0">
+              <p className="text-sm md:text-base font-semibold text-white truncate">
+                {isEditing ? `Editar OS — ${formData.numero_os}` : 'Nova Ordem de Serviço'}
+              </p>
+              <p className="text-[11px] text-slate-300 mt-0.5 hidden sm:block">
+                {isEditing ? 'Atualize os dados da OS' : 'Preencha os dados'}
+              </p>
             </div>
           </div>
-        </DialogHeader>
+          <button type="button" onClick={onClose} disabled={isSaving} className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        {/* ────────── */}
 
         {isLoadingData ? (
           <div className="flex-1 flex items-center justify-center py-24">
