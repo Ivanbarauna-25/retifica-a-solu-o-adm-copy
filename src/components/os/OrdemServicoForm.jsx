@@ -361,8 +361,8 @@ export default function OrdemServicoForm({
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden bg-slate-100/50">
-            <div className="modern-modal-content p-3 md:p-5">
+          <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-3 md:p-5">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="bg-slate-200 border border-slate-300 p-1 rounded-lg md:rounded-xl grid grid-cols-3 gap-1 mb-3 md:mb-5 sticky top-0 z-30 shadow-sm">
                   <TabsTrigger 
