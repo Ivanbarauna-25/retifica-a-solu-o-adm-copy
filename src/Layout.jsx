@@ -62,7 +62,6 @@ import {
   DropdownMenuSeparator } from
 "@/components/ui/dropdown-menu";
 import { Toaster } from "@/components/ui/toaster";
-import MobileBottomNav from "@/components/layout/MobileBottomNav";
 
 // Componente de Transição de Página Simplificado
 const PageTransition = ({ children, error }) => {
