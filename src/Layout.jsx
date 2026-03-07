@@ -452,120 +452,220 @@ export default function Layout({ children, currentPageName }) {
   return (
     <>
       <style>{`
-        .modern-modal {
-          background-color: white !important;
+        /* ===== RESET ESTRUTURAL ===== */
+        html, body, #root {
+          height: 100%;
+          width: 100%;
+          overflow: hidden;
         }
-        
+
+        /* ===== MODAIS ===== */
+        .modern-modal { background-color: white !important; }
         .modern-modal input:not([type="checkbox"]):not([type="radio"]),
         .modern-modal textarea,
         .modern-modal select {
           background-color: white !important;
           color: #1f2937 !important;
         }
-        
         .modern-modal-header,
         .modern-modal-header * {
           background-color: #1e293b !important;
           color: white !important;
         }
-        
-        .modern-modal table thead {
-          background-color: #1e293b !important;
-        }
-        
-        .modern-modal table thead th {
-          color: white !important;
-        }
-        
-        .modern-modal table tbody td {
-          color: #1f2937 !important;
-        }
-        
+        .modern-modal table thead { background-color: #1e293b !important; }
+        .modern-modal table thead th { color: white !important; }
+        .modern-modal table tbody td { color: #1f2937 !important; }
         .TabsTrigger[data-state="active"] {
           background-color: #1e293b !important;
           color: white !important;
         }
+
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .app-shell {
+          display: flex;
+          height: 100vh;
+          width: 100vw;
+          overflow: hidden;
+          background: #f1f5f9;
+        }
+
+        .app-main {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-width: 0;
+          height: 100vh;
+          overflow: hidden;
+        }
+
+        .app-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          flex-shrink: 0;
+          background: #1e293b;
+          border-bottom: 1px solid #334155;
+          padding: 0 1.25rem;
+          height: 52px;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+          position: sticky;
+          top: 0;
+          z-index: 30;
+        }
+
+        @media (max-width: 767px) {
+          .app-header { padding: 0 0.75rem; height: 48px; }
+        }
+
+        /* ===== ÁREA DE CONTEÚDO ===== */
+        .app-content {
+          flex: 1;
+          overflow-y: auto;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+          scroll-behavior: smooth;
+        }
+
+        /* Swipe horizontal suave em mobile */
+        @media (max-width: 767px) {
+          .app-content {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
+          }
+        }
+
+        .page-inner {
+          min-width: 0;
+          width: 100%;
+          padding: 1.25rem 1.5rem;
+        }
+
+        @media (max-width: 767px) {
+          .page-inner { padding: 0.75rem; }
+        }
+
+        /* ===== SCROLLBARS DESKTOP ===== */
+        @media (min-width: 768px) {
+          .app-content::-webkit-scrollbar { width: 8px; height: 8px; }
+          .app-content::-webkit-scrollbar-track { background: #f1f5f9; }
+          .app-content::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 6px;
+          }
+          .app-content::-webkit-scrollbar-thumb:hover { background: #64748b; }
+          .app-content::-webkit-scrollbar-corner { background: #f1f5f9; }
+        }
+
+        /* ===== TABELAS RESPONSIVAS ===== */
+        .table-wrapper {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          border-radius: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+          .table-wrapper::-webkit-scrollbar { height: 6px; }
+          .table-wrapper::-webkit-scrollbar-track { background: #f8fafc; }
+          .table-wrapper::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+          }
+        }
+
+        /* ===== SIDEBAR ===== */
+        [data-sidebar] {
+          flex-shrink: 0;
+        }
       `}</style>
       
       <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-slate-100">
+        <div className="app-shell">
           {/* Sidebar - apenas desktop */}
-          <Sidebar className="no-print border-r-0 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-col transition-all duration-300 shadow-xl hidden md:flex" aria-label="Sidebar de Navegação">
+          <Sidebar
+            className="no-print border-r-0 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-col transition-all duration-300 shadow-xl hidden md:flex"
+            aria-label="Sidebar de Navegação"
+          >
             <CustomSidebarHeader />
             <SidebarContent className="flex min-h-0 flex-col gap-3 overflow-auto group-data-[collapsible=icon]:overflow-hidden p-3 flex-1">
               <SidebarMenu className="space-y-3">
                 {navigationGroupsFiltered.map((group) =>
-                <AccordionNavGroup
-                  key={group.group}
-                  groupData={group}
-                  currentPath={location.pathname} />
-
+                  <AccordionNavGroup key={group.group} groupData={group} currentPath={location.pathname} />
                 )}
               </SidebarMenu>
             </SidebarContent>
             <CustomSidebarFooter />
           </Sidebar>
 
-          <main className="flex-1 flex flex-col min-h-0 overflow-auto">
-            <header className="bg-slate-800 text-slate-50 px-3 md:px-5 py-0 no-print border-b border-slate-700 flex items-center justify-between h-12 md:h-13 shadow-sm flex-shrink-0 w-full" role="banner">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger className="p-1.5 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
+          <div className="app-main">
+            {/* Header fixo, full-width */}
+            <header className="app-header no-print" role="banner">
+              <div className="flex items-center gap-2 min-w-0">
+                {/* Toggle sidebar desktop */}
+                <SidebarTrigger className="p-1.5 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex flex-shrink-0" aria-label="Alternar menu Sidebar">
                   <PanelLeft className="w-5 h-5 text-slate-400" aria-hidden="true" />
                 </SidebarTrigger>
                 {/* Menu hamburguer mobile */}
                 <MobileMenu navigationGroups={navigationGroupsFiltered} />
-                {/* Breadcrumb / título */}
-                <div className="hidden md:flex items-center gap-2 text-slate-400 text-xs">
-                  <span className="text-slate-500">Sistema</span>
-                  <span>/</span>
-                  {PageIcon && <PageIcon className="w-3.5 h-3.5" />}
-                  <span className="text-slate-200 font-medium">{pageTitle}</span>
+                {/* Breadcrumb desktop */}
+                <div className="hidden md:flex items-center gap-2 text-slate-400 text-xs min-w-0">
+                  <span className="text-slate-500 flex-shrink-0">Sistema</span>
+                  <span className="flex-shrink-0">/</span>
+                  {PageIcon && <PageIcon className="w-3.5 h-3.5 flex-shrink-0" />}
+                  <span className="text-slate-200 font-medium truncate">{pageTitle}</span>
                 </div>
-                {/* Título mobile simples */}
-                <div className="md:hidden flex items-center gap-1.5">
-                  {PageIcon && <PageIcon className="w-3.5 h-3.5 text-slate-400" />}
-                  <span className="text-sm font-semibold text-slate-100 truncate max-w-[160px]">{pageTitle}</span>
+                {/* Título mobile */}
+                <div className="md:hidden flex items-center gap-1.5 min-w-0">
+                  {PageIcon && <PageIcon className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />}
+                  <span className="text-sm font-semibold text-slate-100 truncate">{pageTitle}</span>
                 </div>
               </div>
 
-              {user ?
-              <DropdownMenu>
+              {/* Usuário */}
+              {user ? (
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-700 transition-colors duration-200" aria-haspopup="true" aria-expanded="false">
+                    <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-700 transition-colors duration-200 flex-shrink-0" aria-haspopup="true">
                       <UserCircle className="w-6 h-6 text-slate-50" aria-hidden="true" />
                       <div className="text-left hidden md:block">
-                        <p className="text-sm font-medium text-slate-50" aria-label={`Usuário ${user?.full_name || user?.email}`}>{user?.full_name || user?.email}</p>
+                        <p className="text-sm font-medium text-slate-50">{user?.full_name || user?.email}</p>
                         <p className="text-xs text-slate-300">{user?.email}</p>
                       </div>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56" role="menu" aria-label="Menu do usuário">
-                    <DropdownMenuItem onClick={() => navigate(createPageUrl('MeuPerfil'))} role="menuitem" tabIndex={0}>
-                      <UserCog className="mr-2 h-4 w-4" aria-hidden="true" />
+                  <DropdownMenuContent align="end" className="w-56" role="menu">
+                    <DropdownMenuItem onClick={() => navigate(createPageUrl('MeuPerfil'))}>
+                      <UserCog className="mr-2 h-4 w-4" />
                       <span>Meu Perfil</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500" role="menuitem" tabIndex={0}>
-                      <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+                    <DropdownMenuItem onClick={handleLogout} className="text-red-500 focus:text-red-500">
+                      <LogOut className="mr-2 h-4 w-4" />
                       <span>Sair do Sistema</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
-                </DropdownMenu> :
-              <Button onClick={handleLogin} variant="outline" className="text-slate-50 border-slate-600 hover:bg-slate-700">
+                </DropdownMenu>
+              ) : (
+                <Button onClick={handleLogin} variant="outline" className="text-slate-50 border-slate-600 hover:bg-slate-700 flex-shrink-0">
                   Entrar
                 </Button>
-              }
+              )}
             </header>
 
-            <PageTransition error={navigationError}>
-              <ErrorBoundary currentPageName={currentPageName}>
-                <div className="text-slate-800 mx-auto w-full max-w-screen-2xl p-3 md:p-5 lg:p-6 flex-1 overflow-x-auto overflow-y-auto">
-                  {children}
-                </div>
-              </ErrorBoundary>
-            </PageTransition>
-          </main>
-
+            {/* Conteúdo principal com scroll */}
+            <div className="app-content">
+              <PageTransition error={navigationError}>
+                <ErrorBoundary currentPageName={currentPageName}>
+                  <div className="page-inner text-slate-800">
+                    {children}
+                  </div>
+                </ErrorBoundary>
+              </PageTransition>
+            </div>
+          </div>
         </div>
         <Toaster />
       </SidebarProvider>
