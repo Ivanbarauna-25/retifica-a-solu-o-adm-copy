@@ -118,17 +118,15 @@ export default function Dashboard() {
 
   return (
     <div className="w-full space-y-4 md:space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 p-4 md:p-6 rounded-xl shadow-xl">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-1">Painel de Controle</h1>
-            <p className="text-slate-400 text-xs md:text-sm">Visão geral do sistema</p>
-          </div>
-          <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 md:px-4 py-1.5 md:py-2 rounded-full">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-            <span className="font-semibold text-[10px] md:text-sm">Sistema Online</span>
-          </div>
+      {/* Linha de status */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-base md:text-lg font-semibold text-slate-800">Visão Geral</h2>
+          <p className="text-xs text-slate-500">Resumo operacional do dia</p>
+        </div>
+        <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full text-xs font-medium">
+          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+          Online
         </div>
       </div>
 
