@@ -570,8 +570,6 @@ export default function Layout({ children, currentPageName }) {
             </PageTransition>
           </main>
 
-          {/* Navegação mobile inferior */}
-          <MobileBottomNav navigationGroups={navigationGroupsFiltered} user={user} />
         </div>
         <Toaster />
       </SidebarProvider>
