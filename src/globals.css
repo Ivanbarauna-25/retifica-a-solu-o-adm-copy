@@ -169,9 +169,9 @@ body {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   }
   
-  /* Espaçamento bottom para barra inferior */
+  /* Sem padding bottom (barra inferior removida) */
   body {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 52px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   
   /* Transições suaves em mobile */
