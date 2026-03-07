@@ -512,12 +512,8 @@ export default function Layout({ children, currentPageName }) {
                 <SidebarTrigger className="p-1.5 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
                   <PanelLeft className="w-5 h-5 text-slate-400" aria-hidden="true" />
                 </SidebarTrigger>
-                {/* Logo mobile */}
-                <div className="flex items-center gap-2 md:hidden">
-                  <div className="w-7 h-7 bg-slate-700 rounded-lg flex items-center justify-center">
-                    <Wrench className="w-3.5 h-3.5 text-white" />
-                  </div>
-                </div>
+                {/* Menu hamburguer mobile */}
+                <MobileMenu navigationGroups={navigationGroupsFiltered} />
                 {/* Breadcrumb / título */}
                 <div className="hidden md:flex items-center gap-2 text-slate-400 text-xs">
                   <span className="text-slate-500">Sistema</span>
