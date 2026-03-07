@@ -507,20 +507,30 @@ export default function Layout({ children, currentPageName }) {
           </Sidebar>
 
           <main className="flex-1 flex flex-col pb-14 md:pb-0 min-h-0 overflow-auto">
-            <header className="bg-slate-800 text-slate-50 px-3 md:px-6 py-2 md:py-3 no-print border-b border-gray-200 flex items-center justify-between shadow-sm flex-shrink-0" role="banner">
-              <SidebarTrigger className="p-2 -ml-2 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
-                <PanelLeft className="w-6 h-6 text-slate-50" aria-hidden="true" />
-              </SidebarTrigger>
-              {/* Logo mobile */}
-              <div className="flex items-center gap-2 md:hidden">
-                <div className="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-700 rounded-lg flex items-center justify-center">
-                  <Wrench className="w-4 h-4 text-white" />
+            <header className="bg-slate-800 text-slate-50 px-3 md:px-5 py-0 no-print border-b border-slate-700 flex items-center justify-between h-12 md:h-13 shadow-sm flex-shrink-0" role="banner">
+              <div className="flex items-center gap-2">
+                <SidebarTrigger className="p-1.5 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
+                  <PanelLeft className="w-5 h-5 text-slate-400" aria-hidden="true" />
+                </SidebarTrigger>
+                {/* Logo mobile */}
+                <div className="flex items-center gap-2 md:hidden">
+                  <div className="w-7 h-7 bg-slate-700 rounded-lg flex items-center justify-center">
+                    <Wrench className="w-3.5 h-3.5 text-white" />
+                  </div>
+                </div>
+                {/* Breadcrumb / título */}
+                <div className="hidden md:flex items-center gap-2 text-slate-400 text-xs">
+                  <span className="text-slate-500">Sistema</span>
+                  <span>/</span>
+                  {PageIcon && <PageIcon className="w-3.5 h-3.5" />}
+                  <span className="text-slate-200 font-medium">{pageTitle}</span>
+                </div>
+                {/* Título mobile simples */}
+                <div className="md:hidden flex items-center gap-1.5">
+                  {PageIcon && <PageIcon className="w-3.5 h-3.5 text-slate-400" />}
+                  <span className="text-sm font-semibold text-slate-100 truncate max-w-[160px]">{pageTitle}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                  {PageIcon && <PageIcon className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />}
-                  <h1 className="text-sm md:text-base font-semibold truncate max-w-[150px] md:max-w-none" tabIndex={-1}>{pageTitle}</h1>
-                </div>
 
               {user ?
               <DropdownMenu>
