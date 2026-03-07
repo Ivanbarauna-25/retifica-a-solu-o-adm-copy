@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import ErrorBoundary from "@/components/errors/ErrorBoundary";
+import MobileMenu from "@/components/layout/MobileMenu";
 import { base44 } from "@/api/base44Client";
 import { usePermissions } from '@/components/ProtectedPage';
 import {
