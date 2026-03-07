@@ -506,7 +506,7 @@ export default function Layout({ children, currentPageName }) {
           </Sidebar>
 
           <main className="flex-1 flex flex-col min-h-0 overflow-auto">
-            <header className="bg-slate-800 text-slate-50 px-3 md:px-5 py-0 no-print border-b border-slate-700 flex items-center justify-between h-12 md:h-13 shadow-sm flex-shrink-0" role="banner">
+            <header className="bg-slate-800 text-slate-50 px-3 md:px-5 py-0 no-print border-b border-slate-700 flex items-center justify-between h-12 md:h-13 shadow-sm flex-shrink-0 w-full" role="banner">
               <div className="flex items-center gap-2">
                 <SidebarTrigger className="p-1.5 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex" aria-label="Alternar menu Sidebar">
                   <PanelLeft className="w-5 h-5 text-slate-400" aria-hidden="true" />
