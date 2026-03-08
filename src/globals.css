@@ -477,14 +477,16 @@ body {
 @media (max-width: 768px) {
   /* Container principal das páginas */
   .page-container {
-    padding: 0.75rem !important;
+    padding: 0.875rem !important;
+    width: 100% !important;
   }
   
   /* Headers de página */
   .page-header {
-    padding: 0.75rem !important;
+    padding: 0.875rem !important;
     flex-direction: column !important;
     gap: 0.75rem !important;
+    border-radius: 0.75rem !important;
   }
   
   /* Botões de ação */
@@ -495,24 +497,25 @@ body {
   
   .page-actions button {
     flex: 1 !important;
-    font-size: 0.75rem !important;
-    padding: 0.5rem !important;
+    font-size: 0.8125rem !important;
+    padding: 0.5rem 0.75rem !important;
+    min-height: 44px !important;
   }
   
   /* Cards */
   .mobile-card {
-    border-radius: 0.5rem !important;
-    padding: 0.625rem !important;
+    border-radius: 0.625rem !important;
+    padding: 0.75rem !important;
   }
   
   /* Tabelas responsivas */
   .responsive-table {
-    font-size: 0.75rem !important;
+    font-size: 0.8125rem !important;
   }
   
   .responsive-table th,
   .responsive-table td {
-    padding: 0.375rem 0.5rem !important;
+    padding: 0.5rem 0.625rem !important;
   }
   
   /* Filtros */
@@ -521,17 +524,14 @@ body {
     gap: 0.5rem !important;
   }
   
-  /* Títulos */
-  h1 {
-    font-size: 1.25rem !important;
-  }
+  /* Títulos - padronizados */
+  h1 { font-size: 1.2rem !important; font-weight: 700 !important; color: #0f172a; }
+  h2 { font-size: 1.05rem !important; font-weight: 600 !important; color: #1e293b; }
+  h3 { font-size: 0.9375rem !important; font-weight: 600 !important; color: #1e293b; }
   
-  h2 {
-    font-size: 1.125rem !important;
-  }
-  
-  h3 {
-    font-size: 1rem !important;
+  /* Todos os botões com área de toque adequada */
+  button, a[role="button"] {
+    min-height: 44px !important;
   }
 }
 
