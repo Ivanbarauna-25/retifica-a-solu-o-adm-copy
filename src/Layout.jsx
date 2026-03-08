@@ -498,24 +498,61 @@ export default function Layout({ children, currentPageName }) {
           overflow: hidden;
         }
 
+        /* ===== HEADER ===== */
         .app-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
           width: 100%;
           flex-shrink: 0;
-          background: #1e293b;
+          background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
           border-bottom: 1px solid #334155;
           padding: 0 1.25rem;
-          height: 52px;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+          height: 60px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
           position: sticky;
           top: 0;
           z-index: 30;
         }
 
+        .app-header-title {
+          font-size: 0.9375rem;
+          font-weight: 600;
+          color: #f1f5f9;
+          letter-spacing: 0.01em;
+          line-height: 1.3;
+        }
+
+        .app-header-breadcrumb {
+          font-size: 0.75rem;
+          color: #94a3b8;
+        }
+
+        /* Botão sidebar trigger - área de toque grande */
+        .sidebar-trigger-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          border-radius: 8px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: background 0.15s;
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
+        }
+        .sidebar-trigger-btn:hover,
+        .sidebar-trigger-btn:active {
+          background: rgba(100,116,139,0.4);
+        }
+
         @media (max-width: 767px) {
-          .app-header { padding: 0 0.75rem; height: 48px; }
+          .app-header {
+            padding: 0 0.875rem;
+            height: 56px;
+          }
         }
 
         /* ===== ÁREA DE CONTEÚDO ===== */
@@ -526,37 +563,37 @@ export default function Layout({ children, currentPageName }) {
           -webkit-overflow-scrolling: touch;
           overscroll-behavior: contain;
           scroll-behavior: smooth;
+          touch-action: pan-x pan-y;
         }
 
-        /* Swipe horizontal suave em mobile */
-        @media (max-width: 767px) {
-          .app-content {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            touch-action: pan-x pan-y;
-          }
-        }
-
+        /* ===== PAGE INNER - SEM MAX-WIDTH LIMITANTE ===== */
         .page-inner {
-          min-width: 0;
           width: 100%;
+          min-width: 0;
           padding: 1.25rem 1.5rem;
+          color: #1e293b;
+          font-size: 0.9375rem;
+          line-height: 1.5;
         }
 
         @media (max-width: 767px) {
-          .page-inner { padding: 0.75rem; }
+          .page-inner {
+            padding: 0.875rem 0.875rem;
+            font-size: 0.875rem;
+          }
         }
 
         /* ===== SCROLLBARS DESKTOP ===== */
         @media (min-width: 768px) {
           .app-content::-webkit-scrollbar { width: 8px; height: 8px; }
-          .app-content::-webkit-scrollbar-track { background: #f1f5f9; }
+          .app-content::-webkit-scrollbar-track { background: #e2e8f0; }
           .app-content::-webkit-scrollbar-thumb {
             background: #94a3b8;
             border-radius: 6px;
+            border: 2px solid #e2e8f0;
           }
           .app-content::-webkit-scrollbar-thumb:hover { background: #64748b; }
-          .app-content::-webkit-scrollbar-corner { background: #f1f5f9; }
+          .app-content::-webkit-scrollbar-corner { background: #e2e8f0; }
         }
 
         /* ===== TABELAS RESPONSIVAS ===== */
@@ -564,21 +601,34 @@ export default function Layout({ children, currentPageName }) {
           width: 100%;
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
+          touch-action: pan-x pan-y;
           border-radius: 0.5rem;
         }
 
         @media (min-width: 768px) {
-          .table-wrapper::-webkit-scrollbar { height: 6px; }
-          .table-wrapper::-webkit-scrollbar-track { background: #f8fafc; }
+          .table-wrapper::-webkit-scrollbar { height: 8px; }
+          .table-wrapper::-webkit-scrollbar-track { background: #f8fafc; border-radius: 4px; }
           .table-wrapper::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 4px;
           }
+          .table-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         }
 
         /* ===== SIDEBAR ===== */
-        [data-sidebar] {
-          flex-shrink: 0;
+        [data-sidebar] { flex-shrink: 0; }
+
+        /* ===== PADRONIZAÇÃO GLOBAL DE TIPOGRAFIA ===== */
+        .page-inner h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.3; }
+        .page-inner h2 { font-size: 1.25rem; font-weight: 600; color: #1e293b; line-height: 1.35; }
+        .page-inner h3 { font-size: 1.0625rem; font-weight: 600; color: #1e293b; line-height: 1.4; }
+        .page-inner p, .page-inner span, .page-inner label { color: #334155; }
+        .page-inner .text-muted { color: #64748b; font-size: 0.8125rem; }
+
+        @media (max-width: 767px) {
+          .page-inner h1 { font-size: 1.2rem; }
+          .page-inner h2 { font-size: 1.0625rem; }
+          .page-inner h3 { font-size: 0.9375rem; }
         }
       `}</style>
       
