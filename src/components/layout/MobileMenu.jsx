@@ -16,13 +16,14 @@ export default function MobileMenu({ navigationGroups }) {
 
   return (
     <>
-      {/* Botão hamburguer */}
+      {/* Botão hamburguer - área de toque 44x44 para facilitar toque */}
       <button
-        className="md:hidden p-2 rounded-md hover:bg-slate-700 transition-colors"
+        className="md:hidden flex items-center justify-center rounded-lg hover:bg-slate-700/60 active:bg-slate-600 transition-colors"
+        style={{ width: 44, height: 44, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
         onClick={() => setIsOpen(true)}
         aria-label="Abrir menu"
       >
-        <Menu className="w-5 h-5 text-slate-300" />
+        <Menu className="w-6 h-6 text-slate-200" />
       </button>
 
       {/* Overlay */}
