@@ -654,23 +654,25 @@ export default function Layout({ children, currentPageName }) {
             {/* Header fixo, full-width */}
             <header className="app-header no-print" role="banner">
               <div className="flex items-center gap-2 min-w-0">
-                {/* Toggle sidebar desktop */}
-                <SidebarTrigger className="p-1.5 rounded-md hover:bg-slate-700 transition-colors duration-200 hidden md:flex flex-shrink-0" aria-label="Alternar menu Sidebar">
+                {/* Toggle sidebar desktop - área de toque grande */}
+                <SidebarTrigger
+                  className="sidebar-trigger-btn hidden md:flex flex-shrink-0"
+                  aria-label="Alternar menu Sidebar"
+                >
                   <PanelLeft className="w-5 h-5 text-slate-400" aria-hidden="true" />
                 </SidebarTrigger>
                 {/* Menu hamburguer mobile */}
                 <MobileMenu navigationGroups={navigationGroupsFiltered} />
                 {/* Breadcrumb desktop */}
-                <div className="hidden md:flex items-center gap-2 text-slate-400 text-xs min-w-0">
-                  <span className="text-slate-500 flex-shrink-0">Sistema</span>
-                  <span className="flex-shrink-0">/</span>
-                  {PageIcon && <PageIcon className="w-3.5 h-3.5 flex-shrink-0" />}
-                  <span className="text-slate-200 font-medium truncate">{pageTitle}</span>
+                <div className="hidden md:flex items-center gap-2 min-w-0">
+                  <span className="app-header-breadcrumb flex-shrink-0">Sistema /</span>
+                  {PageIcon && <PageIcon className="w-4 h-4 text-slate-400 flex-shrink-0" />}
+                  <span className="app-header-title truncate">{pageTitle}</span>
                 </div>
                 {/* Título mobile */}
-                <div className="md:hidden flex items-center gap-1.5 min-w-0">
-                  {PageIcon && <PageIcon className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />}
-                  <span className="text-sm font-semibold text-slate-100 truncate">{pageTitle}</span>
+                <div className="md:hidden flex items-center gap-2 min-w-0">
+                  {PageIcon && <PageIcon className="w-4 h-4 text-slate-400 flex-shrink-0" />}
+                  <span className="app-header-title truncate">{pageTitle}</span>
                 </div>
               </div>
 
@@ -678,13 +680,17 @@ export default function Layout({ children, currentPageName }) {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-700 transition-colors duration-200 flex-shrink-0" aria-haspopup="true">
-                      <UserCircle className="w-6 h-6 text-slate-50" aria-hidden="true" />
+                    <button
+                      className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-700/60 transition-colors flex-shrink-0 touch-manipulation"
+                      aria-haspopup="true"
+                      style={{ minWidth: 44, minHeight: 44 }}
+                    >
+                      <UserCircle className="w-6 h-6 text-slate-200 flex-shrink-0" aria-hidden="true" />
                       <div className="text-left hidden md:block">
-                        <p className="text-sm font-medium text-slate-50">{user?.full_name || user?.email}</p>
-                        <p className="text-xs text-slate-300">{user?.email}</p>
+                        <p className="text-sm font-semibold text-slate-100 leading-tight">{user?.full_name || user?.email}</p>
+                        <p className="text-xs text-slate-400 leading-tight">{user?.email}</p>
                       </div>
-                    </Button>
+                    </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56" role="menu">
                     <DropdownMenuItem onClick={() => navigate(createPageUrl('MeuPerfil'))}>
