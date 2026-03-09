@@ -452,12 +452,19 @@ export default function Layout({ children, currentPageName }) {
   return (
     <>
       <style>{`
+        /* ===== FONTE OUTFIT ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
         /* ===== RESET ESTRUTURAL ===== */
         html, body, #root {
           height: 100%;
           width: 100%;
           overflow: hidden;
+          font-family: 'Outfit', sans-serif !important;
+          background-color: #0a0d14;
+          color: #dde3f0;
         }
+        * { font-family: 'Outfit', sans-serif; }
 
         /* ===== MODAIS ===== */
         .modern-modal { background-color: white !important; }
