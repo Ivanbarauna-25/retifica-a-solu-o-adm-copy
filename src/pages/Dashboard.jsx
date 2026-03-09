@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from 'recharts';
@@ -11,6 +13,12 @@ import {
   XCircle, Activity
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
+
+const COLORS_STATUS = {
+  em_andamento: '#f59e0b',
+  finalizado: '#10b981',
+  cancelado: '#ef4444'
+};
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -48,6 +56,7 @@ export default function Dashboard() {
         const cpVencidas = contasPagar.filter(c => c.status === 'pendente' && new Date(c.data_vencimento) < hoje).length;
         const crVencidas = contasReceber.filter(c => c.status === 'pendente' && new Date(c.data_vencimento) < hoje).length;
 
+        // Gráfico: OS por status
         const statusCounts = { em_andamento: 0, finalizado: 0, cancelado: 0 };
         ordensServico.forEach(os => { if (statusCounts[os.status] !== undefined) statusCounts[os.status]++; });
         setOsData([
@@ -56,6 +65,7 @@ export default function Dashboard() {
           { name: 'Cancelado', value: statusCounts.cancelado, color: '#ef4444' },
         ]);
 
+        // Gráfico de barras por mês (últimos 6 meses)
         const meses = [];
         for (let i = 5; i >= 0; i--) {
           const d = new Date();
@@ -67,7 +77,7 @@ export default function Dashboard() {
           const count = ordensServico.filter(os => os.data_abertura?.startsWith(filtro)).length;
           meses.push({ mes, count });
         }
-
+        
         setStats({
           totalOS: ordensServico.length, osEmAndamento,
           totalClientes: clientes.length, totalFuncionarios: funcionarios.length,
@@ -90,211 +100,213 @@ export default function Dashboard() {
     return () => { mounted = false; };
   }, []);
 
-  const kpiCards = [
-    { title: 'Ordens de Serviço', value: stats.totalOS, sub: `${stats.osEmAndamento} em andamento`, icon: ClipboardList, href: 'OrdensServico', accent: '#3b7ff5' },
-    { title: 'Clientes', value: stats.totalClientes, icon: Users, href: 'Clientes', accent: '#f59e0b' },
-    { title: 'Funcionários', value: stats.totalFuncionarios, icon: User, href: 'Funcionarios', accent: '#10b981' },
-    { title: 'Produtos Estoque', value: stats.estoqueItens, icon: Package, href: 'Estoque', accent: '#ef4444' },
-    { title: 'A Receber', value: stats.contasReceberPendentes, sub: 'pendentes', icon: TrendingUp, href: 'ContasReceber', accent: '#10b981' },
-    { title: 'A Pagar', value: stats.contasPagarPendentes, sub: 'pendentes', icon: Banknote, href: 'ContasPagar', accent: '#ef4444' },
-    { title: 'Tarefas', value: stats.tarefasPendentes, sub: 'pendentes', icon: ListTodo, href: 'Tarefas', accent: '#f59e0b' },
+  const statCards = [
+    { title: 'Ordens de Serviço', value: stats.totalOS, sub: `${stats.osEmAndamento} em andamento`, icon: ClipboardList, color: 'text-blue-600', bg: 'bg-blue-50', href: 'OrdensServico' },
+    { title: 'Clientes', value: stats.totalClientes, icon: Users, color: 'text-green-600', bg: 'bg-green-50', href: 'Clientes' },
+    { title: 'Funcionários Ativos', value: stats.totalFuncionarios, icon: User, color: 'text-purple-600', bg: 'bg-purple-50', href: 'Funcionarios' },
+    { title: 'Produtos Estoque', value: stats.estoqueItens, icon: Package, color: 'text-orange-600', bg: 'bg-orange-50', href: 'Estoque' },
+    { title: 'Contas a Receber', value: stats.contasReceberPendentes, sub: 'pendentes', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50', href: 'ContasReceber' },
+    { title: 'Contas a Pagar', value: stats.contasPagarPendentes, sub: 'pendentes', icon: Banknote, color: 'text-red-600', bg: 'bg-red-50', href: 'ContasPagar' },
+    { title: 'Tarefas Pendentes', value: stats.tarefasPendentes, icon: ListTodo, color: 'text-amber-600', bg: 'bg-amber-50', href: 'Tarefas' },
   ];
 
-  const statusBadgeMap = {
-    em_andamento: { label: 'Em Andamento', color: '#60a5fa', bg: 'rgba(59,130,246,0.12)' },
-    finalizado:   { label: 'Finalizado',   color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-    cancelado:    { label: 'Cancelado',    color: '#f87171', bg: 'rgba(239,68,68,0.12)' },
+  const statusBadge = {
+    em_andamento: <Badge className="bg-amber-100 text-amber-800 border-0 text-[10px]">Em Andamento</Badge>,
+    finalizado: <Badge className="bg-emerald-100 text-emerald-800 border-0 text-[10px]">Finalizado</Badge>,
+    cancelado: <Badge className="bg-red-100 text-red-800 border-0 text-[10px]">Cancelado</Badge>,
   };
 
   return (
-    <div className="w-full space-y-5">
-      {/* Header row */}
+    <div className="w-full space-y-4 md:space-y-6">
+      {/* Linha de status */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 style={{ color: '#dde3f0', fontWeight: 700, fontSize: 18 }}>Visão Geral</h2>
-          <p style={{ color: '#6b7694', fontSize: 13 }}>Resumo operacional do dia</p>
+          <h2 className="text-base md:text-lg font-semibold text-slate-800">Visão Geral</h2>
+          <p className="text-xs text-slate-500">Resumo operacional do dia</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', padding: '5px 14px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>
-          <span style={{ width: 7, height: 7, background: '#10b981', borderRadius: '50%', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+        <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full text-xs font-medium">
+          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
           Online
         </div>
       </div>
 
       {error && (
-        <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <AlertCircle style={{ color: '#f87171', flexShrink: 0 }} size={18} />
-          <p style={{ color: '#f87171', fontSize: 14 }}>{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+          <p className="text-red-700 text-sm">{error}</p>
         </div>
       )}
 
-      {/* Alertas vencimento */}
+      {/* Alertas de Vencimento */}
       {!loading && (alertas.contasPagarVencidas > 0 || alertas.contasReceberVencidas > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {alertas.contasPagarVencidas > 0 && (
             <Link to={createPageUrl('ContasPagar')}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '12px 16px', cursor: 'pointer' }}>
-                <AlertTriangle style={{ color: '#f87171', flexShrink: 0 }} size={18} />
-                <div style={{ flex: 1 }}>
-                  <p style={{ color: '#f87171', fontWeight: 600, fontSize: 13 }}>{alertas.contasPagarVencidas} conta(s) a pagar vencida(s)</p>
-                  <p style={{ color: '#6b7694', fontSize: 11 }}>Clique para ver detalhes</p>
+              <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl p-3 md:p-4 hover:bg-red-100 transition-colors cursor-pointer">
+                <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-red-800">{alertas.contasPagarVencidas} conta(s) a pagar vencida(s)</p>
+                  <p className="text-xs text-red-600">Clique para ver detalhes</p>
                 </div>
-                <ArrowRight style={{ color: '#f87171' }} size={16} />
+                <ArrowRight className="w-4 h-4 text-red-500" />
               </div>
             </Link>
           )}
           {alertas.contasReceberVencidas > 0 && (
             <Link to={createPageUrl('ContasReceber')}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 12, padding: '12px 16px', cursor: 'pointer' }}>
-                <AlertTriangle style={{ color: '#f59e0b', flexShrink: 0 }} size={18} />
-                <div style={{ flex: 1 }}>
-                  <p style={{ color: '#f59e0b', fontWeight: 600, fontSize: 13 }}>{alertas.contasReceberVencidas} conta(s) a receber vencida(s)</p>
-                  <p style={{ color: '#6b7694', fontSize: 11 }}>Clique para ver detalhes</p>
+              <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3 md:p-4 hover:bg-amber-100 transition-colors cursor-pointer">
+                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-amber-800">{alertas.contasReceberVencidas} conta(s) a receber vencida(s)</p>
+                  <p className="text-xs text-amber-600">Clique para ver detalhes</p>
                 </div>
-                <ArrowRight style={{ color: '#f59e0b' }} size={16} />
+                <ArrowRight className="w-4 h-4 text-amber-500" />
               </div>
             </Link>
           )}
         </div>
       )}
 
-      {/* KPI Cards */}
-      <div className="kpi-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
-        {kpiCards.map((card, i) => (
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2 md:gap-3">
+        {statCards.map((card, i) => (
           <Link key={i} to={createPageUrl(card.href)}>
-            <div style={{
-              background: '#111827',
-              border: '1px solid rgba(255,255,255,0.07)',
-              borderRadius: 16,
-              padding: '20px 18px',
-              borderTop: `2px solid ${card.accent}`,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              height: '100%',
-            }}
-              onMouseEnter={e => e.currentTarget.style.background = '#151e2d'}
-              onMouseLeave={e => e.currentTarget.style.background = '#111827'}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: '#6b7694', fontSize: 11, fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{card.title}</p>
-                  {loading ? (
-                    <Loader2 style={{ color: '#6b7694', animation: 'spin 1s linear infinite' }} size={20} />
-                  ) : (
-                    <p style={{ color: '#dde3f0', fontSize: 28, fontWeight: 700, lineHeight: 1 }}>{card.value}</p>
-                  )}
-                  {card.sub && !loading && (
-                    <p style={{ color: '#6b7694', fontSize: 11, marginTop: 4 }}>{card.sub}</p>
-                  )}
+            <Card className="border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 cursor-pointer h-full">
+              <CardContent className="p-3 md:p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] md:text-xs font-medium text-slate-500 truncate mb-1">{card.title}</p>
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+                    ) : (
+                      <h3 className="text-2xl md:text-3xl font-bold text-slate-800">{card.value}</h3>
+                    )}
+                    {card.sub && !loading && (
+                      <span className="text-[10px] text-slate-500 block truncate">{card.sub}</span>
+                    )}
+                  </div>
+                  <div className={`p-2 rounded-lg ${card.bg} flex-shrink-0`}>
+                    <card.icon className={`w-4 h-4 md:w-5 md:h-5 ${card.color}`} />
+                  </div>
                 </div>
-                <div style={{ background: `${card.accent}1a`, borderRadius: 10, padding: 8, flexShrink: 0 }}>
-                  <card.icon style={{ color: card.accent }} size={18} />
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </Link>
         ))}
       </div>
 
-      {/* Charts */}
+      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '20px 16px' }} className="lg:col-span-2">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <Activity style={{ color: '#3b7ff5' }} size={16} />
-            <span style={{ color: '#dde3f0', fontWeight: 600, fontSize: 14 }}>Ordens de Serviço — Últimos 6 meses</span>
-          </div>
-          {loading ? (
-            <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Loader2 style={{ color: '#6b7694', animation: 'spin 1s linear infinite' }} size={24} />
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={stats.barData || []} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="mes" tick={{ fontSize: 11, fill: '#6b7694', fontFamily: 'Outfit' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#6b7694', fontFamily: 'Outfit' }} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{ background: '#1c2333', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, fontSize: 12, color: '#dde3f0', fontFamily: 'Outfit' }}
-                  formatter={(v) => [v, 'OS']}
-                />
-                <Bar dataKey="count" fill="#3b7ff5" radius={[6, 6, 0, 0]} name="OS" />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
+        {/* Barras: OS por mês */}
+        <Card className="lg:col-span-2 shadow-sm">
+          <CardHeader className="pb-2 px-4 pt-4">
+            <CardTitle className="text-sm md:text-base font-semibold text-slate-800 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-blue-600" />
+              Ordens de Serviço — Últimos 6 meses
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 pb-4">
+            {loading ? (
+              <div className="h-48 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={stats.barData || []} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="mes" tick={{ fontSize: 11, fill: '#64748b' }} />
+                  <YAxis tick={{ fontSize: 11, fill: '#64748b' }} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                    formatter={(v) => [v, 'OS']}
+                  />
+                  <Bar dataKey="count" fill="#1e293b" radius={[4, 4, 0, 0]} name="OS" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
 
-        <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '20px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <ClipboardList style={{ color: '#6b7694' }} size={16} />
-            <span style={{ color: '#dde3f0', fontWeight: 600, fontSize: 14 }}>Status das OS</span>
-          </div>
-          {loading ? (
-            <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Loader2 style={{ color: '#6b7694', animation: 'spin 1s linear infinite' }} size={24} />
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={180}>
-              <PieChart>
-                <Pie data={osData} cx="50%" cy="45%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
-                  {osData.map((entry, index) => (
-                    <Cell key={index} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={{ background: '#1c2333', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, fontSize: 12, color: '#dde3f0', fontFamily: 'Outfit' }} />
-                <Legend iconType="circle" iconSize={8} formatter={(value) => <span style={{ fontSize: 11, color: '#6b7694', fontFamily: 'Outfit' }}>{value}</span>} />
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </div>
+        {/* Pizza: OS por status */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-2 px-4 pt-4">
+            <CardTitle className="text-sm md:text-base font-semibold text-slate-800 flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-slate-600" />
+              Status das OS
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-2 pb-4">
+            {loading ? (
+              <div className="h-48 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={osData}
+                    cx="50%"
+                    cy="45%"
+                    innerRadius={45}
+                    outerRadius={70}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {osData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                  <Legend
+                    iconType="circle"
+                    iconSize={8}
+                    formatter={(value) => <span style={{ fontSize: 11 }}>{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Recent OS */}
-      <div style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Clock style={{ color: '#6b7694' }} size={16} />
-            <span style={{ color: '#dde3f0', fontWeight: 600, fontSize: 14 }}>Últimas Ordens de Serviço</span>
-          </div>
+      {/* OS Recentes */}
+      <Card className="shadow-sm">
+        <CardHeader className="pb-2 px-4 pt-4 flex flex-row items-center justify-between">
+          <CardTitle className="text-sm md:text-base font-semibold text-slate-800 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-slate-600" />
+            Últimas Ordens de Serviço
+          </CardTitle>
           <Link to={createPageUrl('OrdensServico')}>
-            <span style={{ color: '#3b7ff5', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-              Ver todas <ArrowRight size={13} />
+            <span className="text-xs text-blue-600 hover:underline flex items-center gap-1">
+              Ver todas <ArrowRight className="w-3 h-3" />
             </span>
           </Link>
-        </div>
-        <div style={{ padding: '12px 16px' }}>
+        </CardHeader>
+        <CardContent className="px-4 pb-4">
           {loading ? (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 0' }}>
-              <Loader2 style={{ color: '#6b7694', animation: 'spin 1s linear infinite' }} size={24} />
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
             </div>
           ) : recentOS.length === 0 ? (
-            <p style={{ color: '#6b7694', fontSize: 14, textAlign: 'center', padding: '24px 0' }}>Nenhuma OS encontrada</p>
+            <p className="text-slate-500 text-sm text-center py-6">Nenhuma OS encontrada</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {recentOS.map((os) => {
-                const badge = statusBadgeMap[os.status];
-                return (
-                  <div key={os.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: '#1c2333', borderRadius: 10, transition: 'background 0.15s' }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(59,127,245,0.08)'}
-                    onMouseLeave={e => e.currentTarget.style.background = '#1c2333'}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
-                      <span style={{ color: '#3b7ff5', fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap' }}>{os.numero_os}</span>
-                      <span style={{ color: '#6b7694', fontSize: 12 }} className="hidden sm:inline">{formatDate(os.data_abertura)}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                      <span style={{ color: '#dde3f0', fontWeight: 600, fontSize: 13 }}>{formatCurrency(os.valor_total || 0)}</span>
-                      {badge && (
-                        <span style={{ background: badge.bg, color: badge.color, borderRadius: 20, padding: '3px 12px', fontSize: 11, fontWeight: 600 }}>
-                          {badge.label}
-                        </span>
-                      )}
-                    </div>
+            <div className="space-y-2">
+              {recentOS.map((os) => (
+                <div key={os.id} className="flex items-center justify-between p-2 md:p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                  <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                    <span className="font-semibold text-blue-600 text-xs md:text-sm whitespace-nowrap">{os.numero_os}</span>
+                    <span className="text-slate-600 text-xs truncate hidden sm:inline">{formatDate(os.data_abertura)}</span>
                   </div>
-                );
-              })}
+                  <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+                    <span className="font-semibold text-slate-800 text-xs md:text-sm">{formatCurrency(os.valor_total || 0)}</span>
+                    {statusBadge[os.status]}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

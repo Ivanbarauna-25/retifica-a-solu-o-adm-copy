@@ -16,144 +16,108 @@ export default function MobileMenu({ navigationGroups }) {
 
   return (
     <>
-      {/* Botão hamburguer */}
+      {/* Botão hamburguer - área de toque 44x44 para facilitar toque */}
       <button
-        className="md:hidden flex items-center justify-center rounded-lg transition-colors"
-        style={{
-          width: 44, height: 44,
-          touchAction: 'manipulation',
-          WebkitTapHighlightColor: 'transparent',
-          background: 'transparent',
-          border: 'none',
-        }}
+        className="md:hidden flex items-center justify-center rounded-lg hover:bg-slate-700/60 active:bg-slate-600 transition-colors"
+        style={{ width: 44, height: 44, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
         onClick={() => setIsOpen(true)}
         aria-label="Abrir menu"
       >
-        <Menu size={22} style={{ color: '#8b97b3' }} />
+        <Menu className="w-6 h-6 text-slate-200" />
       </button>
 
       {/* Overlay */}
       {isOpen && (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 40 }}
-          className="md:hidden"
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Drawer */}
       <div
-        className={`md:hidden fixed top-0 left-0 h-full flex flex-col ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
-        style={{
-          width: 'min(82vw, 290px)',
-          background: '#0d1117',
-          borderRight: '1px solid rgba(255,255,255,0.07)',
-          zIndex: 50,
-          transition: 'transform 0.25s ease',
-          boxShadow: '4px 0 32px rgba(0,0,0,0.7)',
-        }}
+        className={`fixed top-0 left-0 h-full bg-gradient-to-b from-slate-800 to-slate-900 z-50 transform transition-transform duration-250 ease-in-out md:hidden flex flex-col shadow-2xl ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        style={{ width: 'min(80vw, 300px)' }}
       >
-        {/* Header */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 16px',
-          minHeight: 60,
-          borderBottom: '1px solid rgba(255,255,255,0.07)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, background: 'rgba(59,127,245,0.15)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Wrench size={18} style={{ color: '#3b7ff5' }} />
+        {/* Header do drawer */}
+        <div className="flex items-center justify-between px-4 border-b border-slate-700/50" style={{ minHeight: 60 }}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Wrench className="w-5 h-5 text-white" />
             </div>
-            <span style={{ fontWeight: 700, color: '#dde3f0', fontSize: 15 }}>Sistema de Gestão</span>
+            <span className="font-bold text-white text-base leading-tight">Sistema de Gestão</span>
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            style={{ width: 40, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'transparent', border: 'none', cursor: 'pointer', touchAction: 'manipulation' }}
+            className="flex items-center justify-center rounded-lg hover:bg-slate-700 active:bg-slate-600 transition-colors flex-shrink-0"
+            style={{ width: 44, height: 44, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             aria-label="Fechar menu"
           >
-            <X size={20} style={{ color: '#6b7694' }} />
+            <X className="w-5 h-5 text-slate-300" />
           </button>
         </div>
 
-        {/* Nav items */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px', WebkitOverflowScrolling: 'touch' }}>
+        {/* Itens de navegação */}
+        <div className="flex-1 overflow-y-auto py-2 px-2" style={{ WebkitOverflowScrolling: 'touch' }}>
           {navigationGroups.map((group) => (
-            <div key={group.group} style={{ marginBottom: 4 }}>
+            <div key={group.group} className="mb-1">
               {group.group === "DASHBOARD" ? (
-                <div>
-                  {group.items.map((item) => {
-                    const active = isActive(item.url);
-                    return (
-                      <Link
-                        key={item.url}
-                        to={createPageUrl(item.url)}
-                        onClick={() => setIsOpen(false)}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 10,
-                          padding: '0 12px',
-                          minHeight: 48,
-                          borderRadius: 10,
-                          textDecoration: 'none',
-                          background: active ? 'rgba(59,127,245,0.12)' : 'transparent',
-                          boxShadow: active ? 'inset 3px 0 0 #3b7ff5' : 'none',
-                          color: active ? '#ffffff' : '#8b97b3',
-                          fontWeight: active ? 600 : 500,
-                          fontSize: 14,
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        <item.icon size={18} style={{ color: active ? '#3b7ff5' : '#6b7694', flexShrink: 0 }} />
-                        {item.title}
-                      </Link>
-                    );
-                  })}
+                <div className="space-y-0.5">
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.url}
+                      to={createPageUrl(item.url)}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-3 px-3 rounded-lg transition-all ${
+                        isActive(item.url)
+                          ? "bg-slate-600 text-white"
+                          : "text-slate-200 hover:bg-slate-700/70 hover:text-white"
+                      }`}
+                      style={{ minHeight: 48 }}
+                    >
+                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      <span className="font-semibold text-sm">{item.title}</span>
+                    </Link>
+                  ))}
                 </div>
               ) : (
                 <>
                   <button
                     onClick={() => toggleGroup(group.group)}
-                    style={{
-                      width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '0 12px', minHeight: 40, border: 'none', background: 'transparent', cursor: 'pointer',
-                      color: '#6b7694', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
-                      borderRadius: 8, touchAction: 'manipulation',
-                    }}
+                    className="w-full flex items-center justify-between px-3 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-200 hover:bg-slate-700/30 rounded-lg transition-all"
+                    style={{ minHeight: 44, touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      {group.icon && <group.icon size={13} />}
-                      {group.group}
+                    <div className="flex items-center gap-2">
+                      {group.icon && <group.icon className="w-4 h-4" />}
+                      <span>{group.group}</span>
                     </div>
-                    {openGroups[group.group] ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    {openGroups[group.group] ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
+                    )}
                   </button>
 
                   {openGroups[group.group] && (
-                    <div style={{ paddingLeft: 8 }}>
-                      {group.items.map((item) => {
-                        const active = isActive(item.url);
-                        return (
-                          <Link
-                            key={item.url}
-                            to={createPageUrl(item.url)}
-                            onClick={() => setIsOpen(false)}
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 10,
-                              padding: '0 12px',
-                              minHeight: 44,
-                              borderRadius: 10,
-                              textDecoration: 'none',
-                              background: active ? 'rgba(59,127,245,0.12)' : 'transparent',
-                              boxShadow: active ? 'inset 3px 0 0 #3b7ff5' : 'none',
-                              color: active ? '#ffffff' : '#8b97b3',
-                              fontWeight: active ? 600 : 400,
-                              fontSize: 13,
-                              transition: 'all 0.15s',
-                            }}
-                          >
-                            <item.icon size={16} style={{ color: active ? '#3b7ff5' : '#6b7694', flexShrink: 0 }} />
-                            {item.title}
-                          </Link>
-                        );
-                      })}
+                    <div className="mt-0.5 space-y-0.5 pl-2">
+                      {group.items.map((item) => (
+                        <Link
+                          key={item.url}
+                          to={createPageUrl(item.url)}
+                          onClick={() => setIsOpen(false)}
+                          className={`flex items-center gap-3 px-3 rounded-lg transition-all ${
+                            isActive(item.url)
+                              ? "bg-slate-600 text-white"
+                              : "text-slate-200 hover:bg-slate-700/70 hover:text-white"
+                          }`}
+                          style={{ minHeight: 46 }}
+                        >
+                          <item.icon className="w-4 h-4 flex-shrink-0 text-slate-400" />
+                          <span className="text-sm font-medium">{item.title}</span>
+                        </Link>
+                      ))}
                     </div>
                   )}
                 </>

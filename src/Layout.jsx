@@ -184,8 +184,8 @@ const NavItem = ({ item, currentPath }) => {
         asChild
         className={`w-full justify-start transition-all duration-200 rounded-lg ${
         isActive ?
-        "bg-[rgba(59,127,245,0.12)] text-white shadow-[inset_3px_0_0_#3b7ff5]" :
-        "text-[#6b7694] hover:bg-[rgba(255,255,255,0.05)] hover:text-[#dde3f0]"}`
+        "bg-slate-600 text-white shadow-sm" :
+        "text-slate-300 hover:bg-slate-700/70 hover:text-white"}`
         }
         aria-current={isActive ? "page" : undefined}>
 
@@ -214,7 +214,7 @@ const AccordionNavGroup = ({ groupData, currentPath }) => {
   return (
     <Accordion type="multiple" className="w-full" collapsible>
       <AccordionItem value={groupData.group} className="border-b-0" key={groupData.group}>
-        <AccordionTrigger className="text-[#6b7694] px-3 py-2.5 text-xs font-bold uppercase flex flex-1 items-center justify-between transition-all [&[data-state=open]>svg]:rotate-180 tracking-wider hover:no-underline hover:bg-[rgba(255,255,255,0.05)] hover:text-[#dde3f0] rounded-lg">
+        <AccordionTrigger className="text-slate-400 px-3 py-2.5 text-xs font-bold uppercase flex flex-1 items-center justify-between transition-all [&[data-state=open]>svg]:rotate-180 tracking-wider hover:no-underline hover:bg-slate-700/30 hover:text-slate-300 rounded-lg">
           <div className="flex items-center gap-2">
             {groupData.icon && <groupData.icon className="w-4 h-4" />}
             {groupData.group}
@@ -235,7 +235,7 @@ const AccordionNavGroup = ({ groupData, currentPath }) => {
 const CustomSidebarHeader = () => {
   const { isCollapsed } = useSidebar();
   return (
-    <SidebarHeader className="border-b border-[rgba(255,255,255,0.07)] p-5 bg-[#0d1117]">
+    <SidebarHeader className="border-b border-slate-700/50 p-5 bg-slate-800/50">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-slate-700 rounded-xl flex items-center justify-center shadow-md" aria-label="Logo">
           <Wrench className="w-6 h-6 text-white" aria-hidden="true" />
@@ -248,7 +248,7 @@ const CustomSidebarHeader = () => {
 
 const CustomSidebarFooter = () => {
   return (
-    <SidebarFooter className="border-t border-[rgba(255,255,255,0.07)] p-4 bg-[#0d1117]" aria-label="Rodapé Sidebar">
+    <SidebarFooter className="border-t border-slate-700/50 p-4 bg-slate-800/50" aria-label="Rodapé Sidebar">
       {/* Conteúdo do rodapé, se necessário */}
     </SidebarFooter>);
 
@@ -452,19 +452,12 @@ export default function Layout({ children, currentPageName }) {
   return (
     <>
       <style>{`
-        /* ===== FONTE OUTFIT ===== */
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
         /* ===== RESET ESTRUTURAL ===== */
         html, body, #root {
           height: 100%;
           width: 100%;
           overflow: hidden;
-          font-family: 'Outfit', sans-serif !important;
-          background-color: #0a0d14;
-          color: #dde3f0;
         }
-        * { font-family: 'Outfit', sans-serif; }
 
         /* ===== MODAIS ===== */
         .modern-modal { background-color: white !important; }
@@ -493,7 +486,7 @@ export default function Layout({ children, currentPageName }) {
           height: 100vh;
           width: 100vw;
           overflow: hidden;
-          background: #0a0d14;
+          background: #f1f5f9;
         }
 
         .app-main {
@@ -512,8 +505,8 @@ export default function Layout({ children, currentPageName }) {
           justify-content: space-between;
           width: 100%;
           flex-shrink: 0;
-          background: #0d1117;
-          border-bottom: 1px solid rgba(255,255,255,0.07);
+          background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+          border-bottom: 1px solid #334155;
           padding: 0 1.25rem;
           height: 60px;
           box-shadow: 0 2px 8px rgba(0,0,0,0.25);
@@ -578,10 +571,9 @@ export default function Layout({ children, currentPageName }) {
           width: 100%;
           min-width: 0;
           padding: 1.25rem 1.5rem;
-          color: #dde3f0;
+          color: #1e293b;
           font-size: 0.9375rem;
           line-height: 1.5;
-          font-family: 'Outfit', sans-serif;
         }
 
         @media (max-width: 767px) {
@@ -627,11 +619,11 @@ export default function Layout({ children, currentPageName }) {
         [data-sidebar] { flex-shrink: 0; }
 
         /* ===== PADRONIZAÇÃO GLOBAL DE TIPOGRAFIA ===== */
-        .page-inner h1 { font-size: 1.5rem; font-weight: 700; color: #dde3f0; line-height: 1.3; }
-        .page-inner h2 { font-size: 1.25rem; font-weight: 600; color: #dde3f0; line-height: 1.35; }
-        .page-inner h3 { font-size: 1.0625rem; font-weight: 600; color: #c4cce0; line-height: 1.4; }
-        .page-inner p, .page-inner label { color: #c4cce0; }
-        .page-inner .text-muted { color: #6b7694; font-size: 0.8125rem; }
+        .page-inner h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.3; }
+        .page-inner h2 { font-size: 1.25rem; font-weight: 600; color: #1e293b; line-height: 1.35; }
+        .page-inner h3 { font-size: 1.0625rem; font-weight: 600; color: #1e293b; line-height: 1.4; }
+        .page-inner p, .page-inner span, .page-inner label { color: #334155; }
+        .page-inner .text-muted { color: #64748b; font-size: 0.8125rem; }
 
         @media (max-width: 767px) {
           .page-inner h1 { font-size: 1.2rem; }
@@ -644,7 +636,7 @@ export default function Layout({ children, currentPageName }) {
         <div className="app-shell">
           {/* Sidebar - apenas desktop */}
           <Sidebar
-            className="no-print border-r border-[rgba(255,255,255,0.07)] bg-[#0d1117] text-white flex-col transition-all duration-300 shadow-2xl hidden md:flex"
+            className="no-print border-r-0 bg-gradient-to-b from-slate-800 to-slate-900 text-white flex-col transition-all duration-300 shadow-xl hidden md:flex"
             aria-label="Sidebar de Navegação"
           >
             <CustomSidebarHeader />
@@ -723,7 +715,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="app-content">
               <PageTransition error={navigationError}>
                 <ErrorBoundary currentPageName={currentPageName}>
-                  <div className="page-inner">
+                  <div className="page-inner text-slate-800">
                     {children}
                   </div>
                 </ErrorBoundary>
