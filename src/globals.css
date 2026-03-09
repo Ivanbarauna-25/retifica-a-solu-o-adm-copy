@@ -59,6 +59,18 @@ css
   }
 }
 
+/* ===== APP SHELL DARK OVERRIDE ===== */
+.app-shell { background: #0a0d14 !important; }
+.app-header { background: #0d1117 !important; border-bottom-color: rgba(255,255,255,0.07) !important; }
+.app-content { background: #0a0d14 !important; }
+.page-inner { background: #0a0d14 !important; color: #dde3f0 !important; }
+
+/* Sidebar dark */
+[data-sidebar], aside { background: #0d1117 !important; }
+
+/* Shadcn card override */
+.bg-card, [class*="bg-card"] { background-color: #111827 !important; }
+
 /* === Global Mobile Fixes === */
 html {
   -webkit-text-size-adjust: 100%;
@@ -156,6 +168,7 @@ body {
   /* Sem padding bottom (barra inferior removida) */
   body {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+    background-color: #0a0d14 !important;
   }
   
   /* Transições suaves em mobile */
@@ -172,14 +185,14 @@ body {
     transform: scale(0.97);
   }
   
-  /* Cards com gradiente sutil */
+  /* Cards dark mobile */
   .bg-white {
-    background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+    background: #111827 !important;
   }
   
-  /* Headers com gradiente */
+  /* Headers dark */
   .bg-slate-800 {
-    background: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+    background: #0d1117 !important;
   }
   
   /* Inputs e selects refinados */
