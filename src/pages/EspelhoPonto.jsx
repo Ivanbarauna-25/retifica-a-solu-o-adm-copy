@@ -220,9 +220,7 @@ export default function EspelhoPonto() {
                           </td>
                           <td className="px-3 py-2 text-center">
                             {apuracao && (
-                              <Badge className={`text-xs ${STATUS_STYLE[apuracao.status] || 'bg-slate-100 text-slate-600'}`}>
-                                {apuracao.status}
-                              </Badge>
+                              <StatusBadge status={apuracao.status} label={STATUS_LABEL[apuracao.status] || apuracao.status} />
                             )}
                           </td>
                         </tr>
