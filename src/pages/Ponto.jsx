@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { format, getDaysInMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import PontoAcaoModal from "@/components/ponto/PontoAcaoModal";
+import StatusBadge from "@/components/StatusBadge";
 
 const STATUS_META = {
   ok:         { label: 'OK',         cls: 'bg-green-100 text-green-700' },
@@ -239,17 +240,14 @@ export default function Ponto() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header OS-style */}
-      <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
+      {/* Header limpo */}
+      <div className="mb-4 md:mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="bg-white/10 p-1.5 md:p-3 rounded-lg backdrop-blur-sm">
-              <Timer className="w-4 h-4 md:w-6 md:h-6" />
-            </div>
-            <div>
-              <h1 className="text-sm md:text-xl font-bold tracking-tight">Controle de Ponto</h1>
-              <p className="text-slate-300 text-[9px] md:text-xs">Registro de batidas e ocorrências por funcionário</p>
-            </div>
+          <div>
+            <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+              <Timer className="w-5 h-5 text-slate-600" /> Controle de Ponto
+            </h1>
+            <p className="text-slate-500 text-xs mt-0.5">Registro de batidas e ocorrências por funcionário</p>
           </div>
           <div className="flex gap-1 md:gap-2 flex-wrap">
             <Button
