@@ -296,8 +296,8 @@ export default function Ponto() {
 
         {/* ─── Importar ─────────────────────────────────── */}
         {tab === 'importar' && (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
-          {!parsed ? (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
+            {!parsed ? (
             <label
               className="border-2 border-dashed border-slate-300 rounded-xl p-10 flex flex-col items-center gap-3 cursor-pointer hover:border-slate-500 hover:bg-slate-50 transition-colors block"
               onDragOver={e => e.preventDefault()} onDrop={handleDrop}
