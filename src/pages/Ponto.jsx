@@ -1,41 +1,27 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { parseZKTecoFile, calcularApuracaoDiaria, formatMinutes } from "@/components/ponto/parseZKTeco";
-import {
-  Upload, FileText, CheckCircle, AlertCircle, Loader2,
-  Eye, Clock, AlertTriangle, ChevronDown, ChevronUp
-} from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { createPageUrl } from "@/utils";
-import { Link, useNavigate } from "react-router-dom";
-import { format, getDaysInMonth, getDay } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { format, getDaysInMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import PontoAcaoModal from "@/components/ponto/PontoAcaoModal";
 
-const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
 const STATUS_META = {
-  ok:         { label: 'OK',        cls: 'bg-green-100 text-green-700' },
-  incompleto: { label: 'Incompleto',cls: 'bg-yellow-100 text-yellow-700' },
-  divergente: { label: 'Divergente',cls: 'bg-orange-100 text-orange-700' },
-  falta:      { label: 'Falta',     cls: 'bg-red-100 text-red-700' },
-  ajustado:   { label: 'Ajustado', cls: 'bg-blue-100 text-blue-700' },
-  abonado:    { label: 'Abonado',   cls: 'bg-purple-100 text-purple-700' },
-  folga:      { label: 'Folga',     cls: 'bg-indigo-100 text-indigo-700' },
-  desconto:   { label: 'Desconto',  cls: 'bg-rose-100 text-rose-700' },
+  ok:         { label: 'OK',         cls: 'bg-green-100 text-green-700' },
+  incompleto: { label: 'Falta',      cls: 'bg-red-100 text-red-600' },
+  divergente: { label: 'Divergente', cls: 'bg-orange-100 text-orange-700' },
+  falta:      { label: 'Falta',      cls: 'bg-red-100 text-red-600' },
+  ajustado:   { label: 'Ajustado',   cls: 'bg-blue-100 text-blue-700' },
+  abonado:    { label: 'Abonado',    cls: 'bg-purple-100 text-purple-700' },
+  folga:      { label: 'Folga',      cls: 'bg-indigo-100 text-indigo-700' },
+  desconto:   { label: 'Desconto',   cls: 'bg-rose-100 text-rose-700' },
 };
-
-// Detecta qual batida está faltando para exibir no campo vazio
-function detectarBatidaFaltante(batidas, isWeekend) {
-  if (isWeekend) return null;
-  if (batidas.length === 0) return 'Sem registro';
-  if (batidas.length === 1) return 'Saída 1 ausente';
-  if (batidas.length === 2) return null; // ok - entrada/saída básica
-  if (batidas.length === 3) return 'Saída 2 ausente';
-  return null;
-}
 
 export default function Ponto() {
   const navigate = useNavigate();
@@ -57,15 +43,14 @@ export default function Ponto() {
 
   // Visualização
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [selectedFunc, setSelectedFunc] = useState('todos');
+  const [searchName, setSearchName] = useState('');
   const [apuracoes, setApuracoes] = useState([]);
   const [registrosPonto, setRegistrosPonto] = useState([]);
   const [loadingReg, setLoadingReg] = useState(false);
 
-  // Expansão por funcionário
-  const [expandidos, setExpandidos] = useState({});
-
-  // Modal de ação
-  const [acaoModal, setAcaoModal] = useState(null); // { apuracao, func, batidas, dateStr }
+  // Modal
+  const [acaoModal, setAcaoModal] = useState(null);
 
   const loadBase = useCallback(async () => {
     const [funcs, esc, funEsc, imps] = await Promise.all([
@@ -99,7 +84,7 @@ export default function Ponto() {
 
   useEffect(() => { loadRegistros(); }, [loadRegistros]);
 
-  // ─── Importação ─────────────────────────────────────
+  // ─── Importação ──────────────────────────────────────
   const processFile = (f) => {
     setFile(f);
     const reader = new FileReader();
@@ -187,60 +172,92 @@ export default function Ponto() {
     if (fileRef.current) fileRef.current.value = '';
   };
 
-  // ─── Dados da tabela ────────────────────────────────
-  const [year, month] = selectedMonth.split('-').map(Number);
-  const daysCount = getDaysInMonth(new Date(year, month - 1));
+  // ─── Montar linhas da tabela flat ────────────────────
+  const rows = useMemo(() => {
+    const result = [];
+    const funcMap = {};
+    funcionarios.forEach(f => { funcMap[f.id] = f; });
 
-  const getBatidasDoDia = (funcId, dateStr) =>
-    registrosPonto
-      .filter(r => r.funcionario_id === funcId && r.data === dateStr)
-      .sort((a, b) => (a.hora || '').localeCompare(b.hora || ''))
-      .slice(0, 4);
+    // Agrupar apurações por funcionário/data
+    const apMap = {};
+    apuracoes.forEach(a => { apMap[`${a.funcionario_id}_${a.data}`] = a; });
 
-  const getApuracao = (funcId, dateStr) =>
-    apuracoes.find(a => a.funcionario_id === funcId && a.data === dateStr);
+    // Agrupar registros por funcionário/data → batidas
+    const regMap = {};
+    registrosPonto.forEach(r => {
+      const k = `${r.funcionario_id}_${r.data}`;
+      if (!regMap[k]) regMap[k] = [];
+      regMap[k].push(r);
+    });
 
-  const calcResumoFunc = (funcId) => {
-    const apuracoesFuncionario = apuracoes.filter(a => a.funcionario_id === funcId);
-    const totalTrab = apuracoesFuncionario.reduce((s, a) => s + (a.total_trabalhado_min || 0), 0);
-    const totalFalt = apuracoesFuncionario.reduce((s, a) => s + (a.falta_min || 0), 0);
-    const totalExtra = apuracoesFuncionario.reduce((s, a) => s + (a.hora_extra_min || 0), 0);
-    const saldo = totalExtra - totalFalt;
-    const ocorrencias = apuracoesFuncionario.filter(a => !['ok', 'ajustado', 'abonado', 'folga'].includes(a.status)).length;
-    return { totalTrab, totalFalt, totalExtra, saldo, ocorrencias };
-  };
+    // Gerar linhas: para cada funcionário, cada dia com apuração ou batida
+    const keys = new Set([
+      ...apuracoes.map(a => `${a.funcionario_id}_${a.data}`),
+      ...registrosPonto.filter(r => r.funcionario_id).map(r => `${r.funcionario_id}_${r.data}`),
+    ]);
+
+    keys.forEach(k => {
+      const [funcId, data] = k.split('_');
+      const func = funcMap[funcId];
+      if (!func) return;
+      // Filtro por funcionário
+      if (selectedFunc !== 'todos' && funcId !== selectedFunc) return;
+      // Filtro por nome
+      if (searchName && !func.nome.toLowerCase().includes(searchName.toLowerCase())) return;
+
+      const apuracao = apMap[k];
+      const batidas = (regMap[k] || []).sort((a, b) => (a.hora || '').localeCompare(b.hora || '')).slice(0, 4);
+
+      const saldo = (apuracao?.hora_extra_min || 0) - (apuracao?.falta_min || 0);
+
+      result.push({ funcId, funcNome: func.nome, data, apuracao, batidas, saldo });
+    });
+
+    // Ordenar: data desc, depois nome
+    result.sort((a, b) => {
+      if (b.data !== a.data) return b.data.localeCompare(a.data);
+      return a.funcNome.localeCompare(b.funcNome);
+    });
+
+    return result;
+  }, [apuracoes, registrosPonto, funcionarios, selectedFunc, searchName]);
 
   const months = Array.from({ length: 13 }, (_, i) => {
     const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
     return format(d, 'yyyy-MM');
   });
 
-  const toggleExpandir = (funcId) =>
-    setExpandidos(prev => ({ ...prev, [funcId]: !prev[funcId] }));
-
-  const irParaEspelho = (funcId) => {
-    navigate(`${createPageUrl('EspelhoPonto')}?func=${funcId}&mes=${selectedMonth}`);
+  const formatData = (dateStr) => {
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Controle de Ponto</h1>
-          <p className="text-slate-500 text-sm mt-1">Acompanhe saldos, ocorrências e trate ausências de todos os funcionários</p>
+          <p className="text-slate-500 text-sm mt-0.5">Registro de batidas e ocorrências por funcionário</p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Button onClick={() => setTab(tab === 'importar' ? 'registros' : 'importar')}
-            variant={tab === 'importar' ? 'default' : 'outline'}
-            className={tab === 'importar' ? 'bg-slate-800 hover:bg-slate-900' : ''}>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate(createPageUrl('EspelhoPonto'))}
+          >
+            Espelho de Ponto
+          </Button>
+          <Button
+            className="bg-slate-800 hover:bg-slate-900"
+            onClick={() => setTab(tab === 'importar' ? 'registros' : 'importar')}
+          >
             <Upload className="w-4 h-4 mr-2" />
             {tab === 'importar' ? 'Ver Registros' : 'Importar Arquivo'}
           </Button>
         </div>
       </div>
 
-      {/* ─── Tab Importar ────────────────────────────── */}
+      {/* ─── Importar ─────────────────────────────────── */}
       {tab === 'importar' && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
           {!parsed ? (
@@ -271,7 +288,7 @@ export default function Ponto() {
                 ))}
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-slate-700 mb-2">Mapeamento</h3>
+                <h3 className="text-sm font-semibold text-slate-700 mb-2">Mapeamento de funcionários</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-40 overflow-y-auto">
                   {Object.entries(stats?.empMap || {}).map(([enNo, name]) => {
                     const mapped = funcionarios.find(f => f.user_id_relogio === enNo);
@@ -286,7 +303,7 @@ export default function Ponto() {
                   })}
                 </div>
               </div>
-              <div className="flex gap-3 pt-1">
+              <div className="flex gap-3">
                 <Button onClick={handleConfirm} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 flex-1 sm:flex-none">
                   {isSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Salvando...</> : <><CheckCircle className="w-4 h-4 mr-2" />Confirmar Importação</>}
                 </Button>
@@ -297,13 +314,13 @@ export default function Ponto() {
         </div>
       )}
 
-      {/* ─── Tab Registros ───────────────────────────── */}
+      {/* ─── Registros: tabela flat ───────────────────── */}
       {tab === 'registros' && (
-        <div className="space-y-4">
-          {/* Filtro de mês */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div className="space-y-3">
+          {/* Filtros */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 flex flex-col sm:flex-row gap-2">
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger className="sm:w-56">
+              <SelectTrigger className="sm:w-48">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -314,213 +331,151 @@ export default function Ponto() {
                 ))}
               </SelectContent>
             </Select>
-            {loadingReg && <span className="flex items-center gap-2 text-sm text-slate-500"><Loader2 className="w-4 h-4 animate-spin" />Carregando...</span>}
+            <Select value={selectedFunc} onValueChange={setSelectedFunc}>
+              <SelectTrigger className="sm:w-56">
+                <SelectValue placeholder="Todos os funcionários" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os funcionários</SelectItem>
+                {funcionarios.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="Buscar por nome..."
+              value={searchName}
+              onChange={e => setSearchName(e.target.value)}
+              className="sm:w-56"
+            />
+            {loadingReg && <span className="flex items-center gap-1.5 text-sm text-slate-500 px-1"><Loader2 className="w-4 h-4 animate-spin" />Carregando...</span>}
           </div>
 
-          {/* Tabela principal — um card por funcionário */}
-          {funcionarios.length === 0 ? (
-            <div className="bg-white rounded-xl border p-12 text-center text-slate-500">Nenhum funcionário ativo encontrado.</div>
-          ) : (
-            funcionarios.map(func => {
-              const resumo = calcResumoFunc(func.id);
-              const expanded = !!expandidos[func.id];
+          {/* Tabela */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-slate-800 text-white text-xs font-semibold">
+                    <th className="px-4 py-3 text-left">Funcionário</th>
+                    <th className="px-4 py-3 text-center">Data</th>
+                    <th className="px-4 py-3 text-center">1ª Ent.</th>
+                    <th className="px-4 py-3 text-center">1ª Saí.</th>
+                    <th className="px-4 py-3 text-center">2ª Ent.</th>
+                    <th className="px-4 py-3 text-center">2ª Saí.</th>
+                    <th className="px-4 py-3 text-center">Situação</th>
+                    <th className="px-4 py-3 text-center">Saldo</th>
+                    <th className="px-4 py-3 text-center">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="py-16 text-center text-slate-400 text-sm">
+                        {loadingReg ? 'Carregando registros...' : 'Nenhum registro encontrado para o período selecionado.'}
+                      </td>
+                    </tr>
+                  ) : (
+                    rows.map(({ funcId, funcNome, data, apuracao, batidas, saldo }, idx) => {
+                      const b1 = batidas[0]?.hora?.substring(0, 5);
+                      const b2 = batidas[1]?.hora?.substring(0, 5);
+                      const b3 = batidas[2]?.hora?.substring(0, 5);
+                      const b4 = batidas[3]?.hora?.substring(0, 5);
+                      const status = apuracao?.status;
+                      const meta = STATUS_META[status];
+                      const func = funcionarios.find(f => f.id === funcId);
 
-              // Linhas do mês
-              const dias = Array.from({ length: daysCount }, (_, i) => {
-                const d = String(i + 1).padStart(2, '0');
-                const dateStr = `${year}-${String(month).padStart(2, '0')}-${d}`;
-                const dow = getDay(new Date(year, month - 1, i + 1));
-                const batidas = getBatidasDoDia(func.id, dateStr);
-                const apuracao = getApuracao(func.id, dateStr);
-                const faltante = detectarBatidaFaltante(batidas, dow === 0 || dow === 6);
-                return { dateStr, day: i + 1, dow, batidas, apuracao, faltante };
-              });
-
-              return (
-                <div key={func.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                  {/* Header do funcionário */}
-                  <div
-                    className="bg-slate-800 text-white px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 cursor-pointer select-none"
-                    onClick={() => toggleExpandir(func.id)}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="font-bold text-base truncate">{func.nome}</span>
-                      {resumo.ocorrencias > 0 && (
-                        <Badge className="bg-orange-400 text-white text-xs flex-shrink-0">
-                          <AlertTriangle className="w-3 h-3 mr-1" />{resumo.ocorrencias}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4 text-xs">
-                      <div className="flex gap-3 text-slate-300">
-                        <span>Trabalhado: <strong className="text-white font-mono">{formatMinutes(resumo.totalTrab)}</strong></span>
-                        <span>Faltas: <strong className="text-red-300 font-mono">{formatMinutes(resumo.totalFalt)}</strong></span>
-                        <span>Extras: <strong className="text-blue-300 font-mono">{formatMinutes(resumo.totalExtra)}</strong></span>
-                        <span className={`font-bold font-mono ${resumo.saldo >= 0 ? 'text-green-300' : 'text-red-400'}`}>
-                          Saldo: {resumo.saldo >= 0 ? '+' : ''}{formatMinutes(resumo.saldo)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <button
-                          onClick={e => { e.stopPropagation(); irParaEspelho(func.id); }}
-                          className="flex items-center gap-1 px-2 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-xs transition-colors"
-                          title="Ver espelho de ponto"
+                      return (
+                        <tr
+                          key={`${funcId}_${data}`}
+                          className={`border-b border-slate-100 last:border-0 text-sm ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} hover:bg-blue-50/30 transition-colors`}
                         >
-                          <Eye className="w-3 h-3" /> Espelho
-                        </button>
-                        {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tabela detalhada (expansível) */}
-                  {expanded && (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full text-xs">
-                        <thead>
-                          <tr className="bg-slate-100 text-slate-600 border-b border-slate-200">
-                            <th className="px-3 py-2.5 text-left w-20">Data</th>
-                            <th className="px-3 py-2.5 text-left w-10">Dia</th>
-                            <th className="px-3 py-2.5 text-center">Batida 1</th>
-                            <th className="px-3 py-2.5 text-center">Batida 2</th>
-                            <th className="px-3 py-2.5 text-center">Batida 3</th>
-                            <th className="px-3 py-2.5 text-center">Batida 4</th>
-                            <th className="px-3 py-2.5 text-center">Total</th>
-                            <th className="px-3 py-2.5 text-center">Saldo</th>
-                            <th className="px-3 py-2.5 text-center">Status</th>
-                            <th className="px-3 py-2.5 text-center">Ação</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {dias.map(({ dateStr, day, dow, batidas, apuracao, faltante }) => {
-                            const isWeekend = dow === 0 || dow === 6;
-                            const hasProblema = apuracao && !['ok', 'ajustado', 'abonado', 'folga'].includes(apuracao.status);
-                            const saldoDia = (apuracao?.hora_extra_min || 0) - (apuracao?.falta_min || 0);
-                            return (
-                              <tr key={dateStr} className={`border-b border-slate-100 last:border-0 ${hasProblema ? 'bg-orange-50' : isWeekend ? 'bg-blue-50/30' : 'hover:bg-slate-50'}`}>
-                                <td className="px-3 py-2 font-mono text-slate-600">
-                                  {String(day).padStart(2, '0')}/{String(month).padStart(2, '0')}
-                                </td>
-                                <td className={`px-3 py-2 font-medium ${isWeekend ? 'text-blue-600' : 'text-slate-500'}`}>
-                                  {DIAS_SEMANA[dow]}
-                                </td>
-
-                                {/* Batidas 1-4 com indicação de faltante */}
-                                {[0, 1, 2, 3].map(i => {
-                                  const b = batidas[i];
-                                  const nomesBatidas = ['Entrada 1', 'Saída 1', 'Entrada 2', 'Saída 2'];
-                                  // Mostrar aviso de batida faltante na próxima célula vazia esperada
-                                  const showFaltante = !b && !isWeekend && i === batidas.length && faltante;
-                                  return (
-                                    <td key={i} className="px-2 py-2 text-center">
-                                      {b ? (
-                                        <span className="font-mono font-semibold text-slate-800">{b.hora?.substring(0, 5)}</span>
-                                      ) : showFaltante ? (
-                                        <span className="text-[10px] text-orange-600 bg-orange-100 px-1 py-0.5 rounded font-medium whitespace-nowrap">
-                                          {nomesBatidas[i]} ausente
-                                        </span>
-                                      ) : (
-                                        <span className="text-slate-200">{isWeekend ? '—' : ''}</span>
-                                      )}
-                                    </td>
-                                  );
-                                })}
-
-                                <td className="px-3 py-2 text-center font-mono font-bold text-slate-700">
-                                  {apuracao ? formatMinutes(apuracao.total_trabalhado_min) : ''}
-                                </td>
-                                <td className={`px-3 py-2 text-center font-mono font-bold ${saldoDia > 0 ? 'text-green-600' : saldoDia < 0 ? 'text-red-600' : 'text-slate-400'}`}>
-                                  {apuracao ? `${saldoDia >= 0 ? '+' : ''}${formatMinutes(saldoDia)}` : ''}
-                                </td>
-                                <td className="px-3 py-2 text-center">
-                                  {apuracao ? (
-                                    <Badge className={`text-xs ${STATUS_META[apuracao.status]?.cls || 'bg-slate-100 text-slate-600'}`}>
-                                      {STATUS_META[apuracao.status]?.label || apuracao.status}
-                                    </Badge>
-                                  ) : isWeekend ? (
-                                    <span className="text-slate-300 text-xs">—</span>
-                                  ) : null}
-                                </td>
-                                <td className="px-3 py-2 text-center">
-                                  {(apuracao || (!isWeekend && batidas.length > 0)) && (
-                                    <button
-                                      onClick={() => setAcaoModal({ apuracao, func, batidas, dateStr })}
-                                      className="px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-medium transition-colors"
-                                    >
-                                      Tratar
-                                    </button>
-                                  )}
-                                  {!apuracao && !isWeekend && batidas.length === 0 && (
-                                    <button
-                                      onClick={() => setAcaoModal({ apuracao: null, func, batidas: [], dateStr })}
-                                      className="px-2 py-1 text-xs bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-md font-medium transition-colors"
-                                    >
-                                      Tratar
-                                    </button>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                        {/* Totais */}
-                        <tfoot>
-                          <tr className="bg-slate-800 text-white font-bold text-xs">
-                            <td colSpan={6} className="px-3 py-2.5 text-slate-300">
-                              Totais — {format(new Date(year, month - 1, 1), 'MMMM yyyy', { locale: ptBR })}
-                            </td>
-                            <td className="px-3 py-2.5 text-center font-mono">{formatMinutes(resumo.totalTrab)}</td>
-                            <td className={`px-3 py-2.5 text-center font-mono ${resumo.saldo >= 0 ? 'text-green-300' : 'text-red-400'}`}>
-                              {resumo.saldo >= 0 ? '+' : ''}{formatMinutes(resumo.saldo)}
-                            </td>
-                            <td colSpan={2} className="px-3 py-2.5" />
-                          </tr>
-                        </tfoot>
-                      </table>
-                    </div>
+                          <td className="px-4 py-3 font-semibold text-slate-800 whitespace-nowrap">
+                            {funcNome}
+                          </td>
+                          <td className="px-4 py-3 text-center font-mono text-slate-600 whitespace-nowrap">
+                            {formatData(data)}
+                          </td>
+                          <td className="px-4 py-3 text-center font-mono font-semibold text-slate-800">
+                            {b1 || <span className="text-slate-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center font-mono font-semibold text-slate-800">
+                            {b2 || <span className="text-slate-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center font-mono font-semibold text-slate-800">
+                            {b3 || <span className="text-slate-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center font-mono font-semibold text-slate-800">
+                            {b4 || <span className="text-slate-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            {meta ? (
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${meta.cls}`}>
+                                {meta.label}
+                              </span>
+                            ) : <span className="text-slate-300 text-xs">—</span>}
+                          </td>
+                          <td className={`px-4 py-3 text-center font-mono font-bold text-sm ${saldo > 0 ? 'text-green-600' : saldo < 0 ? 'text-red-500' : 'text-slate-400'}`}>
+                            {apuracao ? `${saldo >= 0 ? '' : ''}${formatMinutes(saldo)}` : <span className="text-slate-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <button
+                              onClick={() => setAcaoModal({ apuracao, func, batidas, dateStr: data })}
+                              className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition-colors"
+                              title="Ver / Tratar"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
-                </div>
-              );
-            })
+                </tbody>
+              </table>
+            </div>
+            {rows.length > 0 && (
+              <div className="px-4 py-2.5 border-t border-slate-100 text-xs text-slate-400 bg-slate-50">
+                {rows.length} registro{rows.length !== 1 ? 's' : ''} exibido{rows.length !== 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+
+          {/* Histórico de importações */}
+          {importacoes.length > 0 && (
+            <details className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <summary className="px-4 py-3 font-semibold text-slate-700 cursor-pointer flex items-center gap-2 text-sm select-none">
+                <Clock className="w-4 h-4 text-slate-400" /> Histórico de Importações ({importacoes.length})
+              </summary>
+              <div className="overflow-x-auto border-t border-slate-100">
+                <table className="min-w-full text-xs">
+                  <thead>
+                    <tr className="bg-slate-700 text-white">
+                      <th className="px-4 py-2.5 text-left">Arquivo</th>
+                      <th className="px-4 py-2.5 text-left">Período</th>
+                      <th className="px-4 py-2.5 text-center">Registros</th>
+                      <th className="px-4 py-2.5 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {importacoes.map((imp, i) => (
+                      <tr key={imp.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                        <td className="px-4 py-2">{imp.arquivo_nome || '-'}</td>
+                        <td className="px-4 py-2 font-mono text-slate-600">{imp.periodo_inicio} → {imp.periodo_fim}</td>
+                        <td className="px-4 py-2 text-center">{imp.total_registros_validos}</td>
+                        <td className="px-4 py-2 text-center">
+                          <Badge className={imp.status === 'concluida' ? 'bg-green-100 text-green-700' : imp.status === 'erro' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}>
+                            {imp.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
           )}
         </div>
-      )}
-
-      {/* Histórico de importações (accordion simples no rodapé) */}
-      {tab === 'registros' && importacoes.length > 0 && (
-        <details className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <summary className="px-4 py-3 font-semibold text-slate-700 cursor-pointer flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4 text-slate-500" /> Histórico de Importações ({importacoes.length})
-          </summary>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-xs">
-              <thead>
-                <tr className="bg-slate-800 text-white">
-                  <th className="px-4 py-2.5 text-left">Arquivo</th>
-                  <th className="px-4 py-2.5 text-left">Período</th>
-                  <th className="px-4 py-2.5 text-center">Registros</th>
-                  <th className="px-4 py-2.5 text-left">Data Importação</th>
-                  <th className="px-4 py-2.5 text-center">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {importacoes.map((imp, i) => (
-                  <tr key={imp.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                    <td className="px-4 py-2">{imp.arquivo_nome || '-'}</td>
-                    <td className="px-4 py-2 font-mono">{imp.periodo_inicio} → {imp.periodo_fim}</td>
-                    <td className="px-4 py-2 text-center">{imp.total_registros_validos}</td>
-                    <td className="px-4 py-2">{imp.data_importacao ? format(new Date(imp.data_importacao), 'dd/MM/yyyy HH:mm', { locale: ptBR }) : '-'}</td>
-                    <td className="px-4 py-2 text-center">
-                      <Badge className={imp.status === 'concluida' ? 'bg-green-100 text-green-700' : imp.status === 'erro' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}>
-                        {imp.status}
-                      </Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </details>
       )}
 
       {/* Modal de ação */}
