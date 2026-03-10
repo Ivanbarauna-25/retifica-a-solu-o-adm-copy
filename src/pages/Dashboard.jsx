@@ -100,20 +100,14 @@ export default function Dashboard() {
   }, []);
 
   const statCards = [
-    { title: 'Ordens de Serviço', value: stats.totalOS, sub: `${stats.osEmAndamento} em andamento`, icon: ClipboardList, color: 'text-blue-600', bg: 'bg-blue-50', href: 'OrdensServico' },
-    { title: 'Clientes', value: stats.totalClientes, icon: Users, color: 'text-green-600', bg: 'bg-green-50', href: 'Clientes' },
-    { title: 'Funcionários Ativos', value: stats.totalFuncionarios, icon: User, color: 'text-purple-600', bg: 'bg-purple-50', href: 'Funcionarios' },
-    { title: 'Produtos Estoque', value: stats.estoqueItens, icon: Package, color: 'text-orange-600', bg: 'bg-orange-50', href: 'Estoque' },
-    { title: 'Contas a Receber', value: stats.contasReceberPendentes, sub: 'pendentes', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50', href: 'ContasReceber' },
-    { title: 'Contas a Pagar', value: stats.contasPagarPendentes, sub: 'pendentes', icon: Banknote, color: 'text-red-600', bg: 'bg-red-50', href: 'ContasPagar' },
-    { title: 'Tarefas Pendentes', value: stats.tarefasPendentes, icon: ListTodo, color: 'text-amber-600', bg: 'bg-amber-50', href: 'Tarefas' },
+    { title: 'Ordens de Serviço', value: stats.totalOS, sub: `${stats.osEmAndamento} em andamento`, icon: ClipboardList, color: 'text-blue-600', bg: 'bg-blue-50', href: 'OrdensServico', bar: 'kpi-bar-blue' },
+    { title: 'Clientes', value: stats.totalClientes, icon: Users, color: 'text-green-600', bg: 'bg-green-50', href: 'Clientes', bar: 'kpi-bar-green' },
+    { title: 'Funcionários Ativos', value: stats.totalFuncionarios, icon: User, color: 'text-purple-600', bg: 'bg-purple-50', href: 'Funcionarios', bar: 'kpi-bar-purple' },
+    { title: 'Produtos Estoque', value: stats.estoqueItens, icon: Package, color: 'text-orange-600', bg: 'bg-orange-50', href: 'Estoque', bar: 'kpi-bar-orange' },
+    { title: 'Contas a Receber', value: stats.contasReceberPendentes, sub: 'pendentes', icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50', href: 'ContasReceber', bar: 'kpi-bar-emerald' },
+    { title: 'Contas a Pagar', value: stats.contasPagarPendentes, sub: 'pendentes', icon: Banknote, color: 'text-red-600', bg: 'bg-red-50', href: 'ContasPagar', bar: 'kpi-bar-red' },
+    { title: 'Tarefas Pendentes', value: stats.tarefasPendentes, icon: ListTodo, color: 'text-amber-600', bg: 'bg-amber-50', href: 'Tarefas', bar: 'kpi-bar-amber' },
   ];
-
-  const statusBadge = {
-    em_andamento: <Badge className="bg-amber-100 text-amber-800 border-0 text-[10px]">Em Andamento</Badge>,
-    finalizado: <Badge className="bg-emerald-100 text-emerald-800 border-0 text-[10px]">Finalizado</Badge>,
-    cancelado: <Badge className="bg-red-100 text-red-800 border-0 text-[10px]">Cancelado</Badge>,
-  };
 
   return (
     <div className="w-full space-y-4 md:space-y-6">
