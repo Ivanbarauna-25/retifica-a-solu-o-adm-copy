@@ -14,9 +14,9 @@ import {
 import { formatCurrency, formatDate } from '@/components/formatters';
 
 const COLORS_STATUS = {
-  em_andamento: '#f59e0b',
-  finalizado: '#10b981',
-  cancelado: '#ef4444'
+  em_andamento: '#D97706',
+  finalizado: '#059669',
+  cancelado: '#DC2626'
 };
 
 export default function Dashboard() {
@@ -59,9 +59,9 @@ export default function Dashboard() {
         const statusCounts = { em_andamento: 0, finalizado: 0, cancelado: 0 };
         ordensServico.forEach(os => { if (statusCounts[os.status] !== undefined) statusCounts[os.status]++; });
         setOsData([
-          { name: 'Em Andamento', value: statusCounts.em_andamento, color: '#f59e0b' },
-          { name: 'Finalizado', value: statusCounts.finalizado, color: '#10b981' },
-          { name: 'Cancelado', value: statusCounts.cancelado, color: '#ef4444' },
+          { name: 'Em Andamento', value: statusCounts.em_andamento, color: '#D97706' },
+          { name: 'Finalizado', value: statusCounts.finalizado, color: '#059669' },
+          { name: 'Cancelado', value: statusCounts.cancelado, color: '#DC2626' },
         ]);
 
         // Gráfico de barras por mês (últimos 6 meses)
