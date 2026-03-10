@@ -29,9 +29,10 @@ const STATUS_STYLE = {
 };
 
 export default function EspelhoPonto() {
+  const urlParams = new URLSearchParams(window.location.search);
   const [funcionarios, setFuncionarios] = useState([]);
-  const [selectedFunc, setSelectedFunc] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
+  const [selectedFunc, setSelectedFunc] = useState(urlParams.get('func') || '');
+  const [selectedMonth, setSelectedMonth] = useState(urlParams.get('mes') || format(new Date(), 'yyyy-MM'));
   const [apuracoes, setApuracoes] = useState([]);
   const [registros, setRegistros] = useState([]);
   const [loading, setLoading] = useState(false);
