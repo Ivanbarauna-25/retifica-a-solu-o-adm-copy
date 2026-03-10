@@ -175,10 +175,10 @@ export default function EspelhoPonto() {
                     <tr className="bg-slate-800 text-white text-xs">
                       <th className="px-3 py-2.5 text-left w-20">Data</th>
                       <th className="px-3 py-2.5 text-left w-12">Dia</th>
-                      <th className="px-3 py-2.5 text-center">Entrada 1</th>
-                      <th className="px-3 py-2.5 text-center">Saída 1</th>
-                      <th className="px-3 py-2.5 text-center">Entrada 2</th>
-                      <th className="px-3 py-2.5 text-center">Saída 2</th>
+                      <th className="px-3 py-2.5 text-center">Batida 1</th>
+                      <th className="px-3 py-2.5 text-center">Batida 2</th>
+                      <th className="px-3 py-2.5 text-center">Batida 3</th>
+                      <th className="px-3 py-2.5 text-center">Batida 4</th>
                       <th className="px-3 py-2.5 text-center">Total</th>
                       <th className="px-3 py-2.5 text-center">H. Extra</th>
                       <th className="px-3 py-2.5 text-center">Falta</th>
@@ -188,6 +188,7 @@ export default function EspelhoPonto() {
                   <tbody>
                     {days.map(({ dateStr, day, dow, apuracao }) => {
                       const isWeekend = dow === 0 || dow === 6;
+                      const batidas = getBatidasDoDia(registros, dateStr);
                       return (
                         <tr key={dateStr} className={isWeekend ? 'bg-blue-50/40' : 'bg-white hover:bg-slate-50'}>
                           <td className="px-3 py-2 font-mono text-xs text-slate-600">
@@ -196,10 +197,11 @@ export default function EspelhoPonto() {
                           <td className={`px-3 py-2 text-xs font-medium ${isWeekend ? 'text-blue-600' : 'text-slate-500'}`}>
                             {DIAS_SEMANA[dow]}
                           </td>
-                          <td className="px-3 py-2 text-center font-mono text-xs">{apuracao?.entrada_1 || (isWeekend ? '—' : '-')}</td>
-                          <td className="px-3 py-2 text-center font-mono text-xs">{apuracao?.saida_1 || (isWeekend ? '—' : '-')}</td>
-                          <td className="px-3 py-2 text-center font-mono text-xs text-slate-500">{apuracao?.entrada_2 || ''}</td>
-                          <td className="px-3 py-2 text-center font-mono text-xs text-slate-500">{apuracao?.saida_2 || ''}</td>
+                          {[0, 1, 2, 3].map(i => (
+                            <td key={i} className="px-3 py-2 text-center font-mono text-xs text-slate-700">
+                              {batidas[i] ? batidas[i].hora?.substring(0, 5) : ''}
+                            </td>
+                          ))}
                           <td className="px-3 py-2 text-center font-mono text-xs font-semibold text-slate-700">
                             {apuracao ? formatMinutes(apuracao.total_trabalhado_min) : ''}
                           </td>
