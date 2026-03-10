@@ -364,14 +364,7 @@ function OrdensServicoContent() {
   };
 
   const getStatusBadge = (status) => {
-    const config = statusMap[status] || statusMap['em_andamento'];
-    const Icon = config.icon;
-    return (
-      <Badge className={`${config.bgClass} ${config.textClass} ${config.borderClass} border hover:${config.bgClass} font-medium flex items-center gap-1.5 px-2.5 py-1`}>
-        <Icon className="w-3.5 h-3.5" />
-        {config.label}
-      </Badge>
-    );
+    return <StatusBadge status={status} />;
   };
 
   const statusLabels = {
