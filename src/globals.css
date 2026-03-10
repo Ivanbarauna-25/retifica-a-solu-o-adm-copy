@@ -662,3 +662,118 @@ body {
 .safe-area-top {
   padding-top: env(safe-area-inset-top, 0);
 }
+
+/* =====================================================
+   DESIGN SYSTEM v2
+   1. Tipografia   2. Badges   3. KPI Cards
+   ===================================================== */
+
+/* ─── 1. Tipografia ──────────────────────────────── */
+html, body, #root {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif !important;
+}
+
+* {
+  font-family: inherit;
+}
+
+/* JetBrains Mono para números, datas, códigos */
+.font-mono,
+code, pre,
+td.font-mono,
+.tabular-nums {
+  font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+}
+
+/* ─── 2. Status Badge (bolinha + fundo pastel) ──── */
+
+/* Container base */
+.badge-status {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 3px 10px !important;
+  border-radius: 20px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  line-height: 1.5 !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+/* Bolinha colorida */
+.badge-status::before {
+  content: '' !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+}
+
+/* Verde — Ativo / Finalizado / Pago / Aprovado */
+.badge-success {
+  background: #ECFDF5 !important;
+  color: #065F46 !important;
+}
+.badge-success::before { background: #059669 !important; }
+
+/* Amarelo — Em Andamento / Pendente / Aguardando */
+.badge-warning {
+  background: #FFFBEB !important;
+  color: #92400E !important;
+}
+.badge-warning::before { background: #D97706 !important; }
+
+/* Vermelho — Cancelado / Vencido / Demitido / Inativo */
+.badge-error {
+  background: #FEF2F2 !important;
+  color: #991B1B !important;
+}
+.badge-error::before { background: #DC2626 !important; }
+
+/* Cinza neutro — Convertido / Outros */
+.badge-neutral {
+  background: #F9FAFB !important;
+  color: #6B7280 !important;
+  border: 1px solid #E5E7EB !important;
+}
+.badge-neutral::before { background: #9CA3AF !important; }
+
+/* Azul — Informativo / Férias */
+.badge-info {
+  background: #EFF6FF !important;
+  color: #1E40AF !important;
+}
+.badge-info::before { background: #3B82F6 !important; }
+
+/* Roxo — Abonado / Folga */
+.badge-purple {
+  background: #F5F3FF !important;
+  color: #5B21B6 !important;
+}
+.badge-purple::before { background: #7C3AED !important; }
+
+/* ─── 3. KPI Card — barra colorida no topo ──────── */
+.kpi-bar {
+  position: relative !important;
+  overflow: hidden !important;
+}
+.kpi-bar::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+.kpi-bar-blue::before    { background: #1A56DB !important; }
+.kpi-bar-green::before   { background: #059669 !important; }
+.kpi-bar-yellow::before  { background: #D97706 !important; }
+.kpi-bar-sky::before     { background: #0EA5E9 !important; }
+.kpi-bar-red::before     { background: #DC2626 !important; }
+.kpi-bar-purple::before  { background: #7C3AED !important; }
+.kpi-bar-orange::before  { background: #EA580C !important; }
+.kpi-bar-amber::before   { background: #F59E0B !important; }
+.kpi-bar-emerald::before { background: #059669 !important; }
