@@ -48,7 +48,6 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Adiantamentos from './pages/Adiantamentos';
-import BancoHoras from './pages/BancoHoras';
 import Cargos from './pages/Cargos';
 import Categorias from './pages/Categorias';
 import Clientes from './pages/Clientes';
@@ -59,13 +58,9 @@ import ContasPagar from './pages/ContasPagar';
 import ContasReceber from './pages/ContasReceber';
 import Contratacao from './pages/Contratacao';
 import CotacoesEPI from './pages/CotacoesEPI';
-import DRE from './pages/DRE';
 import Dashboard from './pages/Dashboard';
 import Departamentos from './pages/Departamentos';
 import EPIs from './pages/EPIs';
-import EscalasTrabalho from './pages/EscalasTrabalho';
-import EspelhoPonto from './pages/EspelhoPonto';
-import EspelhoPontoPrint from './pages/EspelhoPontoPrint';
 import Estoque from './pages/Estoque';
 import FichaCandidato from './pages/FichaCandidato';
 import FichaFuncionario from './pages/FichaFuncionario';
@@ -85,13 +80,11 @@ import MatrizPermissoes from './pages/MatrizPermissoes';
 import MeuPerfil from './pages/MeuPerfil';
 import Motores from './pages/Motores';
 import MovimentacaoFinanceira from './pages/MovimentacaoFinanceira';
-import NotasFiscais from './pages/NotasFiscais';
 import OrcamentoCriadoSucesso from './pages/OrcamentoCriadoSucesso';
 import Orcamentos from './pages/Orcamentos';
 import OrdensServico from './pages/OrdensServico';
 import Patrimonio from './pages/Patrimonio';
 import PlanoContas from './pages/PlanoContas';
-import Ponto from './pages/Ponto';
 import Relatorio13Salario from './pages/Relatorio13Salario';
 import RelatorioAdiantamentos from './pages/RelatorioAdiantamentos';
 import RelatorioContasPagar from './pages/RelatorioContasPagar';
@@ -101,7 +94,6 @@ import RelatorioEntregasEPI from './pages/RelatorioEntregasEPI';
 import RelatorioFluxoCaixa from './pages/RelatorioFluxoCaixa';
 import RelatorioFolhaPagamento from './pages/RelatorioFolhaPagamento';
 import RelatorioFuncionarios from './pages/RelatorioFuncionarios';
-import RelatorioNotasFiscais from './pages/RelatorioNotasFiscais';
 import RelatorioOS from './pages/RelatorioOS';
 import RelatorioOrcamentos from './pages/RelatorioOrcamentos';
 import Servicos from './pages/Servicos';
@@ -114,7 +106,6 @@ import __Layout from './Layout.jsx';
 
 export const PAGES = {
     "Adiantamentos": Adiantamentos,
-    "BancoHoras": BancoHoras,
     "Cargos": Cargos,
     "Categorias": Categorias,
     "Clientes": Clientes,
@@ -125,13 +116,9 @@ export const PAGES = {
     "ContasReceber": ContasReceber,
     "Contratacao": Contratacao,
     "CotacoesEPI": CotacoesEPI,
-    "DRE": DRE,
     "Dashboard": Dashboard,
     "Departamentos": Departamentos,
     "EPIs": EPIs,
-    "EscalasTrabalho": EscalasTrabalho,
-    "EspelhoPonto": EspelhoPonto,
-    "EspelhoPontoPrint": EspelhoPontoPrint,
     "Estoque": Estoque,
     "FichaCandidato": FichaCandidato,
     "FichaFuncionario": FichaFuncionario,
@@ -151,13 +138,11 @@ export const PAGES = {
     "MeuPerfil": MeuPerfil,
     "Motores": Motores,
     "MovimentacaoFinanceira": MovimentacaoFinanceira,
-    "NotasFiscais": NotasFiscais,
     "OrcamentoCriadoSucesso": OrcamentoCriadoSucesso,
     "Orcamentos": Orcamentos,
     "OrdensServico": OrdensServico,
     "Patrimonio": Patrimonio,
     "PlanoContas": PlanoContas,
-    "Ponto": Ponto,
     "Relatorio13Salario": Relatorio13Salario,
     "RelatorioAdiantamentos": RelatorioAdiantamentos,
     "RelatorioContasPagar": RelatorioContasPagar,
@@ -167,7 +152,6 @@ export const PAGES = {
     "RelatorioFluxoCaixa": RelatorioFluxoCaixa,
     "RelatorioFolhaPagamento": RelatorioFolhaPagamento,
     "RelatorioFuncionarios": RelatorioFuncionarios,
-    "RelatorioNotasFiscais": RelatorioNotasFiscais,
     "RelatorioOS": RelatorioOS,
     "RelatorioOrcamentos": RelatorioOrcamentos,
     "Servicos": Servicos,

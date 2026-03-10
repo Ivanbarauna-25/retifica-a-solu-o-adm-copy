@@ -134,22 +134,13 @@ const navigationGroups = [
   { title: "Contratação", url: "Contratacao", icon: UserPlus, module: "contratacao" },
   { title: "Equipe", url: "Funcionarios", icon: UserIcon, module: "funcionarios" },
   { title: "Gestão de RH", url: "GestaoRH", icon: UserCog, module: "rh" },
-  { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
-  { title: "Espelho de Ponto", url: "EspelhoPonto", icon: FileText, module: "ponto" },
-  { title: "Escalas de Trabalho", url: "EscalasTrabalho", icon: Timer, module: "ponto" },
-  { title: "Banco de Horas", url: "BancoHoras", icon: Wallet, module: "ponto" },
+
   { title: "Folha de Pagamento", url: "FolhaPagamento", icon: Wallet, module: "folha" },
   { title: "13º Salário", url: "Folha13", icon: Wallet, module: "folha" },
   { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" }]
 
 },
-{
-  group: "COMPRAS E SUPRIMENTOS",
-  icon: ShoppingCart,
-  items: [
-  { title: "Notas Fiscais de Entrada", url: "NotasFiscais", icon: FileText, module: "compras" }]
 
-},
 {
   group: "FINANCEIRO",
   icon: Banknote,
@@ -159,8 +150,7 @@ const navigationGroups = [
   { title: "Contas Bancarias", url: "ContasBancarias", icon: Banknote, module: "financeiro" },
   { title: "Plano de Contas", url: "PlanoContas", icon: FileBarChart2, module: "plano_contas" },
   { title: "Contas a Pagar", url: "ContasPagar", icon: Banknote, module: "contas_pagar" },
-  { title: "Contas a Receber", url: "ContasReceber", icon: Banknote, module: "contas_receber" },
-  { title: "DRE Gerencial", url: "DRE", icon: BarChart3, module: "dre" }]
+  { title: "Contas a Receber", url: "ContasReceber", icon: Banknote, module: "contas_receber" }]
 
 },
 {
@@ -427,8 +417,7 @@ export default function Layout({ children, currentPageName }) {
   currentPageName === 'Relatorio13Salario' ||
   currentPageName === 'RelatorioOS' ||
   currentPageName === 'TermoRecebimentoEPI' ||
-  currentPageName === 'RelatorioCotacaoEPI' ||
-  currentPageName === 'EspelhoPontoPrint') {
+  currentPageName === 'RelatorioCotacaoEPI') {
     return <>{children}</>;
   }
 
