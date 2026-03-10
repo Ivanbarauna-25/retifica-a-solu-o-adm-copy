@@ -164,26 +164,24 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2 md:gap-3">
         {statCards.map((card, i) => (
           <Link key={i} to={createPageUrl(card.href)}>
-            <Card className="border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 cursor-pointer h-full">
-              <CardContent className="p-3 md:p-4">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] md:text-xs font-medium text-slate-500 truncate mb-1">{card.title}</p>
-                    {loading ? (
-                      <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-                    ) : (
-                      <h3 className="text-2xl md:text-3xl font-bold text-slate-800">{card.value}</h3>
-                    )}
-                    {card.sub && !loading && (
-                      <span className="text-[10px] text-slate-500 block truncate">{card.sub}</span>
-                    )}
-                  </div>
-                  <div className={`p-2 rounded-lg ${card.bg} flex-shrink-0`}>
-                    <card.icon className={`w-4 h-4 md:w-5 md:h-5 ${card.color}`} />
-                  </div>
+            <div className={`kpi-bar ${card.bar} bg-white border border-slate-200 rounded-xl p-3 md:p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer h-full`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider truncate mb-1">{card.title}</p>
+                  {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+                  ) : (
+                    <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 font-mono tracking-tight">{card.value}</h3>
+                  )}
+                  {card.sub && !loading && (
+                    <span className="text-[10px] text-slate-500 block truncate mt-0.5">{card.sub}</span>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+                <div className={`p-2 rounded-lg ${card.bg} flex-shrink-0`}>
+                  <card.icon className={`w-4 h-4 md:w-5 md:h-5 ${card.color}`} />
+                </div>
+              </div>
+            </div>
           </Link>
         ))}
       </div>
@@ -213,7 +211,7 @@ export default function Dashboard() {
                     contentStyle={{ fontSize: 12, borderRadius: 8 }}
                     formatter={(v) => [v, 'OS']}
                   />
-                  <Bar dataKey="count" fill="#1e293b" radius={[4, 4, 0, 0]} name="OS" />
+                  <Bar dataKey="count" fill="#1A56DB" radius={[4, 4, 0, 0]} name="OS" />
                 </BarChart>
               </ResponsiveContainer>
             )}
