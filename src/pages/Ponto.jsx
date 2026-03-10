@@ -512,10 +512,10 @@ export default function Ponto() {
               </div>
             </details>
           )}
-        </div>
-      )}
+          </div>
+          )}
 
-        {/* Modal de ação */}
+          {/* Modal de ação */}
         {acaoModal && (
           <PontoAcaoModal
             apuracao={acaoModal.apuracao}
