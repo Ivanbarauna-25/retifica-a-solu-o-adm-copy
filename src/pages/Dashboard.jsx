@@ -204,7 +204,7 @@ export default function Dashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={stats.barData || []} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
                   <XAxis dataKey="mes" tick={{ fontSize: 11, fill: '#64748b' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#64748b' }} allowDecimals={false} />
                   <Tooltip
@@ -234,15 +234,15 @@ export default function Dashboard() {
             ) : (
               <ResponsiveContainer width="100%" height={180}>
                 <PieChart>
-                  <Pie
-                    data={osData}
-                    cx="50%"
-                    cy="45%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
+                   <Pie
+                     data={osData}
+                     cx="50%"
+                     cy="45%"
+                     innerRadius={52}
+                     outerRadius={75}
+                     paddingAngle={3}
+                     dataKey="value"
+                   >
                     {osData.map((entry, index) => (
                       <Cell key={index} fill={entry.color} />
                     ))}
@@ -290,7 +290,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
                     <span className="font-semibold text-slate-800 text-xs md:text-sm">{formatCurrency(os.valor_total || 0)}</span>
-                    {statusBadge[os.status]}
+                    <StatusBadge status={os.status} />
                   </div>
                 </div>
               ))}
