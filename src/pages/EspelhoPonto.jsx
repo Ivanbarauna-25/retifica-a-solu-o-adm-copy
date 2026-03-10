@@ -33,6 +33,7 @@ export default function EspelhoPonto() {
   const [selectedFunc, setSelectedFunc] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(format(new Date(), 'yyyy-MM'));
   const [apuracoes, setApuracoes] = useState([]);
+  const [registros, setRegistros] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -42,15 +43,17 @@ export default function EspelhoPonto() {
   useEffect(() => {
     if (!selectedFunc) return;
     setLoading(true);
-    base44.entities.ApuracaoDiariaPonto.filter({ funcionario_id: selectedFunc })
-      .then(data => {
-        const [y, m] = selectedMonth.split('-');
-        const start = `${y}-${m}-01`;
-        const end = `${y}-${m}-${String(getDaysInMonth(new Date(+y, +m - 1))).padStart(2, '0')}`;
-        setApuracoes(data.filter(a => a.data >= start && a.data <= end));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    const [y, m] = selectedMonth.split('-');
+    const start = `${y}-${m}-01`;
+    const end = `${y}-${m}-${String(getDaysInMonth(new Date(+y, +m - 1))).padStart(2, '0')}`;
+    Promise.all([
+      base44.entities.ApuracaoDiariaPonto.filter({ funcionario_id: selectedFunc }),
+      base44.entities.PontoRegistro.filter({ funcionario_id: selectedFunc }),
+    ]).then(([apurs, regs]) => {
+      setApuracoes(apurs.filter(a => a.data >= start && a.data <= end));
+      setRegistros(regs.filter(r => r.data >= start && r.data <= end));
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, [selectedFunc, selectedMonth]);
 
   const [year, month] = selectedMonth.split('-').map(Number);
