@@ -7,7 +7,6 @@ import { Printer, ArrowLeft, FileText } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import StatusBadge from "@/components/StatusBadge";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 
