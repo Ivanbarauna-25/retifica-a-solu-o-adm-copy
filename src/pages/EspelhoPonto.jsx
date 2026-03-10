@@ -7,7 +7,7 @@ import { Printer, ArrowLeft, FileText } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import StatusBadge from "@/components/StatusBadge";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 
@@ -21,12 +21,10 @@ function getBatidasDoDia(registros, dateStr) {
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-const STATUS_STYLE = {
-  ok: 'bg-green-100 text-green-700',
-  incompleto: 'bg-yellow-100 text-yellow-700',
-  divergente: 'bg-orange-100 text-orange-700',
-  falta: 'bg-red-100 text-red-700',
-  ajustado: 'bg-blue-100 text-blue-700',
+const STATUS_LABEL = {
+  ok: 'OK', incompleto: 'Incompleto', divergente: 'Divergente',
+  falta: 'Falta', ajustado: 'Ajustado', abonado: 'Abonado',
+  folga: 'Folga', ferias: 'Férias', desconto: 'Desconto',
 };
 
 export default function EspelhoPonto() {
