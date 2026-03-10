@@ -443,10 +443,8 @@ export default function Ponto() {
                             {b4 || <span className="text-slate-300">—</span>}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            {meta ? (
-                              <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold ${meta.cls}`}>
-                                {meta.label}
-                              </span>
+                            {status ? (
+                              <StatusBadge status={status} label={meta?.label} />
                             ) : <span className="text-slate-300 text-xs">—</span>}
                           </td>
                           <td className={`px-4 py-3 text-center font-mono font-bold text-sm ${saldo > 0 ? 'text-blue-600' : saldo < 0 ? 'text-red-500' : 'text-slate-400'}`}>
