@@ -157,14 +157,14 @@ export default function EspelhoPonto() {
             {/* Cards resumo */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 no-print">
               {[
-                { label: 'Dias Trabalhados', value: diasTrabalhados, color: 'text-slate-800' },
-                { label: 'Total Trabalhado', value: formatMinutes(totalTrabalhado), color: 'text-green-700' },
-                { label: 'Total Faltas', value: formatMinutes(totalFaltas), color: 'text-red-600' },
-                { label: 'Horas Extras', value: formatMinutes(totalExtras), color: 'text-blue-700' },
+                { label: 'Dias Trabalhados', value: diasTrabalhados, color: 'text-slate-900', bar: 'kpi-bar-blue' },
+                { label: 'Total Trabalhado', value: formatMinutes(totalTrabalhado), color: 'text-emerald-600', bar: 'kpi-bar-green' },
+                { label: 'Total Faltas', value: formatMinutes(totalFaltas), color: 'text-red-600', bar: 'kpi-bar-red' },
+                { label: 'Horas Extras', value: formatMinutes(totalExtras), color: 'text-blue-700', bar: 'kpi-bar-sky' },
               ].map(c => (
-                <div key={c.label} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-                  <p className="text-xs text-slate-500">{c.label}</p>
-                  <p className={`text-xl font-bold mt-1 ${c.color}`}>{c.value}</p>
+                <div key={c.label} className={`kpi-bar ${c.bar} bg-white rounded-xl border border-slate-200 shadow-sm p-4`}>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{c.label}</p>
+                  <p className={`text-xl font-extrabold mt-1 font-mono ${c.color}`}>{c.value}</p>
                 </div>
               ))}
             </div>
