@@ -271,23 +271,23 @@ export default function Ponto() {
       </div>
 
       {/* Stat cards */}
-      <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+      <div className="max-w-[1800px] mx-auto px-0 md:px-0">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
-          <div className="bg-white rounded-lg border-l-4 border-l-slate-600 shadow-sm p-2 md:p-4">
-            <p className="text-[9px] md:text-xs font-medium text-slate-500">Total Registros</p>
-            <p className="text-sm md:text-xl font-bold text-slate-800 mt-0.5">{rows.length}</p>
+          <div className="kpi-bar kpi-bar-blue bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+            <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Registros</p>
+            <p className="text-sm md:text-2xl font-extrabold text-slate-900 font-mono mt-0.5">{rows.length}</p>
           </div>
-          <div className="bg-white rounded-lg border-l-4 border-l-emerald-500 shadow-sm p-2 md:p-4">
-            <p className="text-[9px] md:text-xs font-medium text-slate-500">OK</p>
-            <p className="text-sm md:text-xl font-bold text-emerald-600 mt-0.5">{totalOk}</p>
+          <div className="kpi-bar kpi-bar-green bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+            <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">OK</p>
+            <p className="text-sm md:text-2xl font-extrabold text-emerald-600 font-mono mt-0.5">{totalOk}</p>
           </div>
-          <div className="bg-white rounded-lg border-l-4 border-l-red-500 shadow-sm p-2 md:p-4">
-            <p className="text-[9px] md:text-xs font-medium text-slate-500">Faltas</p>
-            <p className="text-sm md:text-xl font-bold text-red-600 mt-0.5">{totalFaltas}</p>
+          <div className="kpi-bar kpi-bar-red bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+            <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Faltas</p>
+            <p className="text-sm md:text-2xl font-extrabold text-red-600 font-mono mt-0.5">{totalFaltas}</p>
           </div>
-          <div className="bg-white rounded-lg border-l-4 border-l-purple-500 shadow-sm p-2 md:p-4">
-            <p className="text-[9px] md:text-xs font-medium text-slate-500">Tratados</p>
-            <p className="text-sm md:text-xl font-bold text-purple-600 mt-0.5">{totalTratados}</p>
+          <div className="kpi-bar kpi-bar-purple bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+            <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tratados</p>
+            <p className="text-sm md:text-2xl font-extrabold text-purple-600 font-mono mt-0.5">{totalTratados}</p>
           </div>
         </div>
 
