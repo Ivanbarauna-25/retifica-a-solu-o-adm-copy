@@ -135,6 +135,8 @@ const navigationGroups = [
   { title: "Equipe", url: "Funcionarios", icon: UserIcon, module: "funcionarios" },
   { title: "Gestão de RH", url: "GestaoRH", icon: UserCog, module: "rh" },
 
+  { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
+  { title: "Espelho de Ponto", url: "EspelhoPonto", icon: FileText, module: "ponto" },
   { title: "Folha de Pagamento", url: "FolhaPagamento", icon: Wallet, module: "folha" },
   { title: "13º Salário", url: "Folha13", icon: Wallet, module: "folha" },
   { title: "Adiantamentos", url: "Adiantamentos", icon: CalendarCheck, module: "adiantamentos" }]
@@ -417,7 +419,8 @@ export default function Layout({ children, currentPageName }) {
   currentPageName === 'Relatorio13Salario' ||
   currentPageName === 'RelatorioOS' ||
   currentPageName === 'TermoRecebimentoEPI' ||
-  currentPageName === 'RelatorioCotacaoEPI') {
+  currentPageName === 'RelatorioCotacaoEPI' ||
+  currentPageName === 'EspelhoPonto') {
     return <>{children}</>;
   }
 
