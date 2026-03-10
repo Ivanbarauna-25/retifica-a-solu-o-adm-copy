@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -811,8 +810,11 @@ export default function GestaoRHPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Carregando...</p>
+      <div className="flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-3 text-slate-500">
+          <div className="w-10 h-10 border-4 border-slate-300 border-t-slate-700 rounded-full animate-spin" />
+          <p className="text-sm font-medium">Carregando dados de RH...</p>
+        </div>
       </div>
     );
   }
@@ -820,92 +822,83 @@ export default function GestaoRHPage() {
   return (
     <>
       <Toaster />
-      <div className="container mx-auto p-6 space-y-6">
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 text-white">
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-2xl">Gestão de RH - Aprovações e Histórico</CardTitle>
-              {/* Métricas rápidas */}
-              <div className="flex gap-4 text-sm">
-                <div className="text-center">
-                  <div className="font-bold text-2xl">
-                    {totalSolicitacoes.pendentes}
-                  </div>
-                  <div className="text-xs opacity-90">Pendentes</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold text-2xl text-green-300">
-                    {totalSolicitacoes.aprovadas}
-                  </div>
-                  <div className="text-xs opacity-90">Aprovadas</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-bold text-2xl text-red-300">
-                    {totalSolicitacoes.reprovadas}
-                  </div>
-                  <div className="text-xs opacity-90">Reprovadas</div>
-                </div>
+      <div className="space-y-5">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl shadow-lg px-5 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-lg md:text-xl font-bold text-white">Gestão de RH</h1>
+              <p className="text-slate-300 text-xs mt-0.5">Aprovações e histórico de solicitações</p>
+            </div>
+            <div className="flex gap-3 sm:gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white">{totalSolicitacoes.pendentes}</div>
+                <div className="text-xs text-slate-300">Pendentes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-300">{totalSolicitacoes.aprovadas}</div>
+                <div className="text-xs text-slate-300">Aprovadas</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-300">{totalSolicitacoes.reprovadas}</div>
+                <div className="text-xs text-slate-300">Reprovadas</div>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="pt-6">
+          </div>
+        </div>
+
+        <Card className="shadow-sm">
+          <CardContent className="pt-5 px-3 md:px-6">
             <Tabs defaultValue="ferias" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="ferias" className="gap-2">
-                  <Calendar className="w-4 h-4" />
+              <div className="overflow-x-auto pb-1">
+              <TabsList className="flex w-max min-w-full gap-1 bg-slate-100 p-1 rounded-lg">
+                <TabsTrigger value="ferias" className="flex-shrink-0 gap-1.5 text-xs md:text-sm px-3 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <Calendar className="w-3.5 h-3.5" />
                   Férias
-                  {feriasPendentes.length > 0 && (
-                    <Badge className="ml-2 bg-red-500">{feriasPendentes.length}</Badge>
-                  )}
+                  {feriasPendentes.length > 0 && <Badge className="ml-1 bg-red-500 text-white text-[10px] h-4 px-1">{feriasPendentes.length}</Badge>}
                 </TabsTrigger>
-                <TabsTrigger value="salarios" className="gap-2">
-                  <TrendingUp className="w-4 h-4" />
+                <TabsTrigger value="salarios" className="flex-shrink-0 gap-1.5 text-xs md:text-sm px-3 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <TrendingUp className="w-3.5 h-3.5" />
                   Salários
-                  {salariosPendentes.length > 0 && (
-                    <Badge className="ml-2 bg-red-500">{salariosPendentes.length}</Badge>
-                  )}
+                  {salariosPendentes.length > 0 && <Badge className="ml-1 bg-red-500 text-white text-[10px] h-4 px-1">{salariosPendentes.length}</Badge>}
                 </TabsTrigger>
-                <TabsTrigger value="cargos" className="gap-2">
-                  <Briefcase className="w-4 h-4" />
+                <TabsTrigger value="cargos" className="flex-shrink-0 gap-1.5 text-xs md:text-sm px-3 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <Briefcase className="w-3.5 h-3.5" />
                   Cargos
-                  {cargosPendentes.length > 0 && (
-                    <Badge className="ml-2 bg-red-500">{cargosPendentes.length}</Badge>
-                  )}
+                  {cargosPendentes.length > 0 && <Badge className="ml-1 bg-red-500 text-white text-[10px] h-4 px-1">{cargosPendentes.length}</Badge>}
                 </TabsTrigger>
-                <TabsTrigger value="departamentos" className="gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Departamentos
-                  {departamentosPendentes.length > 0 && (
-                    <Badge className="ml-2 bg-red-500">{departamentosPendentes.length}</Badge>
-                  )}
+                <TabsTrigger value="departamentos" className="flex-shrink-0 gap-1.5 text-xs md:text-sm px-3 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <Building2 className="w-3.5 h-3.5" />
+                  Depto.
+                  {departamentosPendentes.length > 0 && <Badge className="ml-1 bg-red-500 text-white text-[10px] h-4 px-1">{departamentosPendentes.length}</Badge>}
                 </TabsTrigger>
-                <TabsTrigger value="desligamentos" className="gap-2">
-                  <UserX className="w-4 h-4" />
+                <TabsTrigger value="desligamentos" className="flex-shrink-0 gap-1.5 text-xs md:text-sm px-3 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                  <UserX className="w-3.5 h-3.5" />
                   Desligamentos
-                  {desligamentosPendentes.length > 0 && (
-                    <Badge className="ml-2 bg-red-500">{desligamentosPendentes.length}</Badge>
-                  )}
+                  {desligamentosPendentes.length > 0 && <Badge className="ml-1 bg-red-500 text-white text-[10px] h-4 px-1">{desligamentosPendentes.length}</Badge>}
                 </TabsTrigger>
               </TabsList>
+              </div>
 
               {/* ABA DE FÉRIAS */}
-              <TabsContent value="ferias" className="space-y-4">
-                <div className="rounded-md border">
+              <TabsContent value="ferias" className="space-y-4 mt-4">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Funcionário</TableHead>
-                        <TableHead>Período</TableHead>
-                        <TableHead>Dias</TableHead>
-                        <TableHead>Solicitado em</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Ações</TableHead>
+                      <TableRow className="bg-slate-700 hover:bg-slate-700">
+                        <TableHead className="text-white font-semibold text-xs">Funcionário</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Período</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Dias</TableHead>
+                        <TableHead className="text-white font-semibold text-xs hidden md:table-cell">Solicitado em</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Status</TableHead>
+                        <TableHead className="text-white font-semibold text-xs text-center">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {ferias.length === 0 ? (
+                       {ferias.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                          <TableCell colSpan={6} className="text-center text-slate-500 py-10 text-sm">
                             Nenhuma solicitação de férias encontrada
                           </TableCell>
                         </TableRow>
@@ -913,93 +906,64 @@ export default function GestaoRHPage() {
                         ferias.map(f => (
                           <TableRow
                             key={f.id}
-                            className="cursor-pointer hover:bg-slate-50"
+                            className="cursor-pointer hover:bg-slate-50 text-sm"
                             onClick={() => openDetailModal('ferias', f)}
                           >
-                            <TableCell className="font-medium">{getFuncionarioNome(f.funcionario_id)}</TableCell>
-                            <TableCell>
-                              {formatDate(f.inicio)} - {formatDate(f.fim)}
+                            <TableCell className="font-medium text-slate-900">{getFuncionarioNome(f.funcionario_id)}</TableCell>
+                            <TableCell className="text-slate-700 whitespace-nowrap">
+                              {formatDate(f.inicio)} – {formatDate(f.fim)}
                             </TableCell>
-                            <TableCell>{f.dias} dias</TableCell>
-                            <TableCell>{formatDate(f.created_date)}</TableCell>
+                            <TableCell className="text-slate-700">{f.dias} dias</TableCell>
+                            <TableCell className="text-slate-600 hidden md:table-cell">{formatDate(f.created_date)}</TableCell>
                             <TableCell>
                               <Badge className={statusColors[f.status] || 'bg-gray-100 text-gray-800'}>
                                 {statusLabels[f.status] || f.status}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDetailModal('ferias', f);
-                                }}
-                              >
-                                <Eye className="w-4 h-4" />
-                                Ver Detalhes
+                              <Button variant="ghost" size="sm" className="gap-1.5 text-blue-600 hover:bg-blue-50 h-8"
+                                onClick={(e) => { e.stopPropagation(); openDetailModal('ferias', f); }}>
+                                <Eye className="w-3.5 h-3.5" /> Detalhes
                               </Button>
                             </TableCell>
                           </TableRow>
                         ))
                       )}
                     </TableBody>
-                  </Table>
-                </div>
-              </TabsContent>
+                    </Table>
+                    </div>
+                    </div>
+                    </TabsContent>
 
               {/* ABA DE SALÁRIOS */}
-              <TabsContent value="salarios" className="space-y-4">
-                <div className="rounded-md border">
+              <TabsContent value="salarios" className="space-y-4 mt-4">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Funcionário</TableHead>
-                        <TableHead>De</TableHead>
-                        <TableHead>Para</TableHead>
-                        <TableHead>Vigência</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Ações</TableHead>
+                      <TableRow className="bg-slate-700 hover:bg-slate-700">
+                        <TableHead className="text-white font-semibold text-xs">Funcionário</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">De</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Para</TableHead>
+                        <TableHead className="text-white font-semibold text-xs hidden md:table-cell">Vigência</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Status</TableHead>
+                        <TableHead className="text-white font-semibold text-xs text-center">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {salarios.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                            Nenhum histórico de salário encontrado
-                          </TableCell>
-                        </TableRow>
+                        <TableRow><TableCell colSpan={6} className="text-center text-slate-500 py-10 text-sm">Nenhum histórico de salário encontrado</TableCell></TableRow>
                       ) : (
                         salarios.map(s => (
-                          <TableRow
-                            key={s.id}
-                            className="cursor-pointer hover:bg-slate-50"
-                            onClick={() => openDetailModal('salario', s)}
-                          >
-                            <TableCell className="font-medium">{getFuncionarioNome(s.funcionario_id)}</TableCell>
-                            <TableCell>{formatCurrency(s.salario_anterior)}</TableCell>
-                            <TableCell className="font-semibold text-green-600">
-                              {formatCurrency(s.salario_novo)}
-                            </TableCell>
-                            <TableCell>{formatDate(s.data_vigencia)}</TableCell>
-                            <TableCell>
-                              <Badge className={statusColors[s.status] || 'bg-gray-100 text-gray-800'}>
-                                {statusLabels[s.status] || s.status}
-                              </Badge>
-                            </TableCell>
+                          <TableRow key={s.id} className="cursor-pointer hover:bg-slate-50 text-sm" onClick={() => openDetailModal('salario', s)}>
+                            <TableCell className="font-medium text-slate-900">{getFuncionarioNome(s.funcionario_id)}</TableCell>
+                            <TableCell className="text-slate-600 font-mono text-xs">{formatCurrency(s.salario_anterior)}</TableCell>
+                            <TableCell className="font-semibold text-green-700 font-mono text-xs">{formatCurrency(s.salario_novo)}</TableCell>
+                            <TableCell className="text-slate-600 hidden md:table-cell">{formatDate(s.data_vigencia)}</TableCell>
+                            <TableCell><Badge className={statusColors[s.status] || 'bg-gray-100 text-gray-800'}>{statusLabels[s.status] || s.status}</Badge></TableCell>
                             <TableCell className="text-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDetailModal('salario', s);
-                                }}
-                              >
-                                <Eye className="w-4 h-4" />
-                                Ver Detalhes
+                              <Button variant="ghost" size="sm" className="gap-1.5 text-blue-600 hover:bg-blue-50 h-8" onClick={(e) => { e.stopPropagation(); openDetailModal('salario', s); }}>
+                                <Eye className="w-3.5 h-3.5" /> Detalhes
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -1007,60 +971,39 @@ export default function GestaoRHPage() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </TabsContent>
 
               {/* ABA DE CARGOS */}
-              <TabsContent value="cargos" className="space-y-4">
-                <div className="rounded-md border">
+              <TabsContent value="cargos" className="space-y-4 mt-4">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Funcionário</TableHead>
-                        <TableHead>De</TableHead>
-                        <TableHead>Para</TableHead>
-                        <TableHead>Vigência</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Ações</TableHead>
+                      <TableRow className="bg-slate-700 hover:bg-slate-700">
+                        <TableHead className="text-white font-semibold text-xs">Funcionário</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Cargo Anterior</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Cargo Novo</TableHead>
+                        <TableHead className="text-white font-semibold text-xs hidden md:table-cell">Vigência</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Status</TableHead>
+                        <TableHead className="text-white font-semibold text-xs text-center">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {cargos.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                            Nenhum histórico de cargo encontrado
-                          </TableCell>
-                        </TableRow>
+                        <TableRow><TableCell colSpan={6} className="text-center text-slate-500 py-10 text-sm">Nenhum histórico de cargo encontrado</TableCell></TableRow>
                       ) : (
                         cargos.map(c => (
-                          <TableRow
-                            key={c.id}
-                            className="cursor-pointer hover:bg-slate-50"
-                            onClick={() => openDetailModal('cargo', c)}
-                          >
-                            <TableCell className="font-medium">{getFuncionarioNome(c.funcionario_id)}</TableCell>
-                            <TableCell>{c.cargo_anterior || getCargoNome(c.cargo_anterior_id)}</TableCell>
-                            <TableCell className="font-semibold text-blue-600">
-                              {c.cargo_novo || getCargoNome(c.cargo_novo_id)}
-                            </TableCell>
-                            <TableCell>{formatDate(c.data_vigencia)}</TableCell>
-                            <TableCell>
-                              <Badge className={statusColors[c.status] || 'bg-gray-100 text-gray-800'}>
-                                {statusLabels[c.status] || c.status}
-                              </Badge>
-                            </TableCell>
+                          <TableRow key={c.id} className="cursor-pointer hover:bg-slate-50 text-sm" onClick={() => openDetailModal('cargo', c)}>
+                            <TableCell className="font-medium text-slate-900">{getFuncionarioNome(c.funcionario_id)}</TableCell>
+                            <TableCell className="text-slate-600">{c.cargo_anterior || getCargoNome(c.cargo_anterior_id)}</TableCell>
+                            <TableCell className="font-semibold text-blue-700">{c.cargo_novo || getCargoNome(c.cargo_novo_id)}</TableCell>
+                            <TableCell className="text-slate-600 hidden md:table-cell">{formatDate(c.data_vigencia)}</TableCell>
+                            <TableCell><Badge className={statusColors[c.status] || 'bg-gray-100 text-gray-800'}>{statusLabels[c.status] || c.status}</Badge></TableCell>
                             <TableCell className="text-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDetailModal('cargo', c);
-                                }}
-                              >
-                                <Eye className="w-4 h-4" />
-                                Ver Detalhes
+                              <Button variant="ghost" size="sm" className="gap-1.5 text-blue-600 hover:bg-blue-50 h-8" onClick={(e) => { e.stopPropagation(); openDetailModal('cargo', c); }}>
+                                <Eye className="w-3.5 h-3.5" /> Detalhes
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -1068,60 +1011,39 @@ export default function GestaoRHPage() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </TabsContent>
 
               {/* ABA DE DEPARTAMENTOS */}
-              <TabsContent value="departamentos" className="space-y-4">
-                <div className="rounded-md border">
+              <TabsContent value="departamentos" className="space-y-4 mt-4">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Funcionário</TableHead>
-                        <TableHead>De</TableHead>
-                        <TableHead>Para</TableHead>
-                        <TableHead>Vigência</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Ações</TableHead>
+                      <TableRow className="bg-slate-700 hover:bg-slate-700">
+                        <TableHead className="text-white font-semibold text-xs">Funcionário</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Departamento Anterior</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Departamento Novo</TableHead>
+                        <TableHead className="text-white font-semibold text-xs hidden md:table-cell">Vigência</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Status</TableHead>
+                        <TableHead className="text-white font-semibold text-xs text-center">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {departamentos.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                            Nenhum histórico de departamento encontrado
-                          </TableCell>
-                        </TableRow>
+                        <TableRow><TableCell colSpan={6} className="text-center text-slate-500 py-10 text-sm">Nenhum histórico de departamento encontrado</TableCell></TableRow>
                       ) : (
                         departamentos.map(d => (
-                          <TableRow
-                            key={d.id}
-                            className="cursor-pointer hover:bg-slate-50"
-                            onClick={() => openDetailModal('departamento', d)}
-                          >
-                            <TableCell className="font-medium">{getFuncionarioNome(d.funcionario_id)}</TableCell>
-                            <TableCell>{d.departamento_anterior || getDepartamentoNome(d.departamento_anterior_id)}</TableCell>
-                            <TableCell className="font-semibold text-purple-600">
-                              {d.departamento_novo || getDepartamentoNome(d.departamento_novo_id)}
-                            </TableCell>
-                            <TableCell>{formatDate(d.data_vigencia)}</TableCell>
-                            <TableCell>
-                              <Badge className={statusColors[d.status] || 'bg-gray-100 text-gray-800'}>
-                                {statusLabels[d.status] || d.status}
-                              </Badge>
-                            </TableCell>
+                          <TableRow key={d.id} className="cursor-pointer hover:bg-slate-50 text-sm" onClick={() => openDetailModal('departamento', d)}>
+                            <TableCell className="font-medium text-slate-900">{getFuncionarioNome(d.funcionario_id)}</TableCell>
+                            <TableCell className="text-slate-600">{d.departamento_anterior || getDepartamentoNome(d.departamento_anterior_id)}</TableCell>
+                            <TableCell className="font-semibold text-purple-700">{d.departamento_novo || getDepartamentoNome(d.departamento_novo_id)}</TableCell>
+                            <TableCell className="text-slate-600 hidden md:table-cell">{formatDate(d.data_vigencia)}</TableCell>
+                            <TableCell><Badge className={statusColors[d.status] || 'bg-gray-100 text-gray-800'}>{statusLabels[d.status] || d.status}</Badge></TableCell>
                             <TableCell className="text-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDetailModal('departamento', d);
-                                }}
-                              >
-                                <Eye className="w-4 h-4" />
-                                Ver Detalhes
+                              <Button variant="ghost" size="sm" className="gap-1.5 text-blue-600 hover:bg-blue-50 h-8" onClick={(e) => { e.stopPropagation(); openDetailModal('departamento', d); }}>
+                                <Eye className="w-3.5 h-3.5" /> Detalhes
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -1129,58 +1051,39 @@ export default function GestaoRHPage() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </TabsContent>
 
               {/* ABA DE DESLIGAMENTOS */}
-              <TabsContent value="desligamentos" className="space-y-4">
-                <div className="rounded-md border">
+              <TabsContent value="desligamentos" className="space-y-4 mt-4">
+                <div className="rounded-lg border border-slate-200 overflow-hidden">
+                  <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead>Funcionário</TableHead>
-                        <TableHead>Motivo</TableHead>
-                        <TableHead>Data Aviso</TableHead>
-                        <TableHead>Desligamento</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Ações</TableHead>
+                      <TableRow className="bg-slate-700 hover:bg-slate-700">
+                        <TableHead className="text-white font-semibold text-xs">Funcionário</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Motivo</TableHead>
+                        <TableHead className="text-white font-semibold text-xs hidden md:table-cell">Data Aviso</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Desligamento</TableHead>
+                        <TableHead className="text-white font-semibold text-xs">Status</TableHead>
+                        <TableHead className="text-white font-semibold text-xs text-center">Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {desligamentos.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                            Nenhuma solicitação de desligamento encontrada
-                          </TableCell>
-                        </TableRow>
+                        <TableRow><TableCell colSpan={6} className="text-center text-slate-500 py-10 text-sm">Nenhuma solicitação de desligamento encontrada</TableCell></TableRow>
                       ) : (
                         desligamentos.map(d => (
-                          <TableRow
-                            key={d.id}
-                            className="cursor-pointer hover:bg-slate-50"
-                            onClick={() => openDetailModal('desligamento', d)}
-                          >
-                            <TableCell className="font-medium">{getFuncionarioNome(d.funcionario_id)}</TableCell>
-                            <TableCell className="max-w-xs truncate">{d.motivo}</TableCell>
-                            <TableCell>{formatDate(d.data_aviso)}</TableCell>
-                            <TableCell>{formatDate(d.data_desligamento)}</TableCell>
-                            <TableCell>
-                              <Badge className={statusColors[d.status] || 'bg-gray-100 text-gray-800'}>
-                                {statusLabels[d.status] || d.status}
-                              </Badge>
-                            </TableCell>
+                          <TableRow key={d.id} className="cursor-pointer hover:bg-slate-50 text-sm" onClick={() => openDetailModal('desligamento', d)}>
+                            <TableCell className="font-medium text-slate-900">{getFuncionarioNome(d.funcionario_id)}</TableCell>
+                            <TableCell className="max-w-[180px] truncate text-slate-600">{d.motivo}</TableCell>
+                            <TableCell className="text-slate-600 hidden md:table-cell">{formatDate(d.data_aviso)}</TableCell>
+                            <TableCell className="text-slate-700 font-medium">{formatDate(d.data_desligamento)}</TableCell>
+                            <TableCell><Badge className={statusColors[d.status] || 'bg-gray-100 text-gray-800'}>{statusLabels[d.status] || d.status}</Badge></TableCell>
                             <TableCell className="text-center">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDetailModal('desligamento', d);
-                                }}
-                              >
-                                <Eye className="w-4 h-4" />
-                                Ver Detalhes
+                              <Button variant="ghost" size="sm" className="gap-1.5 text-blue-600 hover:bg-blue-50 h-8" onClick={(e) => { e.stopPropagation(); openDetailModal('desligamento', d); }}>
+                                <Eye className="w-3.5 h-3.5" /> Detalhes
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -1188,6 +1091,7 @@ export default function GestaoRHPage() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>

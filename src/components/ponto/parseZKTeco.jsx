@@ -75,7 +75,7 @@ export function calcularApuracaoDiaria(batidas, cargaDiariaMin = 480, tolerancia
   const entrada_1 = entradas[0]?.hora?.substring(0, 5) || null;
   const saida_1 = saidas[0]?.hora?.substring(0, 5) || null;
   const entrada_2 = entradas[1]?.hora?.substring(0, 5) || null;
-  const saida_2 = saidas.length > 1 ? saidas[saidas.length - 1]?.hora?.substring(0, 5) : null;
+  const saida_2 = saidas.length > 1 ? saidas[1]?.hora?.substring(0, 5) : null;
 
   const toMin = (hhmm) => {
     if (!hhmm) return null;
@@ -96,6 +96,7 @@ export function calcularApuracaoDiaria(batidas, cargaDiariaMin = 480, tolerancia
 
   if (!saida_1) {
     status = 'incompleto';
+    falta_min = cargaDiariaMin; // dia sem saída registrada = desconta carga toda
   } else if (totalMin < cargaDiariaMin - toleranciaMin) {
     falta_min = cargaDiariaMin - totalMin;
     status = 'divergente';
