@@ -448,17 +448,12 @@ function OrdensServicoContent() {
       <Toaster />
 
       <div className="min-h-screen bg-slate-50">
-        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
+        <div className="mb-4 md:mb-6">
           <div className="max-w-[1800px] mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="bg-white/10 p-1.5 md:p-3 rounded-lg backdrop-blur-sm">
-                  <ClipboardList className="w-4 h-4 md:w-6 md:h-6" />
-                </div>
-                <div>
-                  <h1 className="text-sm md:text-xl font-bold tracking-tight">Ordens de Serviço</h1>
-                  <p className="text-slate-300 text-[9px] md:text-xs">Gestão de ordens de serviço</p>
-                </div>
+              <div>
+                <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Ordens de Serviço</h1>
+                <p className="text-slate-500 text-xs mt-0.5">Gestão de ordens de serviço</p>
               </div>
               <div className="flex gap-1 md:gap-2 flex-wrap">
                 {isAdmin && selectedOS.length > 0 && (
