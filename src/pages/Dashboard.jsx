@@ -3,14 +3,13 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import StatusBadge from '@/components/StatusBadge';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from 'recharts';
 import {
   ClipboardList, Package, Users, User, Banknote, ListTodo, TrendingUp,
-  Loader2, AlertCircle, AlertTriangle, ArrowRight, Clock, CheckCircle2,
-  XCircle, Activity
+  Loader2, AlertCircle, AlertTriangle, ArrowRight, Clock, Activity
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/formatters';
 

@@ -437,6 +437,9 @@ export default function Layout({ children, currentPageName }) {
   return (
     <>
       <style>{`
+        /* ── Google Fonts ── */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
         /* ===== RESET ESTRUTURAL ===== */
         html, body, #root {
           height: 100%;
