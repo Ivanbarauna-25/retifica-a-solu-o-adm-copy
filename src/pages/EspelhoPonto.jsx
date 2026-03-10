@@ -4,6 +4,7 @@ import { formatMinutes } from "@/components/ponto/parseZKTeco";
 import { getDaysInMonth, getDay, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Printer, ArrowLeft, FileText } from "lucide-react";
+import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -92,27 +93,24 @@ export default function EspelhoPonto() {
       `}</style>
 
       <div className="min-h-screen bg-slate-50 space-y-3">
-        {/* Header OS-style */}
-        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0 no-print">
+        {/* Header limpo */}
+        <div className="mb-2 no-print">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
             <div className="flex items-center gap-2 md:gap-3">
               <Link to={createPageUrl('Ponto')}>
-                <button className="bg-white/10 hover:bg-white/20 p-1.5 md:p-2 rounded-lg transition-colors">
-                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-                </button>
+                <Button variant="outline" size="icon" className="flex-shrink-0 h-8 w-8">
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
               </Link>
-              <div className="bg-white/10 p-1.5 md:p-3 rounded-lg backdrop-blur-sm">
-                <FileText className="w-4 h-4 md:w-6 md:h-6" />
-              </div>
               <div>
-                <h1 className="text-sm md:text-xl font-bold tracking-tight">Espelho de Ponto</h1>
-                <p className="text-slate-300 text-[9px] md:text-xs">Visualização mensal por funcionário</p>
+                <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Espelho de Ponto</h1>
+                <p className="text-slate-500 text-xs mt-0.5">Visualização mensal por funcionário</p>
               </div>
             </div>
             <Button
               variant="outline"
               onClick={() => window.print()}
-              className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 self-start sm:self-auto"
+              className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 self-start sm:self-auto"
             >
               <Printer className="w-3 h-3 md:w-4 md:h-4" />
               <span>Imprimir</span>
