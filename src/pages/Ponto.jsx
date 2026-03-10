@@ -309,7 +309,7 @@ export default function Ponto() {
               </div>
               <input ref={fileRef} type="file" accept=".txt" className="hidden" onChange={handleFileChange} />
             </label>
-          ) : (
+            ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
@@ -347,13 +347,13 @@ export default function Ponto() {
                 <Button variant="outline" onClick={cancelar} disabled={isSaving}>Cancelar</Button>
               </div>
             </div>
-          )}
-        </div>
-      )}
+            )}
+            </div>
+            )}
 
         {/* ─── Registros: tabela flat ───────────────────── */}
         {tab === 'registros' && (
-        <div className="space-y-3">
+          <div className="space-y-3">
           {/* Filtros */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 flex flex-col sm:flex-row gap-2">
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
