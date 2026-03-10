@@ -101,6 +101,8 @@ import Tarefas from './pages/Tarefas';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
+import Ponto from './pages/Ponto';
+import EspelhoPonto from './pages/EspelhoPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -159,6 +161,8 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
+    "Ponto": Ponto,
+    "EspelhoPonto": EspelhoPonto,
 }
 
 export const pagesConfig = {
