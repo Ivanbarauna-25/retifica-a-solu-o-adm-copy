@@ -17,9 +17,10 @@ const STATUS_META = {
   incompleto: { label: 'Falta',      cls: 'bg-red-100 text-red-600' },
   divergente: { label: 'Divergente', cls: 'bg-orange-100 text-orange-700' },
   falta:      { label: 'Falta',      cls: 'bg-red-100 text-red-600' },
-  ajustado:   { label: 'Ajustado',   cls: 'bg-blue-100 text-blue-700' },
+  ajustado:   { label: 'Ajustado',   cls: 'bg-slate-100 text-slate-600' },
   abonado:    { label: 'Abonado',    cls: 'bg-purple-100 text-purple-700' },
   folga:      { label: 'Folga',      cls: 'bg-indigo-100 text-indigo-700' },
+  ferias:     { label: 'Férias',     cls: 'bg-sky-100 text-sky-700' },
   desconto:   { label: 'Desconto',   cls: 'bg-rose-100 text-rose-700' },
 };
 
@@ -415,8 +416,8 @@ export default function Ponto() {
                               </span>
                             ) : <span className="text-slate-300 text-xs">—</span>}
                           </td>
-                          <td className={`px-4 py-3 text-center font-mono font-bold text-sm ${saldo > 0 ? 'text-green-600' : saldo < 0 ? 'text-red-500' : 'text-slate-400'}`}>
-                            {apuracao ? `${saldo >= 0 ? '' : ''}${formatMinutes(saldo)}` : <span className="text-slate-300">—</span>}
+                          <td className={`px-4 py-3 text-center font-mono font-bold text-sm ${saldo > 0 ? 'text-blue-600' : saldo < 0 ? 'text-red-500' : 'text-slate-400'}`}>
+                            {apuracao ? formatMinutes(saldo) : <span className="text-slate-300">—</span>}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <button
