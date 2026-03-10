@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { parseZKTecoFile, calcularApuracaoDiaria, formatMinutes } from "@/components/ponto/parseZKTeco";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, Clock } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, Clock, Timer, FileBarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -75,8 +75,8 @@ export default function Ponto() {
     const daysCount = getDaysInMonth(new Date(+y, +m - 1));
     const end = `${y}-${m}-${String(daysCount).padStart(2, '0')}`;
     const [apurs, regs] = await Promise.all([
-      base44.entities.ApuracaoDiariaPonto.list(),
-      base44.entities.PontoRegistro.list(),
+      base44.entities.ApuracaoDiariaPonto.list('-data', 2000),
+      base44.entities.PontoRegistro.list('-data', 2000),
     ]);
     setApuracoes(apurs.filter(a => a.data >= start && a.data <= end));
     setRegistrosPonto(regs.filter(r => r.data >= start && r.data <= end));
@@ -233,33 +233,69 @@ export default function Ponto() {
     return `${d}/${m}/${y}`;
   };
 
+  const totalOk = rows.filter(r => r.apuracao?.status === 'ok').length;
+  const totalFaltas = rows.filter(r => ['falta', 'incompleto'].includes(r.apuracao?.status)).length;
+  const totalTratados = rows.filter(r => ['abonado', 'folga', 'ferias', 'desconto'].includes(r.apuracao?.status)).length;
+
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Controle de Ponto</h1>
-          <p className="text-slate-500 text-sm mt-0.5">Registro de batidas e ocorrências por funcionário</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate(createPageUrl('EspelhoPonto'))}
-          >
-            Espelho de Ponto
-          </Button>
-          <Button
-            className="bg-slate-800 hover:bg-slate-900"
-            onClick={() => setTab(tab === 'importar' ? 'registros' : 'importar')}
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            {tab === 'importar' ? 'Ver Registros' : 'Importar Arquivo'}
-          </Button>
+    <div className="min-h-screen bg-slate-50">
+      {/* Header OS-style */}
+      <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="bg-white/10 p-1.5 md:p-3 rounded-lg backdrop-blur-sm">
+              <Timer className="w-4 h-4 md:w-6 md:h-6" />
+            </div>
+            <div>
+              <h1 className="text-sm md:text-xl font-bold tracking-tight">Controle de Ponto</h1>
+              <p className="text-slate-300 text-[9px] md:text-xs">Registro de batidas e ocorrências por funcionário</p>
+            </div>
+          </div>
+          <div className="flex gap-1 md:gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              onClick={() => navigate(createPageUrl('EspelhoPonto'))}
+              className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+            >
+              <FileBarChart2 className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Espelho de Ponto</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setTab(tab === 'importar' ? 'registros' : 'importar')}
+              className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+            >
+              <Upload className="w-3 h-3 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">{tab === 'importar' ? 'Ver Registros' : 'Importar Arquivo'}</span>
+              <span className="sm:hidden">{tab === 'importar' ? 'Registros' : 'Importar'}</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* ─── Importar ─────────────────────────────────── */}
-      {tab === 'importar' && (
+      {/* Stat cards */}
+      <div className="max-w-[1800px] mx-auto px-1 md:px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
+          <div className="bg-white rounded-lg border-l-4 border-l-slate-600 shadow-sm p-2 md:p-4">
+            <p className="text-[9px] md:text-xs font-medium text-slate-500">Total Registros</p>
+            <p className="text-sm md:text-xl font-bold text-slate-800 mt-0.5">{rows.length}</p>
+          </div>
+          <div className="bg-white rounded-lg border-l-4 border-l-emerald-500 shadow-sm p-2 md:p-4">
+            <p className="text-[9px] md:text-xs font-medium text-slate-500">OK</p>
+            <p className="text-sm md:text-xl font-bold text-emerald-600 mt-0.5">{totalOk}</p>
+          </div>
+          <div className="bg-white rounded-lg border-l-4 border-l-red-500 shadow-sm p-2 md:p-4">
+            <p className="text-[9px] md:text-xs font-medium text-slate-500">Faltas</p>
+            <p className="text-sm md:text-xl font-bold text-red-600 mt-0.5">{totalFaltas}</p>
+          </div>
+          <div className="bg-white rounded-lg border-l-4 border-l-purple-500 shadow-sm p-2 md:p-4">
+            <p className="text-[9px] md:text-xs font-medium text-slate-500">Tratados</p>
+            <p className="text-sm md:text-xl font-bold text-purple-600 mt-0.5">{totalTratados}</p>
+          </div>
+        </div>
+
+        {/* ─── Importar ─────────────────────────────────── */}
+        {tab === 'importar' && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
           {!parsed ? (
             <label
@@ -315,8 +351,8 @@ export default function Ponto() {
         </div>
       )}
 
-      {/* ─── Registros: tabela flat ───────────────────── */}
-      {tab === 'registros' && (
+        {/* ─── Registros: tabela flat ───────────────────── */}
+        {tab === 'registros' && (
         <div className="space-y-3">
           {/* Filtros */}
           <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 flex flex-col sm:flex-row gap-2">
@@ -479,17 +515,18 @@ export default function Ponto() {
         </div>
       )}
 
-      {/* Modal de ação */}
-      {acaoModal && (
-        <PontoAcaoModal
-          apuracao={acaoModal.apuracao}
-          func={acaoModal.func}
-          batidas={acaoModal.batidas}
-          dateStr={acaoModal.dateStr}
-          onClose={() => setAcaoModal(null)}
-          onSaved={() => { loadRegistros(); setAcaoModal(null); }}
-        />
-      )}
+        {/* Modal de ação */}
+        {acaoModal && (
+          <PontoAcaoModal
+            apuracao={acaoModal.apuracao}
+            func={acaoModal.func}
+            batidas={acaoModal.batidas}
+            dateStr={acaoModal.dateStr}
+            onClose={() => setAcaoModal(null)}
+            onSaved={() => { loadRegistros(); setAcaoModal(null); }}
+          />
+        )}
+      </div>
     </div>
   );
 }

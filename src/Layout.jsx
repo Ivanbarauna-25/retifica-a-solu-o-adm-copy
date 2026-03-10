@@ -9,12 +9,9 @@ import {
   LayoutDashboard,
   ClipboardList,
   Package,
-  Landmark,
-  ListTodo,
   Users,
   Building2,
   User as UserIcon,
-  UserPlus,
   Timer,
   Wallet,
   CalendarCheck,
@@ -103,9 +100,7 @@ const navigationGroups = [
   items: [
   { title: "Ordens de Serviço", url: "OrdensServico", icon: ClipboardList, module: "os" },
   { title: "Orçamentos", url: "Orcamentos", icon: FileText, module: "orcamentos" },
-  { title: "Estoque de Produtos", url: "Estoque", icon: Package, module: "estoque" },
-  { title: "Controle de Patrimônio", url: "Patrimonio", icon: Landmark, module: "patrimonio" },
-  { title: "Tarefas Internas", url: "Tarefas", icon: ListTodo, module: "tarefas" }]
+  { title: "Estoque de Produtos", url: "Estoque", icon: Package, module: "estoque" }]
 
 },
 {
@@ -131,7 +126,6 @@ const navigationGroups = [
   group: "RECURSOS HUMANOS",
   icon: Users,
   items: [
-  { title: "Contratação", url: "Contratacao", icon: UserPlus, module: "contratacao" },
   { title: "Equipe", url: "Funcionarios", icon: UserIcon, module: "funcionarios" },
 
   { title: "Controle de Ponto", url: "Ponto", icon: Timer, module: "ponto" },
