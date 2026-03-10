@@ -515,41 +515,22 @@ function OrdensServicoContent() {
 
         <div className="max-w-[1800px] mx-auto px-1 md:px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
-            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Total</p>
-                  <div className="text-sm md:text-xl font-bold text-slate-900">{resumo.total}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-amber-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Em Andamento</p>
-                  <div className="text-sm md:text-xl font-bold text-amber-600">{resumo.emAndamento}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-emerald-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Finalizadas</p>
-                  <div className="text-sm md:text-xl font-bold text-emerald-600">{resumo.finalizadas}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Valor Total</p>
-                  <div className="text-xs md:text-lg font-bold text-blue-600">{formatCurrency(resumo.valorTotal)}</div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="kpi-bar kpi-bar-blue bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total</p>
+              <div className="text-sm md:text-2xl font-extrabold text-slate-900 font-mono">{resumo.total}</div>
+            </div>
+            <div className="kpi-bar kpi-bar-yellow bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Em Andamento</p>
+              <div className="text-sm md:text-2xl font-extrabold text-amber-600 font-mono">{resumo.emAndamento}</div>
+            </div>
+            <div className="kpi-bar kpi-bar-green bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Finalizadas</p>
+              <div className="text-sm md:text-2xl font-extrabold text-emerald-600 font-mono">{resumo.finalizadas}</div>
+            </div>
+            <div className="kpi-bar kpi-bar-sky bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
+              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Valor Total</p>
+              <div className="text-xs md:text-lg font-extrabold text-blue-600 font-mono">{formatCurrency(resumo.valorTotal)}</div>
+            </div>
           </div>
 
           {/* Filtros Avançados */}
