@@ -61,6 +61,7 @@ import CotacoesEPI from './pages/CotacoesEPI';
 import Dashboard from './pages/Dashboard';
 import Departamentos from './pages/Departamentos';
 import EPIs from './pages/EPIs';
+import EspelhoPonto from './pages/EspelhoPonto';
 import Estoque from './pages/Estoque';
 import FichaCandidato from './pages/FichaCandidato';
 import FichaFuncionario from './pages/FichaFuncionario';
@@ -85,6 +86,7 @@ import Orcamentos from './pages/Orcamentos';
 import OrdensServico from './pages/OrdensServico';
 import Patrimonio from './pages/Patrimonio';
 import PlanoContas from './pages/PlanoContas';
+import Ponto from './pages/Ponto';
 import Relatorio13Salario from './pages/Relatorio13Salario';
 import RelatorioAdiantamentos from './pages/RelatorioAdiantamentos';
 import RelatorioContasPagar from './pages/RelatorioContasPagar';
@@ -101,8 +103,6 @@ import Tarefas from './pages/Tarefas';
 import TermoRecebimentoEPI from './pages/TermoRecebimentoEPI';
 import TiposDespesa from './pages/TiposDespesa';
 import TiposReceita from './pages/TiposReceita';
-import Ponto from './pages/Ponto';
-import EspelhoPonto from './pages/EspelhoPonto';
 import __Layout from './Layout.jsx';
 
 
@@ -121,6 +121,7 @@ export const PAGES = {
     "Dashboard": Dashboard,
     "Departamentos": Departamentos,
     "EPIs": EPIs,
+    "EspelhoPonto": EspelhoPonto,
     "Estoque": Estoque,
     "FichaCandidato": FichaCandidato,
     "FichaFuncionario": FichaFuncionario,
@@ -145,6 +146,7 @@ export const PAGES = {
     "OrdensServico": OrdensServico,
     "Patrimonio": Patrimonio,
     "PlanoContas": PlanoContas,
+    "Ponto": Ponto,
     "Relatorio13Salario": Relatorio13Salario,
     "RelatorioAdiantamentos": RelatorioAdiantamentos,
     "RelatorioContasPagar": RelatorioContasPagar,
@@ -161,8 +163,6 @@ export const PAGES = {
     "TermoRecebimentoEPI": TermoRecebimentoEPI,
     "TiposDespesa": TiposDespesa,
     "TiposReceita": TiposReceita,
-    "Ponto": Ponto,
-    "EspelhoPonto": EspelhoPonto,
 }
 
 export const pagesConfig = {

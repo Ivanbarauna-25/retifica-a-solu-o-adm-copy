@@ -10,6 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 
+// Agrupa registros de ponto por data e retorna até 4 batidas ordenadas
+function getBatidasDoDia(registros, dateStr) {
+  return registros
+    .filter(r => r.data === dateStr)
+    .sort((a, b) => (a.hora || '').localeCompare(b.hora || ''))
+    .slice(0, 4);
+}
+
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 const STATUS_STYLE = {
