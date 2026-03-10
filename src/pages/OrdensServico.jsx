@@ -28,6 +28,7 @@ import {
 import { formatCurrency, formatDate } from '@/components/formatters';
 import OrdemServicoViewer from '@/components/os/OrdemServicoViewer';
 import OrdemServicoForm from '@/components/os/OrdemServicoForm';
+import StatusBadge from '@/components/StatusBadge';
 import RelatorioOSFiltersModal from '@/components/os/RelatorioOSFiltersModal';
 import RelatorioOS from '@/components/os/RelatorioOS';
 import ImportarOSModal from '@/components/os/ImportarOSModal';
