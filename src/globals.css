@@ -524,10 +524,10 @@ body {
     gap: 0.5rem !important;
   }
   
-  /* Títulos - padronizados */
-  h1 { font-size: 1.2rem !important; font-weight: 700 !important; color: #0f172a; }
-  h2 { font-size: 1.05rem !important; font-weight: 600 !important; color: #1e293b; }
-  h3 { font-size: 0.9375rem !important; font-weight: 600 !important; color: #1e293b; }
+  /* Títulos - padronizados (sem forçar cor, para não quebrar textos em fundos escuros) */
+  h1 { font-size: 1.2rem !important; font-weight: 700 !important; }
+  h2 { font-size: 1.05rem !important; font-weight: 600 !important; }
+  h3 { font-size: 0.9375rem !important; font-weight: 600 !important; }
   
   /* Todos os botões com área de toque adequada */
   button, a[role="button"] {

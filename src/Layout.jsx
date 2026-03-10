@@ -611,10 +611,10 @@ export default function Layout({ children, currentPageName }) {
         [data-sidebar] { flex-shrink: 0; }
 
         /* ===== PADRONIZAÇÃO GLOBAL DE TIPOGRAFIA ===== */
-        .page-inner h1 { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.3; }
-        .page-inner h2 { font-size: 1.25rem; font-weight: 600; color: #1e293b; line-height: 1.35; }
-        .page-inner h3 { font-size: 1.0625rem; font-weight: 600; color: #1e293b; line-height: 1.4; }
-        .page-inner p, .page-inner span, .page-inner label { color: #334155; }
+        /* Apenas tamanho/peso — sem forçar cor, para não sobrescrever text-white em fundos escuros */
+        .page-inner h1 { font-size: 1.5rem; font-weight: 700; line-height: 1.3; }
+        .page-inner h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.35; }
+        .page-inner h3 { font-size: 1.0625rem; font-weight: 600; line-height: 1.4; }
         .page-inner .text-muted { color: #64748b; font-size: 0.8125rem; }
 
         @media (max-width: 767px) {
