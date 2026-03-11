@@ -260,7 +260,8 @@ export default function Ponto() {
             </Button>
             <Button
               onClick={() => setTab(tab === 'importar' ? 'registros' : 'importar')}
-              className="bg-slate-800 hover:bg-slate-900 text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+              className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+              style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
             >
               <Upload className="w-3 h-3 md:w-4 md:h-4" />
               <span className="hidden sm:inline">{tab === 'importar' ? 'Ver Registros' : 'Importar Arquivo'}</span>
@@ -338,7 +339,7 @@ export default function Ponto() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <Button onClick={handleConfirm} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 flex-1 sm:flex-none">
+                <Button onClick={handleConfirm} disabled={isSaving} className="flex-1 sm:flex-none" style={{background:'#059669',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}>
                   {isSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Salvando...</> : <><CheckCircle className="w-4 h-4 mr-2" />Confirmar Importação</>}
                 </Button>
                 <Button variant="outline" onClick={cancelar} disabled={isSaving}>Cancelar</Button>
@@ -482,7 +483,7 @@ export default function Ponto() {
               <div className="overflow-x-auto border-t border-slate-100">
                 <table className="min-w-full text-xs">
                   <thead>
-                    <tr className="bg-slate-700 text-white">
+                    <tr className="bg-[#0B1629] text-white">
                       <th className="px-4 py-2.5 text-left">Arquivo</th>
                       <th className="px-4 py-2.5 text-left">Período</th>
                       <th className="px-4 py-2.5 text-center">Registros</th>
