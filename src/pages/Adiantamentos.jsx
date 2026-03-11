@@ -565,101 +565,82 @@ export default function AdiantamentosPage() {
   return (
   <>
     <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
-        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-3 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0">
-          <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
-                  <Wallet className="w-4 h-4 md:w-6 md:h-6" />
-                </div>
-                <div>
-                  <h1 className="text-sm md:text-xl font-bold">Adiantamentos</h1>
-                  <p className="text-slate-400 text-[9px] md:text-xs">Gestão de adiantamentos</p>
-                </div>
-              </div>
+        {/* Header limpo */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+          <div>
+            <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>Adiantamentos</h1>
+            <p style={{fontSize:'13px',color:'#6B7280',margin:'4px 0 0 0'}}>Gestão de adiantamentos salariais</p>
+          </div>
+          <div className="flex gap-1.5 md:gap-2 flex-wrap items-center">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowFilters(!showFilters)} 
+              className="gap-1 md:gap-2 text-[11px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Filter className="w-3 h-3 md:w-4 md:h-4" /> 
+              <span className="hidden sm:inline">Filtros</span>
+            </Button>
 
-              <div className="flex gap-1 md:gap-2 flex-wrap">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowFilters(!showFilters)} 
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-                >
-                  <Filter className="w-3 h-3 md:w-4 md:h-4" /> 
-                  <span className="hidden sm:inline">Filtros</span>
-                </Button>
+            {selecionados.length > 0 && (
+              <Button 
+                onClick={abrirAprovacaoLote}
+                className="gap-1 md:gap-2 text-[11px] md:text-sm h-8 md:h-9 px-2 md:px-3"
+                style={{background:'#059669',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+              >
+                <CheckCircle2 className="w-3 h-3 md:h-4 md:w-4" /> Aprovar ({selecionados.length})
+              </Button>
+            )}
 
-                {selecionados.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    className="bg-green-600 border-green-600 text-white hover:bg-green-700 gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3" 
-                    onClick={abrirAprovacaoLote}
-                  >
-                    <CheckCircle2 className="w-3 h-3 md:h-4 md:w-4" /> Aprovar ({selecionados.length})
-                  </Button>
-                )}
+            <Button 
+              variant="outline" 
+              onClick={() => setIsRelatorioFiltersModalOpen(true)}
+              className="gap-1 md:gap-2 text-[11px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Printer className="w-3 h-3 md:h-4 md:w-4" /> 
+              <span className="hidden sm:inline">Relatório</span>
+            </Button>
 
-                <Button 
-                  variant="outline" 
-                  onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-                >
-                  <Printer className="w-3 h-3 md:h-4 md:w-4" /> 
-                  <span className="hidden sm:inline">Relatório</span>
-                </Button>
+            <Button 
+              variant="outline" 
+              onClick={abrirLote} 
+              className="gap-1 md:gap-2 text-[11px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Users className="w-3 h-3 md:h-4 md:w-4" /> 
+              <span className="hidden sm:inline">Lote</span>
+            </Button>
 
-                <Button 
-                  variant="outline" 
-                  onClick={abrirLote} 
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-                >
-                  <Users className="w-3 h-3 md:h-4 md:w-4" /> 
-                  <span className="hidden sm:inline">Lote</span>
-                </Button>
-
-                <Button 
-                  variant="outline" 
-                  onClick={abrirNovo} 
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-                >
-                  <Plus className="w-3 h-3 md:h-4 md:w-4" /> Novo
-                </Button>
-              </div>
-            </div>
+            <Button 
+              onClick={abrirNovo} 
+              className="gap-1 md:gap-2 text-[11px] md:text-sm h-8 md:h-9 px-2 md:px-3"
+              style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+            >
+              <Plus className="w-3 h-3 md:h-4 md:w-4" /> Novo
+            </Button>
           </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
-            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Total</p>
-                <div className="text-xs md:text-lg font-bold text-slate-900">{formatCurrency(totalFiltrado)}</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Pendentes</p>
-                <div className="text-xs md:text-lg font-bold text-yellow-600">{formatCurrency(totais.pendente)}</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Aprovados</p>
-                <div className="text-xs md:text-lg font-bold text-blue-600">{formatCurrency(totais.aprovado)}</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <p className="text-[9px] md:text-xs font-medium text-slate-500 mb-0.5">Pagos</p>
-                <div className="text-xs md:text-lg font-bold text-green-600">{formatCurrency(totais.pago)}</div>
-              </CardContent>
-            </Card>
+        <div className="max-w-[1800px] mx-auto">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-3 md:mb-4">
+            <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total</p>
+              <p className="text-base md:text-xl font-extrabold text-slate-900 font-mono">{formatCurrency(totalFiltrado)}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-yellow bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pendentes</p>
+              <p className="text-base md:text-xl font-extrabold text-amber-600 font-mono">{formatCurrency(totais.pendente)}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Aprovados</p>
+              <p className="text-base md:text-xl font-extrabold text-sky-600 font-mono">{formatCurrency(totais.aprovado)}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pagos</p>
+              <p className="text-base md:text-xl font-extrabold text-emerald-600 font-mono">{formatCurrency(totais.pago)}</p>
+            </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-1.5 md:p-3 mb-2 md:mb-3">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-2 md:p-3 mb-2 md:mb-3">
             <div className="relative">
               <Search className="absolute left-2 md:left-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 w-3.5 h-3.5 md:w-4 md:h-4" />
               <Input
@@ -765,11 +746,11 @@ export default function AdiantamentosPage() {
           )}
 
           {/* Tabela Desktop */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden hidden md:block">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hidden md:block">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700">
+                  <TableRow className="bg-[#0B1629] hover:bg-[#0B1629]">
                     <TableHead className="text-white font-semibold w-12">
                       <Checkbox
                         checked={todosSelecionados}
