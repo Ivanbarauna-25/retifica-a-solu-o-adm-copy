@@ -822,12 +822,13 @@ function Folha13Content() {
                   )}
                 </TableBody>
               </Table>
-            </div>
-          </div>
-        </div>
-      </div>
+              </div>
+              </div>
+              </div>
+              </div>
+              </div>
 
-      {/* Modais */}
+              {/* Modais */}
       {isFormOpen && (
         <Folha13Form
           isOpen={isFormOpen}
