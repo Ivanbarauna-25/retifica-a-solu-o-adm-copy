@@ -158,17 +158,20 @@ export default function AdiantamentoLoteForm({
 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-full max-w-[95vw] md:max-w-4xl max-h-[85vh] overflow-hidden modern-modal bg-white border-2 border-slate-800 shadow-2xl flex flex-col p-0" onPointerDownOutside={(e) => e.preventDefault()}>
-          <DialogHeader className="flex-shrink-0 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white no-print border-b border-slate-600">
-            <DialogTitle className="flex items-center gap-3 text-white">
-              <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                <Users className="w-5 h-5 md:w-6 md:h-6" />
+          <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-4 rounded-t-xl flex-shrink-0" style={{ background: '#0B1629' }}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <Users className="w-5 h-5" style={{ color: '#fff' }} />
               </div>
-              <div>
-                <p className="text-base md:text-lg font-semibold">Gerar Adiantamento em Lote</p>
-                <p className="text-xs text-slate-300 font-normal">Crie adiantamentos para múltiplos funcionários</p>
+              <div className="min-w-0">
+                <h2 className="text-base font-bold leading-tight" style={{ color: '#fff' }}>Gerar Adiantamento em Lote</h2>
+                <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>Crie adiantamentos para múltiplos funcionários</p>
               </div>
-            </DialogTitle>
-          </DialogHeader>
+            </div>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
           <div onClick={(e) => e.stopPropagation()} className="adiantamento-lote-scroll flex-1 px-4 md:px-6 pb-4 md:pb-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
