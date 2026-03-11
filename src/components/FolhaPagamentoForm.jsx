@@ -420,377 +420,182 @@ export default function FolhaPagamentoForm({ isOpen, onClose, folha, funcionario
     }
   };
 
+  const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+  const tabTriggerClass = "flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold text-slate-500 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none bg-transparent whitespace-nowrap";
+  const SectionHdr = ({ icon: Icon, title }) => (
+    <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 mb-3">
+      {Icon && <Icon className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />}
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{title}</span>
+    </div>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-3xl max-h-[88vh] modern-modal" 
+      <DialogContent
+        className="max-w-2xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl border-0"
+        data-custom-modal="true"
         onPointerDownOutside={(e) => e.preventDefault()}
-        style={{
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#94a3b8 #f1f5f9'
-        }}
       >
-        <style>{`
-          .modern-modal::-webkit-scrollbar {
-            width: 8px;
-          }
-          .modern-modal::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-          }
-        `}</style>
-        
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white no-print border-b border-slate-600">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <DollarSign className="h-5 w-5 text-white" />
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-4 rounded-t-xl flex-shrink-0" style={{ background: "#0B1629" }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <DollarSign className="w-5 h-5" style={{ color: '#fff' }} />
             </div>
-            <div>
-              <h2 className="text-xl font-bold">{folha ? 'Editar Folha de Pagamento' : 'Nova Folha de Pagamento'}</h2>
-              <p className="text-sm text-slate-300">Preencha os dados da folha de pagamento</p>
+            <div className="min-w-0">
+              <h2 className="text-base font-bold leading-tight truncate" style={{ color: '#fff' }}>
+                {folha ? 'Editar Folha de Pagamento' : 'Nova Folha de Pagamento'}
+              </h2>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>Preencha os dados da folha</p>
             </div>
-          </DialogTitle>
-        </DialogHeader>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-        <div onClick={(e) => e.stopPropagation()} className="p-5 pt-2">
-          {isCalculating &&
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-              <span className="text-sm text-blue-700">Calculando valores automaticamente...</span>
-            </div>
-          }
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-            <TabsList className="bg-slate-100 p-1 rounded-lg grid grid-cols-3 gap-1 mb-4">
-              <TabsTrigger
-                value="geral"
-                className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 transition-all text-xs py-2"
-              >
-                <Info className="w-3 h-3" /> Geral
-              </TabsTrigger>
-              <TabsTrigger
-                value="valores"
-                className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 transition-all text-xs py-2"
-              >
-                <DollarSign className="w-3 h-3" /> Valores
-              </TabsTrigger>
-              <TabsTrigger
-                value="observacoes"
-                className="rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm flex items-center gap-2 transition-all text-xs py-2"
-              >
-                <FileText className="w-3 h-3" /> Observações
-              </TabsTrigger>
+        {/* Tabs nav */}
+        <div className="border-b border-slate-200 bg-white flex-shrink-0 overflow-x-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 min-h-0">
+            <TabsList className="flex bg-transparent p-0 h-auto gap-0 w-max min-w-full">
+              <TabsTrigger value="geral" className={tabTriggerClass}><Info className="w-3.5 h-3.5" /> Geral</TabsTrigger>
+              <TabsTrigger value="valores" className={tabTriggerClass}><DollarSign className="w-3.5 h-3.5" /> Valores</TabsTrigger>
+              <TabsTrigger value="observacoes" className={tabTriggerClass}><FileText className="w-3.5 h-3.5" /> Observações</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="geral" className="space-y-4 mt-4">
-              <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-slate-50/50 to-white p-4 shadow-sm">
-                <h3 className="text-sm font-bold text-slate-900 mb-3">Informações do Funcionário</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="funcionario_id" className="text-xs font-semibold text-slate-700 mb-1">
-                      Funcionário *
-                    </Label>
-                    <SmartInput
-                      id="funcionario_id"
-                      options={funcionarios.map((f) => ({ value: f.id, label: f.nome }))}
-                      value={formData.funcionario_id}
-                      onChange={(v) => handleInputChange("funcionario_id", v)}
-                      placeholder="Selecione o funcionário"
-                      className="modern-input text-sm h-9"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="competencia" className="text-xs font-semibold text-slate-700 mb-1">
-                      Competência *
-                    </Label>
-                    <Input
-                      id="competencia"
-                      type="month"
-                      value={formData.competencia}
-                      onChange={(e) => handleInputChange("competencia", e.target.value)}
-                      className="modern-input text-sm h-9 text-black"
-                      required
-                    />
-                  </div>
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-5">
+              {isCalculating && (
+                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                  <span className="text-sm text-blue-700">Calculando valores automaticamente...</span>
                 </div>
-              </div>
+              )}
 
-              <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-blue-50/50 to-white p-4 shadow-sm">
-                <h3 className="text-sm font-bold text-slate-900 mb-3">Cálculo Proporcional (Opcional)</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="data_inicio_competencia" className="text-xs font-semibold text-slate-700 mb-1">
-                      Data de Início na Competência
-                    </Label>
-                    <Input
-                      id="data_inicio_competencia"
-                      type="date"
-                      value={formData.data_inicio_competencia}
-                      onChange={(e) => handleInputChange("data_inicio_competencia", e.target.value)}
-                      className="modern-input text-sm h-9 text-black"
-                      disabled={!formData.funcionario_id || !formData.competencia}
-                    />
-                    <p className="text-xs text-slate-500 mt-1">
-                      O sistema calculará automaticamente os dias trabalhados
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="dias_trabalhados" className="text-xs font-semibold text-slate-700 mb-1">
-                      Dias Trabalhados
-                    </Label>
-                    <Input
-                      id="dias_trabalhados"
-                      type="number"
-                      value={formData.dias_trabalhados}
-                      readOnly
-                      className="modern-input bg-slate-100 text-sm h-9 text-black"
-                      disabled // Also disable to prevent focus
-                    />
-                    <p className="text-xs text-slate-500 mt-1">
-                      {formData.dias_trabalhados > 0 ? 'Cálculo proporcional ativo' : 'Mês integral'}
-                    </p>
+              <TabsContent value="geral" className="space-y-3 mt-0">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHdr icon={Info} title="Funcionário e Competência" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Funcionário *</Label>
+                      <SmartInput options={funcionarios.map((f) => ({ value: f.id, label: f.nome }))} value={formData.funcionario_id} onChange={(v) => handleInputChange("funcionario_id", v)} placeholder="Selecione o funcionário" className="text-sm h-9" />
+                    </div>
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Competência *</Label>
+                      <Input type="month" value={formData.competencia} onChange={(e) => handleInputChange("competencia", e.target.value)} className="text-sm h-9" required />
+                    </div>
                   </div>
                 </div>
 
-                {salarioIntegral > 0 && formData.dias_trabalhados > 0 &&
-                  <div className="mt-3 p-2 bg-blue-100 border border-blue-300 rounded-md">
-                    <p className="text-xs text-blue-800">
-                      <strong>💡 Cálculo:</strong> Salário integral R$ {salarioIntegral.toFixed(2)} ÷ {calcularDiasDoMes(formData.competencia)} dias × {formData.dias_trabalhados} dias = <strong>R$ {formData.salario_base.toFixed(2)}</strong>
-                    </p>
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHdr icon={Info} title="Cálculo Proporcional (Opcional)" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Data de Início na Competência</Label>
+                      <Input type="date" value={formData.data_inicio_competencia} onChange={(e) => handleInputChange("data_inicio_competencia", e.target.value)} className="text-sm h-9" disabled={!formData.funcionario_id || !formData.competencia} />
+                      <p className="text-[10px] text-slate-400 mt-1">O sistema calcula os dias automaticamente</p>
+                    </div>
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Dias Trabalhados</Label>
+                      <Input type="number" value={formData.dias_trabalhados} readOnly disabled className="text-sm h-9 bg-slate-100" />
+                      <p className="text-[10px] text-slate-400 mt-1">{formData.dias_trabalhados > 0 ? 'Cálculo proporcional ativo' : 'Mês integral'}</p>
+                    </div>
                   </div>
-                }
-              </div>
-
-              <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-blue-50/50 to-white p-4 shadow-sm">
-                <h3 className="text-sm font-bold text-slate-900 mb-3">Dados de Pagamento</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="plano_contas_id" className="text-xs font-semibold text-slate-700 mb-1">
-                      Plano de Contas
-                    </Label>
-                    <SmartInput
-                      id="plano_contas_id"
-                      options={planoContas.map((pc) => ({ value: pc.id, label: pc.nome }))}
-                      value={formData.plano_contas_id}
-                      onChange={(v) => handleInputChange("plano_contas_id", v)}
-                      placeholder="Selecione o plano de contas"
-                      className="modern-input text-sm h-9"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="data_pagamento" className="text-xs font-semibold text-slate-700 mb-1">
-                      Data de Pagamento
-                    </Label>
-                    <Input
-                      id="data_pagamento"
-                      type="date"
-                      value={formData.data_pagamento}
-                      onChange={(e) => handleInputChange("data_pagamento", e.target.value)}
-                      className="modern-input text-sm h-9 text-black"
-                    />
-                  </div>
+                  {salarioIntegral > 0 && formData.dias_trabalhados > 0 && (
+                    <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-xs text-blue-800">
+                        <strong>Cálculo:</strong> R$ {salarioIntegral.toFixed(2)} ÷ {calcularDiasDoMes(formData.competencia)} dias × {formData.dias_trabalhados} dias = <strong>R$ {formData.salario_base.toFixed(2)}</strong>
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            </TabsContent>
 
-            <TabsContent value="valores" className="space-y-4 mt-4">
-              <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-green-50/50 to-white p-4 shadow-sm">
-                <h3 className="text-sm font-bold text-green-900 mb-3">Entradas</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="salario_base" className="text-xs font-semibold text-slate-700 mb-1">Salário Base</Label>
-                    <div className="relative">
-                      <Input
-                        id="salario_base"
-                        type="number"
-                        step="0.01"
-                        value={formData.salario_base}
-                        onChange={(e) => handleInputChange("salario_base", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHdr icon={DollarSign} title="Dados de Pagamento" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Plano de Contas</Label>
+                      <SmartInput options={planoContas.map((pc) => ({ value: pc.id, label: pc.nome }))} value={formData.plano_contas_id} onChange={(v) => handleInputChange("plano_contas_id", v)} placeholder="Selecione" className="text-sm h-9" />
                     </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="comissoes" className="text-xs font-semibold text-slate-700 mb-1">Comissões</Label>
-                    <div className="relative">
-                      <Input
-                        id="comissoes"
-                        type="number"
-                        step="0.01"
-                        value={formData.comissoes}
-                        onChange={(e) => handleInputChange("comissoes", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="horas_extras" className="text-xs font-semibold text-slate-700 mb-1">Horas Extras</Label>
-                    <div className="relative">
-                      <Input
-                        id="horas_extras"
-                        type="number"
-                        step="0.01"
-                        value={formData.horas_extras}
-                        onChange={(e) => handleInputChange("horas_extras", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="bonus" className="text-xs font-semibold text-slate-700 mb-1">Bônus</Label>
-                    <div className="relative">
-                      <Input
-                        id="bonus"
-                        type="number"
-                        step="0.01"
-                        value={formData.bonus}
-                        onChange={(e) => handleInputChange("bonus", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label htmlFor="outras_entradas" className="text-xs font-semibold text-slate-700 mb-1">Outras Entradas</Label>
-                    <div className="relative">
-                      <Input
-                        id="outras_entradas"
-                        type="number"
-                        step="0.01"
-                        value={formData.outras_entradas}
-                        onChange={(e) => handleInputChange("outras_entradas", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
+                    <div>
+                      <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Data de Pagamento</Label>
+                      <Input type="date" value={formData.data_pagamento} onChange={(e) => handleInputChange("data_pagamento", e.target.value)} className="text-sm h-9" />
                     </div>
                   </div>
                 </div>
-              </div>
+              </TabsContent>
 
-              <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-red-50/50 to-white p-4 shadow-sm">
-                <h3 className="text-sm font-bold text-red-900 mb-3">Saídas/Descontos</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label htmlFor="adiantamentos" className="text-xs font-semibold text-slate-700 mb-1">Adiantamentos</Label>
-                    <div className="relative">
-                      <Input
-                        id="adiantamentos"
-                        type="number"
-                        step="0.01"
-                        value={formData.adiantamentos}
-                        onChange={(e) => handleInputChange("adiantamentos", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="faltas" className="text-xs font-semibold text-slate-700 mb-1">Faltas</Label>
-                    <div className="relative">
-                      <Input
-                        id="faltas"
-                        type="number"
-                        step="0.01"
-                        value={formData.faltas}
-                        onChange={(e) => handleInputChange("faltas", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="encargos" className="text-xs font-semibold text-slate-700 mb-1">Encargos</Label>
-                    <div className="relative">
-                      <Input
-                        id="encargos"
-                        type="number"
-                        step="0.01"
-                        value={formData.encargos}
-                        onChange={(e) => handleInputChange("encargos", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="outras_saidas" className="text-xs font-semibold text-slate-700 mb-1">Outras Saídas</Label>
-                    <div className="relative">
-                      <Input
-                        id="outras_saidas"
-                        type="number"
-                        step="0.01"
-                        value={formData.outras_saidas}
-                        onChange={(e) => handleInputChange("outras_saidas", Number(e.target.value))}
-                        className="modern-input pl-9 text-sm h-9 text-black"
-                      />
-                    </div>
+              <TabsContent value="valores" className="space-y-3 mt-0">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHdr icon={DollarSign} title="Entradas" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { id: 'salario_base', label: 'Salário Base' },
+                      { id: 'comissoes', label: 'Comissões' },
+                      { id: 'horas_extras', label: 'Horas Extras' },
+                      { id: 'bonus', label: 'Bônus' },
+                      { id: 'outras_entradas', label: 'Outras Entradas' },
+                    ].map(f => (
+                      <div key={f.id} className={f.id === 'outras_entradas' ? 'md:col-span-2' : ''}>
+                        <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">{f.label}</Label>
+                        <Input type="number" step="0.01" value={formData[f.id]} onChange={(e) => handleInputChange(f.id, Number(e.target.value))} className="text-sm h-9" />
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
 
-              <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-4 rounded-lg text-white">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-xs text-slate-300 mb-1">Total Entradas</p>
-                    <p className="text-lg font-bold">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotais().entradas)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-300 mb-1">Total Saídas</p>
-                    <p className="text-lg font-bold">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotais().saidas)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-300 mb-1">Salário Líquido</p>
-                    <p className="text-2xl font-bold">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calcularTotais().liquido)}</p>
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHdr icon={FileText} title="Saídas / Descontos" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { id: 'adiantamentos', label: 'Adiantamentos' },
+                      { id: 'faltas', label: 'Faltas' },
+                      { id: 'encargos', label: 'Encargos' },
+                      { id: 'outras_saidas', label: 'Outras Saídas' },
+                    ].map(f => (
+                      <div key={f.id}>
+                        <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">{f.label}</Label>
+                        <Input type="number" step="0.01" value={formData[f.id]} onChange={(e) => handleInputChange(f.id, Number(e.target.value))} className="text-sm h-9" />
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            </TabsContent>
 
-            <TabsContent value="observacoes" className="mt-4">
-              <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-slate-50/50 to-white p-4 shadow-sm">
-                <Label htmlFor="observacoes" className="text-xs font-semibold text-slate-700 mb-2 block">
-                  Observações
-                </Label>
-                <Textarea
-                  id="observacoes"
-                  placeholder="Observações sobre a folha de pagamento..."
-                  value={formData.observacoes}
-                  onChange={(e) => handleInputChange("observacoes", e.target.value)}
-                  rows={8}
-                  className="modern-input resize-none text-sm text-black"
-                />
-              </div>
-            </TabsContent>
+                {/* Totais */}
+                <div className="rounded-xl p-4 grid grid-cols-3 gap-3 text-center" style={{ background: '#0B1629' }}>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Total Entradas</p>
+                    <p className="text-sm font-bold" style={{ color: '#fff' }}>{fmt(calcularTotais().entradas)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Total Saídas</p>
+                    <p className="text-sm font-bold" style={{ color: '#fff' }}>{fmt(calcularTotais().saidas)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Salário Líquido</p>
+                    <p className="text-lg font-bold" style={{ color: '#34d399' }}>{fmt(calcularTotais().liquido)}</p>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="observacoes" className="mt-0">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHdr icon={FileText} title="Observações" />
+                  <Textarea placeholder="Observações sobre a folha de pagamento..." value={formData.observacoes} onChange={(e) => handleInputChange("observacoes", e.target.value)} rows={8} className="resize-none text-sm" />
+                </div>
+              </TabsContent>
+            </div>
           </Tabs>
+        </div>
 
-          <DialogFooter className="flex gap-3 mt-6 pt-4 border-t border-slate-200">
-            <Button
-              variant="outline"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-              }}
-              className="gap-2 px-6 text-sm h-9 border-slate-300 text-slate-700 hover:bg-slate-50"
-            >
-              <X className="w-4 h-4" /> Cancelar
-            </Button>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSave();
-              }}
-              className="gap-2 px-6 bg-slate-900 hover:bg-slate-800 text-white text-sm h-9"
-              disabled={isCalculating}
-            >
-              <Save className="w-4 h-4" /> {folha ? "Salvar Alterações" : "Criar Folha"}
-            </Button>
-          </DialogFooter>
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700 gap-1.5">
+            <X className="w-3.5 h-3.5" /> Cancelar
+          </Button>
+          <Button onClick={handleSave} className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 text-white gap-1.5" disabled={isCalculating}>
+            <Save className="w-3.5 h-3.5" /> {folha ? "Salvar" : "Criar Folha"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

@@ -332,47 +332,32 @@ export default function FolhaPagamentoLoteForm({
     }
   }, [isOpen]);
 
+  const tabTriggerClass = "flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold text-slate-500 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none bg-transparent whitespace-nowrap";
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-[95vw] max-h-[92vh] modern-modal" 
+      <DialogContent
+        className="max-w-[98vw] w-full max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl border-0"
+        data-custom-modal="true"
         onPointerDownOutside={(e) => e.preventDefault()}
-        style={{
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#94a3b8 #f1f5f9'
-        }}
       >
-        <style>{`
-          .modern-modal::-webkit-scrollbar {
-            width: 8px;
-          }
-          .modern-modal::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-          }
-        `}</style>
-        
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white no-print border-b border-slate-600">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <Users className="w-6 h-6" />
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-4 rounded-t-xl flex-shrink-0" style={{ background: "#0B1629" }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Users className="w-5 h-5" style={{ color: '#fff' }} />
             </div>
-            <div>
-              <p className="text-lg font-semibold">Gerar Folha de Pagamento em Lote</p>
-              <p className="text-xs text-white/80 font-normal">Configure a competência e edite os valores de cada funcionário</p>
+            <div className="min-w-0">
+              <h2 className="text-base font-bold leading-tight" style={{ color: '#fff' }}>Folha de Pagamento em Lote</h2>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>Configure a competência e edite os valores</p>
             </div>
-          </DialogTitle>
-        </DialogHeader>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-        <div onClick={(e) => e.stopPropagation()} className="p-6 pt-2">
+        <div className="flex flex-col flex-1 min-h-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
             <TabsList className="bg-slate-100 p-1 rounded-xl grid grid-cols-2 gap-1 mb-6">
               <TabsTrigger
@@ -390,11 +375,12 @@ export default function FolhaPagamentoLoteForm({
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="configuracao" className="space-y-5 pt-2 animate-in fade-in duration-300">
-              <div className="rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-6 shadow-sm">
-                <h3 className="font-semibold text-slate-800 mb-5 flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-slate-600" /> Dados da Folha
-                </h3>
+            <TabsContent value="configuracao" className="space-y-4 mt-0 animate-in fade-in duration-300">
+              <div className="bg-white rounded-xl border border-slate-200 p-4">
+                <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 mb-3">
+                  <Settings className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Dados da Folha</span>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <Label htmlFor="competencia" className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
@@ -428,38 +414,26 @@ export default function FolhaPagamentoLoteForm({
               </div>
 
               {competencia && (
-                <div className="rounded-xl border-2 border-slate-300 bg-gradient-to-br from-slate-50 to-slate-100 p-8 shadow-lg">
-                  <div className="text-center space-y-3">
+                <div className="bg-white rounded-xl border border-slate-200 p-6 text-center">
+                  {isCalculating ? (
                     <div className="flex items-center justify-center gap-2">
-                      <Calculator className="w-6 h-6 text-slate-700" />
-                      <p className="text-sm font-medium text-slate-600 uppercase tracking-wide">
-                        {isCalculating ? "Calculando..." : "Pronto para gerar"}
-                      </p>
+                      <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                      <span className="text-sm text-slate-600">Calculando...</span>
                     </div>
-                    {!isCalculating && (
-                      <>
-                        <p className="text-5xl font-bold text-slate-700">{folhasFuncionarios.length}</p>
-                        <div className="flex items-center justify-center gap-2 text-slate-600">
-                          <Users className="w-4 h-4" />
-                          <p className="text-sm">funcionário(s) encontrado(s)</p>
-                        </div>
-                        <Button
-                          onClick={() => setActiveTab("funcionarios")}
-                          className="mt-4 bg-slate-800 hover:bg-slate-700 text-white"
-                        >
-                          Ir para Funcionários
-                        </Button>
-                      </>
-                    )}
-                    {isCalculating && (
-                      <Loader2 className="w-8 h-8 animate-spin text-slate-600 mx-auto" />
-                    )}
-                  </div>
+                  ) : (
+                    <>
+                      <p className="text-4xl font-bold text-slate-700 mb-1">{folhasFuncionarios.length}</p>
+                      <p className="text-sm text-slate-500 mb-4">funcionário(s) encontrado(s)</p>
+                      <Button onClick={() => setActiveTab("funcionarios")} className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5 h-9">
+                        <Users className="w-3.5 h-3.5" /> Ver Funcionários
+                      </Button>
+                    </>
+                  )}
                 </div>
               )}
             </TabsContent>
 
-            <TabsContent value="funcionarios" className="space-y-5 pt-2 animate-in fade-in duration-300">
+            <TabsContent value="funcionarios" className="space-y-3 mt-0 animate-in fade-in duration-300">
               <div className="flex items-center gap-3 p-4 bg-slate-100 rounded-xl border border-slate-200">
                 <Checkbox
                   id="checkAll"
@@ -684,45 +658,24 @@ export default function FolhaPagamentoLoteForm({
             </TabsContent>
           </Tabs>
 
-          <DialogFooter className="flex items-center justify-between gap-3 mt-6 pt-6 border-t">
-            <div className="text-sm text-slate-600 flex items-center gap-2">
-              {folhasSelecionadas.length > 0 && (
-                <>
-                  <DollarSign className="w-4 h-4 text-slate-700" />
-                  <span>
-                    Total: <strong className="text-slate-700 text-base">{formatCurrency(totalSelecionado)}</strong> para{' '}
-                    <strong>{folhasSelecionadas.length}</strong> funcionário(s)
-                  </span>
-                </>
-              )}
-            </div>
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onClose();
-                }}
-                className="gap-2 px-6 bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
-              >
-                <X className="w-4 h-4" /> Cancelar
-              </Button>
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleGenerate();
-                }}
-                disabled={folhasSelecionadas.length === 0 || !competencia || !dataPagamento}
-                className="gap-2 px-6 bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Save className="w-4 h-4" /> Gerar {folhasSelecionadas.length} Folha(s)
-              </Button>
-            </div>
-          </DialogFooter>
+          </div>
+        </Tabs>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
+          <div className="text-sm text-slate-600">
+            {folhasSelecionadas.length > 0 && (
+              <span>Total: <strong className="text-slate-800">{formatCurrency(totalSelecionado)}</strong> · <strong>{folhasSelecionadas.length}</strong> funcionário(s)</span>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700 gap-1.5">
+              <X className="w-3.5 h-3.5" /> Cancelar
+            </Button>
+            <Button onClick={handleGenerate} disabled={folhasSelecionadas.length === 0 || !competencia || !dataPagamento} className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 text-white gap-1.5 disabled:opacity-50">
+              <Save className="w-3.5 h-3.5" /> Gerar {folhasSelecionadas.length} Folha(s)
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
