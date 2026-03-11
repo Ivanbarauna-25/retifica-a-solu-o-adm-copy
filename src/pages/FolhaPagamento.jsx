@@ -861,7 +861,6 @@ function FolhaPagamentoContent() {
                 </TableBody>
               </Table>
             </div>
-            </div>
           </div>
         </div>
       </div>
