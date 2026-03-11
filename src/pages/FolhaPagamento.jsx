@@ -572,115 +572,91 @@ function FolhaPagamentoContent() {
   return (
     <>
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-lg md:rounded-xl shadow-lg p-4 md:p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg md:text-2xl font-bold text-white">Folha de Pagamento</h1>
-                <p className="text-slate-300 text-xs md:text-sm">Gestão de pagamentos</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-1.5 md:gap-2">
-              <Button
-                onClick={() => setShowFilters(!showFilters)}
-                variant="outline"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
-              >
-                <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">{showFilters ? 'Ocultar' : 'Filtros'}</span>
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
-              >
-                <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Relatório</span>
-              </Button>
-              <Button
-                variant="outline"
-                onClick={openMovimentacaoModal}
-                disabled={selectedForBaixa.length === 0}
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 disabled:opacity-50"
-              >
-                <ArrowRightLeft className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                ({selectedForBaixa.length})
-              </Button>
-              <Button
-                variant="outline"
-                onClick={openCancelModal}
-                className="bg-transparent border-red-500 text-red-300 hover:bg-red-600 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 hidden sm:flex"
-              >
-                <Ban className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden md:inline">Cancelar</span>
-              </Button>
-              <Button
-                onClick={() => setIsLoteFormOpen(true)}
-                variant="outline"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4 hidden sm:flex"
-              >
-                <Users className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                Lote
-              </Button>
-              <Button
-                onClick={() => openForm()}
-                variant="outline"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1.5 text-xs md:text-sm px-2 md:px-4"
-              >
-                <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Novo</span>
-              </Button>
-            </div>
+        {/* Header limpo */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
+            <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>Folha de Pagamento</h1>
+            <p style={{fontSize:'13px',color:'#6B7280',margin:'4px 0 0 0'}}>Gestão de pagamentos mensais</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5 md:gap-2 items-center">
+            <Button
+              onClick={() => setShowFilters(!showFilters)}
+              variant="outline"
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Filter className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">{showFilters ? 'Ocultar' : 'Filtros'}</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsRelatorioFiltersModalOpen(true)}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Relatório</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={openMovimentacaoModal}
+              disabled={selectedForBaixa.length === 0}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 disabled:opacity-50"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              ({selectedForBaixa.length})
+            </Button>
+            <Button
+              variant="outline"
+              onClick={openCancelModal}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-red-200 text-red-600 hover:bg-red-50 hidden sm:flex"
+            >
+              <Ban className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden md:inline">Cancelar</span>
+            </Button>
+            <Button
+              onClick={() => setIsLoteFormOpen(true)}
+              variant="outline"
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 hidden sm:flex"
+            >
+              <Users className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              Lote
+            </Button>
+            <Button
+              onClick={() => openForm()}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-4"
+              style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+            >
+              <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Novo</span>
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-          <Card className="border-l-4 border-l-slate-600">
-            <CardHeader className="pb-1 md:pb-3 p-3 md:p-6">
-              <CardTitle className="text-[10px] md:text-sm font-medium text-slate-600">Total Geral</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="text-base md:text-2xl font-bold text-slate-900">{formatCurrency(totais.totalGeral)}</div>
-              <p className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1">{folhasFiltradas.length} lançamentos</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader className="pb-1 md:pb-3 p-3 md:p-6">
-              <CardTitle className="text-[10px] md:text-sm font-medium text-slate-600">Pagos</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="text-base md:text-2xl font-bold text-green-700">{formatCurrency(totais.totalPago)}</div>
-              <p className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1">{folhasFiltradas.filter((f) => f.status_pagamento === 'pago').length}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="pb-1 md:pb-3 p-3 md:p-6">
-              <CardTitle className="text-[10px] md:text-sm font-medium text-slate-600">Parciais</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="text-base md:text-2xl font-bold text-blue-700">{formatCurrency(totais.totalParcial)}</div>
-              <p className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1">{folhasFiltradas.filter((f) => f.status_pagamento === 'pago_parcial').length}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-yellow-500">
-            <CardHeader className="pb-1 md:pb-3 p-3 md:p-6">
-              <CardTitle className="text-[10px] md:text-sm font-medium text-slate-600">Pendentes</CardTitle>
-            </CardHeader>
-            <CardContent className="p-3 md:p-6 pt-0">
-              <div className="text-base md:text-2xl font-bold text-yellow-700">{formatCurrency(totais.totalPendente)}</div>
-              <p className="text-[10px] md:text-xs text-slate-500 mt-0.5 md:mt-1">{folhasFiltradas.filter((f) => f.status_pagamento === 'pendente').length}</p>
-            </CardContent>
-          </Card>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+          <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Geral</p>
+            <p className="text-base md:text-2xl font-extrabold text-slate-900 font-mono">{formatCurrency(totais.totalGeral)}</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">{folhasFiltradas.length} lançamentos</p>
+          </div>
+          <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pagos</p>
+            <p className="text-base md:text-2xl font-extrabold text-emerald-600 font-mono">{formatCurrency(totais.totalPago)}</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">{folhasFiltradas.filter((f) => f.status_pagamento === 'pago').length}</p>
+          </div>
+          <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Parciais</p>
+            <p className="text-base md:text-2xl font-extrabold text-sky-600 font-mono">{formatCurrency(totais.totalParcial)}</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">{folhasFiltradas.filter((f) => f.status_pagamento === 'pago_parcial').length}</p>
+          </div>
+          <div className="kpi-bar kpi-bar-yellow bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pendentes</p>
+            <p className="text-base md:text-2xl font-extrabold text-amber-600 font-mono">{formatCurrency(totais.totalPendente)}</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">{folhasFiltradas.filter((f) => f.status_pagamento === 'pendente').length}</p>
+          </div>
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-lg shadow-sm p-3 md:p-4 mb-3 md:mb-4">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4 mb-3 md:mb-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
               <Input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 md:pl-10 text-sm md:text-base" />
@@ -717,11 +693,11 @@ function FolhaPagamentoContent() {
             </Card>
           }
 
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto w-full">
               <Table className="min-w-[1800px]">
                 <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700">
+                  <TableRow className="bg-[#0B1629] hover:bg-[#0B1629]">
                     <TableHead className="w-8 md:w-12 text-white text-xs md:text-sm">
                       <Checkbox
                         checked={selectedForBaixa.length === folhasFiltradas.length && folhasFiltradas.length > 0}
