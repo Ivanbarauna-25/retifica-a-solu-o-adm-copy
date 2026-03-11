@@ -23,7 +23,9 @@ const useSidebar = () => {
 const Sidebar = React.forwardRef(({ className, ...props }, ref) => (
   <aside
     ref={ref}
+    data-sidebar="true"
     className={`flex flex-col ${className || ''}`}
+    style={{ background: '#0B1629', backgroundColor: '#0B1629', opacity: 1 }}
     {...props}
   />
 ))
