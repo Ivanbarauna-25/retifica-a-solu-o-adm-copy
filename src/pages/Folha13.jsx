@@ -939,33 +939,19 @@ function Folha13Content() {
         </div>
       )}
 
-      {/* Dialog de Confirmação */}
-      <Dialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{confirmDialog.title}</DialogTitle>
-            <DialogDescription>{confirmDialog.message}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })}
-              className="bg-white border-2 border-slate-400 text-slate-900 hover:bg-slate-100 font-bold"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={() => {
-                confirmDialog.onConfirm?.();
-                setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
-              }}
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold"
-            >
-              Confirmar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <StandardDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null })}
+        onConfirm={() => {
+          confirmDialog.onConfirm?.();
+          setConfirmDialog({ isOpen: false, title: '', message: '', onConfirm: null });
+        }}
+        title={confirmDialog.title}
+        description={confirmDialog.message}
+        variant={confirmDialog.title?.includes('Exclusão') || confirmDialog.title?.includes('Excluir') ? 'danger' : 'confirm'}
+        confirmText="Confirmar"
+        cancelText="Cancelar"
+      />
     </>
   );
 }
