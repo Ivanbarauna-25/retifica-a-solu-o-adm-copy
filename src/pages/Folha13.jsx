@@ -528,95 +528,74 @@ function Folha13Content() {
   return (
     <>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl shadow-lg p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                <Gift className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">13º Salário</h1>
-                <p className="text-slate-300 text-sm">Gestão completa do décimo terceiro salário</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={() => setShowFilters(!showFilters)}
-                variant="outline"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
-              >
-                <Filter className="w-4 h-4" />
-                {showFilters ? 'Ocultar Filtros' : 'Filtros'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                Relatório
-              </Button>
-              <Button
-                variant="outline"
-                onClick={openMovimentacaoModal}
-                disabled={selectedForBaixa.length === 0}
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 disabled:opacity-50"
-              >
-                <ArrowRightLeft className="w-4 h-4" />
-                Gerar Movimentação ({selectedForBaixa.length})
-              </Button>
-              <Button
-                onClick={() => setIsLoteFormOpen(true)}
-                variant="outline"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
-              >
-                <Users className="w-4 h-4" />
-                Gerar em Lote
-              </Button>
-              <Button
-                onClick={() => openForm()}
-                variant="outline"
-                className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Novo Lançamento
-              </Button>
-            </div>
+        {/* Header limpo */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+          <div>
+            <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>13º Salário</h1>
+            <p style={{fontSize:'13px',color:'#6B7280',margin:'4px 0 0 0'}}>Gestão completa do décimo terceiro salário</p>
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button
+              onClick={() => setShowFilters(!showFilters)}
+              variant="outline"
+              className="gap-2 text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Filter className="w-4 h-4" />
+              {showFilters ? 'Ocultar Filtros' : 'Filtros'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsRelatorioFiltersModalOpen(true)}
+              className="gap-2 text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <FileText className="w-4 h-4" />
+              Relatório
+            </Button>
+            <Button
+              variant="outline"
+              onClick={openMovimentacaoModal}
+              disabled={selectedForBaixa.length === 0}
+              className="gap-2 text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 disabled:opacity-50"
+            >
+              <ArrowRightLeft className="w-4 h-4" />
+              Movimentação ({selectedForBaixa.length})
+            </Button>
+            <Button
+              onClick={() => setIsLoteFormOpen(true)}
+              className="gap-2 text-sm"
+              style={{background:'#059669',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+            >
+              <Users className="w-4 h-4" />
+              Gerar em Lote
+            </Button>
+            <Button
+              onClick={() => openForm()}
+              className="gap-2 text-sm"
+              style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+            >
+              <Plus className="w-4 h-4" />
+              Novo Lançamento
+            </Button>
           </div>
         </div>
 
-        {/* Cards de Totais */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="border-l-4 border-l-slate-600">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Total Geral</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">{formatCurrency(totais.totalGeral)}</div>
-              <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.length} lançamentos</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Pagos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-700">{formatCurrency(totais.totalPago)}</div>
-              <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.filter((f) => f.status === 'pago').length} lançamentos</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600">Gerados/Pendentes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-700">{formatCurrency(totais.totalGerado)}</div>
-              <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.filter((f) => ['gerado', 'editado'].includes(f.status)).length} lançamentos</p>
-            </CardContent>
-          </Card>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Geral</p>
+            <p className="text-2xl font-extrabold text-slate-900 font-mono">{formatCurrency(totais.totalGeral)}</p>
+            <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.length} lançamentos</p>
+          </div>
+          <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pagos</p>
+            <p className="text-2xl font-extrabold text-emerald-600 font-mono">{formatCurrency(totais.totalPago)}</p>
+            <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.filter((f) => f.status === 'pago').length} lançamentos</p>
+          </div>
+          <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Gerados/Pendentes</p>
+            <p className="text-2xl font-extrabold text-sky-600 font-mono">{formatCurrency(totais.totalGerado)}</p>
+            <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.filter((f) => ['gerado', 'editado'].includes(f.status)).length} lançamentos</p>
+          </div>
         </div>
 
         {/* Busca e Filtros */}
@@ -710,11 +689,11 @@ function Folha13Content() {
           )}
 
           {/* Tabela */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700">
+                  <TableRow className="bg-[#0B1629] hover:bg-[#0B1629]">
                     <TableHead className="w-12 text-white">
                       <Checkbox
                         checked={selectedForBaixa.length === folhasFiltradas.filter(f => f.status !== 'pago' && f.status !== 'cancelado').length && folhasFiltradas.length > 0}
