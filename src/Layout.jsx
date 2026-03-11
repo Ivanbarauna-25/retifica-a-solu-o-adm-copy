@@ -489,7 +489,7 @@ export default function Layout({ children, currentPageName }) {
 
         .nav-item { position: relative; color: var(--text-sb) !important; transition: all 0.12s !important; margin: 1px 0 !important; }
         .nav-item:hover { background: rgba(255,255,255,0.055) !important; color: var(--text-sb-h) !important; }
-        .nav-item svg { opacity: 0.65; }
+        .nav-item svg { opacity: 0.85; }
 
         .nav-item-active { background: rgba(26,86,219,0.18) !important; color: #ffffff !important; }
         .nav-item-active::before {
