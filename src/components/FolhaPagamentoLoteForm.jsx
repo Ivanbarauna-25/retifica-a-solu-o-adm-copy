@@ -653,8 +653,8 @@ export default function FolhaPagamentoLoteForm({
                 </div>
               </div>
             </TabsContent>
-          </div>
-        </Tabs>
+            </div>
+          </Tabs>
 
         {/* Footer */}
         <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
