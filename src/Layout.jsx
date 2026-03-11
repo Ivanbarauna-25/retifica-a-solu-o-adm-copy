@@ -420,8 +420,8 @@ export default function Layout({ children, currentPageName }) {
           --sb-bg: #0B1629;
           --accent: #1A56DB;
           --border-sb: rgba(255,255,255,0.06);
-          --text-sb: rgba(255,255,255,0.42);
-          --text-sb-h: rgba(255,255,255,0.80);
+          --text-sb: rgba(255,255,255,0.72);
+          --text-sb-h: rgba(255,255,255,0.95);
         }
 
         html, body, #root { height: 100%; width: 100%; overflow: hidden; }
