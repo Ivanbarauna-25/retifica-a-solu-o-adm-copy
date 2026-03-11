@@ -1133,14 +1133,14 @@ export default function AdiantamentosPage() {
               variant="outline" 
               onClick={() => setIsAprovacaoLoteOpen(false)} 
               disabled={processandoLote}
-              className="bg-slate-800 text-gray-50 px-4 py-2 text-sm font-bold opacity-100 rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:text-accent-foreground h-10 border-2 border-slate-800 hover:bg-slate-50 gap-2"
+              className="border-slate-300 text-slate-700 hover:bg-slate-100 hover:text-slate-900 gap-2"
             >
               <X className="w-4 h-4" /> Cancelar
             </Button>
             <Button
               onClick={confirmarAprovacaoLote}
               disabled={processandoLote}
-              className="bg-slate-800 text-gray-50 px-4 py-2 text-sm font-bold opacity-100 rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:text-accent-foreground h-10 border-2 border-slate-800 hover:bg-slate-50 gap-2"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-2"
             >
               {processandoLote ? (
                 <>
@@ -1149,7 +1149,7 @@ export default function AdiantamentosPage() {
                 </>
               ) : (
                 <>
-                <Check className="w-4 h-4" /> Confirmar Aprovação
+                  <Check className="w-4 h-4" /> Confirmar Aprovação
                 </>
               )}
             </Button>

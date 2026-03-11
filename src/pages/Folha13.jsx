@@ -18,14 +18,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from '@/components/ui/dialog';
+import StandardDialog from '@/components/ui/StandardDialog';
 import Folha13Form from '@/components/folha13/Folha13Form';
 import Folha13LoteForm from '@/components/folha13/Folha13LoteForm';
 import Folha13Viewer from '@/components/folha13/Folha13Viewer';
