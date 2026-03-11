@@ -176,81 +176,16 @@ export default function AdiantamentoViewer({
 
               {/* Ações desktop */}
               <div className="hidden md:flex items-center gap-1">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title="Aprovar" 
-                  onClick={() => setStatus("aprovado")}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title="Reprovar" 
-                  onClick={() => setStatus("reprovado")}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
-                >
-                  <XCircle className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title="Cancelar" 
-                  onClick={() => setStatus("cancelado")}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
-                >
-                  <Ban className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title={adiantamento?.movimentacao_financeira_id ? "Movimentação já gerada" : "Gerar Financeiro"} 
-                  onClick={() => onOpenFinanceiro && onOpenFinanceiro(adiantamento)}
-                  disabled={!!adiantamento?.movimentacao_financeira_id}
-                  className={`h-9 w-9 ${adiantamento?.movimentacao_financeira_id ? 'bg-slate-500 opacity-50 cursor-not-allowed' : 'bg-slate-600 hover:bg-slate-700'} text-white`}
-                >
-                  <Wallet className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title="Pagamento parcial" 
-                  onClick={() => onOpenPagamentoParcial && onOpenPagamentoParcial(adiantamento)}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
-                >
-                  <Receipt className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title="Gerar recibo" 
-                  onClick={handleGenerateReceipt}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
-                >
-                  <FileText className="w-4 h-4" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  title="Fechar" 
-                  onClick={onClose}
-                  className="bg-slate-600 hover:bg-slate-700 text-white h-9 w-9"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+                <button title="Aprovar" onClick={() => setStatus("aprovado")} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'rgba(255,255,255,0.6)' }}><CheckCircle2 className="w-4 h-4" /></button>
+                <button title="Reprovar" onClick={() => setStatus("reprovado")} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'rgba(255,255,255,0.6)' }}><XCircle className="w-4 h-4" /></button>
+                <button title="Cancelar adiantamento" onClick={() => setStatus("cancelado")} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'rgba(255,255,255,0.6)' }}><Ban className="w-4 h-4" /></button>
+                <button title={adiantamento?.movimentacao_financeira_id ? "Movimentação já gerada" : "Gerar Financeiro"} onClick={() => onOpenFinanceiro && onOpenFinanceiro(adiantamento)} disabled={!!adiantamento?.movimentacao_financeira_id} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40" style={{ color: 'rgba(255,255,255,0.6)' }}><Wallet className="w-4 h-4" /></button>
+                <button title="Pagamento parcial" onClick={() => onOpenPagamentoParcial && onOpenPagamentoParcial(adiantamento)} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'rgba(255,255,255,0.6)' }}><Receipt className="w-4 h-4" /></button>
+                <button title="Gerar recibo" onClick={handleGenerateReceipt} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'rgba(255,255,255,0.6)' }}><FileText className="w-4 h-4" /></button>
+                <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'rgba(255,255,255,0.5)' }}><X className="w-4 h-4" /></button>
               </div>
-              
               {/* Fechar mobile */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={onClose}
-                className="md:hidden bg-slate-600 hover:bg-slate-700 text-white h-8 w-8 flex-shrink-0"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+              <button onClick={onClose} className="md:hidden p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}><X className="w-4 h-4" /></button>
             </div>
           </DialogHeader>
 
