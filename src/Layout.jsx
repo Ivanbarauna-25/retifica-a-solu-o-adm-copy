@@ -477,12 +477,12 @@ export default function Layout({ children, currentPageName }) {
         }
 
         .sidebar-section-trigger {
-          color: rgba(255,255,255,0.22) !important;
+          color: rgba(255,255,255,0.65) !important;
           letter-spacing: 0.12em !important;
           transition: all 0.15s !important;
         }
         .sidebar-section-trigger:hover {
-          color: rgba(255,255,255,0.45) !important;
+          color: rgba(255,255,255,0.90) !important;
           background: rgba(255,255,255,0.04) !important;
         }
         .sidebar-section-trigger svg { color: rgba(255,255,255,0.2) !important; width: 12px !important; height: 12px !important; }

@@ -822,7 +822,7 @@ aside[data-sidebar="true"] > * {
 
 /* Títulos de seção na sidebar */
 [data-sidebar="true"] .sidebar-section-trigger {
-  color: rgba(255,255,255,0.25) !important;
+  color: rgba(255,255,255,0.65) !important;
   font-size: 10px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.12em !important;
