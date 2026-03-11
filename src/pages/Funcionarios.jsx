@@ -365,94 +365,90 @@ export default function FuncionariosPage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-2 md:p-6">
+    <div className="min-h-screen bg-slate-50">
       <Toaster />
 
       <div className="container mx-auto max-w-[1800px] space-y-4">
         {/* Header */}
-        <Card className="overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 md:p-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <CardTitle className="text-base md:text-2xl">Equipe</CardTitle>
-                <CardDescription className="text-slate-200">
-                  Gerenciamento de funcionários
-                </CardDescription>
-              </div>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-1">
+          <div>
+            <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>Equipe</h1>
+            <p style={{fontSize:'13px',color:'#6B7280',margin:'4px 0 0 0'}}>Gerenciamento de funcionários</p>
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button
+              onClick={() => setShowFilters((v) => !v)}
+              variant="outline"
+              className="gap-2 text-xs md:text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Filter className="w-4 h-4" />
+              Filtros
+            </Button>
 
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  onClick={() => setShowFilters((v) => !v)}
-                  variant="outline"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 text-xs md:text-sm"
-                >
-                  <Filter className="w-4 h-4" />
-                  Filtros
-                </Button>
+            {canCreateFunc && (
+              <Button
+                onClick={() => setModalImportar(true)}
+                variant="outline"
+                className="gap-2 text-xs md:text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 hidden sm:flex"
+              >
+                <Upload className="w-4 h-4" />
+                Importar
+              </Button>
+            )}
 
-                {canCreateFunc && (
-                  <Button
-                    onClick={() => setModalImportar(true)}
-                    variant="outline"
-                    className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 text-xs md:text-sm hidden sm:flex"
-                  >
-                    <Upload className="w-4 h-4" />
-                    Importar
-                  </Button>
-                )}
+            <Button
+              onClick={() => setShowRelatorio(true)}
+              variant="outline"
+              className="gap-2 text-xs md:text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <FileText className="w-4 h-4" />
+              Relatório
+            </Button>
 
-                <Button
-                  onClick={() => setShowRelatorio(true)}
-                  variant="outline"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 text-xs md:text-sm"
-                >
-                  <FileText className="w-4 h-4" />
-                  Relatório
-                </Button>
+            <Button
+              onClick={repararDados}
+              variant="outline"
+              className="gap-2 text-xs md:text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <Wrench className="w-4 h-4" />
+              Reparar dados
+            </Button>
 
-                <Button
-                  onClick={repararDados}
-                  variant="outline"
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-2 text-xs md:text-sm"
-                >
-                  <Wrench className="w-4 h-4" />
-                  Reparar dados
-                </Button>
+            {canCreateFunc && (
+              <Button
+                onClick={handleNovo}
+                className="gap-2 text-xs md:text-sm"
+                style={{background:'#059669',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+              >
+                <Plus className="w-4 h-4" />
+                Novo
+              </Button>
+            )}
+          </div>
+        </div>
 
-                {canCreateFunc && (
-                  <Button
-                    onClick={handleNovo}
-                    className="bg-emerald-600 hover:bg-emerald-700 gap-2 text-xs md:text-sm"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Novo
-                  </Button>
-                )}
-              </div>
-            </div>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total</p>
+            <p className="text-2xl font-extrabold text-slate-900 font-mono">{funcionarios.length}</p>
+          </div>
+          <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ativos</p>
+            <p className="text-2xl font-extrabold text-emerald-600 font-mono">{totalAtivos}</p>
+          </div>
+          <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Férias</p>
+            <p className="text-2xl font-extrabold text-sky-600 font-mono">{totalFerias}</p>
+          </div>
+          <div className="kpi-bar kpi-bar-red bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Afastados/Demitidos</p>
+            <p className="text-2xl font-extrabold text-red-600 font-mono">{totalAfastados}</p>
+          </div>
+        </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
-              <div className="bg-white/10 border border-white/15 rounded-lg p-3">
-                <div className="text-[10px] text-slate-200">Total</div>
-                <div className="text-xl font-bold">{funcionarios.length}</div>
-              </div>
-              <div className="bg-white/10 border border-white/15 rounded-lg p-3">
-                <div className="text-[10px] text-slate-200">Ativos</div>
-                <div className="text-xl font-bold">{totalAtivos}</div>
-              </div>
-              <div className="bg-white/10 border border-white/15 rounded-lg p-3">
-                <div className="text-[10px] text-slate-200">Férias</div>
-                <div className="text-xl font-bold">{totalFerias}</div>
-              </div>
-              <div className="bg-white/10 border border-white/15 rounded-lg p-3">
-                <div className="text-[10px] text-slate-200">Afastados/Demitidos</div>
-                <div className="text-xl font-bold">{totalAfastados}</div>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent className="p-4 md:p-6 space-y-4">
+        {/* Conteúdo principal */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 md:p-6 space-y-4">
             {/* Filtros */}
             {showFilters ? (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -542,9 +538,9 @@ export default function FuncionariosPage() {
             )}
 
             {/* Desktop Table */}
-            <div className="hidden md:block rounded-lg border overflow-hidden bg-white">
+            <div className="hidden md:block rounded-xl border border-slate-200 overflow-hidden bg-white">
               <Table>
-                <TableHeader className="bg-slate-800">
+                <TableHeader className="bg-[#0B1629]">
                   <TableRow>
                     <TableHead className="text-white text-xs">Nome</TableHead>
                     <TableHead className="text-white text-xs">ID Relógio (EnNo)</TableHead>
@@ -802,8 +798,7 @@ export default function FuncionariosPage() {
                 })
               )}
             </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
 
       {/* Modal Form */}
