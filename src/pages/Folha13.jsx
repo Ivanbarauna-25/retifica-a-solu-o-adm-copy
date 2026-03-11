@@ -826,7 +826,6 @@ function Folha13Content() {
               </div>
               </div>
               </div>
-              </div>
 
               {/* Modais */}
       {isFormOpen && (
