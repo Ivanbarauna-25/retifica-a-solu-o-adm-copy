@@ -165,13 +165,13 @@ export default function AdiantamentoViewer({
 
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="w-[95vw] md:w-[85vw] lg:max-w-2xl h-auto max-h-[90vh] overflow-hidden modern-modal bg-white border-2 border-slate-800 shadow-2xl flex flex-col p-0" onPointerDownOutside={(e) => e.preventDefault()}>
-          <DialogHeader className="modern-modal-header flex-shrink-0 bg-gradient-to-r from-slate-800 to-slate-700 px-3 md:px-6 py-3 md:py-4 border-b border-slate-600">
+          <DialogHeader className="modern-modal-header flex-shrink-0 px-3 md:px-5 py-3 md:py-4 rounded-t-xl" style={{ background: '#0B1629' }}>
             <div className="w-full flex items-center justify-between gap-2">
-              <DialogTitle className="flex items-center gap-2 md:gap-3 text-white text-sm md:text-lg font-bold min-w-0">
-                <div className="h-8 w-8 md:h-10 md:w-10 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm flex-shrink-0">
-                  <Wallet className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              <DialogTitle className="flex items-center gap-2 md:gap-3 text-sm md:text-base font-bold min-w-0">
+                <div className="h-8 w-8 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                  <Wallet className="w-4 h-4" style={{ color: '#fff' }} />
                 </div>
-                <span className="truncate">Adiantamento</span>
+                <span className="truncate" style={{ color: '#fff' }}>Adiantamento</span>
               </DialogTitle>
 
               {/* Ações desktop */}
