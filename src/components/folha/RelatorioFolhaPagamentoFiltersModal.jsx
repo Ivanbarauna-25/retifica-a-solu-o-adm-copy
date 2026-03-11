@@ -53,164 +53,87 @@ export default function RelatorioFolhaPagamentoFiltersModal({
     ...departamentos.map(d => ({ value: d.id, label: d.nome }))
   ];
 
+  const SectionHdr = ({ icon: Icon, title }) => (
+    <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 mb-3">
+      {Icon && <Icon className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />}
+      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{title}</span>
+    </div>
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-2xl max-h-[92vh] modern-modal bg-white" 
+      <DialogContent
+        className="max-w-2xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl border-0"
+        data-custom-modal="true"
         onPointerDownOutside={(e) => e.preventDefault()}
-        style={{
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#94a3b8 #f1f5f9'
-        }}
       >
-        <style>{`
-          .modern-modal::-webkit-scrollbar {
-            width: 8px;
-          }
-          .modern-modal::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-          }
-        `}</style>
-
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white no-print border-b border-slate-600">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
-              <Printer className="w-5 h-5 text-white" />
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-4 rounded-t-xl flex-shrink-0" style={{ background: "#0B1629" }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+              <Printer className="w-5 h-5" style={{ color: '#fff' }} />
             </div>
-            <div>
-              <h2 className="text-xl font-bold">Gerar Relatório de Folha de Pagamento</h2>
-              <p className="text-sm text-slate-300">Configure os filtros para gerar o relatório personalizado</p>
+            <div className="min-w-0">
+              <h2 className="text-base font-bold leading-tight" style={{ color: '#fff' }}>Relatório de Folha de Pagamento</h2>
+              <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>Configure os filtros para gerar o relatório</p>
             </div>
-          </DialogTitle>
-        </DialogHeader>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <Label className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-slate-600" /> 
-              Status
-            </Label>
-            <SmartInput
-              options={statusOptions}
-              value={status}
-              onChange={setStatus}
-              placeholder="Selecione o status"
-              className="modern-input text-black"
-            />
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto bg-slate-50 p-4 md:p-5 space-y-4">
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <SectionHdr icon={DollarSign} title="Filtros" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Status</Label>
+                <SmartInput options={statusOptions} value={status} onChange={setStatus} placeholder="Selecione o status" className="text-sm h-9" />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Competência</Label>
+                <Input type="month" value={competencia} onChange={(e) => setCompetencia(e.target.value)} className="text-sm h-9" />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Funcionário</Label>
+                <SmartInput options={funcionariosOptions} value={funcionarioId} onChange={setFuncionarioId} placeholder="Todos" className="text-sm h-9" />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Departamento</Label>
+                <SmartInput options={departamentosOptions} value={departamentoId} onChange={setDepartamentoId} placeholder="Todos" className="text-sm h-9" />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Data Pagamento (Início)</Label>
+                <Input type="date" value={dataInicio} onChange={(e) => setDataInicio(e.target.value)} className="text-sm h-9" />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Data Pagamento (Fim)</Label>
+                <Input type="date" value={dataFim} onChange={(e) => setDataFim(e.target.value)} className="text-sm h-9" />
+              </div>
+            </div>
           </div>
 
-          <div>
-            <Label className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-slate-600" /> 
-              Competência
-            </Label>
-            <Input 
-              type="month" 
-              value={competencia} 
-              onChange={(e) => setCompetencia(e.target.value)} 
-              placeholder="Selecione o mês"
-              className="modern-input text-black" 
-            />
-          </div>
-
-          <div>
-            <Label className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Users className="w-4 h-4 text-slate-600" /> 
-              Funcionário
-            </Label>
-            <SmartInput
-              options={funcionariosOptions}
-              value={funcionarioId}
-              onChange={setFuncionarioId}
-              placeholder="Selecione o funcionário"
-              className="modern-input text-black"
-            />
-          </div>
-
-          <div>
-            <Label className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-slate-600" /> 
-              Departamento
-            </Label>
-            <SmartInput
-              options={departamentosOptions}
-              value={departamentoId}
-              onChange={setDepartamentoId}
-              placeholder="Selecione o departamento"
-              className="modern-input text-black"
-            />
-          </div>
-
-          <div>
-            <Label className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-slate-600" /> 
-              Data Pagamento (Início)
-            </Label>
-            <Input 
-              type="date" 
-              value={dataInicio} 
-              onChange={(e) => setDataInicio(e.target.value)} 
-              className="modern-input text-black" 
-            />
-          </div>
-          
-          <div>
-            <Label className="text-sm font-bold text-slate-900 mb-2 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-slate-600" /> 
-              Data Pagamento (Fim)
-            </Label>
-            <Input 
-              type="date" 
-              value={dataFim} 
-              onChange={(e) => setDataFim(e.target.value)} 
-              className="modern-input text-black" 
-            />
-          </div>
-
-          <div className="md:col-span-2 mt-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
             <div className="flex items-center gap-3">
-              <Checkbox 
-                id="proporcional" 
-                checked={apenasComProporcional} 
-                onCheckedChange={(v) => setApenasComProporcional(!!v)} 
-                className="border-2 border-slate-400"
-              />
-              <Label htmlFor="proporcional" className="cursor-pointer text-sm font-semibold text-slate-900">
+              <Checkbox id="proporcional" checked={apenasComProporcional} onCheckedChange={(v) => setApenasComProporcional(!!v)} />
+              <Label htmlFor="proporcional" className="cursor-pointer text-sm font-medium text-slate-700">
                 Apenas salários proporcionais (funcionários que começaram no meio do mês)
               </Label>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="flex items-center justify-between gap-4 mt-6 pt-4 border-t border-slate-200 px-6 pb-6">
-          <p className="text-sm text-slate-700 font-medium">Aplique os filtros desejados e clique em Gerar</p>
-          <div className="flex gap-3">
-            <Button 
-              variant="outline" 
-              onClick={onClose} 
-              className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50 font-bold px-6"
-            >
-              <X className="w-4 h-4 mr-2" />
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleGenerate} 
-              className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-8 shadow-lg gap-2"
-            >
-              <Printer className="w-4 h-4" />
-              Gerar
-            </Button>
-          </div>
-        </DialogFooter>
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700 gap-1.5">
+            <X className="w-3.5 h-3.5" /> Cancelar
+          </Button>
+          <Button onClick={handleGenerate} className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 text-white gap-1.5">
+            <Printer className="w-3.5 h-3.5" /> Gerar Relatório
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
