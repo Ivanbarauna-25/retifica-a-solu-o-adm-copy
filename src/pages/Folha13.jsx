@@ -805,8 +805,6 @@ function Folha13Content() {
           funcionarios={funcionarios.filter(f => f.status === 'ativo')}
           planoContas={planoContas}
           folhasPagamento={folhasPagamento}
-          controlePonto={controlePontos}
-          configuracoes={configuracoes}
           onSave={handleSave}
           onClose={() => { setIsFormOpen(false); setSelectedFolha13(null); }}
         />

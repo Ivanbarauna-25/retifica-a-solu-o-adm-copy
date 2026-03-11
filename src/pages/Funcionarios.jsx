@@ -42,7 +42,6 @@ import {
   Filter,
   FileText,
   Upload,
-  Wrench,
 } from "lucide-react";
 
 import { useToast } from "@/components/ui/use-toast";
@@ -439,15 +438,6 @@ export default function FuncionariosPage() {
             >
               <FileText className="w-4 h-4" />
               Relatório
-            </Button>
-
-            <Button
-              onClick={repararDados}
-              variant="outline"
-              className="gap-2 text-xs md:text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
-            >
-              <Wrench className="w-4 h-4" />
-              Reparar dados
             </Button>
 
             {canCreateFunc && (
