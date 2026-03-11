@@ -99,10 +99,10 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
                 <User className="w-5 h-5 text-white" />
               </div>
               <div className="min-w-0">
-                <h2 className="text-base md:text-lg font-bold text-white leading-tight truncate">
+                <h2 className="text-base md:text-lg font-bold leading-tight truncate" style={{color:'#fff'}}>
                   {funcionario.nome}
                 </h2>
-                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                <p className="text-[11px] mt-0.5 truncate" style={{color:'rgba(255,255,255,0.5)'}}>
                   {funcionario.user_id_relogio ? `ID Relógio: ${funcionario.user_id_relogio}` : "Sem ID relógio"}
                   {cargo?.nome ? ` · ${cargo.nome}` : ""}
                 </p>

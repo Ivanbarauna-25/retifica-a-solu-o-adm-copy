@@ -435,10 +435,10 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm md:text-base font-semibold text-white leading-tight truncate">
+                  <h2 className="text-sm md:text-base font-semibold leading-tight truncate" style={{color:'#fff'}}>
                     {funcionario ? 'Editar Funcionário' : 'Novo Funcionário'}
                   </h2>
-                  <p className="text-[11px] text-slate-300 mt-0.5 hidden sm:block">Gerencie os dados do colaborador</p>
+                  <p className="text-[11px] mt-0.5 hidden sm:block" style={{color:'rgba(255,255,255,0.5)'}}>Gerencie os dados do colaborador</p>
                 </div>
               </div>
               <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0">

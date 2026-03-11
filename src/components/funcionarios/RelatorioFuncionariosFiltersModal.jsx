@@ -106,8 +106,8 @@ export default function RelatorioFuncionariosFiltersModal({
               <Users className="w-5 h-5 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base font-bold text-white leading-tight">Relatório de Funcionários</h2>
-              <p className="text-[11px] text-slate-400 mt-0.5">Selecione os campos e formato desejados</p>
+              <h2 className="text-base font-bold leading-tight" style={{color:'#fff'}}>Relatório de Funcionários</h2>
+              <p className="text-[11px] mt-0.5" style={{color:'rgba(255,255,255,0.5)'}}>Selecione os campos e formato desejados</p>
             </div>
           </div>
           <button
