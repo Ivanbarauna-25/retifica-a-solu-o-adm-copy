@@ -802,11 +802,11 @@ aside[data-sidebar="true"] > * {
 [data-sidebar="true"] a,
 [data-sidebar="true"] button,
 [data-sidebar="true"] .nav-item {
-  color: rgba(255,255,255,0.55) !important;
+  color: rgba(255,255,255,0.85) !important;
 }
 [data-sidebar="true"] .nav-item:hover {
   background: rgba(255,255,255,0.06) !important;
-  color: rgba(255,255,255,0.85) !important;
+  color: rgba(255,255,255,1) !important;
 }
 [data-sidebar="true"] .nav-item-active {
   background: rgba(26,86,219,0.20) !important;
