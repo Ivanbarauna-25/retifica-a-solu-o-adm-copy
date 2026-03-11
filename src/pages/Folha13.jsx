@@ -581,17 +581,17 @@ function Folha13Content() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-          <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-4" style={{borderTop:'3px solid #1A56DB'}}>
+          <div className="bg-white rounded-xl shadow-sm p-4" style={{borderTop:'3px solid #1A56DB', borderRight:'1px solid #E5E7EB', borderBottom:'1px solid #E5E7EB', borderLeft:'1px solid #E5E7EB'}}>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Geral</p>
             <p className="text-2xl font-extrabold text-slate-900 font-mono">{formatCurrency(totais.totalGeral)}</p>
             <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.length} lançamentos</p>
           </div>
-          <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-4" style={{borderTop:'3px solid #059669'}}>
+          <div className="bg-white rounded-xl shadow-sm p-4" style={{borderTop:'3px solid #059669', borderRight:'1px solid #E5E7EB', borderBottom:'1px solid #E5E7EB', borderLeft:'1px solid #E5E7EB'}}>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pagos</p>
             <p className="text-2xl font-extrabold text-emerald-600 font-mono">{formatCurrency(totais.totalPago)}</p>
             <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.filter((f) => f.status === 'pago').length} lançamentos</p>
           </div>
-          <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-4" style={{borderTop:'3px solid #D97706'}}>
+          <div className="bg-white rounded-xl shadow-sm p-4" style={{borderTop:'3px solid #D97706', borderRight:'1px solid #E5E7EB', borderBottom:'1px solid #E5E7EB', borderLeft:'1px solid #E5E7EB'}}>
             <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Gerados/Pendentes</p>
             <p className="text-2xl font-extrabold text-sky-600 font-mono">{formatCurrency(totais.totalGerado)}</p>
             <p className="text-xs text-slate-500 mt-1">{folhasFiltradas.filter((f) => ['gerado', 'editado'].includes(f.status)).length} lançamentos</p>

@@ -93,16 +93,36 @@ function safeStr(v) {
 }
 
 function StatusBadgeFuncionario({ status }) {
-  const cfg = {
-    ativo:       { bg: '#ECFDF5', color: '#065F46', dot: '#059669' },
-    experiencia: { bg: '#FFFBEB', color: '#92400E', dot: '#D97706' },
-    ferias:      { bg: '#EFF6FF', color: '#1E40AF', dot: '#1A56DB' },
-    afastado:    { bg: '#FFFBEB', color: '#92400E', dot: '#D97706' },
-    demitido:    { bg: '#FEF2F2', color: '#991B1B', dot: '#DC2626' },
-  }[status] || { bg: '#F9FAFB', color: '#6B7280', dot: '#9CA3AF' };
+  const cfgMap = {
+    ativo:       { backgroundColor: '#ECFDF5', color: '#065F46', dotColor: '#059669' },
+    experiencia: { backgroundColor: '#FFFBEB', color: '#92400E', dotColor: '#D97706' },
+    ferias:      { backgroundColor: '#EFF6FF', color: '#1E40AF', dotColor: '#1A56DB' },
+    afastado:    { backgroundColor: '#FEF2F2', color: '#991B1B', dotColor: '#DC2626' },
+    demitido:    { backgroundColor: '#FEF2F2', color: '#991B1B', dotColor: '#DC2626' },
+  };
+  const cfg = cfgMap[status] || { backgroundColor: '#F9FAFB', color: '#6B7280', dotColor: '#9CA3AF', border: '1px solid #E5E7EB' };
   return (
-    <span style={{ display:'inline-flex', alignItems:'center', gap:'5px', padding:'3px 10px', borderRadius:'20px', fontSize:'11px', fontWeight:'700', background: cfg.bg, color: cfg.color }}>
-      <span style={{ width:'6px', height:'6px', borderRadius:'50%', background: cfg.dot, display:'inline-block', flexShrink:0 }} />
+    <span style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '5px',
+      padding: '3px 10px',
+      borderRadius: '20px',
+      fontSize: '11px',
+      fontWeight: '700',
+      whiteSpace: 'nowrap',
+      backgroundColor: cfg.backgroundColor,
+      color: cfg.color,
+      border: cfg.border || 'none',
+    }}>
+      <span style={{
+        width: '6px',
+        height: '6px',
+        borderRadius: '50%',
+        display: 'inline-block',
+        flexShrink: 0,
+        backgroundColor: cfg.dotColor,
+      }} />
       {statusLabels[status] || status}
     </span>
   );

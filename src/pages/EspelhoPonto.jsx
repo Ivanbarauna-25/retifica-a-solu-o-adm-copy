@@ -80,14 +80,18 @@ export default function EspelhoPonto() {
 
   return (
     <>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
       <style>{`
         @media print {
           .no-print { display: none !important; }
+          button { display: none !important; }
           body { background: white !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
+        * { font-family: 'Outfit', system-ui, sans-serif; }
       `}</style>
 
-      <div className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-4">
+      <div style={{minHeight:'100vh', background:'#F1F5F9', padding:'24px', fontFamily:"'Outfit', sans-serif"}} className="space-y-4">
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 no-print">
