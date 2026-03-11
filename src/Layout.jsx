@@ -430,15 +430,42 @@ export default function Layout({ children, currentPageName }) {
         .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: #F1F5F9; }
         .app-main { display: flex; flex-direction: column; flex: 1; min-width: 0; height: 100vh; overflow: hidden; }
 
-        [data-sidebar] {
-          background: var(--sb-bg) !important;
+        [data-sidebar],
+        [data-sidebar] *:not(svg):not(path):not(span):not(a):not(button) {
+          --sidebar-background: #0B1629 !important;
+        }
+
+        [data-sidebar],
+        aside[data-sidebar],
+        div[data-sidebar],
+        [data-slot="sidebar"],
+        [data-slot="sidebar-wrapper"],
+        [data-slot="sidebar-gap"] {
+          background: #0B1629 !important;
+          background-color: #0B1629 !important;
+          opacity: 1 !important;
           border-right: none !important;
-          box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+          box-shadow: 4px 0 24px rgba(0,0,0,0.18) !important;
           flex-shrink: 0;
         }
 
-        .sidebar-header { background: rgba(255,255,255,0.02) !important; border-bottom: 1px solid var(--border-sb) !important; }
-        .sidebar-footer { background: rgba(255,255,255,0.02) !important; border-top: 1px solid var(--border-sb) !important; }
+        [data-slot="sidebar-content"] {
+          background: #0B1629 !important;
+          background-color: #0B1629 !important;
+        }
+
+        .sidebar-header,
+        [data-slot="sidebar-header"] {
+          background: #0a1525 !important;
+          background-color: #0a1525 !important;
+          border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+        }
+        .sidebar-footer,
+        [data-slot="sidebar-footer"] {
+          background: #0a1525 !important;
+          background-color: #0a1525 !important;
+          border-top: 1px solid var(--border-sb) !important;
+        }
 
         .sidebar-logo-icon {
           width: 34px; height: 34px;
