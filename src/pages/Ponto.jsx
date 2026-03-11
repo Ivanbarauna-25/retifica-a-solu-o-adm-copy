@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { parseZKTecoFile, calcularApuracaoDiaria, formatMinutes } from "@/components/ponto/parseZKTeco";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, Clock, Timer, FileBarChart2 } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, Eye, Clock, Timer, FileBarChart2, Plus, X, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,6 +12,10 @@ import { format, getDaysInMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import PontoAcaoModal from "@/components/ponto/PontoAcaoModal";
 import StatusBadge from "@/components/StatusBadge";
+import EscalaForm from "@/components/ponto/EscalaForm";
+import VincularEscalaFuncionarioModal from "@/components/ponto/VincularEscalaFuncionarioModal";
+import LancamentoBancoHorasModal from "@/components/ponto/LancamentoBancoHorasModal";
+import CalendarioPonto from "@/components/ponto/CalendarioPonto";
 
 const STATUS_META = {
   ok:         { label: 'OK',         cls: 'bg-green-100 text-green-700' },
@@ -53,6 +57,12 @@ export default function Ponto() {
 
   // Modal
   const [acaoModal, setAcaoModal] = useState(null);
+  const [escalaModal, setEscalaModal] = useState(null);
+  const [vincularModal, setVincularModal] = useState(null);
+  const [bancoModal, setBancoModal] = useState(null);
+  const [bancoHoras, setBancoHoras] = useState([]);
+  const [loadingBanco, setLoadingBanco] = useState(false);
+  const [funcBancoFilter, setFuncBancoFilter] = useState('todos');
 
   const loadBase = useCallback(async () => {
     const [funcs, esc, funEsc, imps] = await Promise.all([
@@ -85,6 +95,25 @@ export default function Ponto() {
   }, [selectedMonth]);
 
   useEffect(() => { loadRegistros(); }, [loadRegistros]);
+
+  const loadBancoHoras = useCallback(async () => {
+    setLoadingBanco(true);
+    const bh = await base44.entities.BancoHoras.list('-data', 500);
+    setBancoHoras(bh);
+    setLoadingBanco(false);
+  }, []);
+
+  useEffect(() => { if (tab === 'banco_horas') loadBancoHoras(); }, [tab, loadBancoHoras]);
+
+  const saveEscala = async (formData) => {
+    if (escalaModal?.escala) {
+      await base44.entities.EscalaTrabalho.update(escalaModal.escala.id, formData);
+    } else {
+      await base44.entities.EscalaTrabalho.create(formData);
+    }
+    await loadBase();
+    setEscalaModal(null);
+  };
 
   // ─── Importação ──────────────────────────────────────
   const processFile = (f) => {
@@ -249,31 +278,42 @@ export default function Ponto() {
             </h1>
             <p className="text-slate-500 text-xs mt-0.5">Registro de batidas e ocorrências por funcionário</p>
           </div>
-          <div className="flex gap-1 md:gap-2 flex-wrap">
-            <Button
-              variant="outline"
-              onClick={() => navigate(createPageUrl('EspelhoPonto'))}
-              className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-            >
-              <FileBarChart2 className="w-3 h-3 md:w-4 md:h-4" />
-              <span className="hidden sm:inline">Espelho de Ponto</span>
-            </Button>
-            <Button
-              onClick={() => setTab(tab === 'importar' ? 'registros' : 'importar')}
-              className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-              style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
-            >
-              <Upload className="w-3 h-3 md:w-4 md:h-4" />
-              <span className="hidden sm:inline">{tab === 'importar' ? 'Ver Registros' : 'Importar Arquivo'}</span>
-              <span className="sm:hidden">{tab === 'importar' ? 'Registros' : 'Importar'}</span>
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            onClick={() => navigate(createPageUrl('EspelhoPonto'))}
+            className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 flex-shrink-0"
+          >
+            <FileBarChart2 className="w-3 h-3 md:w-4 md:h-4" />
+            <span className="hidden sm:inline">Espelho de Ponto</span>
+          </Button>
         </div>
+      </div>
+
+      {/* Tab Bar */}
+      <div className="flex gap-0.5 mb-3 bg-white border border-slate-200 rounded-xl p-1 overflow-x-auto">
+        {[
+          { key: 'registros', label: 'Registros', icon: Eye },
+          { key: 'importar', label: 'Importar', icon: Upload },
+          { key: 'escalas', label: 'Escalas', icon: Clock },
+          { key: 'banco_horas', label: 'Banco Horas', icon: Timer },
+          { key: 'calendario', label: 'Calendário', icon: CalendarDays },
+        ].map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] md:text-xs font-semibold whitespace-nowrap transition-all flex-shrink-0 ${
+              tab === key ? 'bg-[#0B1629] text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            <Icon className="w-3.5 h-3.5" />
+            <span>{label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Stat cards */}
       <div className="max-w-[1800px] mx-auto px-0 md:px-0">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
+        {tab === 'registros' && <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
           <div className="kpi-bar kpi-bar-blue bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
             <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Registros</p>
             <p className="text-sm md:text-2xl font-extrabold text-slate-900 font-mono mt-0.5">{rows.length}</p>
@@ -290,7 +330,7 @@ export default function Ponto() {
             <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tratados</p>
             <p className="text-sm md:text-2xl font-extrabold text-purple-600 font-mono mt-0.5">{totalTratados}</p>
           </div>
-        </div>
+        </div>}
 
         {/* ─── Importar ─────────────────────────────────── */}
         {tab === 'importar' && (
@@ -511,7 +551,220 @@ export default function Ponto() {
           </div>
           )}
 
-          {/* Modal de ação */}
+          {/* ─── Escalas ─────────────────────────────────── */}
+        {tab === 'escalas' && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-700">Escalas de Trabalho</h3>
+              <Button onClick={() => setEscalaModal({ escala: null })} className="gap-1.5 text-xs h-8" style={{background:'#1A56DB',color:'#fff',border:'none',borderRadius:'8px',fontWeight:'600'}}>
+                <Plus className="w-3.5 h-3.5" /> Nova Escala
+              </Button>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-3 text-left">Nome</th>
+                      <th className="px-4 py-3 text-center">Entrada → Saída</th>
+                      <th className="px-4 py-3 text-center">Carga/dia</th>
+                      <th className="px-4 py-3 text-center">Status</th>
+                      <th className="px-4 py-3 text-center">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {escalas.length === 0 ? (
+                      <tr><td colSpan={5} className="py-10 text-center text-slate-400 text-sm">Nenhuma escala cadastrada. Clique em "Nova Escala" para começar.</td></tr>
+                    ) : escalas.map((e, i) => (
+                      <tr key={e.id} className={`border-b border-slate-100 last:border-0 ${i%2===0?'bg-white':'bg-slate-50/50'} hover:bg-blue-50/20`}>
+                        <td className="px-4 py-3 font-semibold text-slate-800">
+                          {e.nome}
+                          {e.escala_padrao && <span className="ml-2 text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold">Padrão</span>}
+                        </td>
+                        <td className="px-4 py-3 text-center font-mono text-sm">{e.hora_entrada_prevista} → {e.hora_saida_prevista}</td>
+                        <td className="px-4 py-3 text-center font-mono text-sm">{Math.floor((e.carga_diaria_minutos||0)/60)}h{(e.carga_diaria_minutos||0)%60>0?`${(e.carga_diaria_minutos||0)%60}m`:''}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`badge-status ${e.ativo!==false?'badge-success':'badge-error'}`}>{e.ativo!==false?'Ativa':'Inativa'}</span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <button onClick={() => setEscalaModal({ escala: e })} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition-colors" title="Editar">
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+                <p className="text-sm font-semibold text-slate-700">Escala por Funcionário</p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-3 text-left">Funcionário</th>
+                      <th className="px-4 py-3 text-center">Escala Atual</th>
+                      <th className="px-4 py-3 text-center">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {funcionarios.length === 0 ? (
+                      <tr><td colSpan={3} className="py-6 text-center text-slate-400 text-sm">Nenhum funcionário ativo</td></tr>
+                    ) : funcionarios.map((func, i) => {
+                      const fe = [...funEscalas].filter(fe => fe.funcionario_id === func.id).sort((a, b) => (b.vigencia_inicio||'').localeCompare(a.vigencia_inicio||''))[0];
+                      const escalaAtual = fe ? escalas.find(e => e.id === fe.escala_id) : null;
+                      return (
+                        <tr key={func.id} className={`border-b border-slate-100 last:border-0 ${i%2===0?'bg-white':'bg-slate-50/50'} hover:bg-blue-50/20`}>
+                          <td className="px-4 py-3 font-semibold text-slate-800">{func.nome}</td>
+                          <td className="px-4 py-3 text-center text-sm">
+                            {escalaAtual ? <span className="font-medium text-slate-700">{escalaAtual.nome}</span> : <span className="text-slate-400 italic text-xs">Sem escala vinculada</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <button onClick={() => setVincularModal(func)} className="text-xs px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold transition-colors">
+                              Gerenciar
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {escalaModal && (
+              <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+                <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col">
+                  <div className="bg-[#0B1629] text-white px-5 py-4 flex items-center justify-between flex-shrink-0">
+                    <p className="font-bold">{escalaModal.escala ? 'Editar Escala' : 'Nova Escala'}</p>
+                    <button onClick={() => setEscalaModal(null)} className="p-1 hover:bg-white/10 rounded-lg"><X className="w-5 h-5" /></button>
+                  </div>
+                  <div className="p-5 overflow-y-auto flex-1">
+                    <EscalaForm escala={escalaModal.escala} onSave={saveEscala} onCancel={() => setEscalaModal(null)} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ─── Banco de Horas ───────────────────────────── */}
+        {tab === 'banco_horas' && (
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-700">Banco de Horas</h3>
+              <div className="flex gap-2 flex-wrap">
+                <Select value={funcBancoFilter} onValueChange={setFuncBancoFilter}>
+                  <SelectTrigger className="w-52 text-xs h-8">
+                    <SelectValue placeholder="Todos os funcionários" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="todos">Todos os funcionários</SelectItem>
+                    {funcionarios.map(f => <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                {funcBancoFilter !== 'todos' && (
+                  <Button onClick={() => setBancoModal(funcionarios.find(f => f.id === funcBancoFilter))} className="gap-1.5 text-xs h-8" style={{background:'#1A56DB',color:'#fff',border:'none',borderRadius:'8px',fontWeight:'600'}}>
+                    <Plus className="w-3.5 h-3.5" /> Novo Lançamento
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                {loadingBanco ? (
+                  <div className="py-10 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-slate-400" /></div>
+                ) : (
+                  <table className="min-w-full">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-3 text-left">Funcionário</th>
+                        <th className="px-4 py-3 text-center">Data</th>
+                        <th className="px-4 py-3 text-center">Tipo</th>
+                        <th className="px-4 py-3 text-center">Origem</th>
+                        <th className="px-4 py-3 text-center">Saldo</th>
+                        <th className="px-4 py-3 text-left">Observação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bancoHoras.filter(b => funcBancoFilter === 'todos' || b.funcionario_id === funcBancoFilter).length === 0 ? (
+                        <tr><td colSpan={6} className="py-10 text-center text-slate-400 text-sm">Nenhum lançamento encontrado</td></tr>
+                      ) : bancoHoras.filter(b => funcBancoFilter === 'todos' || b.funcionario_id === funcBancoFilter).map((b, i) => {
+                        const func = funcionarios.find(f => f.id === b.funcionario_id);
+                        return (
+                          <tr key={b.id} className={`border-b border-slate-100 last:border-0 text-sm ${i%2===0?'bg-white':'bg-slate-50/50'}`}>
+                            <td className="px-4 py-3 font-semibold text-slate-800">{func?.nome || '—'}</td>
+                            <td className="px-4 py-3 text-center font-mono text-slate-600">{b.data ? formatData(b.data) : '—'}</td>
+                            <td className="px-4 py-3 text-center">
+                              <span className={`badge-status ${b.tipo==='credito'?'badge-success':'badge-error'}`}>{b.tipo==='credito'?'Crédito':'Débito'}</span>
+                            </td>
+                            <td className="px-4 py-3 text-center text-slate-600 capitalize">{b.origem}</td>
+                            <td className={`px-4 py-3 text-center font-mono font-bold ${b.tipo==='credito'?'text-blue-600':'text-red-500'}`}>
+                              {b.tipo==='debito'?'-':'+'}{formatMinutes(b.minutos||0)}
+                            </td>
+                            <td className="px-4 py-3 text-slate-600 max-w-[180px] truncate">{b.observacao || '—'}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Calendário ───────────────────────────────── */}
+        {tab === 'calendario' && (
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-700">Calendário de Ponto</h3>
+              <Select value={selectedFunc} onValueChange={setSelectedFunc}>
+                <SelectTrigger className="sm:w-56 text-xs h-8">
+                  <SelectValue placeholder="Todos os funcionários" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os funcionários</SelectItem>
+                  {funcionarios.map(f => <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <CalendarioPonto
+              registros={registrosPonto}
+              funcionariosEscalas={funEscalas}
+              ocorrencias={[]}
+              funcionarioSelecionado={selectedFunc}
+              onDiaClicado={null}
+            />
+          </div>
+        )}
+
+        {/* Modal Vincular Escala */}
+        {vincularModal && (
+          <VincularEscalaFuncionarioModal
+            isOpen={!!vincularModal}
+            funcionario={vincularModal}
+            onClose={() => setVincularModal(null)}
+            onVinculoFeito={() => { loadBase(); setVincularModal(null); }}
+          />
+        )}
+
+        {/* Modal Banco de Horas */}
+        {bancoModal && (
+          <LancamentoBancoHorasModal
+            isOpen={!!bancoModal}
+            funcionario={bancoModal}
+            onClose={() => setBancoModal(null)}
+            onLancamentoFeito={() => { loadBancoHoras(); setBancoModal(null); }}
+          />
+        )}
+
+        {/* Modal de ação */}
         {acaoModal && (
           <PontoAcaoModal
             apuracao={acaoModal.apuracao}
