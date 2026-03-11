@@ -429,7 +429,7 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
         <DialogContent className="max-w-4xl w-[calc(100vw-1rem)] md:w-auto max-h-[92vh] md:max-h-[88vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl border-0">
           <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
             {/* Header padronizado */}
-            <div className="flex items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 bg-slate-800 rounded-t-xl flex-shrink-0">
+            <div className="flex items-center justify-between gap-3 px-4 md:px-6 py-3 md:py-4 rounded-t-xl flex-shrink-0" style={{background:"#0B1629"}}>
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-white" />
