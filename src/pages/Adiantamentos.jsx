@@ -31,6 +31,22 @@ import RelatorioAdiantamentosFiltersModal from "@/components/adiantamentos/Relat
 import StandardDialog from "@/components/ui/StandardDialog";
 import ProgressModal, { useProgressModal } from '@/components/ui/ProgressModal';
 
+function StatusBadgeAdiantamento({ status }) {
+  const labels = { pendente: 'Pendente', aprovado: 'Aprovado', pago: 'Pago', cancelado: 'Cancelado' };
+  const cfg = {
+    pendente:  { bg: '#FFFBEB', color: '#92400E', dot: '#D97706' },
+    aprovado:  { bg: '#EFF6FF', color: '#1E40AF', dot: '#1A56DB' },
+    pago:      { bg: '#ECFDF5', color: '#065F46', dot: '#059669' },
+    cancelado: { bg: '#FEF2F2', color: '#991B1B', dot: '#DC2626' },
+  }[status] || { bg: '#F9FAFB', color: '#6B7280', dot: '#9CA3AF' };
+  return (
+    <span style={{ display:'inline-flex', alignItems:'center', gap:'5px', padding:'3px 10px', borderRadius:'20px', fontSize:'11px', fontWeight:'700', background: cfg.bg, color: cfg.color }}>
+      <span style={{ width:'6px', height:'6px', borderRadius:'50%', background: cfg.dot, display:'inline-block', flexShrink:0 }} />
+      {labels[status] || status}
+    </span>
+  );
+}
+
 export default function AdiantamentosPage() {
   const [itens, setItens] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
@@ -622,19 +638,19 @@ export default function AdiantamentosPage() {
         <div className="max-w-[1800px] mx-auto">
           {/* KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-3 md:mb-4">
-            <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4" style={{borderTop:'3px solid #1A56DB'}}>
               <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total</p>
               <p className="text-base md:text-xl font-extrabold text-slate-900 font-mono">{formatCurrency(totalFiltrado)}</p>
             </div>
-            <div className="kpi-bar kpi-bar-yellow bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <div className="kpi-bar kpi-bar-yellow bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4" style={{borderTop:'3px solid #D97706'}}>
               <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pendentes</p>
               <p className="text-base md:text-xl font-extrabold text-amber-600 font-mono">{formatCurrency(totais.pendente)}</p>
             </div>
-            <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4" style={{borderTop:'3px solid #0EA5E9'}}>
               <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Aprovados</p>
               <p className="text-base md:text-xl font-extrabold text-sky-600 font-mono">{formatCurrency(totais.aprovado)}</p>
             </div>
-            <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+            <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4" style={{borderTop:'3px solid #059669'}}>
               <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pagos</p>
               <p className="text-base md:text-xl font-extrabold text-emerald-600 font-mono">{formatCurrency(totais.pago)}</p>
             </div>
@@ -810,9 +826,7 @@ export default function AdiantamentosPage() {
                           </TableCell>
                           <TableCell className="max-w-[280px] truncate text-slate-900">{a.motivo || "-"}</TableCell>
                           <TableCell>
-                            <Badge className={statusColors[a.status] || 'bg-gray-100 text-gray-800'}>
-                              {statusLabels[a.status] || a.status}
-                            </Badge>
+                            <StatusBadgeAdiantamento status={a.status} />
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center justify-center gap-2">
@@ -895,9 +909,7 @@ export default function AdiantamentosPage() {
                           <p className="text-[9px] text-slate-500">{formatDate(a.data_adiantamento)}</p>
                         </div>
                       </div>
-                      <Badge className={`${statusColors[a.status] || 'bg-gray-100 text-gray-800'} text-[8px] px-1 py-0.5`}>
-                        {statusLabels[a.status] || a.status}
-                      </Badge>
+                      <StatusBadgeAdiantamento status={a.status} />
                     </div>
                     
                     <div className="grid grid-cols-2 gap-0.5 text-[9px] mb-1">

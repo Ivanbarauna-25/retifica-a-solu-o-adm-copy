@@ -189,15 +189,15 @@ export default function EspelhoPonto() {
             {/* Tabela espelho */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
               {/* Sub-header da tabela */}
-              <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center justify-between" style={{background:'#0B1629', padding:'14px 18px'}}>
                 <div>
-                  <span className="font-bold text-slate-900 text-sm">{funcionario?.nome}</span>
-                  <span className="text-slate-400 mx-2">—</span>
-                  <span className="text-slate-600 text-sm capitalize">
+                  <span style={{fontWeight:'700', color:'#FFFFFF', fontSize:'15px'}}>{funcionario?.nome}</span>
+                  <span style={{color:'rgba(255,255,255,0.35)', margin:'0 8px'}}>—</span>
+                  <span style={{color:'rgba(255,255,255,0.65)', fontSize:'14px'}} className="capitalize">
                     {format(new Date(year, month - 1, 1), 'MMMM yyyy', { locale: ptBR })}
                   </span>
                 </div>
-                <span className="text-xs text-slate-400 hidden sm:block">{daysInMonth} dias no mês</span>
+                <span style={{fontSize:'11px', color:'rgba(255,255,255,0.4)'}} className="hidden sm:block">{daysInMonth} dias no mês</span>
               </div>
 
               <div className="overflow-x-auto">

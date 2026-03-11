@@ -605,9 +605,9 @@ function FolhaPagamentoContent() {
               ({selectedForBaixa.length})
             </Button>
             <Button
-              variant="outline"
               onClick={openCancelModal}
-              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-red-200 text-red-600 hover:bg-red-50 hidden sm:flex"
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 hidden sm:flex"
+              style={{background:'#DC2626',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
             >
               <Ban className="w-3.5 h-3.5 md:w-4 md:h-4" />
               <span className="hidden md:inline">Cancelar</span>

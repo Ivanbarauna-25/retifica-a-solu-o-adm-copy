@@ -92,6 +92,22 @@ function safeStr(v) {
   return String(v);
 }
 
+function StatusBadgeFuncionario({ status }) {
+  const cfg = {
+    ativo:       { bg: '#ECFDF5', color: '#065F46', dot: '#059669' },
+    experiencia: { bg: '#FFFBEB', color: '#92400E', dot: '#D97706' },
+    ferias:      { bg: '#EFF6FF', color: '#1E40AF', dot: '#1A56DB' },
+    afastado:    { bg: '#FFFBEB', color: '#92400E', dot: '#D97706' },
+    demitido:    { bg: '#FEF2F2', color: '#991B1B', dot: '#DC2626' },
+  }[status] || { bg: '#F9FAFB', color: '#6B7280', dot: '#9CA3AF' };
+  return (
+    <span style={{ display:'inline-flex', alignItems:'center', gap:'5px', padding:'3px 10px', borderRadius:'20px', fontSize:'11px', fontWeight:'700', background: cfg.bg, color: cfg.color }}>
+      <span style={{ width:'6px', height:'6px', borderRadius:'50%', background: cfg.dot, display:'inline-block', flexShrink:0 }} />
+      {statusLabels[status] || status}
+    </span>
+  );
+}
+
 export default function FuncionariosPage() {
   const { toast } = useToast();
 
@@ -606,14 +622,7 @@ export default function FuncionariosPage() {
                           </TableCell>
 
                           <TableCell>
-                            <Badge
-                              className={
-                                statusColors[funcionario.status] ||
-                                "bg-gray-100 text-gray-800 border-gray-200"
-                              }
-                            >
-                              {statusLabels[funcionario.status] || funcionario.status}
-                            </Badge>
+                            <StatusBadgeFuncionario status={funcionario.status} />
                           </TableCell>
 
                           <TableCell className="text-right">
@@ -770,14 +779,7 @@ export default function FuncionariosPage() {
                         </div>
 
                         <div className="mt-3 flex flex-wrap gap-2">
-                          <Badge
-                            className={
-                              statusColors[funcionario.status] ||
-                              "bg-gray-100 text-gray-800 border-gray-200"
-                            }
-                          >
-                            {statusLabels[funcionario.status] || funcionario.status}
-                          </Badge>
+                          <StatusBadgeFuncionario status={funcionario.status} />
 
                           <Badge variant="secondary" className="text-xs">
                             {getCargoNome(funcionario.cargo_id)}
