@@ -656,8 +656,6 @@ export default function FolhaPagamentoLoteForm({
                 </div>
               </div>
             </TabsContent>
-          </Tabs>
-
           </div>
         </Tabs>
 
