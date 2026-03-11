@@ -681,8 +681,45 @@ function Folha13Content() {
             </Card>
           )}
 
-          {/* Tabela */}
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          {/* Mobile Cards */}
+          <div className="md:hidden space-y-2 mb-3">
+            {isLoading ? (
+              <div className="py-8 text-center text-slate-500 text-sm">Carregando...</div>
+            ) : folhasFiltradas.length === 0 ? (
+              <div className="py-8 text-center text-slate-500 text-sm">Nenhum lançamento encontrado</div>
+            ) : folhasFiltradas.map((folha) => (
+              <div key={folha?.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      checked={selectedForBaixa.includes(folha.id)}
+                      onCheckedChange={(checked) => handleSelectForBaixa(folha.id, checked)}
+                      disabled={folha.status === 'pago' || folha.status === 'cancelado'}
+                      className="w-3.5 h-3.5"
+                    />
+                    <div>
+                      <p className="font-semibold text-slate-900 text-sm">{getFuncionarioNome(folha?.funcionario_id)}</p>
+                      <p className="text-xs text-slate-500">{folha?.ano_referencia} · {folha?.avos_editados ?? folha?.avos_calculados}/12 avos</p>
+                    </div>
+                  </div>
+                  {statusLabels[folha?.status]}
+                </div>
+                <div className="grid grid-cols-2 gap-1 text-xs mb-2">
+                  <div><span className="text-slate-500">Tipo:</span> <span className="text-slate-700">{{'1_parcela':'1ª Parcela','2_parcela':'2ª Parcela','parcela_unica':'Parcela Única'}[folha?.tipo_parcela]}</span></div>
+                  <div><span className="text-slate-500">Líquido:</span> <span className="font-bold text-slate-900">{formatCurrency(folha?.valor_liquido)}</span></div>
+                </div>
+                <div className="flex justify-end gap-1 pt-2 border-t border-slate-100">
+                  <Button variant="ghost" size="sm" onClick={() => handleViewFolha13(folha)} className="h-7 w-7 p-0 text-blue-600 hover:bg-blue-50"><Eye className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => openForm(folha)} disabled={folha.status === 'pago'} className="h-7 w-7 p-0 text-amber-600 hover:bg-amber-50"><Edit className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleGerarMovimentacaoSingle(folha)} disabled={folha.status === 'pago' || folha.status === 'cancelado'} className="h-7 w-7 p-0 text-slate-600 hover:bg-slate-100"><ArrowRightLeft className="h-3.5 w-3.5" /></Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(folha?.id)} className="h-7 w-7 p-0 text-red-500 hover:bg-red-50"><Trash2 className="h-3.5 w-3.5" /></Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tabela Desktop */}
+          <div className="hidden md:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
