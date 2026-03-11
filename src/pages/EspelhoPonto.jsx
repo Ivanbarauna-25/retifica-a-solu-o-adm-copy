@@ -3,14 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { formatMinutes } from "@/components/ponto/parseZKTeco";
 import { getDaysInMonth, getDay, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Printer, ArrowLeft, FileText } from "lucide-react";
+import { Printer, ArrowLeft, Loader2 } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 
-// Agrupa registros de ponto por data e retorna até 4 batidas ordenadas
 function getBatidasDoDia(registros, dateStr) {
   return registros
     .filter(r => r.data === dateStr)
@@ -85,38 +84,44 @@ export default function EspelhoPonto() {
         @media print {
           .no-print { display: none !important; }
           body { background: white !important; }
-          .page-inner { padding: 0 !important; }
         }
       `}</style>
 
-      <div className="min-h-screen bg-slate-50 space-y-3">
-        {/* Header limpo */}
-        <div className="mb-2 no-print">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
-            <div className="flex items-center gap-2 md:gap-3">
-              <Link to={createPageUrl('Ponto')}>
-                <Button variant="outline" size="icon" className="flex-shrink-0 h-8 w-8">
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Espelho de Ponto</h1>
-                <p className="text-slate-500 text-xs mt-0.5">Visualização mensal por funcionário</p>
-              </div>
+      <div className="min-h-screen bg-slate-50 p-4 md:p-6 space-y-4">
+
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 no-print">
+          <div className="flex items-center gap-3">
+            <Link to={createPageUrl('Ponto')}>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 flex-shrink-0 border-slate-200 text-slate-700"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            </Link>
+            <div>
+              <h1 style={{ fontSize: '22px', fontWeight: '800', color: '#111827', letterSpacing: '-0.5px', margin: '0', lineHeight: '1.2' }}>
+                Espelho de Ponto
+              </h1>
+              <p style={{ fontSize: '13px', color: '#6B7280', margin: '4px 0 0 0' }}>
+                Visualização mensal detalhada por funcionário
+              </p>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => window.print()}
-              className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 self-start sm:self-auto"
-            >
-              <Printer className="w-3 h-3 md:w-4 md:h-4" />
-              <span>Imprimir</span>
-            </Button>
           </div>
+          <Button
+            variant="outline"
+            onClick={() => window.print()}
+            className="gap-2 text-sm border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 self-start sm:self-auto"
+          >
+            <Printer className="w-4 h-4" />
+            Imprimir
+          </Button>
         </div>
 
         {/* Filtros */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 no-print mx-1 md:mx-0">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 no-print">
           <div className="flex flex-col sm:flex-row gap-3">
             <Select value={selectedFunc} onValueChange={setSelectedFunc}>
               <SelectTrigger className="sm:w-72">
@@ -143,52 +148,72 @@ export default function EspelhoPonto() {
           </div>
         </div>
 
-        {!selectedFunc ? (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center text-slate-500">
-            Selecione um funcionário para visualizar o espelho de ponto
+        {/* Estado vazio */}
+        {!selectedFunc && (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-16 text-center">
+            <p className="text-slate-400 text-sm">Selecione um funcionário para visualizar o espelho de ponto</p>
           </div>
-        ) : loading ? (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 text-center text-slate-500">
-            Carregando...
+        )}
+
+        {/* Loading */}
+        {selectedFunc && loading && (
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-12 flex items-center justify-center gap-3">
+            <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
+            <span className="text-slate-500 text-sm">Carregando registros...</span>
           </div>
-        ) : (
+        )}
+
+        {/* Conteúdo */}
+        {selectedFunc && !loading && (
           <>
-            {/* Cards resumo */}
+            {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 no-print">
-              {[
-                { label: 'Dias Trabalhados', value: diasTrabalhados, color: 'text-slate-900', bar: 'kpi-bar-blue' },
-                { label: 'Total Trabalhado', value: formatMinutes(totalTrabalhado), color: 'text-emerald-600', bar: 'kpi-bar-green' },
-                { label: 'Total Faltas', value: formatMinutes(totalFaltas), color: 'text-red-600', bar: 'kpi-bar-red' },
-                { label: 'Horas Extras', value: formatMinutes(totalExtras), color: 'text-blue-700', bar: 'kpi-bar-sky' },
-              ].map(c => (
-                <div key={c.label} className={`kpi-bar ${c.bar} bg-white rounded-xl border border-slate-200 shadow-sm p-4`}>
-                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{c.label}</p>
-                  <p className={`text-xl font-extrabold mt-1 font-mono ${c.color}`}>{c.value}</p>
-                </div>
-              ))}
+              <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Dias Trabalhados</p>
+                <p className="text-2xl font-extrabold text-slate-900 font-mono">{diasTrabalhados}</p>
+              </div>
+              <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Trabalhado</p>
+                <p className="text-2xl font-extrabold text-emerald-600 font-mono">{formatMinutes(totalTrabalhado)}</p>
+              </div>
+              <div className="kpi-bar kpi-bar-red bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Faltas</p>
+                <p className="text-2xl font-extrabold text-red-600 font-mono">{formatMinutes(totalFaltas)}</p>
+              </div>
+              <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Horas Extras</p>
+                <p className="text-2xl font-extrabold text-sky-600 font-mono">{formatMinutes(totalExtras)}</p>
+              </div>
             </div>
 
             {/* Tabela espelho */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-slate-100">
-                <h2 className="font-semibold text-slate-800">
-                  {funcionario?.nome} — {format(new Date(year, month - 1, 1), 'MMMM yyyy', { locale: ptBR })}
-                </h2>
+              {/* Sub-header da tabela */}
+              <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-slate-900 text-sm">{funcionario?.nome}</span>
+                  <span className="text-slate-400 mx-2">—</span>
+                  <span className="text-slate-600 text-sm capitalize">
+                    {format(new Date(year, month - 1, 1), 'MMMM yyyy', { locale: ptBR })}
+                  </span>
+                </div>
+                <span className="text-xs text-slate-400 hidden sm:block">{daysInMonth} dias no mês</span>
               </div>
+
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-800 text-white text-xs">
-                      <th className="px-3 py-2.5 text-left w-20">Data</th>
-                      <th className="px-3 py-2.5 text-left w-12">Dia</th>
-                      <th className="px-3 py-2.5 text-center">Batida 1</th>
-                      <th className="px-3 py-2.5 text-center">Batida 2</th>
-                      <th className="px-3 py-2.5 text-center">Batida 3</th>
-                      <th className="px-3 py-2.5 text-center">Batida 4</th>
-                      <th className="px-3 py-2.5 text-center">Total</th>
-                      <th className="px-3 py-2.5 text-center">H. Extra</th>
-                      <th className="px-3 py-2.5 text-center">Falta</th>
-                      <th className="px-3 py-2.5 text-center">Status</th>
+                    <tr style={{ background: '#0B1629' }} className="text-xs">
+                      <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Data</th>
+                      <th className="px-4 py-3 text-left font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Dia</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Batida 1</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Batida 2</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Batida 3</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Batida 4</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Total</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>H. Extra</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Falta</th>
+                      <th className="px-4 py-3 text-center font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.55)', letterSpacing: '0.1em', fontSize: '10.5px' }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -196,28 +221,34 @@ export default function EspelhoPonto() {
                       const isWeekend = dow === 0 || dow === 6;
                       const batidas = getBatidasDoDia(registros, dateStr);
                       return (
-                        <tr key={dateStr} className={isWeekend ? 'bg-blue-50/40' : 'bg-white hover:bg-slate-50'}>
-                          <td className="px-3 py-2 font-mono text-xs text-slate-600">
+                        <tr
+                          key={dateStr}
+                          className="border-b border-slate-100 last:border-0"
+                          style={{ background: isWeekend ? '#EFF6FF' : '#FFFFFF' }}
+                          onMouseEnter={e => { if (!isWeekend) e.currentTarget.style.background = '#F8FAFF'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = isWeekend ? '#EFF6FF' : '#FFFFFF'; }}
+                        >
+                          <td className="px-4 py-2.5 font-mono text-xs text-slate-600 whitespace-nowrap">
                             {String(day).padStart(2, '0')}/{String(month).padStart(2, '0')}
                           </td>
-                          <td className={`px-3 py-2 text-xs font-medium ${isWeekend ? 'text-blue-600' : 'text-slate-500'}`}>
+                          <td className={`px-4 py-2.5 text-xs font-semibold ${isWeekend ? 'text-blue-600' : 'text-slate-500'}`}>
                             {DIAS_SEMANA[dow]}
                           </td>
                           {[0, 1, 2, 3].map(i => (
-                            <td key={i} className="px-3 py-2 text-center font-mono text-xs text-slate-700">
-                              {batidas[i] ? batidas[i].hora?.substring(0, 5) : ''}
+                            <td key={i} className="px-4 py-2.5 text-center font-mono text-xs text-slate-700">
+                              {batidas[i] ? batidas[i].hora?.substring(0, 5) : <span className="text-slate-200">—</span>}
                             </td>
                           ))}
-                          <td className="px-3 py-2 text-center font-mono text-xs font-semibold text-slate-700">
-                            {apuracao ? formatMinutes(apuracao.total_trabalhado_min) : ''}
+                          <td className="px-4 py-2.5 text-center font-mono text-xs font-semibold text-slate-800">
+                            {apuracao ? formatMinutes(apuracao.total_trabalhado_min) : <span className="text-slate-200">—</span>}
                           </td>
-                          <td className="px-3 py-2 text-center font-mono text-xs text-blue-700 font-medium">
+                          <td className="px-4 py-2.5 text-center font-mono text-xs font-semibold text-sky-600">
                             {apuracao?.hora_extra_min > 0 ? formatMinutes(apuracao.hora_extra_min) : ''}
                           </td>
-                          <td className="px-3 py-2 text-center font-mono text-xs text-red-600 font-medium">
+                          <td className="px-4 py-2.5 text-center font-mono text-xs font-semibold text-red-600">
                             {apuracao?.falta_min > 0 ? formatMinutes(apuracao.falta_min) : ''}
                           </td>
-                          <td className="px-3 py-2 text-center">
+                          <td className="px-4 py-2.5 text-center">
                             {apuracao && (
                               <StatusBadge status={apuracao.status} label={STATUS_LABEL[apuracao.status] || apuracao.status} />
                             )}
@@ -227,15 +258,15 @@ export default function EspelhoPonto() {
                     })}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-slate-800 text-white text-sm font-bold">
-                      <td colSpan={6} className="px-3 py-3">
+                    <tr style={{ background: '#0B1629' }} className="text-sm font-bold">
+                      <td colSpan={6} className="px-4 py-3 text-white font-bold text-xs uppercase tracking-wider">
                         TOTAIS — {diasTrabalhados} dias trabalhados
                       </td>
-                      <td className="px-3 py-3 text-center font-mono">{formatMinutes(totalTrabalhado)}</td>
-                      <td className="px-3 py-3 text-center font-mono text-blue-300">{formatMinutes(totalExtras)}</td>
-                      <td className="px-3 py-3 text-center font-mono text-red-300">{formatMinutes(totalFaltas)}</td>
-                      <td className="px-3 py-3 text-center font-mono">
-                        <span className={saldoBH >= 0 ? 'text-green-300' : 'text-red-300'}>
+                      <td className="px-4 py-3 text-center font-mono text-white">{formatMinutes(totalTrabalhado)}</td>
+                      <td className="px-4 py-3 text-center font-mono" style={{ color: '#93c5fd' }}>{formatMinutes(totalExtras)}</td>
+                      <td className="px-4 py-3 text-center font-mono" style={{ color: '#fca5a5' }}>{formatMinutes(totalFaltas)}</td>
+                      <td className="px-4 py-3 text-center font-mono">
+                        <span style={{ color: saldoBH >= 0 ? '#86efac' : '#fca5a5' }}>
                           {saldoBH >= 0 ? '+' : ''}{formatMinutes(saldoBH)}
                         </span>
                       </td>
@@ -243,9 +274,10 @@ export default function EspelhoPonto() {
                   </tfoot>
                 </table>
               </div>
-              {/* Assinatura para impressão */}
-              <div className="hidden print:block p-6 mt-4 border-t border-slate-200">
-                <div className="grid grid-cols-2 gap-12 mt-8">
+
+              {/* Assinatura impressão */}
+              <div className="hidden print:block p-8 border-t border-slate-200">
+                <div className="grid grid-cols-2 gap-16 mt-10">
                   <div className="border-t border-slate-400 pt-2 text-center text-sm text-slate-600">
                     Assinatura do Funcionário
                   </div>
