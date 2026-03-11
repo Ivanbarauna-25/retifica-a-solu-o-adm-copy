@@ -374,44 +374,21 @@ export default function AdiantamentoLoteForm({
             </Tabs>
           </div>
 
-          <DialogFooter className="flex-shrink-0 flex flex-col sm:flex-row items-center justify-between gap-3 px-6 py-4 border-t border-slate-200 bg-white">
-            <div className="text-xs md:text-sm text-black flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
+            <div className="text-sm text-slate-600">
               {selectedIds.size > 0 && (
-                <>
-                  <DollarSign className="w-4 h-4 text-black" />
-                  <span>
-                    Total: <strong className="text-black text-sm md:text-base">{formatCurrency(totalPagamento)}</strong> para{' '}
-                    <strong>{selectedIds.size}</strong> funcionário(s)
-                  </span>
-                </>
+                <span>Total: <strong className="text-slate-800">{formatCurrency(totalPagamento)}</strong> · <strong>{selectedIds.size}</strong> funcionário(s)</span>
               )}
             </div>
-            <div className="flex gap-2 md:gap-3 w-full sm:w-auto">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onClose();
-                }}
-                className="bg-slate-800 text-gray-50 px-4 py-2 text-sm font-bold opacity-100 rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:text-accent-foreground h-10 border-2 border-slate-800 hover:bg-slate-50 gap-2"
-              >
-                <X className="w-4 h-4" /> Cancelar
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700 gap-1.5">
+                <X className="w-3.5 h-3.5" /> Cancelar
               </Button>
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleGenerate();
-                }}
-                className="bg-slate-800 text-gray-50 px-4 py-2 text-sm font-bold opacity-100 rounded-md inline-flex items-center justify-center ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:text-accent-foreground h-10 border-2 border-slate-800 hover:bg-slate-50 gap-2"
-              >
-                <Save className="w-4 h-4" /> Gerar Adiantamentos
+              <Button onClick={handleGenerate} disabled={selectedIds.size === 0} className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 text-white gap-1.5 disabled:opacity-50">
+                <Save className="w-3.5 h-3.5" /> Gerar Adiantamentos
               </Button>
             </div>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </>
