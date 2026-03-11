@@ -7,7 +7,7 @@ const Dialog = ({ open, onOpenChange, children }) => {
     <DialogContext.Provider value={{ open, onOpenChange }}>
       {open &&
       <>
-          <div className="bg-background/80 text-slate-950 fixed inset-0 z-50 backdrop-blur-sm"
+          <div className="bg-black/40 text-slate-950 fixed inset-0 z-50"
 
         onClick={() => onOpenChange?.(false)} />
 
