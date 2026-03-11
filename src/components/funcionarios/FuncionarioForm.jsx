@@ -380,9 +380,9 @@ export default function FuncionarioForm({ isOpen, funcionario, candidato, onSave
   };
 
   const SectionTitle = ({ children, icon: Icon }) =>
-    <div className="flex items-center gap-2 md:gap-3 bg-slate-800 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg mb-3 md:mb-4 mt-4 md:mt-6 first:mt-0 shadow-sm">
-      {Icon && <Icon className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />}
-      <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider">{children}</h3>
+    <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 mb-3 md:mb-4 mt-4 md:mt-5 first:mt-0">
+      {Icon && <Icon className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />}
+      <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{children}</h3>
     </div>;
 
   const RequiredLabel = ({ children, htmlFor }) =>

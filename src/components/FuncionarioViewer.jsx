@@ -1,35 +1,55 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { base44 } from "@/api/base44Client";
 import {
-  User,
-  Briefcase,
-  MapPin,
-  Phone,
-  Mail,
-  Calendar,
-  CreditCard,
-  FileText,
-  Edit,
-  Building2,
-  Users,
-  Banknote,
-  AlertCircle,
-  Printer,
-  HardHat,
-  History,
-  Clock,
-  Fingerprint
+  User, Briefcase, MapPin, Phone, Mail, Calendar, CreditCard,
+  FileText, Edit, Building2, Users, Banknote, AlertCircle,
+  Printer, HardHat, History, Clock, Fingerprint, X, UserMinus, Settings
 } from "lucide-react";
 import EntregaEPIModal from "@/components/epi/EntregaEPIModal";
 import HistoricoEPIModal from "@/components/epi/HistoricoEPIModal";
 import VincularEscalaFuncionarioModal from "@/components/ponto/VincularEscalaFuncionarioModal";
 import { formatCurrency, formatDate } from "@/components/formatters";
 
-export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit, onUpdated }) {
+const statusMap = {
+  ativo:       { label: "Ativo",          dot: "bg-emerald-500" },
+  experiencia: { label: "Em Experiência", dot: "bg-amber-500"   },
+  ferias:      { label: "Em Férias",      dot: "bg-blue-500"    },
+  afastado:    { label: "Afastado",       dot: "bg-orange-500"  },
+  demitido:    { label: "Demitido",       dot: "bg-red-500"     },
+};
+
+const regimeMap = {
+  clt: "CLT", pj: "PJ", estagio: "Estágio",
+  aprendiz: "Aprendiz", temporario: "Temporário", terceirizado: "Terceirizado",
+};
+
+const StatusBadge = ({ label, dot }) => (
+  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-700">
+    <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
+    {label}
+  </span>
+);
+
+const SectionHeader = ({ icon: Icon, title }) => (
+  <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 mb-4">
+    {Icon && <Icon className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />}
+    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{title}</span>
+  </div>
+);
+
+const InfoItem = ({ label, value, highlight }) => (
+  <div>
+    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">{label}</p>
+    <p className={`text-sm font-medium break-words ${highlight ? "text-emerald-600 font-bold" : "text-slate-800"}`}>
+      {value || "—"}
+    </p>
+  </div>
+);
+
+export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit, onUpdated, onDemitir }) {
   const [cargo, setCargo] = useState(null);
   const [departamento, setDepartamento] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,316 +58,314 @@ export default function FuncionarioViewer({ isOpen, funcionario, onClose, onEdit
   const [showVincularEscala, setShowVincularEscala] = useState(false);
 
   useEffect(() => {
-    const fetchRelatedData = async () => {
-      if (!funcionario) return;
-
-      setIsLoading(true);
-      try {
-        const [cargoData, departamentoData] = await Promise.all([
-          funcionario.cargo_id
-            ? base44.entities.Cargo.filter({ id: funcionario.cargo_id }).then((data) => data?.[0] || null)
-            : Promise.resolve(null),
-          funcionario.departamento_id
-            ? base44.entities.Departamento.filter({ id: funcionario.departamento_id }).then((data) => data?.[0] || null)
-            : Promise.resolve(null)
-        ]);
-
-        setCargo(cargoData);
-        setDepartamento(departamentoData);
-      } catch (error) {
-        console.error("Erro ao carregar dados relacionados:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (isOpen && funcionario) fetchRelatedData();
+    if (!isOpen || !funcionario) return;
+    setIsLoading(true);
+    Promise.all([
+      funcionario.cargo_id
+        ? base44.entities.Cargo.filter({ id: funcionario.cargo_id }).then(d => d?.[0] || null)
+        : Promise.resolve(null),
+      funcionario.departamento_id
+        ? base44.entities.Departamento.filter({ id: funcionario.departamento_id }).then(d => d?.[0] || null)
+        : Promise.resolve(null),
+    ]).then(([c, d]) => { setCargo(c); setDepartamento(d); })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
   }, [isOpen, funcionario]);
 
   if (!funcionario) return null;
 
   const handlePrint = () => {
-    if (!funcionario?.id) return;
-    const url = `/FichaFuncionario?id=${funcionario.id}`;
-    window.open(url, "_blank");
+    if (funcionario?.id) window.open(`/FichaFuncionario?id=${funcionario.id}`, "_blank");
   };
 
-  const getStatusConfig = (status) => {
-    const configs = {
-      ativo: { label: "Ativo", className: "bg-emerald-100 text-emerald-700 border-emerald-300" },
-      experiencia: { label: "Em Experiência", className: "bg-amber-100 text-amber-700 border-amber-300" },
-      ferias: { label: "Em Férias", className: "bg-blue-100 text-blue-700 border-blue-300" },
-      afastado: { label: "Afastado", className: "bg-orange-100 text-orange-700 border-orange-300" },
-      demitido: { label: "Demitido", className: "bg-red-100 text-red-700 border-red-300" }
-    };
-    return configs[status] || configs.ativo;
-  };
-
-  const getRegimeLabel = (regime) => {
-    const regimes = {
-      clt: "CLT",
-      pj: "PJ",
-      estagio: "Estágio",
-      aprendiz: "Aprendiz",
-      temporario: "Temporário",
-      terceirizado: "Terceirizado"
-    };
-    return regimes[regime] || regime;
-  };
-
-  const statusConfig = getStatusConfig(funcionario.status);
-
-  const InfoSection = ({ title, icon: Icon, children }) => (
-    <Card className="border-slate-200">
-      <CardContent className="p-3 md:p-5">
-        <div className="flex items-center gap-2 mb-3 md:mb-4">
-          <div className="p-1.5 md:p-2 bg-slate-100 rounded-lg">
-            <Icon className="w-4 h-4 md:w-5 md:h-5 text-slate-700" />
-          </div>
-          <h3 className="font-semibold text-slate-900 text-sm md:text-base">{title}</h3>
-        </div>
-        <div className="space-y-2 md:space-y-3">{children}</div>
-      </CardContent>
-    </Card>
-  );
-
-  const InfoItem = ({ label, value, icon: Icon }) => (
-    <div className="flex items-start gap-2 md:gap-3">
-      {Icon && <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-400 mt-0.5 flex-shrink-0" />}
-      <div className="flex-1 min-w-0">
-        <p className="text-[10px] md:text-xs text-slate-500 font-medium uppercase tracking-wide">{label}</p>
-        <p className="text-slate-900 text-xs md:text-sm break-words">{value || "-"}</p>
-      </div>
-    </div>
-  );
-
-  // Ajuste: ID do relógio (equipamento) fixo = 1 (como você descreveu)
-  const REL0GIO_ID_FIXO = 1;
-
-  // Ajuste: EnNo do funcionário (user_id_relogio)
+  const st = statusMap[funcionario.status] || statusMap.ativo;
   const enNo = funcionario?.user_id_relogio ? String(funcionario.user_id_relogio).trim() : "";
 
+  const tabTriggerClass =
+    "flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold text-slate-500 border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:text-blue-600 rounded-none bg-transparent whitespace-nowrap";
+
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) onClose?.();
-      }}
-    >
-      <DialogContent className="max-w-4xl w-[95vw] max-h-[95vh] md:max-h-[90vh] overflow-y-auto modern-modal p-0">
-        <DialogHeader className="px-3 md:px-6 py-3 md:py-5 bg-slate-800 text-white border-b border-slate-700 rounded-t-lg sticky top-0 z-10">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-            <div className="flex-1 min-w-0">
-              <DialogTitle className="text-lg md:text-2xl font-bold text-white mb-2 truncate">
-                {funcionario.nome}
-              </DialogTitle>
-
-              <div className="flex flex-wrap items-center gap-1.5 md:gap-2">
-                <Badge className={`${statusConfig.className} border px-2 md:px-3 py-0.5 md:py-1 font-semibold text-xs md:text-sm`}>
-                  {statusConfig.label}
-                </Badge>
-
-                {funcionario.regime && (
-                  <Badge
-                    variant="outline"
-                    className="border-white/30 bg-white/10 text-white text-xs md:text-sm px-2 py-0.5"
-                  >
-                    {getRegimeLabel(funcionario.regime)}
-                  </Badge>
-                )}
-
-                {cargo?.nome && (
-                  <Badge
-                    variant="outline"
-                    className="border-white/30 bg-white/10 text-white text-xs md:text-sm px-2 py-0.5 hidden md:inline-flex"
-                  >
-                    {cargo.nome}
-                  </Badge>
-                )}
-
-                {funcionario.data_fim_experiencia &&
-                  new Date(funcionario.data_fim_experiencia) > new Date() && (
-                    <Badge
-                      variant="outline"
-                      className="border-amber-300 text-amber-700 bg-amber-50 text-xs px-2 py-0.5"
-                    >
-                      <AlertCircle className="w-3 h-3 mr-1" />
-                      <span className="hidden sm:inline">Experiência até</span> {formatDate(funcionario.data_fim_experiencia)}
-                    </Badge>
-                  )}
+    <Dialog open={isOpen} onOpenChange={open => { if (!open) onClose?.(); }}>
+      <DialogContent
+        className="max-w-2xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl border-0"
+        data-custom-modal="true"
+      >
+        {/* Header */}
+        <div className="flex-shrink-0 rounded-t-xl" style={{ background: "#0B1629" }}>
+          {/* Top row: icon + name + X */}
+          <div className="flex items-start justify-between gap-3 px-4 md:px-5 pt-4 pb-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-base md:text-lg font-bold text-white leading-tight truncate">
+                  {funcionario.nome}
+                </h2>
+                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                  {funcionario.user_id_relogio ? `ID Relógio: ${funcionario.user_id_relogio}` : "Sem ID relógio"}
+                  {cargo?.nome ? ` · ${cargo.nome}` : ""}
+                </p>
               </div>
             </div>
-
-            <div className="flex gap-1.5 md:gap-2 flex-wrap">
-              <Button
-                onClick={() => setShowVincularEscala(true)}
-                variant="outline"
-                size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9"
-              >
-                <Clock className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                Escalas
-              </Button>
-
-              <Button
-                onClick={() => setShowEntregaEPI(true)}
-                variant="outline"
-                size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9"
-              >
-                <HardHat className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Entregar</span> EPI
-              </Button>
-
-              <Button
-                onClick={() => setShowHistoricoEPI(true)}
-                variant="outline"
-                size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9"
-              >
-                <History className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Histórico</span>
-              </Button>
-
-              <Button
-                onClick={handlePrint}
-                variant="outline"
-                size="sm"
-                className="border-white/30 bg-white/10 text-white hover:bg-white/20 gap-1 md:gap-2 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9"
-              >
-                <Printer className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                <span className="hidden sm:inline">Imprimir</span>
-              </Button>
-
-              <Button
-                onClick={() => onEdit?.(funcionario)}
-                size="sm"
-                className="gap-1 md:gap-2 bg-white text-slate-800 hover:bg-white/90 text-xs md:text-sm px-2 md:px-3 h-8 md:h-9"
-              >
-                <Edit className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                Editar
-              </Button>
-            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 mt-0.5"
+            >
+              <X className="w-4 h-4" />
+            </button>
           </div>
-        </DialogHeader>
 
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-1.5 px-4 md:px-5 pb-3">
+            <Button
+              onClick={() => setShowVincularEscala(true)}
+              variant="outline"
+              size="sm"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/20 gap-1.5 text-xs h-8 px-3"
+            >
+              <Clock className="w-3.5 h-3.5" /> Escalas
+            </Button>
+            <Button
+              onClick={() => setShowEntregaEPI(true)}
+              variant="outline"
+              size="sm"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/20 gap-1.5 text-xs h-8 px-3"
+            >
+              <HardHat className="w-3.5 h-3.5" /> Entregar EPI
+            </Button>
+            <Button
+              onClick={() => setShowHistoricoEPI(true)}
+              variant="outline"
+              size="sm"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/20 gap-1.5 text-xs h-8 px-3"
+            >
+              <History className="w-3.5 h-3.5" /> Histórico
+            </Button>
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              size="sm"
+              className="border-white/20 bg-white/10 text-white hover:bg-white/20 gap-1.5 text-xs h-8 px-3"
+            >
+              <Printer className="w-3.5 h-3.5" /> Imprimir
+            </Button>
+          </div>
+
+          {/* Status badges */}
+          <div className="flex flex-wrap gap-1.5 px-4 md:px-5 pb-3">
+            <StatusBadge label={st.label} dot={st.dot} />
+            {funcionario.regime && (
+              <StatusBadge label={regimeMap[funcionario.regime] || funcionario.regime} dot="bg-slate-400" />
+            )}
+            {cargo?.nome && (
+              <StatusBadge label={cargo.nome} dot="bg-blue-400" />
+            )}
+          </div>
+        </div>
+
+        {/* Tabs */}
         {isLoading ? (
-          <div className="py-8 md:py-12 text-center text-slate-500 text-sm md:text-base">
-            Carregando informações...
-          </div>
+          <div className="flex-1 flex items-center justify-center text-slate-500 text-sm">Carregando...</div>
         ) : (
-          <div className="space-y-3 md:space-y-4 p-3 md:p-6">
-            {/* INFORMAÇÕES DO PONTO (CRÍTICO) */}
-            <InfoSection title="Ponto / Relógio" icon={Fingerprint}>
-              <div className="grid grid-cols-2 gap-2 md:gap-4">
-                <InfoItem label="ID do Relógio (equipamento)" value={String(REL0GIO_ID_FIXO)} icon={Clock} />
-                <InfoItem
-                  label="EnNo (ID do funcionário no relógio)"
-                  value={enNo || "Não informado"}
-                  icon={Fingerprint}
-                />
-              </div>
+          <Tabs defaultValue="dados" className="flex-1 flex flex-col min-h-0">
+            <div className="border-b border-slate-200 bg-white flex-shrink-0 overflow-x-auto">
+              <TabsList className="flex bg-transparent p-0 h-auto gap-0 w-max min-w-full">
+                <TabsTrigger value="dados" className={tabTriggerClass}>
+                  <User className="w-3.5 h-3.5" /> Dados
+                </TabsTrigger>
+                <TabsTrigger value="profissional" className={tabTriggerClass}>
+                  <Briefcase className="w-3.5 h-3.5" /> Profissional
+                </TabsTrigger>
+                <TabsTrigger value="endereco" className={tabTriggerClass}>
+                  <MapPin className="w-3.5 h-3.5" /> Endereço
+                </TabsTrigger>
+                <TabsTrigger value="banco" className={tabTriggerClass}>
+                  <CreditCard className="w-3.5 h-3.5" /> Banco
+                </TabsTrigger>
+                <TabsTrigger value="acesso" className={tabTriggerClass}>
+                  <Settings className="w-3.5 h-3.5" /> Acesso
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-              {!enNo && (
-                <div className="mt-3 p-3 rounded-lg border border-amber-200 bg-amber-50">
-                  <p className="text-xs md:text-sm text-amber-900">
-                    Atenção: este funcionário está sem <strong>EnNo</strong>. Sem isso, o mapeamento/importação do ponto fica inconsistente.
-                  </p>
+            <div className="flex-1 overflow-y-auto bg-slate-50">
+              {/* TAB: DADOS */}
+              <TabsContent value="dados" className="m-0 p-4 md:p-5 space-y-4">
+                {/* Ponto / Relógio */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={Fingerprint} title="Ponto / Relógio" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="ID do Relógio (Equipamento)" value="1" />
+                    <InfoItem label="EnNo (ID do Funcionário no Relógio)" value={enNo || "Não informado"} />
+                  </div>
+                  {!enNo && (
+                    <div className="mt-3 p-3 rounded-lg border border-amber-200 bg-amber-50 flex gap-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-amber-800">
+                        Atenção: este funcionário está sem <strong>EnNo</strong>. Sem isso, o mapeamento/importação do ponto fica inconsistente.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </InfoSection>
 
-            {/* Informações Profissionais */}
-            <InfoSection title="Informações Profissionais" icon={Briefcase}>
-              <div className="grid grid-cols-2 gap-2 md:gap-4">
-                <InfoItem label="Cargo" value={cargo?.nome || "Não especificado"} icon={Briefcase} />
-                <InfoItem label="Departamento" value={departamento?.nome || "Não especificado"} icon={Building2} />
-                <InfoItem label="Data de Início" value={formatDate(funcionario.data_inicio)} icon={Calendar} />
-                <InfoItem label="Salário" value={formatCurrency(funcionario.salario)} icon={Banknote} />
-              </div>
-            </InfoSection>
-
-            {/* Informações Pessoais */}
-            <InfoSection title="Informações Pessoais" icon={User}>
-              <div className="grid grid-cols-2 gap-2 md:gap-4">
-                <InfoItem label="CPF" value={funcionario.cpf} icon={FileText} />
-                <InfoItem label="RG" value={funcionario.rg} icon={FileText} />
-                <InfoItem label="Data de Nascimento" value={formatDate(funcionario.data_nascimento)} icon={Calendar} />
-                <InfoItem label="Email" value={funcionario.email} icon={Mail} />
-                <InfoItem label="Telefone" value={funcionario.telefone} icon={Phone} />
-                <InfoItem label="Telefone 2" value={funcionario.telefone2} icon={Phone} />
-              </div>
-            </InfoSection>
-
-            {/* Contato de Emergência */}
-            {(funcionario.contato_emergencia || funcionario.telefone_emergencia) && (
-              <InfoSection title="Contato de Emergência" icon={AlertCircle}>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
-                  <InfoItem label="Nome" value={funcionario.contato_emergencia} icon={Users} />
-                  <InfoItem label="Telefone" value={funcionario.telefone_emergencia} icon={Phone} />
-                  <InfoItem label="Parentesco" value={funcionario.parente_emergencia} icon={Users} />
+                {/* Informações Pessoais */}
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={User} title="Informações Pessoais" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="CPF" value={funcionario.cpf} />
+                    <InfoItem label="RG" value={funcionario.rg} />
+                    <InfoItem label="Data de Nascimento" value={formatDate(funcionario.data_nascimento)} />
+                    <InfoItem label="Email" value={funcionario.email} />
+                    <InfoItem label="Telefone" value={funcionario.telefone} />
+                    <InfoItem label="Telefone 2" value={funcionario.telefone2} />
+                  </div>
                 </div>
-              </InfoSection>
-            )}
 
-            {/* Endereço */}
-            {(funcionario.logradouro || funcionario.cidade) && (
-              <InfoSection title="Endereço" icon={MapPin}>
-                <div className="grid grid-cols-2 gap-2 md:gap-4">
-                  <InfoItem label="CEP" value={funcionario.cep} />
-                  <InfoItem label="Logradouro" value={funcionario.logradouro} />
-                  <InfoItem label="Número" value={funcionario.numero} />
-                  <InfoItem label="Complemento" value={funcionario.complemento} />
-                  <InfoItem label="Bairro" value={funcionario.bairro} />
-                  <InfoItem label="Cidade" value={funcionario.cidade} />
-                  <InfoItem label="UF" value={funcionario.uf} />
+                {/* Contato Emergência */}
+                {(funcionario.contato_emergencia || funcionario.telefone_emergencia) && (
+                  <div className="bg-white rounded-xl border border-slate-200 p-4">
+                    <SectionHeader icon={AlertCircle} title="Contato de Emergência" />
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <InfoItem label="Nome" value={funcionario.contato_emergencia} />
+                      <InfoItem label="Telefone" value={funcionario.telefone_emergencia} />
+                      <InfoItem label="Parentesco" value={funcionario.parente_emergencia} />
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* TAB: PROFISSIONAL */}
+              <TabsContent value="profissional" className="m-0 p-4 md:p-5 space-y-4">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={Briefcase} title="Informações Profissionais" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="Cargo" value={cargo?.nome || "Não especificado"} />
+                    <InfoItem label="Departamento" value={departamento?.nome || "Não especificado"} />
+                    <InfoItem label="Data de Início" value={formatDate(funcionario.data_inicio)} />
+                    <InfoItem label="Salário" value={formatCurrency(funcionario.salario)} highlight />
+                    <InfoItem label="Regime" value={regimeMap[funcionario.regime] || funcionario.regime} />
+                    <InfoItem label="Status" value={st.label} />
+                    {funcionario.data_fim_experiencia && (
+                      <InfoItem label="Fim da Experiência" value={formatDate(funcionario.data_fim_experiencia)} />
+                    )}
+                  </div>
                 </div>
-              </InfoSection>
-            )}
 
-            {/* Dados Bancários */}
-            {(funcionario.banco || funcionario.conta || funcionario.pix) && (
-              <InfoSection title="Dados Bancários" icon={CreditCard}>
-                <div className="grid grid-cols-2 gap-2 md:gap-4">
-                  <InfoItem label="Banco" value={funcionario.banco} />
-                  <InfoItem label="Tipo de Conta" value={funcionario.tipo_conta} />
-                  <InfoItem label="Agência" value={funcionario.agencia} />
-                  <InfoItem label="Conta" value={funcionario.conta} />
-                  {funcionario.pix && <InfoItem label="Chave PIX" value={funcionario.pix} icon={CreditCard} />}
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={Banknote} title="Parâmetros de Ponto" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="Desconto por Falta" value={funcionario.regra_desconto_falta === "dia_cheio" ? "Dia cheio" : "Por horas"} />
+                    <InfoItem label="Fator H.E. Semana" value={funcionario.fator_hora_extra_semana ? `${funcionario.fator_hora_extra_semana}x` : null} />
+                    <InfoItem label="Fator H.E. FDS/Feriado" value={funcionario.fator_hora_extra_fds ? `${funcionario.fator_hora_extra_fds}x` : null} />
+                  </div>
                 </div>
-              </InfoSection>
-            )}
 
-            {/* Observações */}
-            {funcionario.observacoes && (
-              <InfoSection title="Observações" icon={FileText}>
-                <p className="text-sm text-slate-700 whitespace-pre-wrap">{funcionario.observacoes}</p>
-              </InfoSection>
-            )}
-          </div>
+                {funcionario.observacoes && (
+                  <div className="bg-white rounded-xl border border-slate-200 p-4">
+                    <SectionHeader icon={FileText} title="Observações" />
+                    <p className="text-sm text-slate-700 whitespace-pre-wrap">{funcionario.observacoes}</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* TAB: ENDEREÇO */}
+              <TabsContent value="endereco" className="m-0 p-4 md:p-5">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={MapPin} title="Endereço Residencial" />
+                  {(funcionario.logradouro || funcionario.cidade) ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      <InfoItem label="CEP" value={funcionario.cep} />
+                      <InfoItem label="UF" value={funcionario.uf} />
+                      <InfoItem label="Cidade" value={funcionario.cidade} />
+                      <InfoItem label="Bairro" value={funcionario.bairro} />
+                      <InfoItem label="Logradouro" value={funcionario.logradouro} />
+                      <InfoItem label="Número" value={funcionario.numero} />
+                      {funcionario.complemento && <InfoItem label="Complemento" value={funcionario.complemento} />}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400 text-center py-4">Endereço não cadastrado</p>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* TAB: BANCO */}
+              <TabsContent value="banco" className="m-0 p-4 md:p-5">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={CreditCard} title="Dados Bancários" />
+                  {(funcionario.banco || funcionario.conta || funcionario.pix) ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      <InfoItem label="Banco" value={funcionario.banco} />
+                      <InfoItem label="Tipo de Conta" value={funcionario.tipo_conta} />
+                      <InfoItem label="Agência" value={funcionario.agencia} />
+                      <InfoItem label="Conta" value={funcionario.conta} />
+                      {funcionario.pix && <InfoItem label="Chave PIX" value={funcionario.pix} />}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400 text-center py-4">Dados bancários não cadastrados</p>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* TAB: ACESSO */}
+              <TabsContent value="acesso" className="m-0 p-4 md:p-5">
+                <div className="bg-white rounded-xl border border-slate-200 p-4">
+                  <SectionHeader icon={Settings} title="Acesso ao Sistema" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InfoItem label="Tem Acesso" value={funcionario.tem_acesso_sistema ? "Sim" : "Não"} />
+                    {funcionario.email_acesso && <InfoItem label="Email de Acesso" value={funcionario.email_acesso} />}
+                    {funcionario.convite_status && (
+                      <InfoItem label="Status do Convite" value={
+                        funcionario.convite_status === "aceito" ? "✅ Aceito" :
+                        funcionario.convite_status === "pendente" ? "⏳ Pendente" : "❌ Expirado"
+                      } />
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+            </div>
+          </Tabs>
         )}
 
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700">
+            Fechar
+          </Button>
+          <Button
+            onClick={() => onEdit?.(funcionario)}
+            variant="outline"
+            className="h-9 px-4 text-sm border-slate-300 text-slate-700 gap-1.5"
+          >
+            <Edit className="w-3.5 h-3.5" /> Editar
+          </Button>
+          {funcionario.status !== "demitido" && onDemitir && (
+            <Button
+              onClick={() => onDemitir?.(funcionario)}
+              className="h-9 px-4 text-sm bg-red-600 hover:bg-red-700 text-white gap-1.5"
+            >
+              <UserMinus className="w-3.5 h-3.5" /> Demitir
+            </Button>
+          )}
+        </div>
+
+        {/* Sub-modals */}
         <EntregaEPIModal
           isOpen={showEntregaEPI}
           onClose={() => setShowEntregaEPI(false)}
           funcionario={funcionario}
           onSave={() => setShowEntregaEPI(false)}
         />
-
         <HistoricoEPIModal
           isOpen={showHistoricoEPI}
           onClose={() => setShowHistoricoEPI(false)}
           funcionario={funcionario}
         />
-
         <VincularEscalaFuncionarioModal
           isOpen={showVincularEscala}
           onClose={() => setShowVincularEscala(false)}
           funcionario={funcionario}
-          onVinculoFeito={() => {
-            setShowVincularEscala(false);
-            onUpdated?.();
-          }}
+          onVinculoFeito={() => { setShowVincularEscala(false); onUpdated?.(); }}
         />
       </DialogContent>
     </Dialog>

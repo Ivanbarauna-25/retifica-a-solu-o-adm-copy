@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { createPageUrl } from '@/utils';
-import { FileText, Printer, FileSpreadsheet, X, Users } from 'lucide-react';
+import { FileText, Printer, FileSpreadsheet, X, Users, Filter, Download } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export default function RelatorioFuncionariosFiltersModal({ 
-  isOpen, 
-  onClose, 
+const SectionHeader = ({ icon: Icon, title }) => (
+  <div className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 mb-4">
+    {Icon && <Icon className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />}
+    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">{title}</span>
+  </div>
+);
+
+const formatoOptions = [
+  { value: 'visualizar', label: 'Visualizar / Imprimir', icon: Printer },
+  { value: 'pdf',        label: 'PDF (gerar)',           icon: FileText },
+  { value: 'excel',      label: 'Excel (XLSX)',          icon: FileSpreadsheet },
+  { value: 'csv',        label: 'CSV',                   icon: FileText },
+];
+
+export default function RelatorioFuncionariosFiltersModal({
+  isOpen,
+  onClose,
   funcionarios = [],
   cargos = [],
   departamentos = [],
@@ -23,44 +37,19 @@ export default function RelatorioFuncionariosFiltersModal({
   const [cargoSelecionado, setCargoSelecionado] = useState(filtroCargo || '');
   const [ordenacao, setOrdenacao] = useState('nome');
   const [camposSelecionados, setCamposSelecionados] = useState({
-    nome: true,
-    cpf: true,
-    cargo: true,
-    departamento: true,
-    regime: true,
-    status: true,
-    telefone: false,
-    email: false,
-    data_inicio: false,
-    salario: false,
-    rg: false,
-    data_nascimento: false,
-    cep: false,
-    logradouro: false,
-    numero: false,
-    complemento: false,
-    bairro: false,
-    cidade: false,
-    uf: false,
-    banco: false,
-    agencia: false,
-    conta: false,
-    tipo_conta: false,
-    pix: false
+    nome: true, cpf: true, cargo: true, departamento: true, regime: true, status: true,
+    telefone: false, email: false, data_inicio: false, salario: false, rg: false,
+    data_nascimento: false, cep: false, logradouro: false, numero: false,
+    complemento: false, bairro: false, cidade: false, uf: false,
+    banco: false, agencia: false, conta: false, tipo_conta: false, pix: false
   });
 
-  const handleCheckboxChange = (campo) => {
-    setCamposSelecionados(prev => ({
-      ...prev,
-      [campo]: !prev[campo]
-    }));
+  const handleCheckbox = (campo) => {
+    setCamposSelecionados(prev => ({ ...prev, [campo]: !prev[campo] }));
   };
 
-  const handleGenerateRelatorio = () => {
-    const campos = Object.keys(camposSelecionados)
-      .filter(key => camposSelecionados[key])
-      .join(',');
-    
+  const handleGenerate = () => {
+    const campos = Object.keys(camposSelecionados).filter(k => camposSelecionados[k]).join(',');
     const params = new URLSearchParams();
     params.set('formato', formato);
     params.set('campos', campos);
@@ -68,16 +57,10 @@ export default function RelatorioFuncionariosFiltersModal({
     if (departamentoSelecionado && departamentoSelecionado !== 'todos') params.set('departamento_id', departamentoSelecionado);
     if (cargoSelecionado && cargoSelecionado !== 'todos') params.set('cargo_id', cargoSelecionado);
     params.set('ordenacao', ordenacao);
-    
     const url = `${createPageUrl('RelatorioFuncionarios')}?${params.toString()}`;
-    const newWindow = window.open(url, '_blank');
-    
-    if (newWindow) {
-      setTimeout(() => onClose(), 100);
-    } else {
-      console.warn('Pop-up bloqueado pelo navegador');
-      onClose();
-    }
+    const w = window.open(url, '_blank');
+    if (w) setTimeout(() => onClose(), 100);
+    else onClose();
   };
 
   const camposDisponiveis = [
@@ -104,62 +87,47 @@ export default function RelatorioFuncionariosFiltersModal({
     { id: 'agencia', label: 'Agência', grupo: 'Bancário' },
     { id: 'conta', label: 'Conta', grupo: 'Bancário' },
     { id: 'tipo_conta', label: 'Tipo de Conta', grupo: 'Bancário' },
-    { id: 'pix', label: 'PIX', grupo: 'Bancário' }
+    { id: 'pix', label: 'PIX', grupo: 'Bancário' },
   ];
 
   const grupos = ['Básico', 'Profissional', 'Contato', 'Endereço', 'Bancário'];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
-        className="max-w-3xl max-h-[90vh] modern-modal bg-white"
-        onPointerDownOutside={(e) => e.preventDefault()}
-        style={{
-          overflowY: 'auto',
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#94a3b8 #f1f5f9'
-        }}
+      <DialogContent
+        className="max-w-2xl w-[95vw] max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0 rounded-xl border-0"
+        data-custom-modal="true"
+        onPointerDownOutside={e => e.preventDefault()}
       >
-        <style>{`
-          .modern-modal::-webkit-scrollbar {
-            width: 8px;
-          }
-          .modern-modal::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
-          }
-          .modern-modal::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-          }
-        `}</style>
-
-        <DialogHeader className="sticky top-0 z-10 px-6 py-4 bg-gradient-to-r from-slate-800 to-slate-700 text-white no-print border-b border-slate-600">
-          <DialogTitle className="flex items-center gap-3 text-white">
-            <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-5 py-4 rounded-t-xl flex-shrink-0" style={{ background: "#0B1629" }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
               <Users className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold">Gerar Relatório de Funcionários</h2>
-              <p className="text-sm text-slate-300">Selecione os campos e formato desejados</p>
+            <div className="min-w-0">
+              <h2 className="text-base font-bold text-white leading-tight">Relatório de Funcionários</h2>
+              <p className="text-[11px] text-slate-400 mt-0.5">Selecione os campos e formato desejados</p>
             </div>
-          </DialogTitle>
-        </DialogHeader>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-        <div className="p-6 space-y-6">
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-4 bg-slate-50">
           {/* Filtros */}
-          <div className="space-y-3">
-            <Label className="text-base font-semibold text-slate-900">Filtros do Relatório</Label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <SectionHeader icon={Filter} title="Filtros do Relatório" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm text-slate-700 mb-1 block">Status</Label>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Status</Label>
                 <Select value={statusSelecionado} onValueChange={setStatusSelecionado}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Todos" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
                     <SelectItem value="ativo">Ativo</SelectItem>
@@ -171,39 +139,29 @@ export default function RelatorioFuncionariosFiltersModal({
                 </Select>
               </div>
               <div>
-                <Label className="text-sm text-slate-700 mb-1 block">Departamento</Label>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Departamento</Label>
                 <Select value={departamentoSelecionado} onValueChange={setDepartamentoSelecionado}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Todos" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
-                    {departamentos.map(dept => (
-                      <SelectItem key={dept.id} value={dept.id}>{dept.nome}</SelectItem>
-                    ))}
+                    {departamentos.map(d => <SelectItem key={d.id} value={d.id}>{d.nome}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-sm text-slate-700 mb-1 block">Cargo</Label>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Cargo</Label>
                 <Select value={cargoSelecionado} onValueChange={setCargoSelecionado}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Todos" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="todos">Todos</SelectItem>
-                    {cargos.map(cargo => (
-                      <SelectItem key={cargo.id} value={cargo.id}>{cargo.nome}</SelectItem>
-                    ))}
+                    {cargos.map(c => <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-sm text-slate-700 mb-1 block">Ordenação</Label>
+                <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">Ordenação</Label>
                 <Select value={ordenacao} onValueChange={setOrdenacao}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nome" />
-                  </SelectTrigger>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="nome">Nome</SelectItem>
                     <SelectItem value="salario">Salário</SelectItem>
@@ -215,120 +173,77 @@ export default function RelatorioFuncionariosFiltersModal({
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Label className="text-base font-semibold text-slate-900">Formato de Exportação</Label>
+          {/* Formato de Exportação */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <SectionHeader icon={Download} title="Formato de Exportação" />
             <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="visualizar"
-                  name="formato"
-                  value="visualizar"
-                  checked={formato === 'visualizar'}
-                  onChange={(e) => setFormato(e.target.value)}
-                  className="w-4 h-4"
-                />
-                <Label htmlFor="visualizar" className="flex items-center gap-2 cursor-pointer text-slate-900">
-                  <Printer className="w-4 h-4" />
-                  Visualizar/Imprimir
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="pdf"
-                  name="formato"
-                  value="pdf"
-                  checked={formato === 'pdf'}
-                  onChange={(e) => setFormato(e.target.value)}
-                  className="w-4 h-4"
-                />
-                <Label htmlFor="pdf" className="flex items-center gap-2 cursor-pointer text-slate-900">
-                  <FileText className="w-4 h-4" />
-                  PDF (gerar)
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="excel"
-                  name="formato"
-                  value="excel"
-                  checked={formato === 'excel'}
-                  onChange={(e) => setFormato(e.target.value)}
-                  className="w-4 h-4"
-                />
-                <Label htmlFor="excel" className="flex items-center gap-2 cursor-pointer text-slate-900">
-                  <FileSpreadsheet className="w-4 h-4" />
-                  Excel (XLSX)
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  id="csv"
-                  name="formato"
-                  value="csv"
-                  checked={formato === 'csv'}
-                  onChange={(e) => setFormato(e.target.value)}
-                  className="w-4 h-4"
-                />
-                <Label htmlFor="csv" className="flex items-center gap-2 cursor-pointer text-slate-900">
-                  <FileText className="w-4 h-4" />
-                  CSV
-                </Label>
-              </div>
+              {formatoOptions.map(opt => {
+                const Icon = opt.icon;
+                const isSelected = formato === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setFormato(opt.value)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border text-sm font-medium transition-all text-left ${
+                      isSelected
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      isSelected ? "border-blue-600" : "border-slate-300"
+                    }`}>
+                      {isSelected && <div className="w-2 h-2 rounded-full bg-blue-600" />}
+                    </div>
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Label className="text-base font-semibold text-slate-900">Campos a Incluir no Relatório</Label>
-            
-            {grupos.map(grupo => {
-              const camposDoGrupo = camposDisponiveis.filter(c => c.grupo === grupo);
-              return (
-                <div key={grupo} className="border rounded-lg p-4 space-y-2 bg-slate-50">
-                  <h4 className="font-medium text-sm text-slate-900 mb-3">{grupo}</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {camposDoGrupo.map(campo => (
-                      <div key={campo.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={campo.id}
-                          checked={camposSelecionados[campo.id]}
-                          onCheckedChange={() => handleCheckboxChange(campo.id)}
-                        />
-                        <Label
-                          htmlFor={campo.id}
-                          className="text-sm font-normal cursor-pointer text-slate-900"
-                        >
-                          {campo.label}
-                        </Label>
-                      </div>
-                    ))}
+          {/* Campos */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4">
+            <SectionHeader icon={FileText} title="Campos a Incluir no Relatório" />
+            <div className="space-y-3">
+              {grupos.map(grupo => {
+                const campos = camposDisponiveis.filter(c => c.grupo === grupo);
+                return (
+                  <div key={grupo} className="border border-slate-200 rounded-lg p-3 bg-slate-50">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2.5">{grupo}</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {campos.map(campo => (
+                        <div key={campo.id} className="flex items-center gap-2">
+                          <Checkbox
+                            id={campo.id}
+                            checked={camposSelecionados[campo.id]}
+                            onCheckedChange={() => handleCheckbox(campo.id)}
+                            className="w-4 h-4"
+                          />
+                          <Label htmlFor={campo.id} className="text-sm font-normal cursor-pointer text-slate-700">
+                            {campo.label}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <DialogFooter className="flex justify-end gap-3 pt-4 border-t border-slate-200 px-6 pb-6">
-          <Button 
-            variant="outline" 
-            onClick={onClose}
-            className="bg-slate-800 hover:bg-slate-700 text-white gap-2"
-          >
-            <X className="w-4 h-4" />
-            Cancelar
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-4 md:px-5 py-3 border-t border-slate-200 bg-white rounded-b-xl flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="h-9 px-4 text-sm border-slate-300 text-slate-700 gap-1.5">
+            <X className="w-3.5 h-3.5" /> Cancelar
           </Button>
-          <Button 
-            onClick={handleGenerateRelatorio}
-            className="bg-slate-800 hover:bg-slate-700 text-white gap-2"
-          >
-            <Printer className="w-4 h-4" />
-            Gerar Relatório
+          <Button onClick={handleGenerate} className="h-9 px-4 text-sm bg-blue-600 hover:bg-blue-700 text-white gap-1.5">
+            <Printer className="w-3.5 h-3.5" /> Gerar Relatório
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
