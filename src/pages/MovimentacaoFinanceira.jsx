@@ -552,56 +552,44 @@ export default function MovimentacaoFinanceiraPage() {
     <>
       <Toaster />
       <div className="min-h-screen bg-slate-50">
-        {/* Header com fundo escuro */}
-        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-8 mb-4 md:mb-6 shadow-xl">
-          <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4">
-              <div className="flex items-center gap-3 md:gap-4">
-                <div className="bg-white/10 p-2 md:p-4 rounded-lg md:rounded-xl backdrop-blur-sm">
-                  <ArrowRightLeft className="w-5 h-5 md:w-8 md:h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-lg md:text-3xl font-bold mb-0.5 md:mb-1 tracking-tight">Movimentação Financeira</h1>
-                  <p className="text-slate-200 text-xs md:text-base">
-                    Gestão de entradas e saídas
-                    {filtroOrigemId && (
-                      <Badge className="ml-2 bg-blue-600 text-white border-none text-[10px] md:text-xs">
-                        {filtroOrigemTipo === 'compras' ? 'NF' : filtroOrigemTipo === 'os' ? 'OS' : 'Orç.'}
-                      </Badge>
-                    )}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-1.5 md:gap-2 flex-wrap">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsBaixaModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
-                >
-                  <ArrowDownCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  <span className="hidden sm:inline">Baixa</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={() => setIsRenegociarModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
-                >
-                  <FileSignature className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  <span className="hidden sm:inline">Renegociar</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={() => openModal()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-2 h-8 md:h-9 text-xs md:text-sm px-2 md:px-3"
-                >
-                  <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  <span className="hidden sm:inline">Novo</span>
-                </Button>
-              </div>
-            </div>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+          <div>
+            <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>Movimentação Financeira</h1>
+            <p style={{fontSize:'13px',color:'#6B7280',margin:'4px 0 0 0'}}>
+              Gestão de entradas e saídas
+              {filtroOrigemId && (
+                <Badge className="ml-2 bg-blue-600 text-white border-none text-[10px]">
+                  {filtroOrigemTipo === 'compras' ? 'NF' : filtroOrigemTipo === 'os' ? 'OS' : 'Orç.'}
+                </Badge>
+              )}
+            </p>
+          </div>
+          <div className="flex gap-1.5 md:gap-2 flex-wrap items-center">
+            <Button
+              variant="outline"
+              onClick={() => setIsBaixaModalOpen(true)}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <ArrowDownCircle className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Baixa</span>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsRenegociarModalOpen(true)}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+            >
+              <FileSignature className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Renegociar</span>
+            </Button>
+            <Button
+              onClick={() => openModal()}
+              className="gap-1.5 text-xs md:text-sm px-2 md:px-3"
+              style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+            >
+              <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Novo</span>
+            </Button>
           </div>
         </div>
 
@@ -609,44 +597,23 @@ export default function MovimentacaoFinanceiraPage() {
         <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
-            <Card className="border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Entradas</p>
-                  <div className="text-sm md:text-2xl font-bold text-green-600">{formatCurrency(totais.totalEntradas)}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Saídas</p>
-                  <div className="text-sm md:text-2xl font-bold text-red-600">{formatCurrency(totais.totalSaidas)}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Saldo</p>
-                  <div className={`text-sm md:text-2xl font-bold ${totais.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>
-                    {formatCurrency(totais.saldo)}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-yellow-500 shadow-sm">
-              <CardContent className="p-3 md:p-6">
-                <div>
-                  <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-0.5 md:mb-1">Pendente</p>
-                  <div className="text-sm md:text-2xl font-bold text-yellow-600">{formatCurrency(totais.totalPendente)}</div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4 md:mb-6">
+            <div className="kpi-bar kpi-bar-green bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Entradas</p>
+              <p className="text-base md:text-2xl font-extrabold text-emerald-600 font-mono">{formatCurrency(totais.totalEntradas)}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-red bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Saídas</p>
+              <p className="text-base md:text-2xl font-extrabold text-red-600 font-mono">{formatCurrency(totais.totalSaidas)}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Saldo</p>
+              <p className={`text-base md:text-2xl font-extrabold font-mono ${totais.saldo >= 0 ? 'text-blue-600' : 'text-red-600'}`}>{formatCurrency(totais.saldo)}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-yellow bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pendente</p>
+              <p className="text-base md:text-2xl font-extrabold text-amber-600 font-mono">{formatCurrency(totais.totalPendente)}</p>
+            </div>
           </div>
 
           {/* Filtros Avançados */}
