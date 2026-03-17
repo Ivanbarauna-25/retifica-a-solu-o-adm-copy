@@ -70,7 +70,7 @@ export default function ClientesPage() {
         await base44.entities.Veiculo.create(data);
       }
       await fetchData();
-      setIsVeiculoForm(false);
+      setIsVeiculoFormOpen(false);
       setSelectedVeiculo(null);
       setClienteParaVeiculo(null);
     } catch (err) {
@@ -113,7 +113,7 @@ export default function ClientesPage() {
     setError(null);
     setSelectedVeiculo(veiculo);
     setClienteParaVeiculo(cliente);
-    setIsVeiculoForm(true);
+    setIsVeiculoFormOpen(true);
   };
 
   const getVeiculosDoCliente = (clienteId) => {
@@ -363,7 +363,7 @@ export default function ClientesPage() {
         clientePreSelecionado={clienteParaVeiculo}
         onSave={handleSaveVeiculo}
         onClose={() => {
-          setIsVeiculoForm(false);
+          setIsVeiculoFormOpen(false);
           setSelectedVeiculo(null);
           setClienteParaVeiculo(null);
         }}
