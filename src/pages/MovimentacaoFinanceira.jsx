@@ -594,7 +594,7 @@ export default function MovimentacaoFinanceiraPage() {
         </div>
 
         {/* Conteúdo Principal */}
-        <div className="max-w-[1800px] mx-auto px-3 md:px-6">
+        <div>
           
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-4 md:mb-6">
