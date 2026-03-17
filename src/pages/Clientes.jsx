@@ -155,7 +155,7 @@ export default function ClientesPage() {
     <>
       <div className="min-h-screen bg-slate-50">
         {/* Header */}
-        <div className="bg-slate-800 text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg sticky top-0 z-10">
+        <div className="bg-[#0B1629] text-white px-3 md:px-6 py-4 md:py-6 mb-3 md:mb-6 shadow-lg rounded-xl">
           <div className="max-w-[1800px] mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -203,29 +203,14 @@ export default function ClientesPage() {
         <div className="max-w-[1800px] mx-auto px-3 md:px-6">
           {/* Stats Cards */}
           <div className="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-6">
-            <Card className="border-l-4 border-l-slate-600 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-3 md:p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Total Clientes</p>
-                    <div className="text-xl md:text-3xl font-bold text-slate-900">{clientes.length}</div>
-                  </div>
-                  <Users className="w-6 h-6 md:w-8 md:h-8 text-slate-300" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-3 md:p-5">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] md:text-sm font-medium text-slate-600 mb-1">Total Veículos</p>
-                    <div className="text-xl md:text-3xl font-bold text-blue-600">{totalVeiculos}</div>
-                  </div>
-                  <Car className="w-6 h-6 md:w-8 md:h-8 text-blue-300" />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="kpi-bar kpi-bar-blue bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Clientes</p>
+              <p className="text-xl md:text-3xl font-extrabold text-slate-900 font-mono">{clientes.length}</p>
+            </div>
+            <div className="kpi-bar kpi-bar-sky bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+              <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Veículos</p>
+              <p className="text-xl md:text-3xl font-extrabold text-sky-600 font-mono">{totalVeiculos}</p>
+            </div>
           </div>
 
           {/* Filtros Avançados */}
