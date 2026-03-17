@@ -446,25 +446,25 @@ function OrdensServicoContent() {
           <div className="max-w-[1800px] mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
               <div>
-                <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Ordens de Serviço</h1>
+                <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>Ordens de Serviço</h1>
                 <p className="text-slate-500 text-xs mt-0.5">Gestão de ordens de serviço</p>
               </div>
-              <div className="flex gap-1 md:gap-2 flex-wrap">
+              <div className="flex gap-1.5 md:gap-2 flex-wrap items-center">
                 {isAdmin && selectedOS.length > 0 && (
                   <>
                     <Button
-                      variant="outline"
                       onClick={handleAgrupar}
                       disabled={selectedOS.length < 2}
-                      className="bg-blue-600 border-blue-600 text-white hover:bg-blue-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3"
+                      style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
                     >
                       <Merge className="w-3 h-3 md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
                     </Button>
                     <Button
-                      variant="outline"
                       onClick={handleBulkDelete}
-                      className="bg-red-600 border-red-600 text-white hover:bg-red-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3"
+                      style={{background:'#DC2626',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
                     >
                       <Trash className="w-3 h-3 md:w-4 md:h-4" />
                       ({selectedOS.length})
@@ -475,7 +475,7 @@ function OrdensServicoContent() {
                 <Button
                   variant="outline"
                   onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+                  className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
                 >
                   <FileText className="w-3 h-3 md:w-4 md:h-4" />
                   <span className="hidden sm:inline">Relatório</span>
@@ -486,16 +486,16 @@ function OrdensServicoContent() {
                     <Button
                       variant="outline"
                       onClick={() => setIsImportModalOpen(true)}
-                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3 hidden sm:flex"
+                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 hidden sm:flex"
                     >
                       <Upload className="w-3 h-3 md:w-4 md:h-4" />
                       Importar
                     </Button>
 
                     <Button
-                      variant="outline"
                       onClick={handleNewOS}
-                      className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
+                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3"
+                      style={{background:'#059669',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
                     >
                       <Plus className="w-3 h-3 md:w-4 md:h-4" />
                       <span className="hidden sm:inline">Nova OS</span>

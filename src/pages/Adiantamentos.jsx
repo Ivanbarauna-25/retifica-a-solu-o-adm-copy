@@ -573,7 +573,7 @@ export default function AdiantamentosPage() {
 
   return (
   <>
-    <div className="min-h-screen bg-slate-50 w-full max-w-full overflow-x-hidden">
+    <div className="w-full max-w-full overflow-x-hidden">
         {/* Header limpo */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
           <div>

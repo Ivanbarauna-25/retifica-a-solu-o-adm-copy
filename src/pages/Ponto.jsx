@@ -268,7 +268,7 @@ export default function Ponto() {
   const totalTratados = rows.filter(r => ['abonado', 'folga', 'ferias', 'desconto'].includes(r.apuracao?.status)).length;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div>
       {/* Header limpo */}
       <div className="mb-4 md:mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
