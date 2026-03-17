@@ -17,7 +17,7 @@ export default function ClientesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isClienteFormOpen, setIsClienteFormOpen] = useState(false);
-  const [isVeiculoFormOpen, setIsVeiculoForm] = useState(false);
+  const [isVeiculoFormOpen, setIsVeiculoFormOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState(null);
   const [selectedVeiculo, setSelectedVeiculo] = useState(null);
   const [clienteParaVeiculo, setClienteParaVeiculo] = useState(null);

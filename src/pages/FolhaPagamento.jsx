@@ -41,7 +41,6 @@ const withRetry = async (fn, retries = 3, delay = 1000) => {
 
 function FolhaPagamentoContent() {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   const [folhasPagamento, setFolhasPagamento] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
