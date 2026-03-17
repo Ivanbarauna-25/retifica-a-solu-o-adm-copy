@@ -551,7 +551,7 @@ export default function MovimentacaoFinanceiraPage() {
   return (
     <>
       <Toaster />
-      <div className="min-h-screen bg-slate-50">
+      <div>
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
           <div>
