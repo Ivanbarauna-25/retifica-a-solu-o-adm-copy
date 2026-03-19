@@ -839,13 +839,35 @@ export default function AdiantamentosPage() {
                             <StatusBadgeAdiantamento status={a.status} />
                           </TableCell>
                           <TableCell>
-                            <div className="flex items-center justify-center gap-2">
+                            <div className="flex items-center justify-center gap-1">
+                              {a.status === 'pendente' && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  title="Aprovar"
+                                  onClick={() => alterarStatus(a, 'aprovado')}
+                                  className="hover:bg-emerald-50 text-emerald-600 h-8 w-8 p-0"
+                                >
+                                  <CheckCircle2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {(a.status === 'pendente' || a.status === 'aprovado') && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  title="Cancelar"
+                                  onClick={() => alterarStatus(a, 'cancelado')}
+                                  className="hover:bg-orange-50 text-orange-500 h-8 w-8 p-0"
+                                >
+                                  <Ban className="h-4 w-4" />
+                                </Button>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 title="Visualizar"
                                 onClick={() => abrirVisualizacao(a)}
-                                className="hover:bg-blue-50 text-blue-600"
+                                className="hover:bg-blue-50 text-blue-600 h-8 w-8 p-0"
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
@@ -854,7 +876,7 @@ export default function AdiantamentosPage() {
                                 size="sm"
                                 title="Pagamento Parcial"
                                 onClick={() => abrirPagamentoParcial(a)}
-                                className="hover:bg-green-50 text-green-600"
+                                className="hover:bg-green-50 text-green-600 h-8 w-8 p-0"
                               >
                                 <Receipt className="h-4 w-4" />
                               </Button>
@@ -863,7 +885,7 @@ export default function AdiantamentosPage() {
                                 size="sm" 
                                 title="Editar" 
                                 onClick={() => abrirEdicao(a)}
-                                className="hover:bg-amber-50 text-amber-600"
+                                className="hover:bg-amber-50 text-amber-600 h-8 w-8 p-0"
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
@@ -872,7 +894,7 @@ export default function AdiantamentosPage() {
                                 size="sm"
                                 title="Excluir"
                                 onClick={() => excluir(a.id)}
-                                className="hover:bg-red-50 text-red-600"
+                                className="hover:bg-red-50 text-red-600 h-8 w-8 p-0"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
