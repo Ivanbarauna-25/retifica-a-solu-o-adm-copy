@@ -227,6 +227,23 @@ export default function AdiantamentosPage() {
     setIsViewerOpen(false);
   };
 
+  const alterarStatus = async (item, novoStatus) => {
+    const labels = { aprovado: 'aprovar', cancelado: 'cancelar', reprovado: 'reprovar' };
+    showConfirm(
+      `Confirmar ação`,
+      `Tem certeza que deseja ${labels[novoStatus] || novoStatus} este adiantamento?`,
+      async () => {
+        try {
+          await base44.entities.Adiantamento.update(item.id, { status: novoStatus });
+          toast({ title: "✅ Sucesso", description: "Status atualizado com sucesso." });
+          await carregar();
+        } catch (error) {
+          toast({ title: "❌ Erro", description: error.message, variant: "destructive" });
+        }
+      }
+    );
+  };
+
   const excluir = async (id) => {
     showConfirm(
       'Confirmar Exclusão',
