@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Filter, Printer, Eye, CheckCircle2, Users, Search, Wallet, Loader2, X, Check, Receipt } from "lucide-react";
+import { Plus, Edit, Trash2, Filter, Printer, Eye, CheckCircle2, Users, Search, Wallet, Loader2, X, Check, Receipt, XCircle, Ban } from "lucide-react";
 import AdiantamentoForm from "@/components/adiantamentos/AdiantamentoForm";
 import AdiantamentoLoteForm from "@/components/AdiantamentoLoteForm";
 import AdiantamentoViewer from "@/components/adiantamentos/AdiantamentoViewer";
