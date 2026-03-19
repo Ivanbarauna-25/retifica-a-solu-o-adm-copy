@@ -82,7 +82,7 @@ export default function AdiantamentoForm({ isOpen, adiantamento, funcionarios, p
   }, [form]);
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     
     if (!canSave) {
       toast({
