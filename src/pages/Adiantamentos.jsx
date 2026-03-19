@@ -968,36 +968,26 @@ export default function AdiantamentosPage() {
                     </div>
 
                     <div className="flex justify-end gap-0.5 pt-1 border-t border-slate-100">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => abrirVisualizacao(a)}
-                        className="h-6 w-6 p-0 hover:bg-blue-50 text-blue-600"
-                      >
+                      {a.status === 'pendente' && (
+                        <Button variant="ghost" size="sm" title="Aprovar" onClick={() => alterarStatus(a, 'aprovado')} className="h-7 w-7 p-0 hover:bg-emerald-50 text-emerald-600">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      {(a.status === 'pendente' || a.status === 'aprovado') && (
+                        <Button variant="ghost" size="sm" title="Cancelar" onClick={() => alterarStatus(a, 'cancelado')} className="h-7 w-7 p-0 hover:bg-orange-50 text-orange-500">
+                          <Ban className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="sm" onClick={() => abrirVisualizacao(a)} className="h-7 w-7 p-0 hover:bg-blue-50 text-blue-600">
                         <Eye className="h-3.5 w-3.5" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => abrirPagamentoParcial(a)}
-                        className="h-6 w-6 p-0 hover:bg-green-50 text-green-600"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => abrirPagamentoParcial(a)} className="h-7 w-7 p-0 hover:bg-green-50 text-green-600">
                         <Receipt className="h-3.5 w-3.5" />
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => abrirEdicao(a)}
-                        className="h-6 w-6 p-0 hover:bg-amber-50 text-amber-600"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => abrirEdicao(a)} className="h-7 w-7 p-0 hover:bg-amber-50 text-amber-600">
                         <Edit className="h-3.5 w-3.5" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => excluir(a.id)}
-                        className="h-6 w-6 p-0 hover:bg-red-50 text-red-600"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => excluir(a.id)} className="h-7 w-7 p-0 hover:bg-red-50 text-red-600">
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
