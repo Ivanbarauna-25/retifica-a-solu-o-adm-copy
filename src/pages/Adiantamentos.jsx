@@ -967,29 +967,29 @@ export default function AdiantamentosPage() {
                       )}
                     </div>
 
-                    <div className="flex justify-end gap-0.5 pt-1 border-t border-slate-100">
+                    <div className="flex justify-end gap-1 pt-1 border-t border-slate-100 flex-wrap">
                       {a.status === 'pendente' && (
-                        <Button variant="ghost" size="sm" title="Aprovar" onClick={() => alterarStatus(a, 'aprovado')} className="h-7 w-7 p-0 hover:bg-emerald-50 text-emerald-600">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                        </Button>
+                        <button title="Aprovar" onClick={() => alterarStatus(a, 'aprovado')} style={{minHeight:'unset'}} className="flex items-center justify-center rounded-md p-1.5 hover:bg-emerald-50 text-emerald-600 transition-colors">
+                          <CheckCircle2 className="h-4 w-4" />
+                        </button>
                       )}
                       {(a.status === 'pendente' || a.status === 'aprovado') && (
-                        <Button variant="ghost" size="sm" title="Cancelar" onClick={() => alterarStatus(a, 'cancelado')} className="h-7 w-7 p-0 hover:bg-orange-50 text-orange-500">
-                          <Ban className="h-3.5 w-3.5" />
-                        </Button>
+                        <button title="Cancelar" onClick={() => alterarStatus(a, 'cancelado')} style={{minHeight:'unset'}} className="flex items-center justify-center rounded-md p-1.5 hover:bg-orange-50 text-orange-500 transition-colors">
+                          <Ban className="h-4 w-4" />
+                        </button>
                       )}
-                      <Button variant="ghost" size="sm" onClick={() => abrirVisualizacao(a)} className="h-7 w-7 p-0 hover:bg-blue-50 text-blue-600">
-                        <Eye className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => abrirPagamentoParcial(a)} className="h-7 w-7 p-0 hover:bg-green-50 text-green-600">
-                        <Receipt className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => abrirEdicao(a)} className="h-7 w-7 p-0 hover:bg-amber-50 text-amber-600">
-                        <Edit className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => excluir(a.id)} className="h-7 w-7 p-0 hover:bg-red-50 text-red-600">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      <button title="Visualizar" onClick={() => abrirVisualizacao(a)} style={{minHeight:'unset'}} className="flex items-center justify-center rounded-md p-1.5 hover:bg-blue-50 text-blue-600 transition-colors">
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      <button title="Pagamento Parcial" onClick={() => abrirPagamentoParcial(a)} style={{minHeight:'unset'}} className="flex items-center justify-center rounded-md p-1.5 hover:bg-green-50 text-green-600 transition-colors">
+                        <Receipt className="h-4 w-4" />
+                      </button>
+                      <button title="Editar" onClick={() => abrirEdicao(a)} style={{minHeight:'unset'}} className="flex items-center justify-center rounded-md p-1.5 hover:bg-amber-50 text-amber-600 transition-colors">
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button title="Excluir" onClick={() => excluir(a.id)} style={{minHeight:'unset'}} className="flex items-center justify-center rounded-md p-1.5 hover:bg-red-50 text-red-600 transition-colors">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
                 );
