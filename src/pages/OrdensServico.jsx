@@ -526,7 +526,7 @@ function OrdensServicoContent() {
           </div>
 
           {/* BOTÕES DE AÇÃO (lado direito em desktop, abaixo em mobile) */}
-          <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0">
+          <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0 lg:min-w-[168px]">
             {isAdmin && selectedOS.length > 0 && (
               <div className="flex gap-2">
                 <button onClick={handleAgrupar} disabled={selectedOS.length < 2}
