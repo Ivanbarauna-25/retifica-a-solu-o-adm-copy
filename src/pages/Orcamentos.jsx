@@ -212,10 +212,10 @@ export default function OrcamentosPage() {
           <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
-                  <Filter className="w-3.5 h-3.5 text-slate-400" />
+                <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[13px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
+                  <Filter className="w-4 h-4 text-slate-400" />
                   Ações
-                  <ChevronDown className="w-3 h-3 opacity-40" />
+                  <ChevronDown className="w-3.5 h-3.5 opacity-40" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
