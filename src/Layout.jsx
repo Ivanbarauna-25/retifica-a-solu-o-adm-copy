@@ -518,7 +518,7 @@ export default function Layout({ children, currentPageName }) {
 
         .header-breadcrumb { font-size: 12px; color: rgba(255,255,255,0.3); font-weight: 500; }
         .header-sep { color: rgba(255,255,255,0.15); margin: 0 4px; font-size: 13px; }
-        .header-page-title { font-size: 13.5px; font-weight: 700; color: rgba(255,255,255,0.9); letter-spacing: -0.1px; }
+        .header-page-title { font-size: 15px; font-weight: 800; color: rgba(255,255,255,0.95); letter-spacing: 0.03em; text-transform: uppercase; }
         .header-page-icon { color: rgba(255,255,255,0.4); }
 
         .sidebar-trigger-btn {
@@ -614,14 +614,14 @@ export default function Layout({ children, currentPageName }) {
                   <PanelLeft className="w-4 h-4" aria-hidden="true" />
                 </SidebarTrigger>
                 <MobileMenu navigationGroups={navigationGroupsFiltered} />
-                <div className="hidden md:flex items-center gap-1 min-w-0">
+                <div className="hidden md:flex items-center gap-1.5 min-w-0">
                   <span className="header-breadcrumb flex-shrink-0">Sistema</span>
                   <span className="header-sep">/</span>
-                  {PageIcon && <PageIcon className="w-3.5 h-3.5 header-page-icon flex-shrink-0" aria-hidden="true" />}
+                  {PageIcon && <PageIcon className="w-5 h-5 header-page-icon flex-shrink-0" aria-hidden="true" />}
                   <span className="header-page-title truncate">{pageTitle}</span>
                 </div>
                 <div className="md:hidden flex items-center gap-2 min-w-0">
-                  {PageIcon && <PageIcon className="w-4 h-4 header-page-icon flex-shrink-0" aria-hidden="true" />}
+                  {PageIcon && <PageIcon className="w-5 h-5 header-page-icon flex-shrink-0" aria-hidden="true" />}
                   <span className="header-page-title truncate">{pageTitle}</span>
                 </div>
               </div>
