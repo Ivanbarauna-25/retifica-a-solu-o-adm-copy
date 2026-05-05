@@ -417,11 +417,11 @@ export default function Layout({ children, currentPageName }) {
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
         :root {
-          --sb-bg: #0B1629;
-          --accent: #1A56DB;
-          --border-sb: rgba(255,255,255,0.06);
-          --text-sb: rgba(255,255,255,0.72);
-          --text-sb-h: rgba(255,255,255,0.95);
+          --sb-bg: #131C2E;
+          --accent: #2563EB;
+          --border-sb: rgba(255,255,255,0.05);
+          --text-sb: rgba(255,255,255,0.65);
+          --text-sb-h: rgba(255,255,255,0.92);
         }
 
         html, body, #root { height: 100%; width: 100%; overflow: hidden; }
@@ -441,29 +441,29 @@ export default function Layout({ children, currentPageName }) {
         [data-slot="sidebar"],
         [data-slot="sidebar-wrapper"],
         [data-slot="sidebar-gap"] {
-          background: #0B1629 !important;
-          background-color: #0B1629 !important;
+          background: #131C2E !important;
+          background-color: #131C2E !important;
           opacity: 1 !important;
           border-right: none !important;
-          box-shadow: 4px 0 24px rgba(0,0,0,0.18) !important;
+          box-shadow: 2px 0 16px rgba(0,0,0,0.14) !important;
           flex-shrink: 0;
         }
 
         [data-slot="sidebar-content"] {
-          background: #0B1629 !important;
-          background-color: #0B1629 !important;
+          background: #131C2E !important;
+          background-color: #131C2E !important;
         }
 
         .sidebar-header,
         [data-slot="sidebar-header"] {
-          background: #0a1525 !important;
-          background-color: #0a1525 !important;
-          border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+          background: #0f1724 !important;
+          background-color: #0f1724 !important;
+          border-bottom: 1px solid rgba(255,255,255,0.06) !important;
         }
         .sidebar-footer,
         [data-slot="sidebar-footer"] {
-          background: #0a1525 !important;
-          background-color: #0a1525 !important;
+          background: #0f1724 !important;
+          background-color: #0f1724 !important;
           border-top: 1px solid var(--border-sb) !important;
         }
 
@@ -487,21 +487,21 @@ export default function Layout({ children, currentPageName }) {
         }
         .sidebar-section-trigger svg { color: rgba(255,255,255,0.2) !important; width: 12px !important; height: 12px !important; }
 
-        .nav-item { position: relative; color: var(--text-sb) !important; transition: all 0.12s !important; margin: 1px 0 !important; }
-        .nav-item:hover { background: rgba(255,255,255,0.055) !important; color: var(--text-sb-h) !important; }
-        .nav-item svg { opacity: 0.85; }
+        .nav-item { position: relative; color: var(--text-sb) !important; transition: all 0.12s !important; margin: 2px 0 !important; }
+        .nav-item:hover { background: rgba(255,255,255,0.05) !important; color: var(--text-sb-h) !important; }
+        .nav-item svg { opacity: 0.8; }
 
-        .nav-item-active { background: rgba(26,86,219,0.18) !important; color: #ffffff !important; }
+        .nav-item-active { background: rgba(37,99,235,0.15) !important; color: #ffffff !important; }
         .nav-item-active::before {
           content: '';
           position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-          width: 3px; height: 18px;
-          background: var(--accent);
-          border-radius: 0 3px 3px 0;
+          width: 2px; height: 22px;
+          background: #60a5fa;
+          border-radius: 0 2px 2px 0;
         }
         .nav-item-active svg { opacity: 1; color: #93c5fd !important; }
         .nav-item-inactive { background: transparent !important; }
-        .nav-item-inactive:hover { background: rgba(255,255,255,0.055) !important; color: rgba(255,255,255,0.8) !important; }
+        .nav-item-inactive:hover { background: rgba(255,255,255,0.045) !important; color: rgba(255,255,255,0.82) !important; }
 
         [data-sidebar] ::-webkit-scrollbar { width: 3px; }
         [data-sidebar] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
