@@ -447,9 +447,15 @@ function OrdensServicoContent() {
         <div className="mb-4 md:mb-5">
           <div className="max-w-[1800px] mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <h1 className="text-[18px] md:text-[22px] font-extrabold text-slate-900 leading-tight tracking-tight">Ordens de Serviço</h1>
-                <p className="text-slate-400 text-[11px] font-medium mt-0.5">Gestão e acompanhamento de ordens de serviço</p>
+              {/* Título + subtítulo */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-200 flex-shrink-0">
+                  <ClipboardList className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-[17px] md:text-[20px] font-extrabold text-slate-900 leading-tight tracking-tight">Ordens de Serviço</h1>
+                  <p className="text-slate-400 text-[11px] font-medium mt-0.5 leading-none">Gestão e acompanhamento · {resumo.total} registros</p>
+                </div>
               </div>
 
               {/* Botões de ação */}
@@ -459,14 +465,14 @@ function OrdensServicoContent() {
                     <button
                       onClick={handleAgrupar}
                       disabled={selectedOS.length < 2}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-700 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors font-semibold"
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
                     >
                       <Merge className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
                     </button>
                     <button
                       onClick={handleBulkDelete}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors"
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
                     >
                       <Trash className="w-3.5 h-3.5" />
                       ({selectedOS.length})
@@ -476,7 +482,7 @@ function OrdensServicoContent() {
 
                 <button
                   onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                  className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shadow-sm"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Relatório</span>
@@ -486,7 +492,7 @@ function OrdensServicoContent() {
                   <>
                     <button
                       onClick={() => setIsImportModalOpen(true)}
-                      className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                      className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shadow-sm"
                     >
                       <Upload className="w-3.5 h-3.5" />
                       Importar
@@ -494,9 +500,9 @@ function OrdensServicoContent() {
 
                     <button
                       onClick={handleNewOS}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                      className="inline-flex items-center gap-1.5 h-8 px-4 rounded-lg text-[12px] font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-4 h-4" />
                       <span className="hidden sm:inline">Nova OS</span>
                       <span className="sm:hidden">Nova</span>
                     </button>
@@ -512,24 +518,44 @@ function OrdensServicoContent() {
           {/* ── KPI CARDS ── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-3 md:mb-4">
             {/* Total */}
-            <div className="kpi-bar kpi-bar-blue bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total de OS</p>
+            <div className="kpi-bar kpi-bar-blue bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total de OS</p>
+                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <ClipboardList className="w-3.5 h-3.5 text-blue-500" />
+                </div>
+              </div>
               <span className="text-2xl md:text-3xl font-black text-slate-800 font-mono leading-none">{resumo.total}</span>
             </div>
             {/* Em Andamento */}
-            <div className="kpi-bar kpi-bar-yellow bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Em Andamento</p>
+            <div className="kpi-bar kpi-bar-yellow bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Em Andamento</p>
+                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                  <Clock className="w-3.5 h-3.5 text-amber-500" />
+                </div>
+              </div>
               <span className="text-2xl md:text-3xl font-black text-amber-500 font-mono leading-none">{resumo.emAndamento}</span>
             </div>
             {/* Finalizadas */}
-            <div className="kpi-bar kpi-bar-green bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Finalizadas</p>
+            <div className="kpi-bar kpi-bar-green bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Finalizadas</p>
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                </div>
+              </div>
               <span className="text-2xl md:text-3xl font-black text-emerald-600 font-mono leading-none">{resumo.finalizadas}</span>
             </div>
-            {/* Valor Total */}
-            <div className="kpi-bar kpi-bar-sky bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Faturamento</p>
-              <span className="text-base md:text-xl font-black text-blue-600 font-mono leading-none">{formatCurrency(resumo.valorTotal)}</span>
+            {/* Faturamento */}
+            <div className="kpi-bar kpi-bar-sky bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Faturamento</p>
+                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <DollarSign className="w-3.5 h-3.5 text-blue-500" />
+                </div>
+              </div>
+              <span className="text-sm md:text-xl font-black text-blue-600 font-mono leading-none">{formatCurrency(resumo.valorTotal)}</span>
             </div>
           </div>
 
@@ -547,13 +573,21 @@ function OrdensServicoContent() {
           </div>
 
           {/* ── TABELA ── */}
-          <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            {/* Barra de título da tabela */}
+            <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50">
+              <div className="flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-slate-400" />
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Lista de OS</span>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{filteredOS.length} registro{filteredOS.length !== 1 ? 's' : ''}</span>
+            </div>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-800 hover:bg-slate-800" style={{height:'32px'}}>
+                  <TableRow className="bg-slate-700 hover:bg-slate-700" style={{height:'30px'}}>
                     {isAdmin && (
-                      <TableHead className="text-slate-300 font-semibold w-8 md:w-10 text-[10px] px-2 uppercase tracking-widest py-0 text-center">
+                      <TableHead className="text-slate-200 font-bold w-8 md:w-10 text-[9px] px-2 uppercase tracking-widest py-0 text-center">
                         <Checkbox
                           checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
                           onCheckedChange={handleSelectAll}
@@ -561,17 +595,17 @@ function OrdensServicoContent() {
                         />
                       </TableHead>
                     )}
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center">Nº OS</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden sm:table-cell">Data</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center w-[110px] md:w-[160px]">Cliente</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden lg:table-cell">Veículo</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden xl:table-cell">Produtos</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden xl:table-cell">Serviços</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden 2xl:table-cell">Despesas</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden 2xl:table-cell">Desconto</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden md:table-cell">Valor Total</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden lg:table-cell">Status</TableHead>
-                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center">Ações</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-center">Nº OS</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-center w-[110px] md:w-[160px]">Cliente</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden lg:table-cell">Veículo</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-right hidden xl:table-cell">Produtos</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-right hidden xl:table-cell">Serviços</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-right hidden 2xl:table-cell">Despesas</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-right hidden 2xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-right hidden md:table-cell">Valor Total</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden lg:table-cell">Status</TableHead>
+                    <TableHead className="text-slate-200 font-bold text-[9px] px-2 md:px-3 uppercase tracking-widest py-0 text-center">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
