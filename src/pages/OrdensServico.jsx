@@ -456,104 +456,131 @@ function OrdensServicoContent() {
     );
   }
 
+  const canceladas = ordensServico.filter((os) => os.status === 'cancelado').length;
+
   return (
     <>
       <Toaster />
 
-      <div className="min-h-screen bg-slate-50">
+      <div className="space-y-5">
 
-        {/* ── KPI CARDS + BOTÕES ── */}
-        <div className="mb-5">
-          <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
+        {/* ═══════════════════════════════════════
+            LINHA 1 — KPI CARDS + AÇÕES
+        ═══════════════════════════════════════ */}
+        <div className="flex flex-col lg:flex-row gap-3">
 
-            {/* Card TOTAL */}
-            <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-5 py-4 flex-1 min-w-0 shadow-sm">
-              <div>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-1">Total</p>
-                <span className="text-4xl font-black text-slate-800 leading-none">{resumo.total}</span>
+          {/* KPI CARDS */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
+
+            {/* Total */}
+            <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden group hover:shadow-md transition-shadow">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-slate-300 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Total</p>
+              <div className="flex items-end justify-between">
+                <span className="text-[2.8rem] font-black text-slate-800 leading-none">{resumo.total}</span>
+                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center mb-1">
+                  <ClipboardList className="w-5 h-5 text-slate-400" />
+                </div>
               </div>
-              <TrendingUp className="w-9 h-9 text-slate-200" strokeWidth={1.5} />
+              <p className="text-[11px] text-slate-400 mt-2">todas as ordens</p>
             </div>
 
-            {/* Card EM ANDAMENTO */}
-            <div className="flex items-center justify-between bg-amber-400 rounded-xl px-5 py-4 flex-1 min-w-0 shadow-sm">
-              <div>
-                <p className="text-[11px] font-semibold text-amber-800/80 uppercase tracking-widest mb-1">Em Andamento</p>
-                <span className="text-4xl font-black text-white leading-none">{resumo.emAndamento}</span>
+            {/* Em Andamento */}
+            <div className="relative bg-white rounded-2xl border border-amber-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-amber-400 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Em Andamento</p>
+              <div className="flex items-end justify-between">
+                <span className="text-[2.8rem] font-black text-amber-500 leading-none">{resumo.emAndamento}</span>
+                <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center mb-1">
+                  <Clock className="w-5 h-5 text-amber-400" />
+                </div>
               </div>
-              <Clock className="w-9 h-9 text-amber-200/70" strokeWidth={1.5} />
+              <p className="text-[11px] text-slate-400 mt-2">aguardando conclusão</p>
             </div>
 
-            {/* Card FINALIZADAS */}
-            <div className="flex items-center justify-between bg-emerald-500 rounded-xl px-5 py-4 flex-1 min-w-0 shadow-sm">
-              <div>
-                <p className="text-[11px] font-semibold text-emerald-100 uppercase tracking-widest mb-1">Finalizadas</p>
-                <span className="text-4xl font-black text-white leading-none">{resumo.finalizadas}</span>
+            {/* Finalizadas */}
+            <div className="relative bg-white rounded-2xl border border-emerald-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-emerald-500 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">Finalizadas</p>
+              <div className="flex items-end justify-between">
+                <span className="text-[2.8rem] font-black text-emerald-600 leading-none">{resumo.finalizadas}</span>
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mb-1">
+                  <CheckCircle className="w-5 h-5 text-emerald-500" />
+                </div>
               </div>
-              <CheckCircle className="w-9 h-9 text-emerald-200/70" strokeWidth={1.5} />
+              <p className="text-[11px] text-slate-400 mt-2">concluídas com êxito</p>
             </div>
 
-            {/* Card FATURAMENTO */}
-            <div className="hidden sm:flex items-center justify-between bg-white border border-slate-200 rounded-xl px-5 py-4 flex-1 min-w-0 shadow-sm">
-              <div>
-                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest mb-1">Faturamento Total</p>
-                <span className="text-xl font-black text-blue-700 leading-none whitespace-nowrap">{formatCurrency(resumo.valorTotal)}</span>
+            {/* Faturamento */}
+            <div className="relative bg-white rounded-2xl border border-blue-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow col-span-2 lg:col-span-1">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-blue-500 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2">Faturamento Total</p>
+              <div className="flex items-end justify-between">
+                <span className="text-xl font-black text-blue-700 leading-none">{formatCurrency(resumo.valorTotal)}</span>
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-1">
+                  <DollarSign className="w-5 h-5 text-blue-400" />
+                </div>
               </div>
-              <DollarSign className="w-9 h-9 text-blue-100" strokeWidth={1.5} />
+              <p className="text-[11px] text-slate-400 mt-2">{canceladas} cancelada{canceladas !== 1 ? 's' : ''}</p>
             </div>
+          </div>
 
-            {/* Botões */}
-            <div className="flex gap-2 items-center flex-shrink-0">
-              {isAdmin && selectedOS.length > 0 && (
-                <>
-                  <button onClick={handleAgrupar} disabled={selectedOS.length < 2}
-                    className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-lg text-[13px] font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
-                    <Merge className="w-4 h-4" strokeWidth={2} />
-                    <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
-                  </button>
-                  <button onClick={handleBulkDelete}
-                    className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-lg text-[13px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors">
-                    <Trash className="w-4 h-4" strokeWidth={2} />({selectedOS.length})
-                  </button>
-                </>
-              )}
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-lg text-[13px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors">
-                    <span>··· Ações</span>
-                    <ChevronDown className="w-3.5 h-3.5 opacity-50" strokeWidth={2} />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem className="py-2.5 text-sm" onClick={() => setIsRelatorioFiltersModalOpen(true)}>
-                    <FileText className="w-4 h-4 mr-2.5 text-slate-500" />Relatório
-                  </DropdownMenuItem>
-                  {canCreate('os') && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="py-2.5 text-sm" onClick={() => setIsImportModalOpen(true)}>
-                        <Upload className="w-4 h-4 mr-2.5 text-slate-500" />Importar OS
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {canCreate('os') && (
-                <button onClick={handleNewOS}
-                  className="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-lg text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm whitespace-nowrap">
-                  <Plus className="w-4 h-4" strokeWidth={2.5} />+ Nova OS
+          {/* BOTÕES DE AÇÃO (lado direito em desktop, abaixo em mobile) */}
+          <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0">
+            {isAdmin && selectedOS.length > 0 && (
+              <div className="flex gap-2">
+                <button onClick={handleAgrupar} disabled={selectedOS.length < 2}
+                  className="inline-flex items-center justify-center gap-1.5 h-10 px-3 rounded-xl text-[12px] font-semibold bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors whitespace-nowrap">
+                  <Merge className="w-3.5 h-3.5" />
+                  <span>Agrupar ({selectedOS.length})</span>
                 </button>
-              )}
-            </div>
+                <button onClick={handleBulkDelete}
+                  className="inline-flex items-center justify-center gap-1.5 h-10 px-3 rounded-xl text-[12px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors whitespace-nowrap">
+                  <Trash className="w-3.5 h-3.5" />({selectedOS.length})
+                </button>
+              </div>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
+                  <Filter className="w-3.5 h-3.5 text-slate-400" />
+                  Ações
+                  <ChevronDown className="w-3 h-3 opacity-40" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsRelatorioFiltersModalOpen(true)}>
+                  <FileText className="w-4 h-4 mr-2.5 text-slate-400" />Gerar Relatório
+                </DropdownMenuItem>
+                {canCreate('os') && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsImportModalOpen(true)}>
+                      <Upload className="w-4 h-4 mr-2.5 text-slate-400" />Importar OS
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {canCreate('os') && (
+              <button onClick={handleNewOS}
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm shadow-blue-200 whitespace-nowrap">
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+                Nova OS
+              </button>
+            )}
           </div>
         </div>
 
-        {/* ── TABELA + FILTROS ── */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          {/* Barra de filtros */}
-          <div className="px-4 pt-3 pb-3 border-b border-slate-100">
+        {/* ═══════════════════════════════════════
+            LINHA 2 — TABELA
+        ═══════════════════════════════════════ */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+
+          {/* Toolbar */}
+          <div className="px-4 pt-4 pb-3 border-b border-slate-100">
             <AdvancedSearchFilters
               entityName="ordens_servico"
               searchFields={osSearchFields}
@@ -565,50 +592,51 @@ function OrdensServicoContent() {
               placeholder="Buscar por nº OS, cliente, responsável, veículo..."
             />
           </div>
-          {/* Sub-header */}
-          <div className="flex items-center justify-between px-4 py-2 bg-slate-50 border-b border-slate-100">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Resultados</span>
-            <span className="text-[11px] font-medium text-slate-400">
+
+          {/* Contador de resultados */}
+          <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50/70 border-b border-slate-100">
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">Resultados</span>
+            <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
               {filteredOS.length} registro{filteredOS.length !== 1 ? 's' : ''}
             </span>
           </div>
+
+          {/* Tabela */}
           <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-slate-800 hover:bg-slate-800">
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ background: '#0B1629' }}>
                   {isAdmin && (
-                    <TableHead className="text-slate-300 font-bold w-10 text-[10px] px-3 uppercase tracking-wider py-3 text-center">
+                    <th className="w-10 px-3 py-3 text-center">
                       <Checkbox
                         checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-slate-500 w-4 h-4"
                       />
-                    </TableHead>
+                    </th>
                   )}
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3">Nº OS</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 hidden sm:table-cell">Data</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3">Cliente</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 hidden lg:table-cell">Veículo</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-right hidden xl:table-cell">Produtos</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-right hidden xl:table-cell">Serviços</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-right hidden 2xl:table-cell">Despesas</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-right hidden 2xl:table-cell">Desconto</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-right hidden md:table-cell">Valor Total</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-center hidden lg:table-cell">Status</TableHead>
-                  <TableHead className="text-slate-300 font-bold text-[10px] px-3 uppercase tracking-wider py-3 text-center">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Nº OS</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap hidden sm:table-cell">Data</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Cliente</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden lg:table-cell">Veículo</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden xl:table-cell whitespace-nowrap">Produtos</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden xl:table-cell whitespace-nowrap">Serviços</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:table-cell whitespace-nowrap">Valor Total</th>
+                  <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden lg:table-cell">Status</th>
+                  <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
                 {filteredOS.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={isAdmin ? 12 : 11} className="text-center py-16">
+                  <tr>
+                    <td colSpan={isAdmin ? 10 : 9} className="text-center py-20">
                       <ClipboardList className="w-12 h-12 mx-auto text-slate-200 mb-3" />
                       <p className="text-slate-400 text-sm font-semibold">Nenhuma ordem de serviço encontrada</p>
                       <p className="text-slate-300 text-xs mt-1">Tente ajustar os filtros ou criar uma nova OS</p>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ) : (
-                  filteredOS.map((os) => {
+                  filteredOS.map((os, idx) => {
                     const valorProdutos = (os.itens || [])
                       .filter(item => item.tipo === 'produto')
                       .reduce((sum, item) => sum + (item.valor_total || 0), 0);
@@ -622,76 +650,128 @@ function OrdensServicoContent() {
                       .reduce((sum, d) => sum + (d.valor || 0), 0);
                     const valorDespesas = (os.outras_despesas || 0) + despesasDaOS;
 
+                    const isSelected = selectedOS.includes(os.id);
+
                     return (
-                      <TableRow key={os.id} className="hover:bg-blue-50/50 border-b border-slate-100 transition-colors">
+                      <tr key={os.id}
+                        className={`border-b border-slate-100 transition-colors cursor-default ${isSelected ? 'bg-blue-50' : idx % 2 === 0 ? 'bg-white hover:bg-slate-50/80' : 'bg-slate-50/30 hover:bg-slate-50/80'}`}>
                         {isAdmin && (
-                          <TableCell className="py-3 px-3 text-center">
+                          <td className="py-3.5 px-3 text-center">
                             <Checkbox
-                              checked={selectedOS.includes(os.id)}
+                              checked={isSelected}
                               onCheckedChange={() => handleSelectOS(os.id)}
                               className="w-4 h-4"
                             />
-                          </TableCell>
+                          </td>
                         )}
-                        <TableCell className="font-bold text-blue-600 py-3 text-xs px-3 whitespace-nowrap">{os.numero_os}</TableCell>
-                        <TableCell className="text-slate-500 py-3 text-xs whitespace-nowrap px-3 hidden sm:table-cell font-medium">{formatDate(os.data_abertura)}</TableCell>
-                        <TableCell className="text-slate-800 py-3 text-xs px-3 max-w-[180px] truncate font-semibold">{getContatoNome(os)}</TableCell>
-                        <TableCell className="text-slate-500 py-3 text-xs hidden lg:table-cell px-3 max-w-[160px] truncate">{getVeiculoInfo(os.veiculo_id) || <span className="text-slate-300">—</span>}</TableCell>
-                        <TableCell className="text-slate-600 py-3 text-right text-xs hidden xl:table-cell px-3 font-mono">{formatCurrency(valorProdutos)}</TableCell>
-                        <TableCell className="text-slate-600 py-3 text-right text-xs hidden xl:table-cell px-3 font-mono">{formatCurrency(valorServicos)}</TableCell>
-                        <TableCell className="text-slate-600 py-3 text-right text-xs hidden 2xl:table-cell px-3 font-mono">{formatCurrency(valorDespesas)}</TableCell>
-                        <TableCell className="text-slate-600 py-3 text-right text-xs hidden 2xl:table-cell px-3 font-mono">{formatCurrency(os.desconto_valor || 0)}</TableCell>
-                        <TableCell className="font-bold text-slate-900 py-3 text-right text-xs hidden md:table-cell px-3 font-mono">{formatCurrency(os.valor_total)}</TableCell>
-                        <TableCell className="py-3 hidden lg:table-cell px-3">{getStatusBadge(os.status)}</TableCell>
-                        <TableCell className="py-3 px-3">
+
+                        {/* Nº OS */}
+                        <td className="py-3.5 px-4 whitespace-nowrap">
+                          <button onClick={() => handleView(os)} className="text-blue-600 font-bold text-[13px] hover:text-blue-800 hover:underline transition-colors">
+                            {os.numero_os}
+                          </button>
+                        </td>
+
+                        {/* Data */}
+                        <td className="py-3.5 px-4 text-[12px] text-slate-500 whitespace-nowrap hidden sm:table-cell font-medium tabular-nums">
+                          {formatDate(os.data_abertura)}
+                        </td>
+
+                        {/* Cliente */}
+                        <td className="py-3.5 px-4 max-w-[200px]">
+                          <span className="text-[13px] font-semibold text-slate-800 truncate block">{getContatoNome(os)}</span>
+                        </td>
+
+                        {/* Veículo */}
+                        <td className="py-3.5 px-4 max-w-[160px] hidden lg:table-cell">
+                          <span className="text-[12px] text-slate-500 truncate block">
+                            {getVeiculoInfo(os.veiculo_id) || <span className="text-slate-300">—</span>}
+                          </span>
+                        </td>
+
+                        {/* Produtos */}
+                        <td className="py-3.5 px-4 text-right text-[12px] text-slate-500 hidden xl:table-cell tabular-nums">
+                          {formatCurrency(valorProdutos)}
+                        </td>
+
+                        {/* Serviços */}
+                        <td className="py-3.5 px-4 text-right text-[12px] text-slate-500 hidden xl:table-cell tabular-nums">
+                          {formatCurrency(valorServicos)}
+                        </td>
+
+                        {/* Valor Total */}
+                        <td className="py-3.5 px-4 text-right hidden md:table-cell">
+                          <span className="text-[13px] font-bold text-slate-800 tabular-nums">{formatCurrency(os.valor_total)}</span>
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-3.5 px-4 text-center hidden lg:table-cell">
+                          {(() => {
+                            const cfg = {
+                              em_andamento: { label: 'Em Andamento', dot: '#F59E0B', bg: '#FFFBEB', color: '#92400E' },
+                              finalizado:   { label: 'Finalizado',   dot: '#10B981', bg: '#ECFDF5', color: '#065F46' },
+                              cancelado:    { label: 'Cancelado',    dot: '#EF4444', bg: '#FEF2F2', color: '#991B1B' },
+                            };
+                            const s = cfg[os.status] || { label: os.status, dot: '#9CA3AF', bg: '#F9FAFB', color: '#6B7280' };
+                            return (
+                              <span style={{ background: s.bg, color: s.color }}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-bold whitespace-nowrap">
+                                <span style={{ background: s.dot, width: 6, height: 6, borderRadius: '50%', flexShrink: 0, display: 'inline-block' }} />
+                                {s.label}
+                              </span>
+                            );
+                          })()}
+                        </td>
+
+                        {/* Ações */}
+                        <td className="py-3.5 px-4">
                           <div className="flex items-center justify-center gap-1">
                             <button onClick={() => handleView(os)} title="Visualizar"
-                              className="flex items-center justify-center w-8 h-8 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors">
-                              <Eye className="w-4 h-4" />
+                              className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+                              <Eye className="w-[15px] h-[15px]" />
                             </button>
                             {canEdit('os') && (
                               <button onClick={() => handleEdit(os)} title="Editar"
-                                className="hidden sm:flex items-center justify-center w-8 h-8 rounded-lg text-amber-500 hover:bg-amber-50 transition-colors">
-                                <Pencil className="w-4 h-4" />
+                                className="hidden sm:flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-all">
+                                <Pencil className="w-[15px] h-[15px]" />
                               </button>
                             )}
                             {canDelete('os') && (
                               <button onClick={() => handleDelete(os)} title="Excluir"
-                                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors">
-                                <Trash2 className="w-4 h-4" />
+                                className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all">
+                                <Trash2 className="w-[15px] h-[15px]" />
                               </button>
                             )}
-                            {/* Mobile: menu de ações */}
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-50 transition-colors">
+                                <button className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 transition-all">
                                   <MoreHorizontal className="w-4 h-4" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem onClick={() => handleView(os)} className="py-2.5">
+                              <DropdownMenuContent align="end" className="w-44">
+                                <DropdownMenuItem onClick={() => handleView(os)} className="py-2.5 cursor-pointer">
                                   <Eye className="w-4 h-4 mr-2 text-blue-500" />Ver detalhes
                                 </DropdownMenuItem>
                                 {canEdit('os') && (
-                                  <DropdownMenuItem onClick={() => handleEdit(os)} className="py-2.5">
+                                  <DropdownMenuItem onClick={() => handleEdit(os)} className="py-2.5 cursor-pointer">
                                     <Pencil className="w-4 h-4 mr-2 text-amber-500" />Editar
                                   </DropdownMenuItem>
                                 )}
                                 {canDelete('os') && (
-                                  <DropdownMenuItem onClick={() => handleDelete(os)} className="py-2.5 text-red-600">
+                                  <DropdownMenuItem onClick={() => handleDelete(os)} className="py-2.5 text-red-600 cursor-pointer">
                                     <Trash2 className="w-4 h-4 mr-2" />Excluir
                                   </DropdownMenuItem>
                                 )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
-                        </TableCell>
-                      </TableRow>
+                        </td>
+                      </tr>
                     );
                   })
                 )}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
