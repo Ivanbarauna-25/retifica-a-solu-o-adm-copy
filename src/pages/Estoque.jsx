@@ -10,7 +10,7 @@ import { useAdvancedFilters } from '@/components/filters/useAdvancedFilters';
 import StandardDialog, { useStandardDialog } from '@/components/ui/StandardDialog';
 import {
   Plus, Pencil, Trash2, Package, AlertTriangle, DollarSign,
-  TrendingDown, Loader2, Filter, ChevronDown, MoreHorizontal, Printer
+  Loader2, Filter, ChevronDown, MoreHorizontal, Printer
 } from 'lucide-react';
 import { formatCurrency } from '@/components/formatters';
 import { useToast } from '@/components/ui/use-toast';
@@ -21,10 +21,9 @@ export default function EstoquePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPeca, setSelectedPeca] = useState(null);
-  const [isPrinting, setIsPrinting] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState(null);
   const { toast } = useToast();
-  const { dialogState, showDanger, closeDialog, DialogComponent } = useStandardDialog();
+  const { showDanger, closeDialog, DialogComponent } = useStandardDialog();
 
   const fetchPecas = async () => {
     setIsLoading(true);
@@ -64,7 +63,7 @@ export default function EstoquePage() {
 
   const openForm = (peca = null) => { setSelectedPeca(peca); setIsFormOpen(true); };
 
-  const handlePrint = () => { setIsPrinting(true); window.print(); setIsPrinting(false); };
+  const handlePrint = () => { window.print(); };
 
   const searchFields = [
     { key: 'codigo', label: 'Código' },

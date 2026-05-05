@@ -124,7 +124,7 @@ export default function OrcamentosPage() {
     setShowRelatorioModal(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!showRelatorioModal && pendingReportUrl) { window.open(pendingReportUrl, "_blank"); setPendingReportUrl(null); }
   }, [showRelatorioModal, pendingReportUrl]);
 
