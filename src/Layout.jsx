@@ -205,13 +205,13 @@ const AccordionNavGroup = ({ groupData, currentPath }) => {
   return (
     <Accordion type="multiple" className="w-full" defaultValue={hasActive ? [groupData.group] : []}>
       <AccordionItem value={groupData.group} className="border-b-0">
-        <AccordionTrigger className="sidebar-section-trigger px-2.5 py-2 text-[10px] font-bold uppercase tracking-widest hover:no-underline rounded-lg [&[data-state=open]>svg]:rotate-180">
-          <div className="flex items-center gap-2">
-            {groupData.icon && <groupData.icon className="w-3.5 h-3.5 opacity-60" />}
+        <AccordionTrigger className="sidebar-section-trigger hover:no-underline w-full [&[data-state=open]>.chevron-icon]:rotate-180">
+          <div className="flex items-center gap-1.5">
+            {groupData.icon && <groupData.icon className="w-3 h-3" style={{ opacity: 0.4, flexShrink: 0 }} />}
             <span>{groupData.group}</span>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="pl-1 pr-0 pt-0.5 pb-1">
+        <AccordionContent className="pb-1 pt-0">
           <div className="space-y-0.5">
             {groupData.items.map((item) => (
               <NavItem key={`${groupData.group}-${item.title}`} item={item} currentPath={currentPath} />
@@ -226,21 +226,15 @@ const AccordionNavGroup = ({ groupData, currentPath }) => {
 const CustomSidebarHeader = ({ nomeEmpresa }) => {
   const { isCollapsed } = useSidebar();
   return (
-    <SidebarHeader className="sidebar-header p-4 flex-shrink-0">
-      <div className="flex items-center gap-3">
-        <div className="sidebar-logo-icon" aria-label="Logo">
-          <Zap className="w-4 h-4 text-white" aria-hidden="true" />
+    <SidebarHeader className="sidebar-header flex-shrink-0">
+      <div className="sb-header-inner">
+        <div className="sb-logo" aria-label="Logo">
+          <Zap className="w-5 h-5 text-white relative z-10" aria-hidden="true" strokeWidth={2.5} />
         </div>
         {!isCollapsed && (
-          <div>
-            <div className="text-[15px] font-800 text-white leading-tight font-extrabold tracking-tight">
-              Sistema de Gestão
-            </div>
-            {nomeEmpresa && (
-              <div className="text-[10.5px] text-blue-300/70 font-medium mt-0.5 truncate max-w-[150px]">
-                {nomeEmpresa}
-              </div>
-            )}
+          <div className="min-w-0 flex-1">
+            <div className="sb-brand-name">Sistema de Gestão</div>
+            <div className="sb-brand-sub">{nomeEmpresa || 'Carregando...'}</div>
           </div>
         )}
       </div>
@@ -248,9 +242,49 @@ const CustomSidebarHeader = ({ nomeEmpresa }) => {
   );
 };
 
-const CustomSidebarFooter = () => (
-  <SidebarFooter className="sidebar-footer p-3 flex-shrink-0" aria-label="Rodapé Sidebar" />
-);
+const CustomSidebarFooter = ({ user }) => {
+  const { isCollapsed } = useSidebar();
+  const initials = user?.full_name
+    ? user.full_name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+    : user?.email?.[0]?.toUpperCase() || 'U';
+  const firstName = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || '';
+
+  return (
+    <SidebarFooter className="sidebar-footer flex-shrink-0" aria-label="Rodapé Sidebar">
+      {user && (
+        <div className={`flex items-center gap-2.5 px-3 py-3 ${isCollapsed ? 'justify-center' : ''}`}>
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #1A56DB, #7C3AED)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 11, fontWeight: 800, color: 'white', flexShrink: 0,
+            boxShadow: '0 0 0 2px rgba(96,165,250,0.2)'
+          }}>
+            {initials}
+          </div>
+          {!isCollapsed && (
+            <div className="min-w-0 flex-1">
+              <p style={{ fontSize: 12.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)', lineHeight: 1.2, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {firstName}
+              </p>
+              <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.email}
+              </p>
+            </div>
+          )}
+          {!isCollapsed && (
+            <div style={{
+              width: 7, height: 7, borderRadius: '50%',
+              background: '#22c55e',
+              flexShrink: 0,
+              boxShadow: '0 0 6px rgba(34,197,94,0.6)'
+            }} title="Online" />
+          )}
+        </div>
+      )}
+    </SidebarFooter>
+  );
+};
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
@@ -417,11 +451,14 @@ export default function Layout({ children, currentPageName }) {
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
         :root {
-          --sb-bg: #131C2E;
-          --accent: #2563EB;
-          --border-sb: rgba(255,255,255,0.05);
-          --text-sb: rgba(255,255,255,0.65);
-          --text-sb-h: rgba(255,255,255,0.92);
+          --sb-bg: #0D1526;
+          --sb-bg-header: #09111F;
+          --sb-border: rgba(255,255,255,0.06);
+          --sb-accent: #2563EB;
+          --sb-accent-glow: rgba(37,99,235,0.25);
+          --text-sb: rgba(255,255,255,0.55);
+          --text-sb-h: rgba(255,255,255,0.90);
+          --text-sb-active: #FFFFFF;
         }
 
         html, body, #root { height: 100%; width: 100%; overflow: hidden; }
@@ -430,82 +467,171 @@ export default function Layout({ children, currentPageName }) {
         .app-shell { display: flex; height: 100vh; width: 100vw; overflow: hidden; background: #F1F5F9; }
         .app-main { display: flex; flex-direction: column; flex: 1; min-width: 0; height: 100vh; overflow: hidden; }
 
-        [data-sidebar],
-        [data-sidebar] *:not(svg):not(path):not(span):not(a):not(button) {
-          --sidebar-background: #0B1629 !important;
-        }
-
+        /* ── SIDEBAR BASE ── */
         [data-sidebar],
         aside[data-sidebar],
         div[data-sidebar],
         [data-slot="sidebar"],
         [data-slot="sidebar-wrapper"],
         [data-slot="sidebar-gap"] {
-          background: #131C2E !important;
-          background-color: #131C2E !important;
+          background: var(--sb-bg) !important;
+          background-color: var(--sb-bg) !important;
           opacity: 1 !important;
-          border-right: none !important;
-          box-shadow: 2px 0 16px rgba(0,0,0,0.14) !important;
+          border-right: 1px solid var(--sb-border) !important;
+          box-shadow: 4px 0 24px rgba(0,0,0,0.22) !important;
           flex-shrink: 0;
+          width: 228px !important;
         }
 
         [data-slot="sidebar-content"] {
-          background: #131C2E !important;
-          background-color: #131C2E !important;
+          background: var(--sb-bg) !important;
+          background-color: var(--sb-bg) !important;
         }
 
+        /* ── HEADER ── */
         .sidebar-header,
         [data-slot="sidebar-header"] {
-          background: #0f1724 !important;
-          background-color: #0f1724 !important;
-          border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+          background: var(--sb-bg-header) !important;
+          background-color: var(--sb-bg-header) !important;
+          border-bottom: 1px solid var(--sb-border) !important;
+          padding: 0 !important;
+          height: 64px !important;
+          display: flex !important;
+          align-items: center !important;
+          min-height: 64px !important;
+          max-height: 64px !important;
         }
+
+        .sb-header-inner {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 0 16px;
+          width: 100%;
+        }
+
+        .sb-logo {
+          width: 38px; height: 38px;
+          border-radius: 10px;
+          background: linear-gradient(145deg, #1D4ED8, #1e40af);
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 4px 16px rgba(29,78,216,0.5);
+          flex-shrink: 0;
+          position: relative;
+          overflow: hidden;
+        }
+        .sb-logo::after {
+          content: '';
+          position: absolute; inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+          border-radius: inherit;
+        }
+
+        .sb-brand-name {
+          font-size: 14px;
+          font-weight: 700;
+          color: rgba(255,255,255,0.95);
+          line-height: 1.2;
+          letter-spacing: -0.2px;
+        }
+        .sb-brand-sub {
+          font-size: 11px;
+          color: rgba(255,255,255,0.35);
+          font-weight: 400;
+          margin-top: 1px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 140px;
+        }
+
+        /* ── FOOTER ── */
         .sidebar-footer,
         [data-slot="sidebar-footer"] {
-          background: #0f1724 !important;
-          background-color: #0f1724 !important;
-          border-top: 1px solid var(--border-sb) !important;
+          background: var(--sb-bg-header) !important;
+          background-color: var(--sb-bg-header) !important;
+          border-top: 1px solid var(--sb-border) !important;
+          padding: 0 !important;
+          min-height: 52px !important;
         }
 
-        .sidebar-logo-icon {
-          width: 34px; height: 34px;
-          border-radius: 9px;
-          background: linear-gradient(135deg, #1A56DB, #1e40af);
-          display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 0 20px rgba(26,86,219,0.35);
-          flex-shrink: 0;
-        }
+        /* ── SCROLLBAR ── */
+        [data-sidebar] ::-webkit-scrollbar { width: 2px; }
+        [data-sidebar] ::-webkit-scrollbar-track { background: transparent; }
+        [data-sidebar] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
 
+        /* ── SECTION TRIGGERS (grupos accordion) ── */
         .sidebar-section-trigger {
-          color: rgba(255,255,255,0.65) !important;
-          letter-spacing: 0.12em !important;
+          color: rgba(255,255,255,0.28) !important;
+          font-size: 9.5px !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.14em !important;
+          text-transform: uppercase !important;
           transition: all 0.15s !important;
+          padding: 8px 12px 4px !important;
+          margin-top: 4px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          width: 100% !important;
         }
         .sidebar-section-trigger:hover {
-          color: rgba(255,255,255,0.90) !important;
-          background: rgba(255,255,255,0.04) !important;
+          color: rgba(255,255,255,0.60) !important;
+          background: transparent !important;
         }
-        .sidebar-section-trigger svg { color: rgba(255,255,255,0.2) !important; width: 12px !important; height: 12px !important; }
+        /* chevron do accordion dentro do trigger */
+        .sidebar-section-trigger > svg:last-child,
+        .sidebar-section-trigger > span:last-child > svg {
+          color: rgba(255,255,255,0.20) !important;
+          width: 10px !important;
+          height: 10px !important;
+          flex-shrink: 0;
+        }
+        /* separador visual entre grupos */
+        [data-slot="sidebar-content"] .space-y-0\.5 + .space-y-0\.5 {
+          margin-top: 6px;
+        }
 
-        .nav-item { position: relative; color: var(--text-sb) !important; transition: all 0.12s !important; margin: 2px 0 !important; }
-        .nav-item:hover { background: rgba(255,255,255,0.05) !important; color: var(--text-sb-h) !important; }
-        .nav-item svg { opacity: 0.8; }
+        /* ── NAV ITEMS ── */
+        .nav-item {
+          position: relative;
+          color: var(--text-sb) !important;
+          transition: all 0.12s ease !important;
+          margin: 1px 4px !important;
+          border-radius: 8px !important;
+          font-size: 13px !important;
+          font-weight: 500 !important;
+          letter-spacing: 0.01em !important;
+        }
+        .nav-item a {
+          padding: 7px 10px !important;
+          border-radius: 8px !important;
+          gap: 9px !important;
+        }
+        .nav-item:hover {
+          background: rgba(255,255,255,0.06) !important;
+          color: var(--text-sb-h) !important;
+        }
+        .nav-item svg { opacity: 0.7; width: 15px !important; height: 15px !important; flex-shrink: 0; }
+        .nav-item:hover svg { opacity: 0.95; }
 
-        .nav-item-active { background: rgba(37,99,235,0.15) !important; color: #ffffff !important; }
+        /* Item Ativo */
+        .nav-item-active {
+          background: rgba(37,99,235,0.18) !important;
+          color: var(--text-sb-active) !important;
+        }
         .nav-item-active::before {
           content: '';
           position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-          width: 2px; height: 22px;
-          background: #60a5fa;
-          border-radius: 0 2px 2px 0;
+          width: 3px; height: 20px;
+          background: linear-gradient(to bottom, #60a5fa, #3b82f6);
+          border-radius: 0 3px 3px 0;
         }
         .nav-item-active svg { opacity: 1; color: #93c5fd !important; }
         .nav-item-inactive { background: transparent !important; }
-        .nav-item-inactive:hover { background: rgba(255,255,255,0.045) !important; color: rgba(255,255,255,0.82) !important; }
+        .nav-item-inactive:hover { background: rgba(255,255,255,0.05) !important; color: rgba(255,255,255,0.85) !important; }
 
-        [data-sidebar] ::-webkit-scrollbar { width: 3px; }
-        [data-sidebar] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-
+        /* ── HEADER DA APP (topbar) ── */
         .app-header {
           display: flex; align-items: center; justify-content: space-between;
           width: 100%; flex-shrink: 0;
@@ -529,11 +655,13 @@ export default function Layout({ children, currentPageName }) {
         }
         .sidebar-trigger-btn:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
 
+        /* ── USER BTN ── */
         .user-avatar {
-          width: 30px; height: 30px; border-radius: 50%;
+          width: 32px; height: 32px; border-radius: 50%;
           background: linear-gradient(135deg, #1A56DB, #7C3AED);
           display: flex; align-items: center; justify-content: center;
-          font-size: 11px; font-weight: 800; color: white; flex-shrink: 0; letter-spacing: 0.5px;
+          font-size: 11.5px; font-weight: 800; color: white; flex-shrink: 0; letter-spacing: 0.5px;
+          box-shadow: 0 0 0 2px rgba(96,165,250,0.25);
         }
         .user-trigger-btn {
           display: flex; align-items: center; gap: 8px;
@@ -545,6 +673,7 @@ export default function Layout({ children, currentPageName }) {
         .user-name { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.88); line-height: 1.2; }
         .user-email { font-size: 10.5px; color: rgba(255,255,255,0.35); line-height: 1.2; }
 
+        /* ── CONTENT ── */
         .app-content {
           flex: 1; overflow-y: auto; overflow-x: auto;
           -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
@@ -604,7 +733,7 @@ export default function Layout({ children, currentPageName }) {
                 ))}
               </SidebarMenu>
             </SidebarContent>
-            <CustomSidebarFooter />
+            <CustomSidebarFooter user={user} />
           </Sidebar>
 
           <div className="app-main">
