@@ -173,29 +173,6 @@ export default function EstoquePage() {
             </div>
           </div>
 
-          {/* Botões de Ação */}
-          <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0 lg:min-w-[168px] no-print">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[13px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
-                  <Filter className="w-4 h-4 text-slate-400" />
-                  Ações
-                  <ChevronDown className="w-3.5 h-3.5 opacity-40" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={handlePrint}>
-                  <Printer className="w-4 h-4 mr-2.5 text-slate-400" />Imprimir
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <button onClick={() => openForm()}
-              className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm shadow-blue-200 whitespace-nowrap">
-              <Plus className="w-4 h-4" strokeWidth={2.5} />
-              Novo Produto
-            </button>
-          </div>
         </div>
 
         {/* ── TABELA ── */}
@@ -213,11 +190,32 @@ export default function EstoquePage() {
             />
           </div>
 
-          <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50/70 border-b border-slate-100 no-print">
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">Resultados</span>
-            <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
+          {/* Contador de resultados + Botões de ação */}
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 bg-slate-50/70 border-b border-slate-100 no-print">
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">
               {pecasFiltradas.length} produto{pecasFiltradas.length !== 1 ? 's' : ''}
             </span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition-colors whitespace-nowrap">
+                    <Filter className="w-3 h-3 text-slate-400" />
+                    Ações
+                    <ChevronDown className="w-2.5 h-2.5 opacity-40" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={handlePrint}>
+                    <Printer className="w-4 h-4 mr-2.5 text-slate-400" />Imprimir
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <button onClick={() => openForm()}
+                className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors whitespace-nowrap">
+                <Plus className="w-3 h-3" strokeWidth={2.5} />
+                Novo Produto
+              </button>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
