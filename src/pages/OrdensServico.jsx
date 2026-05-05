@@ -443,144 +443,119 @@ function OrdensServicoContent() {
 
       <div className="min-h-screen bg-slate-50">
 
-        {/* ── HEADER DA PÁGINA ── */}
-        <div className="mb-4 md:mb-5">
-          <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              {/* Título + subtítulo */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 md:w-11 md:h-11 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-200 flex-shrink-0">
-                  <ClipboardList className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-[17px] md:text-[20px] font-extrabold text-slate-900 leading-tight tracking-tight">Ordens de Serviço</h1>
-                  <p className="text-slate-400 text-[11px] font-medium mt-0.5 leading-none">Gestão e acompanhamento · {resumo.total} registros</p>
+        {/* ── BARRA DE AÇÕES (sem título duplicado) ── */}
+        <div className="mb-3 md:mb-4">
+          <div className="max-w-[1800px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            {/* KPIs compactos em linha */}
+            <div className="flex items-center gap-1 md:gap-0 divide-x divide-slate-200 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex-1 min-w-0">
+              {/* Total */}
+              <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 flex-1 min-w-0">
+                <ClipboardList className="w-4 h-4 text-blue-500 flex-shrink-0" strokeWidth={2} />
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total</p>
+                  <span className="text-base md:text-lg font-black text-slate-800 font-mono leading-tight">{resumo.total}</span>
                 </div>
               </div>
-
-              {/* Botões de ação */}
-              <div className="flex gap-2 flex-wrap items-center">
-                {isAdmin && selectedOS.length > 0 && (
-                  <>
-                    <button
-                      onClick={handleAgrupar}
-                      disabled={selectedOS.length < 2}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
-                    >
-                      <Merge className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
-                    </button>
-                    <button
-                      onClick={handleBulkDelete}
-                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
-                    >
-                      <Trash className="w-3.5 h-3.5" />
-                      ({selectedOS.length})
-                    </button>
-                  </>
-                )}
-
-                <button
-                  onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shadow-sm"
-                >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Relatório</span>
-                </button>
-
-                {canCreate('os') && (
-                  <>
-                    <button
-                      onClick={() => setIsImportModalOpen(true)}
-                      className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3.5 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shadow-sm"
-                    >
-                      <Upload className="w-3.5 h-3.5" />
-                      Importar
-                    </button>
-
-                    <button
-                      onClick={handleNewOS}
-                      className="inline-flex items-center gap-1.5 h-8 px-4 rounded-lg text-[12px] font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200"
-                    >
-                      <Plus className="w-4 h-4" />
-                      <span className="hidden sm:inline">Nova OS</span>
-                      <span className="sm:hidden">Nova</span>
-                    </button>
-                  </>
-                )}
+              {/* Em Andamento */}
+              <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 flex-1 min-w-0">
+                <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" strokeWidth={2} />
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none hidden sm:block">Em Andamento</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none sm:hidden">Andamento</p>
+                  <span className="text-base md:text-lg font-black text-amber-500 font-mono leading-tight">{resumo.emAndamento}</span>
+                </div>
               </div>
+              {/* Finalizadas */}
+              <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 flex-1 min-w-0">
+                <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" strokeWidth={2} />
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Finalizadas</p>
+                  <span className="text-base md:text-lg font-black text-emerald-600 font-mono leading-tight">{resumo.finalizadas}</span>
+                </div>
+              </div>
+              {/* Faturamento */}
+              <div className="flex items-center gap-2 px-3 md:px-4 py-2.5 flex-1 min-w-0 hidden sm:flex">
+                <DollarSign className="w-4 h-4 text-blue-600 flex-shrink-0" strokeWidth={2} />
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Faturamento</p>
+                  <span className="text-xs md:text-sm font-black text-blue-600 font-mono leading-tight whitespace-nowrap">{formatCurrency(resumo.valorTotal)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Botões de ação */}
+            <div className="flex gap-1.5 md:gap-2 items-center flex-shrink-0">
+              {isAdmin && selectedOS.length > 0 && (
+                <>
+                  <button
+                    onClick={handleAgrupar}
+                    disabled={selectedOS.length < 2}
+                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[11px] font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    <Merge className="w-3.5 h-3.5" strokeWidth={2} />
+                    <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
+                  </button>
+                  <button
+                    onClick={handleBulkDelete}
+                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[11px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors"
+                  >
+                    <Trash className="w-3.5 h-3.5" strokeWidth={2} />
+                    ({selectedOS.length})
+                  </button>
+                </>
+              )}
+
+              <button
+                onClick={() => setIsRelatorioFiltersModalOpen(true)}
+                className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5" strokeWidth={2} />
+                <span className="hidden sm:inline">Relatório</span>
+              </button>
+
+              {canCreate('os') && (
+                <>
+                  <button
+                    onClick={() => setIsImportModalOpen(true)}
+                    className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    <Upload className="w-3.5 h-3.5" strokeWidth={2} />
+                    Importar
+                  </button>
+
+                  <button
+                    onClick={handleNewOS}
+                    className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-[12px] font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" strokeWidth={2.5} />
+                    Nova OS
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
 
         <div className="max-w-[1800px] mx-auto px-1 md:px-4">
 
-          {/* ── KPI CARDS ── */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-3 md:mb-4">
-            {/* Total */}
-            <div className="kpi-bar kpi-bar-blue bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total de OS</p>
-                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <ClipboardList className="w-3.5 h-3.5 text-blue-500" />
-                </div>
-              </div>
-              <span className="text-2xl md:text-3xl font-black text-slate-800 font-mono leading-none">{resumo.total}</span>
+          {/* ── TABELA + FILTROS ── */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            {/* Barra de filtros integrada */}
+            <div className="px-3 md:px-4 pt-3 pb-2 border-b border-slate-100">
+              <AdvancedSearchFilters
+                entityName="ordens_servico"
+                searchFields={osSearchFields}
+                filterFields={osFilterFields}
+                dateField="data_abertura"
+                sortFields={osSortFields}
+                defaultSort={{ field: 'data_abertura', direction: 'desc' }}
+                onFiltersChange={setAdvancedFilters}
+              />
             </div>
-            {/* Em Andamento */}
-            <div className="kpi-bar kpi-bar-yellow bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Em Andamento</p>
-                <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
-                  <Clock className="w-3.5 h-3.5 text-amber-500" />
-                </div>
-              </div>
-              <span className="text-2xl md:text-3xl font-black text-amber-500 font-mono leading-none">{resumo.emAndamento}</span>
-            </div>
-            {/* Finalizadas */}
-            <div className="kpi-bar kpi-bar-green bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Finalizadas</p>
-                <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-                  <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
-                </div>
-              </div>
-              <span className="text-2xl md:text-3xl font-black text-emerald-600 font-mono leading-none">{resumo.finalizadas}</span>
-            </div>
-            {/* Faturamento */}
-            <div className="kpi-bar kpi-bar-sky bg-white border border-slate-100 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-2">
-              <div className="flex items-center justify-between">
-                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Faturamento</p>
-                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <DollarSign className="w-3.5 h-3.5 text-blue-500" />
-                </div>
-              </div>
-              <span className="text-sm md:text-xl font-black text-blue-600 font-mono leading-none">{formatCurrency(resumo.valorTotal)}</span>
-            </div>
-          </div>
-
-          {/* ── FILTROS ── */}
-          <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-3 md:p-4 mb-3 md:mb-4">
-            <AdvancedSearchFilters
-              entityName="ordens_servico"
-              searchFields={osSearchFields}
-              filterFields={osFilterFields}
-              dateField="data_abertura"
-              sortFields={osSortFields}
-              defaultSort={{ field: 'data_abertura', direction: 'desc' }}
-              onFiltersChange={setAdvancedFilters}
-            />
-          </div>
-
-          {/* ── TABELA ── */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-            {/* Barra de título da tabela */}
-            <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-slate-50">
-              <div className="flex items-center gap-2">
-                <ClipboardList className="w-4 h-4 text-slate-400" />
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Lista de OS</span>
-              </div>
-              <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{filteredOS.length} registro{filteredOS.length !== 1 ? 's' : ''}</span>
+            {/* Sub-header da tabela */}
+            <div className="flex items-center justify-between px-4 py-1.5 bg-slate-50 border-b border-slate-100">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Resultados</span>
+              <span className="text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 px-2 py-0.5 rounded-full">{filteredOS.length} registro{filteredOS.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="overflow-x-auto">
               <Table>
