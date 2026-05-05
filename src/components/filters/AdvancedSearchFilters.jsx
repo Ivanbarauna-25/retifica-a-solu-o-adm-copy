@@ -156,6 +156,7 @@ export default function AdvancedSearchFilters({
   sortFields = [], // [{key: 'created_date', label: 'Data Criação'}]
   defaultSort = { field: 'created_date', direction: 'desc' },
   onFiltersChange,
+  placeholder = null,
   className = ''
 }) {
   const storageKey = `${STORAGE_KEY_PREFIX}${entityName}`;
@@ -305,10 +306,10 @@ export default function AdvancedSearchFilters({
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
           <Input
-            placeholder={`Buscar por ${searchFields.map(f => f.label.toLowerCase()).join(', ')}...`}
+            placeholder={placeholder || `Buscar por ${searchFields.map(f => f.label.toLowerCase()).join(', ')}...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 pr-9 h-9 text-sm border-slate-200 focus:border-blue-400 bg-slate-50 focus:bg-white transition-colors"
+            className="pl-9 pr-9 h-[44px] text-sm border-slate-200 focus:border-blue-400 bg-slate-50 focus:bg-white transition-colors"
           />
           {searchTerm && (
             <button
