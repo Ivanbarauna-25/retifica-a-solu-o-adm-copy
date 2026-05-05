@@ -561,10 +561,10 @@ export default function Layout({ children, currentPageName }) {
 
         /* ── SECTION TRIGGERS ── */
         .sidebar-section-trigger {
-          color: rgba(255,255,255,0.22) !important;
-          font-size: 9px !important;
-          font-weight: 800 !important;
-          letter-spacing: 0.16em !important;
+          color: rgba(255,255,255,0.30) !important;
+          font-size: 9.5px !important;
+          font-weight: 700 !important;
+          letter-spacing: 0.13em !important;
           text-transform: uppercase !important;
           transition: color 0.15s !important;
           padding: 10px 16px 3px !important;
@@ -600,18 +600,18 @@ export default function Layout({ children, currentPageName }) {
           border-radius: 8px !important;
         }
         .nav-item a {
-          padding: 6.5px 10px !important;
+          padding: 7px 10px !important;
           border-radius: 8px !important;
-          gap: 9px !important;
-          font-size: 12.5px !important;
+          gap: 10px !important;
+          font-size: 13px !important;
           font-weight: 500 !important;
-          letter-spacing: 0.005em !important;
+          letter-spacing: 0.003em !important;
         }
         .nav-item:hover {
           background: rgba(255,255,255,0.055) !important;
           color: rgba(255,255,255,0.92) !important;
         }
-        .nav-item svg { opacity: 0.60; width: 14px !important; height: 14px !important; flex-shrink: 0; transition: opacity 0.1s; }
+        .nav-item svg { opacity: 0.65; width: 15px !important; height: 15px !important; flex-shrink: 0; transition: opacity 0.1s; }
         .nav-item:hover svg { opacity: 0.90; }
 
         /* Item Ativo */
