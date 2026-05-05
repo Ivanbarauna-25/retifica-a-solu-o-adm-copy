@@ -544,9 +544,9 @@ function OrdensServicoContent() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700" style={{height:'36px'}}>
+                  <TableRow className="bg-slate-700 hover:bg-slate-700" style={{height:'30px'}}>
                     {isAdmin && (
-                      <TableHead className="text-white font-bold w-8 md:w-12 text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1">
+                      <TableHead className="text-white font-bold w-8 md:w-10 text-[10px] md:text-xs px-2 uppercase tracking-wider py-0 text-center">
                         <Checkbox
                           checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
                           onCheckedChange={handleSelectAll}
@@ -554,17 +554,17 @@ function OrdensServicoContent() {
                         />
                       </TableHead>
                     )}
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1">Nº OS</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden sm:table-cell">Data</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1">Cliente</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden lg:table-cell">Veículo</TableHead>
-                    <TableHead className="text-white font-bold text-right text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden xl:table-cell">Produtos</TableHead>
-                    <TableHead className="text-white font-bold text-right text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden xl:table-cell">Serviços</TableHead>
-                    <TableHead className="text-white font-bold text-right text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden 2xl:table-cell">Despesas</TableHead>
-                    <TableHead className="text-white font-bold text-right text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden 2xl:table-cell">Desconto</TableHead>
-                    <TableHead className="text-white font-bold text-right text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden md:table-cell">Valor</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1 hidden lg:table-cell">Status</TableHead>
-                    <TableHead className="text-white font-bold text-center text-[10px] md:text-xs px-2 md:px-4 uppercase tracking-wider py-1">Ações</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center">Nº OS</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center w-[100px] md:w-[140px]">Cliente</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden lg:table-cell">Veículo</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden xl:table-cell">Produtos</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden xl:table-cell">Serviços</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden 2xl:table-cell">Despesas</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden 2xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden md:table-cell">Valor</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden lg:table-cell">Status</TableHead>
+                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -603,7 +603,7 @@ function OrdensServicoContent() {
                           )}
                           <TableCell className="font-medium text-blue-600 py-1.5 md:py-2 text-xs md:text-sm px-2 md:px-4">{os.numero_os}</TableCell>
                           <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm whitespace-nowrap px-2 md:px-4 hidden sm:table-cell">{formatDate(os.data_abertura)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm px-2 md:px-4 whitespace-nowrap overflow-hidden max-w-[120px] md:max-w-[200px] truncate">{getContatoNome(os)}</TableCell>
+                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap overflow-hidden w-[100px] md:w-[140px] max-w-[100px] md:max-w-[140px] truncate">{getContatoNome(os)}</TableCell>
                           <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm hidden lg:table-cell px-2 md:px-4 max-w-[150px] truncate whitespace-nowrap">{getVeiculoInfo(os.veiculo_id)}</TableCell>
                           <TableCell className="text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden xl:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(valorProdutos)}</TableCell>
                           <TableCell className="text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden xl:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(valorServicos)}</TableCell>
