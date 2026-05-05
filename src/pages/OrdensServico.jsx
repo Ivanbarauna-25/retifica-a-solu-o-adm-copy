@@ -442,64 +442,64 @@ function OrdensServicoContent() {
       <Toaster />
 
       <div className="min-h-screen bg-slate-50">
-        <div className="mb-4 md:mb-6">
+
+        {/* ── HEADER DA PÁGINA ── */}
+        <div className="mb-4 md:mb-5">
           <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <h1 style={{fontSize:'22px',fontWeight:'800',color:'#111827',letterSpacing:'-0.5px',margin:'0',lineHeight:'1.2'}}>Ordens de Serviço</h1>
-                <p className="text-slate-500 text-xs mt-0.5">Gestão de ordens de serviço</p>
+                <h1 className="text-[18px] md:text-[22px] font-extrabold text-slate-900 leading-tight tracking-tight">Ordens de Serviço</h1>
+                <p className="text-slate-400 text-[11px] font-medium mt-0.5">Gestão e acompanhamento de ordens de serviço</p>
               </div>
-              <div className="flex gap-1.5 md:gap-2 flex-wrap items-center">
+
+              {/* Botões de ação */}
+              <div className="flex gap-2 flex-wrap items-center">
                 {isAdmin && selectedOS.length > 0 && (
                   <>
-                    <Button
+                    <button
                       onClick={handleAgrupar}
                       disabled={selectedOS.length < 2}
-                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3"
-                      style={{background:'#1A56DB',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-700 bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors font-semibold"
                     >
-                      <Merge className="w-3 h-3 md:w-4 md:h-4" />
+                      <Merge className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Agrupar</span> ({selectedOS.length})
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       onClick={handleBulkDelete}
-                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3"
-                      style={{background:'#DC2626',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors"
                     >
-                      <Trash className="w-3 h-3 md:w-4 md:h-4" />
+                      <Trash className="w-3.5 h-3.5" />
                       ({selectedOS.length})
-                    </Button>
+                    </button>
                   </>
                 )}
-                
-                <Button
-                  variant="outline"
+
+                <button
                   onClick={() => setIsRelatorioFiltersModalOpen(true)}
-                  className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
                 >
-                  <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                  <FileText className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Relatório</span>
-                </Button>
+                </button>
 
                 {canCreate('os') && (
                   <>
-                    <Button
-                      variant="outline"
+                    <button
                       onClick={() => setIsImportModalOpen(true)}
-                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3 border-slate-200 text-slate-700 hover:border-blue-500 hover:text-blue-600 hidden sm:flex"
+                      className="hidden sm:inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
                     >
-                      <Upload className="w-3 h-3 md:w-4 md:h-4" />
+                      <Upload className="w-3.5 h-3.5" />
                       Importar
-                    </Button>
+                    </button>
 
-                    <Button
+                    <button
                       onClick={handleNewOS}
-                      className="gap-1 md:gap-1.5 text-[10px] md:text-sm h-8 md:h-9 px-2 md:px-3"
-                      style={{background:'#059669',color:'#FFFFFF',border:'none',borderRadius:'8px',fontWeight:'600'}}
+                      className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-semibold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors"
                     >
-                      <Plus className="w-3 h-3 md:w-4 md:h-4" />
+                      <Plus className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">Nova OS</span>
-                    </Button>
+                      <span className="sm:hidden">Nova</span>
+                    </button>
                   </>
                 )}
               </div>
@@ -508,27 +508,33 @@ function OrdensServicoContent() {
         </div>
 
         <div className="max-w-[1800px] mx-auto px-1 md:px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4">
-            <div className="kpi-bar kpi-bar-blue bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total</p>
-              <div className="text-sm md:text-2xl font-extrabold text-slate-900 font-mono">{resumo.total}</div>
+
+          {/* ── KPI CARDS ── */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-3 md:mb-4">
+            {/* Total */}
+            <div className="kpi-bar kpi-bar-blue bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total de OS</p>
+              <span className="text-2xl md:text-3xl font-black text-slate-800 font-mono leading-none">{resumo.total}</span>
             </div>
-            <div className="kpi-bar kpi-bar-yellow bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Em Andamento</p>
-              <div className="text-sm md:text-2xl font-extrabold text-amber-600 font-mono">{resumo.emAndamento}</div>
+            {/* Em Andamento */}
+            <div className="kpi-bar kpi-bar-yellow bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Em Andamento</p>
+              <span className="text-2xl md:text-3xl font-black text-amber-500 font-mono leading-none">{resumo.emAndamento}</span>
             </div>
-            <div className="kpi-bar kpi-bar-green bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Finalizadas</p>
-              <div className="text-sm md:text-2xl font-extrabold text-emerald-600 font-mono">{resumo.finalizadas}</div>
+            {/* Finalizadas */}
+            <div className="kpi-bar kpi-bar-green bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Finalizadas</p>
+              <span className="text-2xl md:text-3xl font-black text-emerald-600 font-mono leading-none">{resumo.finalizadas}</span>
             </div>
-            <div className="kpi-bar kpi-bar-sky bg-white border border-slate-200 rounded-xl p-2 md:p-4 shadow-sm">
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Valor Total</p>
-              <div className="text-xs md:text-lg font-extrabold text-blue-600 font-mono">{formatCurrency(resumo.valorTotal)}</div>
+            {/* Valor Total */}
+            <div className="kpi-bar kpi-bar-sky bg-white border border-slate-200/80 rounded-xl p-3 md:p-4 shadow-sm flex flex-col gap-1">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Faturamento</p>
+              <span className="text-base md:text-xl font-black text-blue-600 font-mono leading-none">{formatCurrency(resumo.valorTotal)}</span>
             </div>
           </div>
 
-          {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-4">
+          {/* ── FILTROS ── */}
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm p-3 md:p-4 mb-3 md:mb-4">
             <AdvancedSearchFilters
               entityName="ordens_servico"
               searchFields={osSearchFields}
@@ -540,39 +546,40 @@ function OrdensServicoContent() {
             />
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          {/* ── TABELA ── */}
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700" style={{height:'30px'}}>
+                  <TableRow className="bg-slate-800 hover:bg-slate-800" style={{height:'32px'}}>
                     {isAdmin && (
-                      <TableHead className="text-white font-bold w-8 md:w-10 text-[10px] md:text-xs px-2 uppercase tracking-wider py-0 text-center">
+                      <TableHead className="text-slate-300 font-semibold w-8 md:w-10 text-[10px] px-2 uppercase tracking-widest py-0 text-center">
                         <Checkbox
                           checked={selectedOS.length === filteredOS.length && filteredOS.length > 0}
                           onCheckedChange={handleSelectAll}
-                          className="border-white w-3.5 h-3.5 md:w-4 md:h-4"
+                          className="border-slate-400 w-3.5 h-3.5"
                         />
                       </TableHead>
                     )}
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center">Nº OS</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden sm:table-cell">Data</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center w-[100px] md:w-[140px]">Cliente</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden lg:table-cell">Veículo</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden xl:table-cell">Produtos</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden xl:table-cell">Serviços</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden 2xl:table-cell">Despesas</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden 2xl:table-cell">Desconto</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden md:table-cell">Valor</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center hidden lg:table-cell">Status</TableHead>
-                    <TableHead className="text-white font-bold text-[10px] md:text-xs px-2 md:px-3 uppercase tracking-wider py-0 text-center">Ações</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center">Nº OS</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden sm:table-cell">Data</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center w-[110px] md:w-[160px]">Cliente</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden lg:table-cell">Veículo</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden xl:table-cell">Produtos</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden xl:table-cell">Serviços</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden 2xl:table-cell">Despesas</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden 2xl:table-cell">Desconto</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden md:table-cell">Valor Total</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center hidden lg:table-cell">Status</TableHead>
+                    <TableHead className="text-slate-300 font-semibold text-[10px] px-2 md:px-3 uppercase tracking-widest py-0 text-center">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredOS.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isAdmin ? 12 : 11} className="text-center py-8">
-                        <FileText className="w-12 h-12 mx-auto text-slate-300 mb-2" />
-                        <p className="text-slate-600">Nenhuma ordem de serviço encontrada</p>
+                      <TableCell colSpan={isAdmin ? 12 : 11} className="text-center py-12">
+                        <ClipboardList className="w-10 h-10 mx-auto text-slate-300 mb-2" />
+                        <p className="text-slate-400 text-sm font-medium">Nenhuma ordem de serviço encontrada</p>
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -591,58 +598,52 @@ function OrdensServicoContent() {
                       const valorDespesas = (os.outras_despesas || 0) + despesasDaOS;
 
                       return (
-                        <TableRow key={os.id} className="hover:bg-slate-50">
+                        <TableRow key={os.id} className="hover:bg-blue-50/40 border-b border-slate-100 transition-colors">
                           {isAdmin && (
-                            <TableCell className="py-2 md:py-3 px-2 md:px-4">
+                            <TableCell className="py-1.5 px-2 text-center">
                               <Checkbox
                                 checked={selectedOS.includes(os.id)}
                                 onCheckedChange={() => handleSelectOS(os.id)}
-                                className="w-3.5 h-3.5 md:w-4 md:h-4"
+                                className="w-3.5 h-3.5"
                               />
                             </TableCell>
                           )}
-                          <TableCell className="font-medium text-blue-600 py-1.5 md:py-2 text-xs md:text-sm px-2 md:px-4">{os.numero_os}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm whitespace-nowrap px-2 md:px-4 hidden sm:table-cell">{formatDate(os.data_abertura)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm px-2 md:px-3 whitespace-nowrap overflow-hidden w-[100px] md:w-[140px] max-w-[100px] md:max-w-[140px] truncate">{getContatoNome(os)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-xs md:text-sm hidden lg:table-cell px-2 md:px-4 max-w-[150px] truncate whitespace-nowrap">{getVeiculoInfo(os.veiculo_id)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden xl:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(valorProdutos)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden xl:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(valorServicos)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden 2xl:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(valorDespesas)}</TableCell>
-                          <TableCell className="text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden 2xl:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(os.desconto_valor || 0)}</TableCell>
-                          <TableCell className="font-semibold text-slate-900 py-1.5 md:py-2 text-right text-xs md:text-sm hidden md:table-cell px-2 md:px-4 font-mono whitespace-nowrap">{formatCurrency(os.valor_total)}</TableCell>
-                          <TableCell className="py-1.5 md:py-2 hidden lg:table-cell px-2 md:px-4">{getStatusBadge(os.status)}</TableCell>
-                          <TableCell className="py-1.5 md:py-2 px-2 md:px-4">
-                            <div className="flex items-center justify-center gap-0.5 md:gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
+                          <TableCell className="font-bold text-blue-600 py-2 text-[11px] md:text-xs px-2 md:px-3 whitespace-nowrap">{os.numero_os}</TableCell>
+                          <TableCell className="text-slate-600 py-2 text-[11px] md:text-xs whitespace-nowrap px-2 md:px-3 hidden sm:table-cell">{formatDate(os.data_abertura)}</TableCell>
+                          <TableCell className="text-slate-800 py-2 text-[11px] md:text-xs px-2 md:px-3 w-[110px] md:w-[160px] max-w-[110px] md:max-w-[160px] truncate font-medium">{getContatoNome(os)}</TableCell>
+                          <TableCell className="text-slate-600 py-2 text-[11px] md:text-xs hidden lg:table-cell px-2 md:px-3 max-w-[160px] truncate whitespace-nowrap">{getVeiculoInfo(os.veiculo_id)}</TableCell>
+                          <TableCell className="text-slate-700 py-2 text-right text-[11px] md:text-xs hidden xl:table-cell px-2 md:px-3 font-mono whitespace-nowrap">{formatCurrency(valorProdutos)}</TableCell>
+                          <TableCell className="text-slate-700 py-2 text-right text-[11px] md:text-xs hidden xl:table-cell px-2 md:px-3 font-mono whitespace-nowrap">{formatCurrency(valorServicos)}</TableCell>
+                          <TableCell className="text-slate-700 py-2 text-right text-[11px] md:text-xs hidden 2xl:table-cell px-2 md:px-3 font-mono whitespace-nowrap">{formatCurrency(valorDespesas)}</TableCell>
+                          <TableCell className="text-slate-700 py-2 text-right text-[11px] md:text-xs hidden 2xl:table-cell px-2 md:px-3 font-mono whitespace-nowrap">{formatCurrency(os.desconto_valor || 0)}</TableCell>
+                          <TableCell className="font-bold text-slate-900 py-2 text-right text-[11px] md:text-xs hidden md:table-cell px-2 md:px-3 font-mono whitespace-nowrap">{formatCurrency(os.valor_total)}</TableCell>
+                          <TableCell className="py-2 hidden lg:table-cell px-2 md:px-3">{getStatusBadge(os.status)}</TableCell>
+                          <TableCell className="py-2 px-2 md:px-3">
+                            <div className="flex items-center justify-center gap-0.5">
+                              <button
                                 onClick={() => handleView(os)}
                                 title="Visualizar"
-                                className="hover:bg-blue-50 text-blue-600 h-8 w-8 md:h-9 md:w-9 p-0"
+                                className="flex items-center justify-center w-7 h-7 rounded-md text-blue-600 hover:bg-blue-50 transition-colors"
                               >
-                                <Eye className="w-4 h-4 md:w-[18px] md:h-[18px]" />
-                              </Button>
+                                <Eye className="w-3.5 h-3.5" />
+                              </button>
                               {canEdit('os') && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
+                                <button
                                   onClick={() => handleEdit(os)}
                                   title="Editar"
-                                  className="hover:bg-amber-50 text-amber-600 h-8 w-8 md:h-9 md:w-9 p-0 hidden sm:flex"
+                                  className="hidden sm:flex items-center justify-center w-7 h-7 rounded-md text-amber-500 hover:bg-amber-50 transition-colors"
                                 >
-                                  <Pencil className="w-4 h-4 md:w-[18px] md:h-[18px]" />
-                                </Button>
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
                               )}
                               {canDelete('os') && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
+                                <button
                                   onClick={() => handleDelete(os)}
                                   title="Excluir"
-                                  className="text-red-600 hover:bg-red-50 h-8 w-8 md:h-9 md:w-9 p-0 hidden md:flex"
+                                  className="hidden md:flex items-center justify-center w-7 h-7 rounded-md text-red-500 hover:bg-red-50 transition-colors"
                                 >
-                                  <Trash2 className="w-4 h-4 md:w-[18px] md:h-[18px]" />
-                                </Button>
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
                               )}
                             </div>
                           </TableCell>
