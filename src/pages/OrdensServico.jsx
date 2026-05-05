@@ -533,7 +533,7 @@ function OrdensServicoContent() {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
 
           {/* Toolbar */}
-          <div className="px-4 pt-4 pb-3 border-b border-slate-100 space-y-3">
+          <div className="px-4 pt-4 pb-3 border-b border-slate-100">
             <AdvancedSearchFilters
               entityName="ordens_servico"
               searchFields={osSearchFields}
@@ -544,30 +544,37 @@ function OrdensServicoContent() {
               onFiltersChange={setAdvancedFilters}
               placeholder="Buscar por nº OS, cliente, responsável, veículo..."
             />
-            <div className="flex flex-wrap items-center gap-2">
+          </div>
+
+          {/* Contador de resultados + Botões de ação */}
+          <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 bg-slate-50/70 border-b border-slate-100">
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">
+              {filteredOS.length} registro{filteredOS.length !== 1 ? 's' : ''}
+            </span>
+            <div className="flex flex-wrap items-center gap-1.5">
               {isAdmin && selectedOS.length > 0 && (
                 <>
                   <button onClick={handleAgrupar} disabled={selectedOS.length < 2}
-                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[12px] font-semibold bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors whitespace-nowrap">
-                    <Merge className="w-3.5 h-3.5" />
+                    className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-semibold bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors whitespace-nowrap">
+                    <Merge className="w-3 h-3" />
                     Agrupar ({selectedOS.length})
                   </button>
                   <button onClick={handleBulkDelete}
-                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[12px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors whitespace-nowrap">
-                    <Trash className="w-3.5 h-3.5" />
+                    className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors whitespace-nowrap">
+                    <Trash className="w-3 h-3" />
                     Excluir ({selectedOS.length})
                   </button>
                 </>
               )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[13px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
-                    <Filter className="w-3.5 h-3.5 text-slate-400" />
+                  <button className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition-colors whitespace-nowrap">
+                    <Filter className="w-3 h-3 text-slate-400" />
                     Ações
-                    <ChevronDown className="w-3 h-3 opacity-40" />
+                    <ChevronDown className="w-2.5 h-2.5 opacity-40" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsRelatorioFiltersModalOpen(true)}>
                     <FileText className="w-4 h-4 mr-2.5 text-slate-400" />Gerar Relatório
                   </DropdownMenuItem>
@@ -583,20 +590,12 @@ function OrdensServicoContent() {
               </DropdownMenu>
               {canCreate('os') && (
                 <button onClick={handleNewOS}
-                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm shadow-blue-200 whitespace-nowrap">
-                  <Plus className="w-4 h-4" strokeWidth={2.5} />
+                  className="inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-[11px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors whitespace-nowrap">
+                  <Plus className="w-3 h-3" strokeWidth={2.5} />
                   Nova OS
                 </button>
               )}
             </div>
-          </div>
-
-          {/* Contador de resultados */}
-          <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50/70 border-b border-slate-100">
-            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">Resultados</span>
-            <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
-              {filteredOS.length} registro{filteredOS.length !== 1 ? 's' : ''}
-            </span>
           </div>
 
           {/* Tabela */}
