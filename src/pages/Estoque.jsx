@@ -1,22 +1,24 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, AlertTriangle, Package, Banknote, Printer, Loader2, Search, Filter, BarChart3 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import EstoqueForm from '@/components/EstoqueForm';
-import { formatCurrency } from '@/components/formatters';
 import AdvancedSearchFilters from '@/components/filters/AdvancedSearchFilters';
 import { useAdvancedFilters } from '@/components/filters/useAdvancedFilters';
 import StandardDialog, { useStandardDialog } from '@/components/ui/StandardDialog';
+import {
+  Plus, Pencil, Trash2, Package, AlertTriangle, DollarSign,
+  TrendingDown, Loader2, Filter, ChevronDown, MoreHorizontal, Printer
+} from 'lucide-react';
+import { formatCurrency } from '@/components/formatters';
 import { useToast } from '@/components/ui/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function EstoquePage() {
   const [pecas, setPecas] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPeca, setSelectedPeca] = useState(null);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -26,386 +28,292 @@ export default function EstoquePage() {
 
   const fetchPecas = async () => {
     setIsLoading(true);
-    setError(null);
     try {
       const data = await base44.entities.Peca.list('-created_date');
       setPecas(data);
-    } catch (err) {
-      console.error("Erro ao buscar peças:", err);
-      setError("Não foi possível carregar o estoque. Tente recarregar a página.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchPecas();
-  }, []);
+  useEffect(() => { fetchPecas(); }, []);
 
   const handleSave = async (data) => {
-    setError(null); 
-    try {
-      if (selectedPeca) {
-        await base44.entities.Peca.update(selectedPeca.id, data);
-      } else {
-        await base44.entities.Peca.create(data);
-      }
-      setIsFormOpen(false);
-      setSelectedPeca(null);
-      await fetchPecas();
-    } catch (err) {
-      console.error("Erro ao salvar peça:", err);
-      setError("Não foi possível salvar a peça. Por favor, tente novamente.");
+    if (selectedPeca) {
+      await base44.entities.Peca.update(selectedPeca.id, data);
+    } else {
+      await base44.entities.Peca.create(data);
     }
+    setIsFormOpen(false);
+    setSelectedPeca(null);
+    await fetchPecas();
   };
 
-  const handleDelete = async (peca) => {
+  const handleDelete = (peca) => {
     showDanger(
       'Excluir Peça',
-      `Tem certeza que deseja excluir a peça "${peca.descricao}"? Esta ação não pode ser desfeita.`,
+      `Tem certeza que deseja excluir "${peca.descricao}"? Esta ação não pode ser desfeita.`,
       async () => {
-        setError(null);
-        try {
-          await base44.entities.Peca.delete(peca.id);
-          toast({
-            title: '✅ Sucesso',
-            description: 'Peça excluída com sucesso.'
-          });
-          await fetchPecas();
-          closeDialog();
-        } catch (err) {
-          console.error("Erro ao excluir peça:", err);
-          toast({
-            title: '❌ Erro',
-            description: 'Não foi possível excluir a peça.',
-            variant: 'destructive'
-          });
-        }
+        await base44.entities.Peca.delete(peca.id);
+        toast({ title: '✅ Peça excluída com sucesso.' });
+        await fetchPecas();
+        closeDialog();
       }
     );
   };
 
-  const openForm = (peca = null) => {
-    setError(null);
-    setSelectedPeca(peca);
-    setIsFormOpen(true);
-  };
+  const openForm = (peca = null) => { setSelectedPeca(peca); setIsFormOpen(true); };
 
-  // Configuração dos campos de busca e filtro
-  const estoqueSearchFields = [
+  const handlePrint = () => { setIsPrinting(true); window.print(); setIsPrinting(false); };
+
+  const searchFields = [
     { key: 'codigo', label: 'Código' },
     { key: 'descricao', label: 'Descrição' },
     { key: 'fabricante', label: 'Fabricante' },
-    { key: 'localizacao', label: 'Localização' }
+    { key: 'localizacao', label: 'Localização' },
   ];
-
-  const estoqueFilterFields = [
-    {
-      key: 'tipo_entrada',
-      label: 'Tipo',
-      options: [
-        { value: 'consumo', label: 'Consumo' },
-        { value: 'revenda', label: 'Revenda' },
-        { value: 'remessa', label: 'Remessa' },
-        { value: 'uso_consumo', label: 'Uso/Consumo' },
-        { value: 'ativo_imobilizado', label: 'Ativo Imobilizado' }
-      ]
-    }
-  ];
-
-  const estoqueSortFields = [
+  const filterFields = [{
+    key: 'tipo_entrada', label: 'Tipo',
+    options: [
+      { value: 'consumo', label: 'Consumo' },
+      { value: 'revenda', label: 'Revenda' },
+      { value: 'remessa', label: 'Remessa' },
+      { value: 'uso_consumo', label: 'Uso/Consumo' },
+      { value: 'ativo_imobilizado', label: 'Ativo Imobilizado' },
+    ]
+  }];
+  const sortFields = [
     { key: 'descricao', label: 'Descrição' },
     { key: 'codigo', label: 'Código' },
     { key: 'quantidade_estoque', label: 'Quantidade' },
     { key: 'preco_venda', label: 'Preço Venda' },
-    { key: 'created_date', label: 'Data Cadastro' }
+    { key: 'created_date', label: 'Data Cadastro' },
   ];
 
-  // Usar hook de filtros avançados
   const pecasFiltradas = useAdvancedFilters(pecas, advancedFilters);
 
   const stats = {
-    totalItens: pecas.reduce((acc, p) => acc + (Number(p.quantidade_estoque) || 0), 0),
-    valorCusto: pecas.reduce((acc, p) => acc + ((Number(p.quantidade_estoque) || 0) * (Number(p.preco_custo) || 0)), 0),
-    valorVenda: pecas.reduce((acc, p) => acc + ((Number(p.quantidade_estoque) || 0) * (Number(p.preco_venda) || 0)), 0),
-    baixoEstoque: pecas.filter(peca => (Number(peca.quantidade_estoque) || 0) <= (Number(peca.quantidade_minima) || 5)).length
+    totalProdutos: pecas.length,
+    totalItens: pecas.reduce((a, p) => a + (Number(p.quantidade_estoque) || 0), 0),
+    valorVenda: pecas.reduce((a, p) => a + ((Number(p.quantidade_estoque) || 0) * (Number(p.preco_venda) || 0)), 0),
+    baixoEstoque: pecas.filter(p => (Number(p.quantidade_estoque) || 0) <= (Number(p.quantidade_minima) || 5)).length,
   };
 
-  const handlePrint = async () => {
-    setIsPrinting(true);
-    try {
-      window.print();
-    } catch (err) {
-      console.error("Erro ao imprimir:", err);
-    } finally {
-      setIsPrinting(false);
-    }
-  };
-  
-  if (error) {
-    return (
-        <div className="container mx-auto p-6 flex flex-col items-center justify-center h-full">
-            <AlertTriangle className="w-16 h-16 text-red-500 mb-4" />
-            <h2 className="text-xl font-semibold text-red-700 mb-2">Ocorreu um Erro</h2>
-            <p className="text-gray-600 mb-4 text-center">{error}</p>
-            <Button onClick={fetchPecas}>Tentar Novamente</Button>
-        </div>
-    );
-  }
+  if (isLoading) return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="text-center"><Loader2 className="h-10 w-10 animate-spin text-slate-400 mx-auto" /><p className="mt-3 text-slate-400">Carregando...</p></div>
+    </div>
+  );
 
   return (
     <>
       <style>{`
         @media print {
-          body {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          @page {
-            size: A4 landscape;
-            margin: 0.5cm;
-          }
-          .no-print {
-            display: none !important;
-          }
-          .printable-content {
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            border: none !important;
-            max-width: none !important;
-            background: white !important;
-          }
-          .print-header {
-            text-align: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 8px;
-          }
-          .print-header h1 {
-            font-size: 18px !important;
-            font-weight: bold;
-            margin: 0 0 3px 0;
-            color: #334155;
-          }
-          .print-header h2 {
-            font-size: 14px !important;
-            margin: 0;
-            color: #64748b;
-          }
-          table {
-            width: 100% !important;
-            border-collapse: collapse;
-            font-size: 8px !important;
-            margin: 0 !important;
-          }
-          th, td {
-            border: 1px solid #cbd5e1 !important;
-            padding: 2px 3px !important;
-            text-align: left;
-            vertical-align: top;
-            line-height: 1.1;
-          }
-          th {
-            background-color: #334155 !important;
-            color: white !important;
-            font-weight: bold;
-            font-size: 9px !important;
-            text-align: center;
-            padding: 3px 2px !important;
-          }
-          tbody tr:nth-child(even) {
-            background-color: #f8fafc !important;
-          }
-          .badge-print {
-            border-radius: 2px;
-            padding: 1px 4px;
-            font-size: 7px;
-            line-height: 1;
-            display: inline-block;
-            font-weight: bold;
-          }
-          .bg-green-500 { 
-            background-color: #22c55e !important; 
-            color: white !important;
-          }
-          .bg-red-500 { 
-            background-color: #ef4444 !important; 
-            color: white !important;
-          }
-          .print-date {
-            text-align: right;
-            font-size: 7px;
-            color: #64748b;
-            margin-top: 5px;
-          }
+          .no-print { display: none !important; }
+          body { -webkit-print-color-adjust: exact !important; }
+          @page { size: A4 landscape; margin: 0.5cm; }
+          table { font-size: 8px !important; }
+          thead tr { background: #0B1629 !important; }
+          thead th { color: white !important; }
         }
       `}</style>
-      
-      <div className="min-h-screen bg-slate-50 printable-content">
-        <div className="print-header hidden">
-          <h1>Retifica a Solução Ltda</h1>
-          <h2>Relatório de Estoque de Peças</h2>
-        </div>
+      <Toaster />
 
-        {/* Header */}
-        <div className="bg-slate-800 text-white px-2 md:px-6 py-3 md:py-5 mb-2 md:mb-4 shadow-lg rounded-lg md:rounded-xl mx-1 md:mx-0 no-print">
-          <div className="max-w-[1800px] mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-4">
-              <div className="flex items-center gap-2 md:gap-3">
-                <div className="bg-slate-700 p-1.5 md:p-2 rounded-lg">
-                  <Package className="w-4 h-4 md:w-6 md:h-6" />
-                </div>
-                <div>
-                  <h1 className="text-sm md:text-xl font-bold">Estoque de Peças</h1>
-                  <p className="text-slate-300 text-[9px] md:text-xs">Gerenciamento de inventário</p>
+      <div className="space-y-5">
+
+        {/* ── KPI CARDS + AÇÕES ── */}
+        <div className="flex flex-col lg:flex-row gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 flex-1">
+
+            <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-slate-300 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Produtos</p>
+              <div className="flex items-end justify-between">
+                <span className="text-[2.8rem] font-black text-slate-800 leading-none">{stats.totalProdutos}</span>
+                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center mb-1">
+                  <Package className="w-5 h-5 text-slate-400" />
                 </div>
               </div>
+              <p className="text-[11px] text-slate-400 mt-2">itens cadastrados</p>
+            </div>
 
-              <div className="flex gap-1 md:gap-2 flex-wrap">
-                <Button
-                  variant="outline"
-                  onClick={handlePrint} 
-                  disabled={isPrinting}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-                >
-                  {isPrinting ? <Loader2 className="w-3 h-3 md:w-4 md:h-4 animate-spin"/> : <Printer className="w-3 h-3 md:w-4 md:h-4"/>}
-                  <span className="hidden sm:inline">Imprimir</span>
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={() => openForm()}
-                  className="bg-transparent border-slate-600 text-white hover:bg-slate-700 hover:text-white gap-1 md:gap-1.5 text-[10px] md:text-sm h-7 md:h-9 px-2 md:px-3"
-                >
-                  <Plus className="w-3 h-3 md:w-4 md:h-4" />
-                  <span className="hidden sm:inline">Adicionar</span>
-                </Button>
+            <div className="relative bg-white rounded-2xl border border-blue-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-blue-500 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2">Qtd. Total</p>
+              <div className="flex items-end justify-between">
+                <span className="text-[2.8rem] font-black text-blue-600 leading-none">{stats.totalItens}</span>
+                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-1">
+                  <Package className="w-5 h-5 text-blue-400" />
+                </div>
               </div>
+              <p className="text-[11px] text-slate-400 mt-2">unidades em estoque</p>
+            </div>
+
+            <div className="relative bg-white rounded-2xl border border-emerald-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-emerald-500 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-2">Valor em Estoque</p>
+              <div className="flex items-end justify-between">
+                <span className="text-xl font-black text-emerald-700 leading-none">{formatCurrency(stats.valorVenda)}</span>
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center mb-1">
+                  <DollarSign className="w-5 h-5 text-emerald-500" />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-2">valor de venda total</p>
+            </div>
+
+            <div className="relative bg-white rounded-2xl border border-red-100 shadow-sm px-5 pt-5 pb-4 overflow-hidden hover:shadow-md transition-shadow col-span-2 lg:col-span-1">
+              <div className="absolute top-0 left-0 right-0 h-[3px] bg-red-500 rounded-t-2xl" />
+              <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-2">Baixo Estoque</p>
+              <div className="flex items-end justify-between">
+                <span className="text-[2.8rem] font-black text-red-500 leading-none">{stats.baixoEstoque}</span>
+                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-1">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-2">abaixo do mínimo</p>
             </div>
           </div>
+
+          {/* Botões de Ação */}
+          <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0 no-print">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[12px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
+                  <Filter className="w-3.5 h-3.5 text-slate-400" />
+                  Ações
+                  <ChevronDown className="w-3 h-3 opacity-40" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={handlePrint}>
+                  <Printer className="w-4 h-4 mr-2.5 text-slate-400" />Imprimir
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <button onClick={() => openForm()}
+              className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm shadow-blue-200 whitespace-nowrap">
+              <Plus className="w-4 h-4" strokeWidth={2.5} />
+              Novo Produto
+            </button>
+          </div>
         </div>
 
-        <div className="max-w-[1800px] mx-auto px-1 md:px-4">
-          {/* Stats Cards - No Print */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 md:gap-3 mb-2 md:mb-4 no-print">
-            <Card className="border-l-2 md:border-l-4 border-l-slate-600 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Total Itens</p>
-                  <div className="text-sm md:text-xl font-bold text-slate-900">{stats.totalItens}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-blue-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Custo</p>
-                  <div className="text-xs md:text-lg font-bold text-blue-600">{formatCurrency(stats.valorCusto)}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-green-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Venda</p>
-                  <div className="text-xs md:text-lg font-bold text-green-600">{formatCurrency(stats.valorVenda)}</div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-2 md:border-l-4 border-l-red-500 shadow-sm">
-              <CardContent className="p-2 md:p-4">
-                <div>
-                  <p className="text-[9px] md:text-xs font-medium text-slate-600 mb-0.5">Baixo Estoque</p>
-                  <div className="text-sm md:text-xl font-bold text-red-600">{stats.baixoEstoque}</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Filtros Avançados */}
-          <div className="bg-white rounded-lg shadow-sm p-2 md:p-4 mb-2 md:mb-3 no-print">
+        {/* ── TABELA ── */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="px-4 pt-4 pb-3 border-b border-slate-100 no-print">
             <AdvancedSearchFilters
               entityName="estoque"
-              searchFields={estoqueSearchFields}
-              filterFields={estoqueFilterFields}
+              searchFields={searchFields}
+              filterFields={filterFields}
               dateField="created_date"
-              sortFields={estoqueSortFields}
+              sortFields={sortFields}
               defaultSort={{ field: 'descricao', direction: 'asc' }}
               onFiltersChange={setAdvancedFilters}
+              placeholder="Buscar por código, descrição, fabricante..."
             />
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-slate-700">
-                  <TableRow>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm">Código</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm">Descrição</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden lg:table-cell">Fabricante</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm">Estoque</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden md:table-cell">P. Custo</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">P. Venda</TableHead>
-                    <TableHead className="text-white font-semibold text-xs md:text-sm hidden sm:table-cell">Status</TableHead>
-                    <TableHead className="text-white font-semibold w-[80px] md:w-[120px] no-print text-center text-xs md:text-sm">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow><TableCell colSpan="8" className="text-center py-8 text-gray-500">Carregando...</TableCell></TableRow>
-                  ) : pecasFiltradas.length === 0 ? (
-                    <TableRow><TableCell colSpan="8" className="text-center py-8 text-gray-500">Nenhuma peça encontrada.</TableCell></TableRow>
-                  ) : (
-                    pecasFiltradas.map((peca) => (
-                      <TableRow key={peca.id} className="hover:bg-slate-50">
-                        <TableCell className="font-medium text-slate-900 text-xs md:text-sm">{peca.codigo}</TableCell>
-                        <TableCell className="text-slate-900 text-xs md:text-sm max-w-[100px] md:max-w-none truncate">{peca.descricao}</TableCell>
-                        <TableCell className="text-slate-600 text-xs md:text-sm hidden lg:table-cell">{peca.fabricante}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1 md:gap-2 font-medium text-xs md:text-sm">
-                            <span>{peca.quantidade_estoque || 0}</span>
-                            {(peca.quantidade_estoque || 0) <= (peca.quantidade_minima || 5) && (
-                              <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 text-red-500 no-print" />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-slate-600 text-xs md:text-sm hidden md:table-cell">{formatCurrency(peca.preco_custo)}</TableCell>
-                        <TableCell className="text-slate-900 font-semibold text-xs md:text-sm hidden sm:table-cell">{formatCurrency(peca.preco_venda)}</TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          <Badge
-                            variant={(peca.quantidade_estoque || 0) <= (peca.quantidade_minima || 5) ? 'destructive' : 'default'}
-                            className={`badge-print text-[10px] md:text-xs ${(peca.quantidade_estoque || 0) > (peca.quantidade_minima || 5) ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}
-                          >
-                            {(peca.quantidade_estoque || 0) <= (peca.quantidade_minima || 5) ? 'Baixo' : 'OK'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="no-print text-center">
-                          <div className="flex justify-center gap-0.5 md:gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => openForm(peca)} className="h-7 w-7 md:h-8 md:w-8 p-0 hover:bg-amber-50 text-amber-600">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" onClick={() => handleDelete(peca)} className="h-7 w-7 md:h-8 md:w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 hidden sm:flex">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-            
-            <div className="print-date hidden print:block p-4">
-              Relatório gerado em {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR')}
-            </div>
+          <div className="flex items-center justify-between px-5 py-2.5 bg-slate-50/70 border-b border-slate-100 no-print">
+            <span className="text-[10.5px] font-bold text-slate-400 uppercase tracking-widest">Resultados</span>
+            <span className="text-[11px] font-semibold text-slate-500 tabular-nums">
+              {pecasFiltradas.length} produto{pecasFiltradas.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ background: '#0B1629' }}>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Código</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest">Descrição</th>
+                  <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden lg:table-cell">Fabricante</th>
+                  <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">Estoque</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:table-cell whitespace-nowrap">P. Custo</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:table-cell whitespace-nowrap">P. Venda</th>
+                  <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:table-cell">Status</th>
+                  <th className="px-4 py-3 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest no-print">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pecasFiltradas.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-20">
+                      <Package className="w-12 h-12 mx-auto text-slate-200 mb-3" />
+                      <p className="text-slate-400 text-sm font-semibold">Nenhum produto encontrado</p>
+                      <p className="text-slate-300 text-xs mt-1">Tente ajustar os filtros ou cadastrar um novo produto</p>
+                    </td>
+                  </tr>
+                ) : pecasFiltradas.map((peca, idx) => {
+                  const baixo = (Number(peca.quantidade_estoque) || 0) <= (Number(peca.quantidade_minima) || 5);
+                  return (
+                    <tr key={peca.id}
+                      className={`border-b border-slate-100 transition-colors ${idx % 2 === 0 ? 'bg-white hover:bg-slate-50/80' : 'bg-slate-50/30 hover:bg-slate-50/80'}`}>
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span className="text-[13px] font-bold text-slate-700">{peca.codigo}</span>
+                      </td>
+                      <td className="py-3.5 px-4 max-w-[200px]">
+                        <span className="text-[13px] font-semibold text-slate-800 truncate block">{peca.descricao}</span>
+                        {peca.localizacao && <span className="text-[10.5px] text-slate-400">{peca.localizacao}</span>}
+                      </td>
+                      <td className="py-3.5 px-4 hidden lg:table-cell">
+                        <span className="text-[12px] text-slate-500">{peca.fabricante || '—'}</span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <span className={`text-[13px] font-bold tabular-nums ${baixo ? 'text-red-600' : 'text-slate-800'}`}>
+                            {peca.quantidade_estoque || 0}
+                          </span>
+                          {baixo && <AlertTriangle className="w-3.5 h-3.5 text-red-400 no-print flex-shrink-0" />}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-right hidden md:table-cell">
+                        <span className="text-[12px] text-slate-500 tabular-nums">{formatCurrency(peca.preco_custo)}</span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right hidden sm:table-cell">
+                        <span className="text-[13px] font-bold text-slate-800 tabular-nums">{formatCurrency(peca.preco_venda)}</span>
+                      </td>
+                      <td className="py-3.5 px-4 text-center hidden sm:table-cell">
+                        <span style={{
+                          background: baixo ? '#FEF2F2' : '#ECFDF5',
+                          color: baixo ? '#991B1B' : '#065F46'
+                        }} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10.5px] font-bold whitespace-nowrap">
+                          <span style={{ background: baixo ? '#EF4444' : '#10B981', width: 6, height: 6, borderRadius: '50%', display: 'inline-block', flexShrink: 0 }} />
+                          {baixo ? 'Baixo' : 'OK'}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 no-print">
+                        <div className="flex items-center justify-center gap-1">
+                          <button onClick={() => openForm(peca)} title="Editar"
+                            className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-all">
+                            <Pencil className="w-[15px] h-[15px]" />
+                          </button>
+                          <button onClick={() => handleDelete(peca)} title="Excluir"
+                            className="hidden sm:flex items-center justify-center w-8 h-8 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all">
+                            <Trash2 className="w-[15px] h-[15px]" />
+                          </button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 transition-all">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <DropdownMenuItem onClick={() => openForm(peca)} className="py-2.5 cursor-pointer">
+                                <Pencil className="w-4 h-4 mr-2 text-amber-500" />Editar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDelete(peca)} className="py-2.5 text-red-600 cursor-pointer">
+                                <Trash2 className="w-4 h-4 mr-2" />Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -414,10 +322,7 @@ export default function EstoquePage() {
         isOpen={isFormOpen}
         peca={selectedPeca}
         onSave={handleSave}
-        onClose={() => {
-          setIsFormOpen(false);
-          setSelectedPeca(null);
-        }}
+        onClose={() => { setIsFormOpen(false); setSelectedPeca(null); }}
       />
 
       <DialogComponent />
