@@ -451,13 +451,12 @@ export default function Layout({ children, currentPageName }) {
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
         :root {
-          --sb-bg: #0D1526;
-          --sb-bg-header: #09111F;
-          --sb-border: rgba(255,255,255,0.06);
+          --sb-bg: #0E1525;
+          --sb-bg-header: #080F1C;
+          --sb-border: rgba(255,255,255,0.055);
           --sb-accent: #2563EB;
-          --sb-accent-glow: rgba(37,99,235,0.25);
-          --text-sb: rgba(255,255,255,0.55);
-          --text-sb-h: rgba(255,255,255,0.90);
+          --text-sb: rgba(255,255,255,0.50);
+          --text-sb-h: rgba(255,255,255,0.88);
           --text-sb-active: #FFFFFF;
         }
 
@@ -478,9 +477,9 @@ export default function Layout({ children, currentPageName }) {
           background-color: var(--sb-bg) !important;
           opacity: 1 !important;
           border-right: 1px solid var(--sb-border) !important;
-          box-shadow: 4px 0 24px rgba(0,0,0,0.22) !important;
+          box-shadow: 2px 0 20px rgba(0,0,0,0.30) !important;
           flex-shrink: 0;
-          width: 228px !important;
+          width: 232px !important;
         }
 
         [data-slot="sidebar-content"] {
@@ -560,74 +559,74 @@ export default function Layout({ children, currentPageName }) {
         [data-sidebar] ::-webkit-scrollbar-track { background: transparent; }
         [data-sidebar] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 2px; }
 
-        /* ── SECTION TRIGGERS (grupos accordion) ── */
+        /* ── SECTION TRIGGERS ── */
         .sidebar-section-trigger {
-          color: rgba(255,255,255,0.28) !important;
-          font-size: 9.5px !important;
-          font-weight: 700 !important;
-          letter-spacing: 0.14em !important;
+          color: rgba(255,255,255,0.22) !important;
+          font-size: 9px !important;
+          font-weight: 800 !important;
+          letter-spacing: 0.16em !important;
           text-transform: uppercase !important;
-          transition: all 0.15s !important;
-          padding: 8px 12px 4px !important;
-          margin-top: 4px !important;
+          transition: color 0.15s !important;
+          padding: 10px 16px 3px !important;
+          margin-top: 6px !important;
           display: flex !important;
           align-items: center !important;
           justify-content: space-between !important;
           width: 100% !important;
+          border-top: 1px solid rgba(255,255,255,0.045) !important;
         }
         .sidebar-section-trigger:hover {
-          color: rgba(255,255,255,0.60) !important;
+          color: rgba(255,255,255,0.55) !important;
           background: transparent !important;
         }
-        /* chevron do accordion dentro do trigger */
         .sidebar-section-trigger > svg:last-child,
         .sidebar-section-trigger > span:last-child > svg {
-          color: rgba(255,255,255,0.20) !important;
-          width: 10px !important;
-          height: 10px !important;
-          flex-shrink: 0;
+          color: rgba(255,255,255,0.15) !important;
+          width: 10px !important; height: 10px !important; flex-shrink: 0;
         }
-        /* separador visual entre grupos */
-        [data-slot="sidebar-content"] .space-y-0\.5 + .space-y-0\.5 {
-          margin-top: 6px;
+        /* primeiro grupo não tem separador */
+        [data-slot="sidebar-content"] > div > div:first-child .sidebar-section-trigger {
+          border-top: none !important;
+          padding-top: 4px !important;
+          margin-top: 2px !important;
         }
 
         /* ── NAV ITEMS ── */
         .nav-item {
           position: relative;
           color: var(--text-sb) !important;
-          transition: all 0.12s ease !important;
-          margin: 1px 4px !important;
+          transition: background 0.10s ease, color 0.10s ease !important;
+          margin: 1px 6px !important;
           border-radius: 8px !important;
-          font-size: 13px !important;
-          font-weight: 500 !important;
-          letter-spacing: 0.01em !important;
         }
         .nav-item a {
-          padding: 7px 10px !important;
+          padding: 6.5px 10px !important;
           border-radius: 8px !important;
           gap: 9px !important;
+          font-size: 12.5px !important;
+          font-weight: 500 !important;
+          letter-spacing: 0.005em !important;
         }
         .nav-item:hover {
-          background: rgba(255,255,255,0.06) !important;
-          color: var(--text-sb-h) !important;
+          background: rgba(255,255,255,0.055) !important;
+          color: rgba(255,255,255,0.92) !important;
         }
-        .nav-item svg { opacity: 0.7; width: 15px !important; height: 15px !important; flex-shrink: 0; }
-        .nav-item:hover svg { opacity: 0.95; }
+        .nav-item svg { opacity: 0.60; width: 14px !important; height: 14px !important; flex-shrink: 0; transition: opacity 0.1s; }
+        .nav-item:hover svg { opacity: 0.90; }
 
         /* Item Ativo */
         .nav-item-active {
-          background: rgba(37,99,235,0.18) !important;
-          color: var(--text-sb-active) !important;
+          background: rgba(59,130,246,0.14) !important;
+          color: #fff !important;
         }
         .nav-item-active::before {
           content: '';
           position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-          width: 3px; height: 20px;
-          background: linear-gradient(to bottom, #60a5fa, #3b82f6);
+          width: 3px; height: 18px;
+          background: #3B82F6;
           border-radius: 0 3px 3px 0;
         }
-        .nav-item-active svg { opacity: 1; color: #93c5fd !important; }
+        .nav-item-active svg { opacity: 1 !important; color: #60A5FA !important; }
         .nav-item-inactive { background: transparent !important; }
         .nav-item-inactive:hover { background: rgba(255,255,255,0.05) !important; color: rgba(255,255,255,0.85) !important; }
 
