@@ -298,62 +298,66 @@ export default function AdvancedSearchFilters({
   const activeCount = getActiveFilterCount();
 
   return (
-    <div className={`space-y-3 ${className}`}>
+    <div className={`space-y-2 ${className}`}>
       {/* Linha Principal */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <div className="flex flex-wrap gap-2 items-center">
         {/* Campo de Busca */}
-        <div className="relative flex-1 min-w-[250px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" strokeWidth={2} />
           <Input
             placeholder={`Buscar por ${searchFields.map(f => f.label.toLowerCase()).join(', ')}...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-10 h-10"
+            className="pl-9 pr-9 h-9 text-sm border-slate-200 focus:border-blue-400 bg-slate-50 focus:bg-white transition-colors"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 rounded p-0.5 hover:bg-slate-100"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
           )}
         </div>
 
-        {/* Filtros de Status/Tipo */}
-        {filterFields.map((field) => (
-          <Select
-            key={field.key}
-            value={activeFilters[field.key] || 'all'}
-            onValueChange={(value) => handleFilterChange(field.key, value)}
-          >
-            <SelectTrigger className="w-[160px] h-10">
-              <SelectValue placeholder={field.label} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {field.options.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ))}
+        {/* Filtros de Status/Tipo — exibe label correto em vez do valor interno */}
+        {filterFields.map((field) => {
+          const currentVal = activeFilters[field.key] || 'all';
+          const currentLabel = currentVal === 'all'
+            ? `Todos (${field.label})`
+            : field.options.find(o => o.value === currentVal)?.label || field.label;
+          return (
+            <Select
+              key={field.key}
+              value={currentVal}
+              onValueChange={(value) => handleFilterChange(field.key, value)}
+            >
+              <SelectTrigger className="w-auto min-w-[130px] h-9 text-sm border-slate-200 bg-slate-50 hover:border-blue-400 hover:bg-white transition-colors gap-1.5">
+                <span className="truncate text-slate-700 font-medium">{currentLabel}</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {field.options.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        })}
 
         {/* Seletor de Período */}
         {dateField && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-10 gap-2">
-                <Calendar className="w-4 h-4" />
-                {selectedPeriod ? (
-                  PRESET_PERIODS.find(p => p.id === selectedPeriod)?.label || 'Período'
-                ) : (
-                  'Período'
-                )}
-                <ChevronDown className="w-3 h-3" />
-              </Button>
+              <button className={`inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-sm font-medium border transition-colors ${selectedPeriod ? 'border-blue-400 bg-blue-50 text-blue-700' : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-400 hover:bg-white'}`}>
+                <Calendar className="w-3.5 h-3.5" strokeWidth={2} />
+                <span className="max-w-[100px] truncate">
+                  {selectedPeriod ? PRESET_PERIODS.find(p => p.id === selectedPeriod)?.label || 'Período' : 'Período'}
+                </span>
+                <ChevronDown className="w-3 h-3 opacity-60" strokeWidth={2} />
+              </button>
             </PopoverTrigger>
             <PopoverContent className="w-72 p-3" align="end">
               <div className="space-y-3">
@@ -371,48 +375,21 @@ export default function AdvancedSearchFilters({
                     </Button>
                   ))}
                 </div>
-                
                 <div className="border-t pt-3">
                   <Label className="text-xs font-semibold text-slate-500 uppercase mb-2 block">Personalizado</Label>
                   <div className="flex gap-2">
                     <div className="flex-1">
                       <Label className="text-xs mb-1 block">De</Label>
-                      <Input
-                        type="date"
-                        value={customDateStart}
-                        onChange={(e) => {
-                          setCustomDateStart(e.target.value);
-                          setSelectedPeriod('custom');
-                        }}
-                        className="h-8 text-sm"
-                      />
+                      <Input type="date" value={customDateStart} onChange={(e) => { setCustomDateStart(e.target.value); setSelectedPeriod('custom'); }} className="h-8 text-sm" />
                     </div>
                     <div className="flex-1">
                       <Label className="text-xs mb-1 block">Até</Label>
-                      <Input
-                        type="date"
-                        value={customDateEnd}
-                        onChange={(e) => {
-                          setCustomDateEnd(e.target.value);
-                          setSelectedPeriod('custom');
-                        }}
-                        className="h-8 text-sm"
-                      />
+                      <Input type="date" value={customDateEnd} onChange={(e) => { setCustomDateEnd(e.target.value); setSelectedPeriod('custom'); }} className="h-8 text-sm" />
                     </div>
                   </div>
                 </div>
-
                 {selectedPeriod && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full text-slate-500"
-                    onClick={() => {
-                      setSelectedPeriod(null);
-                      setCustomDateStart('');
-                      setCustomDateEnd('');
-                    }}
-                  >
+                  <Button variant="ghost" size="sm" className="w-full text-slate-500" onClick={() => { setSelectedPeriod(null); setCustomDateStart(''); setCustomDateEnd(''); }}>
                     <X className="w-3 h-3 mr-1" />
                     Limpar período
                   </Button>
@@ -426,10 +403,10 @@ export default function AdvancedSearchFilters({
         {sortFields.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-10 gap-2">
-                <ArrowUpDown className="w-4 h-4" />
+              <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-sm font-medium border border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-400 hover:bg-white transition-colors">
+                <ArrowUpDown className="w-3.5 h-3.5" strokeWidth={2} />
                 Ordenar
-              </Button>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>Ordenar por</DropdownMenuLabel>
@@ -456,10 +433,10 @@ export default function AdvancedSearchFilters({
         {savedFilters.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-10 gap-2">
-                <Star className="w-4 h-4" />
+              <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-sm font-medium border border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-400 hover:bg-white transition-colors">
+                <Star className="w-3.5 h-3.5" strokeWidth={2} />
                 Favoritos
-              </Button>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Filtros Salvos</DropdownMenuLabel>
@@ -493,9 +470,9 @@ export default function AdvancedSearchFilters({
         {/* Salvar Filtro Atual */}
         <Popover open={showSaveDialog} onOpenChange={setShowSaveDialog}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-10 w-10" title="Salvar filtros atuais">
-              <Save className="w-4 h-4" />
-            </Button>
+            <button className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-slate-200 bg-slate-50 text-slate-500 hover:border-blue-400 hover:bg-white hover:text-blue-600 transition-colors" title="Salvar filtros atuais">
+              <Save className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
           </PopoverTrigger>
           <PopoverContent className="w-64 p-3" align="end">
             <div className="space-y-3">
@@ -521,15 +498,13 @@ export default function AdvancedSearchFilters({
 
         {/* Limpar Tudo */}
         {activeCount > 0 && (
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={clearAllFilters}
-            className="h-10 text-slate-500 hover:text-slate-700"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-sm font-medium text-red-500 hover:text-red-700 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors"
           >
-            <RotateCcw className="w-4 h-4 mr-1" />
+            <RotateCcw className="w-3.5 h-3.5" strokeWidth={2} />
             Limpar
-          </Button>
+          </button>
         )}
       </div>
 
