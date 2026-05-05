@@ -525,53 +525,6 @@ function OrdensServicoContent() {
             </div>
           </div>
 
-          {/* BOTÕES DE AÇÃO (lado direito em desktop, abaixo em mobile) */}
-          <div className="flex flex-row lg:flex-col gap-2 lg:items-stretch lg:justify-center flex-shrink-0 lg:min-w-[168px]">
-            {isAdmin && selectedOS.length > 0 && (
-              <div className="flex gap-2">
-                <button onClick={handleAgrupar} disabled={selectedOS.length < 2}
-                  className="inline-flex items-center justify-center gap-1.5 h-10 px-3 rounded-xl text-[12px] font-semibold bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors whitespace-nowrap">
-                  <Merge className="w-3.5 h-3.5" />
-                  <span>Agrupar ({selectedOS.length})</span>
-                </button>
-                <button onClick={handleBulkDelete}
-                  className="inline-flex items-center justify-center gap-1.5 h-10 px-3 rounded-xl text-[12px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors whitespace-nowrap">
-                  <Trash className="w-3.5 h-3.5" />({selectedOS.length})
-                </button>
-              </div>
-            )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl text-[13px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
-                  <Filter className="w-4 h-4 text-slate-400" />
-                  Ações
-                  <ChevronDown className="w-3.5 h-3.5 opacity-40" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsRelatorioFiltersModalOpen(true)}>
-                  <FileText className="w-4 h-4 mr-2.5 text-slate-400" />Gerar Relatório
-                </DropdownMenuItem>
-                {canCreate('os') && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsImportModalOpen(true)}>
-                      <Upload className="w-4 h-4 mr-2.5 text-slate-400" />Importar OS
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {canCreate('os') && (
-              <button onClick={handleNewOS}
-                className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-xl text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm shadow-blue-200 whitespace-nowrap">
-                <Plus className="w-4 h-4" strokeWidth={2.5} />
-                Nova OS
-              </button>
-            )}
-          </div>
         </div>
 
         {/* ═══════════════════════════════════════
@@ -580,7 +533,7 @@ function OrdensServicoContent() {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
 
           {/* Toolbar */}
-          <div className="px-4 pt-4 pb-3 border-b border-slate-100">
+          <div className="px-4 pt-4 pb-3 border-b border-slate-100 space-y-3">
             <AdvancedSearchFilters
               entityName="ordens_servico"
               searchFields={osSearchFields}
@@ -591,6 +544,51 @@ function OrdensServicoContent() {
               onFiltersChange={setAdvancedFilters}
               placeholder="Buscar por nº OS, cliente, responsável, veículo..."
             />
+            <div className="flex flex-wrap items-center gap-2">
+              {isAdmin && selectedOS.length > 0 && (
+                <>
+                  <button onClick={handleAgrupar} disabled={selectedOS.length < 2}
+                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[12px] font-semibold bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-40 transition-colors whitespace-nowrap">
+                    <Merge className="w-3.5 h-3.5" />
+                    Agrupar ({selectedOS.length})
+                  </button>
+                  <button onClick={handleBulkDelete}
+                    className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[12px] font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors whitespace-nowrap">
+                    <Trash className="w-3.5 h-3.5" />
+                    Excluir ({selectedOS.length})
+                  </button>
+                </>
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-[13px] font-semibold border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors whitespace-nowrap">
+                    <Filter className="w-3.5 h-3.5 text-slate-400" />
+                    Ações
+                    <ChevronDown className="w-3 h-3 opacity-40" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsRelatorioFiltersModalOpen(true)}>
+                    <FileText className="w-4 h-4 mr-2.5 text-slate-400" />Gerar Relatório
+                  </DropdownMenuItem>
+                  {canCreate('os') && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="py-2.5 text-sm cursor-pointer" onClick={() => setIsImportModalOpen(true)}>
+                        <Upload className="w-4 h-4 mr-2.5 text-slate-400" />Importar OS
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {canCreate('os') && (
+                <button onClick={handleNewOS}
+                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-[13px] font-bold bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 transition-colors shadow-sm shadow-blue-200 whitespace-nowrap">
+                  <Plus className="w-4 h-4" strokeWidth={2.5} />
+                  Nova OS
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Contador de resultados */}
