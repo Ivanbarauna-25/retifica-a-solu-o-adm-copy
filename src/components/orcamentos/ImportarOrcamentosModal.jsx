@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import * as XLSX from 'xlsx';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -338,67 +339,86 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
           }
         }
 
-      } else if (isExcel || isPDF) {
-        updateProgress(10, 'Enviando arquivo', 'Fazendo upload...');
-        
-        const uploadResponse = await base44.integrations.Core.UploadFile({ file });
-        const file_url = uploadResponse.file_url;
+      } else if (isExcel) {
+        updateProgress(10, 'Lendo arquivo', 'Carregando Excel...');
 
-        if (!file_url) throw new Error('Falha no upload do arquivo');
+        const arrayBuffer = await file.arrayBuffer();
+        updateProgress(30, 'Analisando estrutura', 'Identificando colunas...');
 
-        updateProgress(30, 'Analisando com IA', isPDF ? 'Extraindo texto do PDF...' : 'Lendo planilha...');
-        await new Promise(r => setTimeout(r, 500));
+        const workbook = XLSX.read(arrayBuffer, { type: 'array', cellDates: true });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
 
-        updateProgress(50, 'Analisando com IA', 'Identificando orçamentos...');
+        if (rows.length < 2) throw new Error('Planilha vazia ou sem dados após o cabeçalho.');
 
-        const extractResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
-          file_url,
-          json_schema: {
-            type: "object",
-            properties: {
-              orcamentos: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    numero_orcamento: { type: "string", description: "Número do orçamento (coluna Nº, N°, Numero)" },
-                    cliente_nome: { type: "string", description: "Nome do cliente (coluna Cliente)" },
-                    vendedor_nome: { type: "string", description: "Nome do vendedor (coluna Vendedor)" },
-                    data_orcamento: { type: "string", description: "Data do orçamento no formato YYYY-MM-DD (coluna Data)" },
-                    data_validade: { type: "string", description: "Data de validade no formato YYYY-MM-DD" },
-                    valor_produtos: { type: "number", description: "Valor total de produtos" },
-                    valor_servicos: { type: "number", description: "Valor total de serviços" },
-                    desconto: { type: "number", description: "Valor do desconto" },
-                    outras_despesas: { type: "number", description: "Outras despesas" },
-                    observacoes: { type: "string", description: "Observações" }
-                  },
-                  required: ["numero_orcamento"]
+        const headers = rows[0].map(h => String(h).trim().toLowerCase());
+        updateProgress(50, 'Mapeando colunas', `${headers.length} colunas encontradas`);
+
+        const colunaMap = {};
+        headers.forEach((h, idx) => {
+          const campo = mapearColuna(h);
+          if (campo) colunaMap[idx] = campo;
+        });
+
+        if (Object.keys(colunaMap).length === 0) {
+          throw new Error('Não foi possível identificar as colunas. Verifique o cabeçalho do arquivo.');
+        }
+
+        updateProgress(60, 'Extraindo dados', `Processando ${rows.length - 1} linhas...`);
+
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          // Pular linhas completamente vazias
+          if (row.every(cell => cell === '' || cell === null || cell === undefined)) continue;
+
+          const orcamento = {
+            numero_orcamento: '', cliente_nome: '', vendedor_nome: '',
+            data_orcamento: '', data_validade: '', status: 'pendente',
+            valor_produtos: 0, valor_servicos: 0, desconto: 0,
+            valor_total: 0, outras_despesas: 0, forma_pagamento_nome: '',
+            condicao_pagamento_nome: '', observacoes: ''
+          };
+
+          row.forEach((cell, idx) => {
+            const campo = colunaMap[idx];
+            if (!campo) return;
+
+            if (cell instanceof Date) {
+              // Datas já parseadas pelo XLSX
+              const d = cell;
+              const ano = d.getFullYear();
+              const mes = String(d.getMonth() + 1).padStart(2, '0');
+              const dia = String(d.getDate()).padStart(2, '0');
+              orcamento[campo] = `${ano}-${mes}-${dia}`;
+            } else if (['valor_produtos', 'valor_servicos', 'desconto', 'valor_total', 'outras_despesas'].includes(campo)) {
+              const valorLimpo = String(cell).replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.');
+              orcamento[campo] = Number(valorLimpo) || 0;
+            } else {
+              const valorLimpo = String(cell).trim();
+              if (valorLimpo && valorLimpo !== '-') {
+                // Tentar converter data em string DD/MM/YYYY ou YYYY-MM-DD
+                if ((campo === 'data_orcamento' || campo === 'data_validade') && valorLimpo.includes('/')) {
+                  const partes = valorLimpo.split('/');
+                  if (partes.length === 3) {
+                    const [dia, mes, ano] = partes;
+                    orcamento[campo] = `${ano}-${mes.padStart(2,'0')}-${dia.padStart(2,'0')}`;
+                  } else {
+                    orcamento[campo] = valorLimpo;
+                  }
+                } else {
+                  orcamento[campo] = valorLimpo;
                 }
               }
             }
-          }
-        });
+          });
 
-        updateProgress(75, 'Processando resultados', 'Organizando dados...');
-
-        if (extractResult.status === 'error') {
-          throw new Error(extractResult.details || 'Erro ao extrair dados do arquivo');
+          dados.push(orcamento);
+          if (i % 10 === 0) updateProgress(60 + Math.floor((i / rows.length) * 25), 'Extraindo dados', `Linha ${i} de ${rows.length - 1}`);
         }
 
-        dados = (extractResult.output?.orcamentos || []).map(d => ({
-          numero_orcamento: String(d.numero_orcamento || ''),
-          cliente_nome: d.cliente_nome || '',
-          vendedor_nome: d.vendedor_nome || '',
-          data_orcamento: d.data_orcamento || '',
-          data_validade: d.data_validade || '',
-          status: 'pendente',
-          valor_produtos: Number(d.valor_produtos) || 0,
-          valor_servicos: Number(d.valor_servicos) || 0,
-          desconto: Number(d.desconto) || 0,
-          valor_total: Number(d.valor_total) || 0,
-          outras_despesas: Number(d.outras_despesas) || 0,
-          observacoes: d.observacoes || ''
-        }));
+      } else if (isPDF) {
+        throw new Error('Importação de PDF requer IA. Use um arquivo CSV ou Excel (.xlsx) com o modelo disponível.');
       }
 
       if (dados.length === 0) {
@@ -880,8 +900,8 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                 <Alert className="bg-blue-50 border-blue-200">
                   <AlertCircle className="w-4 h-4 text-blue-600" />
                   <AlertDescription className="text-xs md:text-sm text-slate-700 space-y-1">
-                    <p><strong className="text-blue-700">CSV recomendado:</strong> Use o modelo baixado, preencha no Excel e importe. Funciona sem depender de IA.</p>
-                    <p className="text-slate-500">Excel (.xlsx) e PDF usam IA para extração automática (consome créditos).</p>
+                    <p><strong className="text-blue-700">CSV e Excel (.xlsx) funcionam sem IA</strong> — use o modelo baixado, preencha e importe diretamente.</p>
+                    <p className="text-slate-500">PDF não é suportado sem IA.</p>
                   </AlertDescription>
                 </Alert>
               </motion.div>
