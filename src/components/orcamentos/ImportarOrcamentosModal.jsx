@@ -179,38 +179,33 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
   };
 
   const downloadTemplate = async () => {
-    // Cabeçalhos no formato exato da tabela do app
+    // Gera CSV puro (separador ;) — funciona sem backend e sem IA
     const headers = ['Nº/Número', 'Data', 'Cliente', 'Vendedor', 'Produtos', 'Serviços', 'Desconto', 'Despesas', 'Forma Pagamento', 'Condição Pagamento', 'Observações'];
-    const keys = CAMPOS_IMPORTACAO.map(c => c.key);
     
     const exampleData = [
-      ['ORC-001', '2024-01-15', 'João Silva', 'Maria Vendedora', 1500.00, 800.00, 100.00, 50.00, 'Dinheiro', 'À Vista', 'Orçamento de exemplo'],
-      ['ORC-002', '2024-01-16', 'José Santos', 'Pedro Vendedor', 2000.00, 500.00, 150.00, 0.00, 'Cartão', '30/60/90', 'Outro exemplo'],
-      ['', '', '', '', '', '', '', '', '', '', ''],
+      ['ORC-001', '2025-01-15', 'João Silva', 'Maria Vendedora', '1500,00', '800,00', '100,00', '50,00', 'Dinheiro', 'À Vista', 'Orçamento de exemplo'],
+      ['ORC-002', '2025-01-16', 'José Santos', 'Pedro Vendedor', '2000,00', '500,00', '150,00', '0,00', 'Cartão', '30/60/90', 'Outro exemplo'],
     ];
 
-    // Criar CSV formatado para Excel (com BOM e separador ;)
     const csvRows = [
-      headers.join(';'),
-      ...exampleData.map(row => row.map(cell => {
-        if (typeof cell === 'number') return cell.toString().replace('.', ',');
-        return `"${cell}"`;
-      }).join(';'))
+      headers.map(h => `"${h}"`).join(';'),
+      ...exampleData.map(row => row.map(cell => `"${cell}"`).join(';'))
     ];
     
+    // BOM para o Excel reconhecer UTF-8
     const csvContent = '\ufeff' + csvRows.join('\r\n');
     
-    const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'modelo_orcamentos.xlsx';
+    link.download = 'modelo_orcamentos.csv';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast({
-      title: 'Modelo XLSX baixado!',
-      description: 'Abra no Excel, preencha os dados e salve. Depois importe aqui ou envie via WhatsApp.'
+      title: '✅ Modelo CSV baixado!',
+      description: 'Abra no Excel, preencha os dados, salve como CSV (separador ponto-e-vírgula) e importe aqui.'
     });
   };
 
@@ -882,10 +877,11 @@ export default function ImportarOrcamentosModal({ isOpen, onClose, onSuccess }) 
                 )}
 
                 {/* Info */}
-                <Alert className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                  <Sparkles className="w-4 h-4 text-blue-600" />
-                  <AlertDescription className="text-xs md:text-sm text-slate-700">
-                    <strong className="text-blue-700">IA Inteligente:</strong> Identificamos automaticamente colunas e corrigimos dados.
+                <Alert className="bg-blue-50 border-blue-200">
+                  <AlertCircle className="w-4 h-4 text-blue-600" />
+                  <AlertDescription className="text-xs md:text-sm text-slate-700 space-y-1">
+                    <p><strong className="text-blue-700">CSV recomendado:</strong> Use o modelo baixado, preencha no Excel e importe. Funciona sem depender de IA.</p>
+                    <p className="text-slate-500">Excel (.xlsx) e PDF usam IA para extração automática (consome créditos).</p>
                   </AlertDescription>
                 </Alert>
               </motion.div>
