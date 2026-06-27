@@ -1,0 +1,62 @@
+{
+  "name": "EntregaEPI",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio que recebeu o EPI"
+    },
+    "data_entrega": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da entrega"
+    },
+    "entregue_por": {
+      "type": "string",
+      "description": "Nome/email de quem fez a entrega"
+    },
+    "itens": {
+      "type": "array",
+      "description": "Lista de EPIs entregues",
+      "items": {
+        "type": "object",
+        "properties": {
+          "epi_id": {
+            "type": "string"
+          },
+          "epi_nome": {
+            "type": "string"
+          },
+          "numero_ca": {
+            "type": "string"
+          },
+          "quantidade": {
+            "type": "number"
+          },
+          "observacoes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es gerais da entrega"
+    },
+    "termo_impresso": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o termo de recebimento foi impresso"
+    },
+    "termo_assinado": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o termo foi assinado pelo funcion\u00e1rio"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "data_entrega",
+    "itens"
+  ]
+}

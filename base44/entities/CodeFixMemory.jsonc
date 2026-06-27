@@ -1,0 +1,44 @@
+{
+  "name": "CodeFixMemory",
+  "type": "object",
+  "properties": {
+    "learned_from": {
+      "type": "array",
+      "description": "Array de erros resolvidos e suas solu\u00e7\u00f5es",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "cause": {
+            "type": "string"
+          },
+          "solution": {
+            "type": "string"
+          },
+          "component": {
+            "type": "string"
+          },
+          "resolved_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data do aprendizado"
+    },
+    "total_learned": {
+      "type": "number",
+      "description": "Total de padr\u00f5es aprendidos",
+      "default": 0
+    }
+  },
+  "required": [
+    "learned_from",
+    "date"
+  ]
+}

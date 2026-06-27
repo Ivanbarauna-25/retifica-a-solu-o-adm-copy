@@ -1,0 +1,42 @@
+{
+  "name": "ControlePonto",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "mes_referencia": {
+      "type": "string",
+      "description": "M\u00eas de refer\u00eancia no formato AAAA-MM"
+    },
+    "dias_trabalhados": {
+      "type": "number",
+      "default": 0
+    },
+    "faltas_dias": {
+      "type": "number",
+      "default": 0
+    },
+    "faltas_horas": {
+      "type": "number",
+      "default": 0
+    },
+    "horas_extras_semana": {
+      "type": "number",
+      "default": 0
+    },
+    "horas_extras_fds": {
+      "type": "number",
+      "default": 0
+    },
+    "gerado_em": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "mes_referencia"
+  ]
+}

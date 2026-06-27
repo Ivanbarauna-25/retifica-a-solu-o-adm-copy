@@ -1,0 +1,66 @@
+{
+  "name": "FuncionarioDesligamento",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio",
+      "x-foreign-key": "Funcionario"
+    },
+    "motivo": {
+      "type": "string",
+      "description": "Motivo do desligamento"
+    },
+    "data_aviso": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do aviso pr\u00e9vio"
+    },
+    "data_desligamento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data efetiva do desligamento"
+    },
+    "solicitante_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio solicitante"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "aguardando_aprovacao",
+        "aprovado",
+        "reprovado"
+      ],
+      "default": "aguardando_aprovacao",
+      "description": "Status da solicita\u00e7\u00e3o"
+    },
+    "aprovador_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio aprovador designado"
+    },
+    "data_aprovacao": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da aprova\u00e7\u00e3o/reprova\u00e7\u00e3o"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre o desligamento"
+    },
+    "motivo_reprovacao": {
+      "type": "string",
+      "description": "Motivo da reprova\u00e7\u00e3o"
+    },
+    "observacoes_aprovacao": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es do aprovador"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "motivo",
+    "data_aviso",
+    "status"
+  ]
+}

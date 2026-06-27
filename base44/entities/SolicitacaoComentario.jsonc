@@ -1,0 +1,58 @@
+{
+  "name": "SolicitacaoComentario",
+  "type": "object",
+  "properties": {
+    "solicitacao_tipo": {
+      "type": "string",
+      "enum": [
+        "ferias",
+        "salario",
+        "cargo",
+        "departamento",
+        "desligamento"
+      ],
+      "description": "Tipo da solicita\u00e7\u00e3o"
+    },
+    "solicitacao_id": {
+      "type": "string",
+      "description": "ID da solicita\u00e7\u00e3o relacionada"
+    },
+    "autor_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio que fez o coment\u00e1rio"
+    },
+    "autor_nome": {
+      "type": "string",
+      "description": "Nome do autor do coment\u00e1rio"
+    },
+    "comentario": {
+      "type": "string",
+      "description": "Texto do coment\u00e1rio"
+    },
+    "tipo_comentario": {
+      "type": "string",
+      "enum": [
+        "comentario",
+        "resposta",
+        "aprovacao",
+        "reprovacao",
+        "encaminhamento"
+      ],
+      "default": "comentario",
+      "description": "Tipo do coment\u00e1rio"
+    },
+    "anexos": {
+      "type": "array",
+      "description": "URLs de arquivos anexados",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "solicitacao_tipo",
+    "solicitacao_id",
+    "autor_id",
+    "comentario"
+  ]
+}

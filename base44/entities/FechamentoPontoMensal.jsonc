@@ -1,0 +1,87 @@
+{
+  "name": "FechamentoPontoMensal",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "mes_referencia": {
+      "type": "string",
+      "description": "M\u00eas de refer\u00eancia (AAAA-MM)"
+    },
+    "total_dias_trabalhados": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de dias trabalhados no m\u00eas"
+    },
+    "total_horas_trabalhadas_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de horas trabalhadas em minutos"
+    },
+    "total_atrasos_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de atrasos em minutos"
+    },
+    "total_faltas_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de faltas em minutos"
+    },
+    "total_hora_extra_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de horas extras em minutos"
+    },
+    "saldo_banco_horas_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Saldo do banco de horas em minutos"
+    },
+    "total_ocorrencias": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de ocorr\u00eancias no m\u00eas"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "aberto",
+        "em_conferencia",
+        "fechado",
+        "assinado"
+      ],
+      "default": "aberto",
+      "description": "Status do fechamento"
+    },
+    "assinatura_funcionario_nome": {
+      "type": "string",
+      "description": "Nome do funcion\u00e1rio na assinatura"
+    },
+    "assinatura_funcionario_data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da assinatura do funcion\u00e1rio"
+    },
+    "assinatura_gestor_nome": {
+      "type": "string",
+      "description": "Nome do gestor na assinatura"
+    },
+    "assinatura_gestor_data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da assinatura do gestor"
+    },
+    "gerado_em": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da gera\u00e7\u00e3o do fechamento"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "mes_referencia"
+  ]
+}

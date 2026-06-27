@@ -1,0 +1,89 @@
+{
+  "name": "Candidato",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome completo do candidato"
+    },
+    "cpf": {
+      "type": "string",
+      "description": "CPF do candidato"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "telefone": {
+      "type": "string"
+    },
+    "data_nascimento": {
+      "type": "string",
+      "format": "date"
+    },
+    "endereco": {
+      "type": "string"
+    },
+    "cargo_id": {
+      "type": "string",
+      "description": "ID do cargo pretendido"
+    },
+    "salario_pretendido": {
+      "type": "number",
+      "description": "Sal\u00e1rio pretendido pelo candidato"
+    },
+    "periodo_experiencia": {
+      "type": "number",
+      "description": "Per\u00edodo de experi\u00eancia em dias",
+      "default": 90
+    },
+    "status_contratacao": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "em_analise",
+        "aprovado",
+        "reprovado",
+        "contratado"
+      ],
+      "default": "pendente"
+    },
+    "doc_foto_url": {
+      "type": "string",
+      "description": "URL da foto 3x4 do candidato"
+    },
+    "doc_rg_url": {
+      "type": "string",
+      "description": "URL do RG do candidato"
+    },
+    "doc_cpf_url": {
+      "type": "string",
+      "description": "URL do CPF do candidato"
+    },
+    "doc_residencia_url": {
+      "type": "string",
+      "description": "URL do comprovante de resid\u00eancia"
+    },
+    "doc_curriculo_url": {
+      "type": "string",
+      "description": "URL do curr\u00edculo"
+    },
+    "doc_exame_admissional_url": {
+      "type": "string",
+      "description": "URL do exame admissional"
+    },
+    "doc_contrato_trabalho_url": {
+      "type": "string",
+      "description": "URL do contrato de trabalho assinado"
+    },
+    "anotacoes": {
+      "type": "string",
+      "description": "Anota\u00e7\u00f5es sobre o candidato e processo seletivo"
+    }
+  },
+  "required": [
+    "nome",
+    "cpf",
+    "cargo_id"
+  ]
+}

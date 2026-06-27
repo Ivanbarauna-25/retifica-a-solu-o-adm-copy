@@ -1,0 +1,29 @@
+{
+  "name": "FuncionarioEscala",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "escala_id": {
+      "type": "string",
+      "description": "ID da escala de trabalho"
+    },
+    "vigencia_inicio": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de in\u00edcio da vig\u00eancia"
+    },
+    "vigencia_fim": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de fim da vig\u00eancia (opcional)"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "escala_id",
+    "vigencia_inicio"
+  ]
+}

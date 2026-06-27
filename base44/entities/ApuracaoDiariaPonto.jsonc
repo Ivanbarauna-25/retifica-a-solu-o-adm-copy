@@ -1,0 +1,92 @@
+{
+  "name": "ApuracaoDiariaPonto",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da apura\u00e7\u00e3o"
+    },
+    "escala_id": {
+      "type": "string",
+      "description": "ID da escala vigente neste dia"
+    },
+    "batidas_ids": {
+      "type": "string",
+      "description": "IDs das batidas usadas (separados por v\u00edrgula)"
+    },
+    "entrada_1": {
+      "type": "string",
+      "description": "Hora da primeira entrada (HH:mm)"
+    },
+    "saida_1": {
+      "type": "string",
+      "description": "Hora da primeira sa\u00edda (HH:mm)"
+    },
+    "entrada_2": {
+      "type": "string",
+      "description": "Hora da segunda entrada (HH:mm)"
+    },
+    "saida_2": {
+      "type": "string",
+      "description": "Hora da segunda sa\u00edda (HH:mm)"
+    },
+    "total_trabalhado_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Total trabalhado em minutos"
+    },
+    "atraso_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Atraso em minutos"
+    },
+    "falta_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Falta em minutos"
+    },
+    "hora_extra_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Hora extra em minutos"
+    },
+    "banco_horas_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Saldo banco de horas em minutos (positivo/negativo)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "incompleto",
+        "divergente",
+        "ajustado",
+        "falta",
+        "abonado",
+        "folga",
+        "desconto"
+      ],
+      "default": "ok",
+      "description": "Status da apura\u00e7\u00e3o do dia"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre a apura\u00e7\u00e3o"
+    },
+    "gerado_em": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da gera\u00e7\u00e3o da apura\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "data"
+  ]
+}

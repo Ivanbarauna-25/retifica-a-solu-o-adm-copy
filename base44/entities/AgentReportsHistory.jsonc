@@ -1,0 +1,79 @@
+{
+  "name": "AgentReportsHistory",
+  "type": "object",
+  "properties": {
+    "report_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora do relat\u00f3rio"
+    },
+    "health_score": {
+      "type": "number",
+      "description": "System Health Score no momento"
+    },
+    "total_errors": {
+      "type": "number",
+      "description": "Total de erros detectados"
+    },
+    "critical_errors": {
+      "type": "number",
+      "description": "Erros cr\u00edticos"
+    },
+    "resolved_errors": {
+      "type": "number",
+      "description": "Erros resolvidos"
+    },
+    "resolution_rate": {
+      "type": "number",
+      "description": "Taxa de resolu\u00e7\u00e3o (%)"
+    },
+    "mttr_hours": {
+      "type": "number",
+      "description": "MTTR em horas"
+    },
+    "total_patterns": {
+      "type": "number",
+      "description": "Total de padr\u00f5es aprendidos"
+    },
+    "model_version": {
+      "type": "number",
+      "description": "Vers\u00e3o do modelo do agente"
+    },
+    "patches_applied": {
+      "type": "number",
+      "description": "Patches aplicados"
+    },
+    "tasks_created": {
+      "type": "number",
+      "description": "Tarefas criadas"
+    },
+    "safety_score": {
+      "type": "number",
+      "description": "Safety score m\u00e9dio"
+    },
+    "status": {
+      "type": "string",
+      "description": "Status do sistema (Operacional/Parcial/Em aten\u00e7\u00e3o)"
+    },
+    "risk_level": {
+      "type": "string",
+      "description": "N\u00edvel de risco (Baixo/M\u00e9dio/Alto)"
+    },
+    "report_data": {
+      "type": "object",
+      "description": "Dados completos do relat\u00f3rio em JSON"
+    }
+  },
+  "required": [
+    "report_date",
+    "health_score",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

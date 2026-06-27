@@ -1,0 +1,72 @@
+{
+  "name": "ContasPagar",
+  "type": "object",
+  "properties": {
+    "fornecedor_id": {
+      "type": "string",
+      "description": "ID do fornecedor"
+    },
+    "plano_contas_id": {
+      "type": "string",
+      "description": "ID da conta do plano de contas"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o da conta"
+    },
+    "numero_documento": {
+      "type": "string",
+      "description": "N\u00famero do documento/nota fiscal"
+    },
+    "data_vencimento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de vencimento"
+    },
+    "data_pagamento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do pagamento"
+    },
+    "competencia": {
+      "type": "string",
+      "description": "Compet\u00eancia no formato AAAA-MM"
+    },
+    "valor_original": {
+      "type": "number",
+      "description": "Valor original da conta"
+    },
+    "valor_pago": {
+      "type": "number",
+      "description": "Valor efetivamente pago"
+    },
+    "juros_multa": {
+      "type": "number",
+      "description": "Juros e multa",
+      "default": 0
+    },
+    "desconto": {
+      "type": "number",
+      "description": "Desconto concedido",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "pago",
+        "vencido",
+        "cancelado"
+      ],
+      "default": "pendente"
+    },
+    "observacoes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "descricao",
+    "data_vencimento",
+    "valor_original"
+  ]
+}

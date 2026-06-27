@@ -1,0 +1,70 @@
+{
+  "name": "FluxoCaixa",
+  "type": "object",
+  "properties": {
+    "data_movimento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do movimento"
+    },
+    "tipo_movimento": {
+      "type": "string",
+      "enum": [
+        "entrada",
+        "saida"
+      ],
+      "description": "Tipo do movimento"
+    },
+    "conta_bancaria_id": {
+      "type": "string",
+      "description": "ID da conta banc\u00e1ria"
+    },
+    "forma_pagamento_id": {
+      "type": "string",
+      "description": "ID da forma de pagamento"
+    },
+    "plano_contas_id": {
+      "type": "string",
+      "description": "ID da conta do plano de contas"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do movimento"
+    },
+    "valor": {
+      "type": "number",
+      "description": "Valor do movimento"
+    },
+    "documento": {
+      "type": "string",
+      "description": "N\u00famero do documento/comprovante"
+    },
+    "origem": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "folha_pagamento",
+        "adiantamento",
+        "conta_pagar",
+        "conta_receber",
+        "venda"
+      ],
+      "description": "Origem do lan\u00e7amento"
+    },
+    "origem_id": {
+      "type": "string",
+      "description": "ID do registro de origem"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es adicionais"
+    }
+  },
+  "required": [
+    "data_movimento",
+    "tipo_movimento",
+    "conta_bancaria_id",
+    "descricao",
+    "valor"
+  ]
+}

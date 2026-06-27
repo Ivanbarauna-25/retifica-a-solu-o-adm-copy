@@ -1,0 +1,224 @@
+{
+  "name": "Configuracoes",
+  "type": "object",
+  "properties": {
+    "nome_empresa": {
+      "type": "string"
+    },
+    "cnpj": {
+      "type": "string"
+    },
+    "endereco": {
+      "type": "string"
+    },
+    "telefone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "contrato_social_url": {
+      "type": "string"
+    },
+    "alvara_url": {
+      "type": "string"
+    },
+    "outros_docs_url": {
+      "type": "string"
+    },
+    "modelo_orcamento_url": {
+      "type": "string",
+      "description": "URL do modelo de or\u00e7amento PDF para reconhecimento autom\u00e1tico via OCR"
+    },
+    "campos_obrigatorios": {
+      "type": "object",
+      "description": "JSON para armazenar a configura\u00e7\u00e3o de campos obrigat\u00f3rios"
+    },
+    "bloquear_edicao_os_com_financeiro": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se deve bloquear a edi\u00e7\u00e3o de OS que j\u00e1 possuem movimenta\u00e7\u00e3o financeira gerada"
+    },
+    "bloquear_edicao_parcela_com_baixa": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se deve bloquear a edi\u00e7\u00e3o de parcelas que j\u00e1 foram baixadas"
+    },
+    "permitir_conversao_multipla_orcamento": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se permite converter um mesmo or\u00e7amento em m\u00faltiplas OS"
+    },
+    "finalizar_os_ao_gerar_financeiro": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se deve finalizar automaticamente a OS ao gerar movimenta\u00e7\u00e3o financeira"
+    },
+    "permitir_cancelamento_movimentacoes_pagas": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se permite cancelar movimenta\u00e7\u00f5es financeiras que j\u00e1 foram baixadas"
+    },
+    "calcular_comissao_apenas_os_finalizadas": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se deve calcular comiss\u00f5es apenas para Ordens de Servi\u00e7o finalizadas"
+    },
+    "plano_contas_padrao_receita_os": {
+      "type": "string",
+      "description": "ID do Plano de Contas padr\u00e3o para receitas de Ordem de Servi\u00e7o"
+    },
+    "plano_contas_padrao_despesa_compras": {
+      "type": "string",
+      "description": "ID do Plano de Contas padr\u00e3o para despesas de compras/NF-e entrada"
+    },
+    "config_13_salario": {
+      "type": "object",
+      "description": "Configura\u00e7\u00f5es espec\u00edficas para c\u00e1lculo do 13\u00ba sal\u00e1rio",
+      "properties": {
+        "incluir_horas_extras_media": {
+          "type": "boolean",
+          "default": true
+        },
+        "incluir_comissoes_media": {
+          "type": "boolean",
+          "default": true
+        },
+        "incluir_adicionais_media": {
+          "type": "boolean",
+          "default": true
+        },
+        "periodo_calculo_medias": {
+          "type": "string",
+          "enum": [
+            "meses_trabalhados",
+            "12_meses",
+            "ano_civil"
+          ],
+          "default": "meses_trabalhados"
+        },
+        "descontar_faltas_avos": {
+          "type": "boolean",
+          "default": true
+        },
+        "dias_tolerancia_falta_avo": {
+          "type": "number",
+          "default": 15
+        },
+        "considerar_afastamentos": {
+          "type": "boolean",
+          "default": true
+        },
+        "dias_afastamento_perda_avo": {
+          "type": "number",
+          "default": 15
+        },
+        "percentual_medias_variaveis": {
+          "type": "number",
+          "default": 100
+        },
+        "usar_salario_dezembro": {
+          "type": "boolean",
+          "default": true
+        },
+        "tabela_inss_vigente": {
+          "type": "string",
+          "enum": [
+            "2024",
+            "2025",
+            "personalizada"
+          ],
+          "default": "2024"
+        },
+        "tabela_irrf_vigente": {
+          "type": "string",
+          "enum": [
+            "2024",
+            "2025",
+            "personalizada"
+          ],
+          "default": "2024"
+        },
+        "dependentes_irrf_valor": {
+          "type": "number",
+          "default": 189.59
+        },
+        "plano_contas_padrao_13": {
+          "type": "string"
+        }
+      }
+    },
+    "config_email_tarefas": {
+      "type": "object",
+      "description": "Configura\u00e7\u00f5es de email para notifica\u00e7\u00f5es de tarefas",
+      "properties": {
+        "remetente_nome": {
+          "type": "string",
+          "description": "Nome do remetente para emails de tarefas"
+        },
+        "rodape_texto": {
+          "type": "string",
+          "description": "Texto do rodap\u00e9 dos emails"
+        },
+        "incluir_logo_rodape": {
+          "type": "boolean",
+          "default": true
+        },
+        "dias_antecedencia_lembrete": {
+          "type": "number",
+          "default": 1,
+          "description": "Dias de anteced\u00eancia para enviar lembrete de prazo"
+        }
+      }
+    },
+    "responsavel_empresa_nome": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel pela empresa"
+    },
+    "responsavel_empresa_cpf": {
+      "type": "string",
+      "description": "CPF do respons\u00e1vel pela empresa"
+    },
+    "responsavel_empresa_cargo": {
+      "type": "string",
+      "description": "Cargo do respons\u00e1vel pela empresa"
+    },
+    "responsavel_empresa_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email do respons\u00e1vel pela empresa"
+    },
+    "responsavel_empresa_telefone": {
+      "type": "string",
+      "description": "Telefone do respons\u00e1vel pela empresa"
+    },
+    "responsavel_rh_nome": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel de RH"
+    },
+    "responsavel_rh_cpf": {
+      "type": "string",
+      "description": "CPF do respons\u00e1vel de RH"
+    },
+    "responsavel_rh_cargo": {
+      "type": "string",
+      "description": "Cargo do respons\u00e1vel de RH"
+    },
+    "responsavel_rh_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email do respons\u00e1vel de RH"
+    },
+    "responsavel_rh_telefone": {
+      "type": "string",
+      "description": "Telefone do respons\u00e1vel de RH"
+    }
+  },
+  "required": [
+    "nome_empresa"
+  ]
+}

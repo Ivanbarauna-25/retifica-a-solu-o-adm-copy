@@ -1,0 +1,68 @@
+{
+  "name": "OcorrenciaPonto",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da ocorr\u00eancia"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "atestado",
+        "abonado",
+        "folga",
+        "ferias",
+        "justificativa",
+        "ajuste_batida",
+        "falta",
+        "atraso",
+        "hora_extra_autorizada",
+        "banco_horas_ajuste"
+      ],
+      "description": "Tipo de ocorr\u00eancia"
+    },
+    "minutos": {
+      "type": "number",
+      "description": "Minutos relacionados \u00e0 ocorr\u00eancia"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o da ocorr\u00eancia"
+    },
+    "anexo_url": {
+      "type": "string",
+      "description": "URL do arquivo anexado"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "aprovado",
+        "rejeitado"
+      ],
+      "default": "pendente",
+      "description": "Status da ocorr\u00eancia"
+    },
+    "aprovado_por": {
+      "type": "string",
+      "description": "Email de quem aprovou/rejeitou"
+    },
+    "aprovado_em": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da aprova\u00e7\u00e3o/rejei\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "data",
+    "tipo",
+    "descricao"
+  ]
+}

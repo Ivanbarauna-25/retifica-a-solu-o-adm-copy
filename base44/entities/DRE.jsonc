@@ -1,0 +1,37 @@
+{
+  "name": "DRE",
+  "type": "object",
+  "properties": {
+    "competencia": {
+      "type": "string",
+      "description": "Compet\u00eancia do DRE no formato AAAA-MM"
+    },
+    "regime": {
+      "type": "string",
+      "enum": [
+        "caixa",
+        "competencia"
+      ],
+      "default": "caixa",
+      "description": "Regime cont\u00e1bil (caixa ou compet\u00eancia)"
+    },
+    "dados_dre": {
+      "type": "string",
+      "description": "String JSON contendo todos os dados calculados do DRE (receitas, despesas, totais, etc.)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "em_rascunho",
+        "finalizado"
+      ],
+      "default": "em_rascunho",
+      "description": "Status do DRE"
+    }
+  },
+  "required": [
+    "competencia",
+    "regime",
+    "dados_dre"
+  ]
+}

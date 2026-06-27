@@ -1,0 +1,22 @@
+{
+  "name": "Servico",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do servi\u00e7o (ex: Troca de \u00d3leo, Alinhamento)"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do que o servi\u00e7o inclui"
+    },
+    "valor_padrao": {
+      "type": "number",
+      "description": "Valor padr\u00e3o do servi\u00e7o, que pode ser alterado na OS/Or\u00e7amento"
+    }
+  },
+  "required": [
+    "nome",
+    "valor_padrao"
+  ]
+}

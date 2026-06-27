@@ -1,0 +1,103 @@
+{
+  "name": "CodeFixKnowledgeBase",
+  "type": "object",
+  "properties": {
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "prompt_ajuste_fino",
+        "padrao_erro",
+        "solucao_validada",
+        "regra_prevencao"
+      ],
+      "default": "padrao_erro",
+      "description": "Tipo de conhecimento armazenado"
+    },
+    "categoria": {
+      "type": "string",
+      "description": "Categoria do erro (null_reference, network, syntax, etc.)"
+    },
+    "fingerprint": {
+      "type": "string",
+      "description": "Fingerprint \u00fanico para identificar padr\u00f5es similares"
+    },
+    "titulo": {
+      "type": "string",
+      "description": "T\u00edtulo descritivo do conhecimento"
+    },
+    "conteudo": {
+      "type": "string",
+      "description": "JSON com detalhes (error_pattern, solution, fine_tune_prompt, etc.)"
+    },
+    "confianca": {
+      "type": "number",
+      "description": "N\u00edvel de confian\u00e7a (0 a 1)",
+      "default": 0
+    },
+    "vezes_usado": {
+      "type": "number",
+      "description": "Quantas vezes este conhecimento foi aplicado",
+      "default": 0
+    },
+    "taxa_sucesso": {
+      "type": "number",
+      "description": "Taxa de sucesso quando aplicado (0 a 1)",
+      "default": 0
+    },
+    "ultima_utilizacao": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima utiliza\u00e7\u00e3o"
+    },
+    "learned_patterns": {
+      "type": "array",
+      "description": "Padr\u00f5es aprendidos pelo agente (legado)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "occurrences": {
+            "type": "number"
+          },
+          "preferred_solution": {
+            "type": "string"
+          },
+          "success_rate": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima atualiza\u00e7\u00e3o"
+    },
+    "version": {
+      "type": "number",
+      "description": "Vers\u00e3o da base de conhecimento",
+      "default": 1
+    },
+    "metrics": {
+      "type": "object",
+      "description": "M\u00e9tricas de aprendizado (JSON)",
+      "properties": {
+        "total_patterns": {
+          "type": "number"
+        },
+        "avg_success_rate": {
+          "type": "number"
+        },
+        "most_common_error": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "tipo",
+    "titulo"
+  ]
+}

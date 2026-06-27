@@ -1,0 +1,22 @@
+{
+  "name": "TipoDespesaOS",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do tipo de despesa (ex.: Comiss\u00f5es, Terceiros, Devolu\u00e7\u00f5es)"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o opcional"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o tipo est\u00e1 ativo para lan\u00e7amentos"
+    }
+  },
+  "required": [
+    "nome"
+  ]
+}

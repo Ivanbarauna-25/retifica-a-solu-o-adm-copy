@@ -1,0 +1,64 @@
+{
+  "name": "BancoHoras",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do lan\u00e7amento"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "credito",
+        "debito"
+      ],
+      "description": "Tipo de lan\u00e7amento"
+    },
+    "origem": {
+      "type": "string",
+      "enum": [
+        "apuracao",
+        "ajuste",
+        "abono",
+        "atestado",
+        "pagamento",
+        "desconto",
+        "compensacao"
+      ],
+      "description": "Origem do lan\u00e7amento"
+    },
+    "minutos": {
+      "type": "number",
+      "description": "Minutos (positivo para cr\u00e9dito, negativo para d\u00e9bito)"
+    },
+    "observacao": {
+      "type": "string",
+      "description": "Observa\u00e7\u00e3o sobre o lan\u00e7amento"
+    },
+    "referencia_id": {
+      "type": "string",
+      "description": "ID de refer\u00eancia (apura\u00e7\u00e3o, ocorr\u00eancia, etc)"
+    },
+    "aprovado_por": {
+      "type": "string",
+      "description": "Email de quem aprovou"
+    },
+    "aprovado_em": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da aprova\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "data",
+    "tipo",
+    "origem",
+    "minutos"
+  ]
+}

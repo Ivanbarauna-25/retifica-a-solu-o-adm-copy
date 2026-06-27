@@ -1,0 +1,100 @@
+{
+  "name": "ConfiguracaoDRE",
+  "type": "object",
+  "properties": {
+    "usuario_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio que criou a configura\u00e7\u00e3o"
+    },
+    "nome_configuracao": {
+      "type": "string",
+      "description": "Nome descritivo da configura\u00e7\u00e3o"
+    },
+    "regime": {
+      "type": "string",
+      "enum": [
+        "caixa",
+        "competencia"
+      ],
+      "default": "caixa",
+      "description": "Regime cont\u00e1bil"
+    },
+    "agrupamento": {
+      "type": "string",
+      "enum": [
+        "categoria",
+        "plano_contas"
+      ],
+      "default": "categoria",
+      "description": "Tipo de agrupamento dos dados"
+    },
+    "tipo_relatorio": {
+      "type": "string",
+      "enum": [
+        "sintetico",
+        "analitico"
+      ],
+      "default": "sintetico",
+      "description": "Tipo de relat\u00f3rio (Sint\u00e9tico ou Anal\u00edtico)"
+    },
+    "data_referencia": {
+      "type": "string",
+      "enum": [
+        "vencimento",
+        "pagamento",
+        "competencia"
+      ],
+      "default": "vencimento",
+      "description": "Campo de data a ser considerado"
+    },
+    "incluir_ordens_servico": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir receitas de ordens de servi\u00e7o"
+    },
+    "incluir_contas_receber": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir contas a receber"
+    },
+    "incluir_movimentacoes": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir movimenta\u00e7\u00f5es financeiras de receita"
+    },
+    "incluir_contas_pagar": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir contas a pagar"
+    },
+    "incluir_folha_pagamento": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir folha de pagamento"
+    },
+    "incluir_adiantamentos": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir adiantamentos"
+    },
+    "incluir_movimentacoes_despesa": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir movimenta\u00e7\u00f5es financeiras de despesa"
+    },
+    "incluir_compras": {
+      "type": "boolean",
+      "default": true,
+      "description": "Incluir compras/notas fiscais de entrada"
+    },
+    "eh_padrao": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se \u00e9 a configura\u00e7\u00e3o padr\u00e3o do usu\u00e1rio"
+    }
+  },
+  "required": [
+    "usuario_id",
+    "nome_configuracao"
+  ]
+}

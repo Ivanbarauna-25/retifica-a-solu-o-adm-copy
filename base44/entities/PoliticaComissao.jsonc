@@ -1,0 +1,50 @@
+{
+  "name": "PoliticaComissao",
+  "type": "object",
+  "properties": {
+    "nome_politica": {
+      "type": "string",
+      "description": "Nome descritivo da pol\u00edtica. Ex: Comiss\u00e3o Vendas Balc\u00e3o"
+    },
+    "cargo_id": {
+      "type": "string",
+      "description": "ID do Cargo ao qual esta pol\u00edtica se aplica"
+    },
+    "tipo_meta": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "empresa"
+      ],
+      "description": "A comiss\u00e3o \u00e9 baseada nas vendas do indiv\u00edduo ou da empresa toda?"
+    },
+    "meta_valor": {
+      "type": "number",
+      "description": "Valor da meta a ser atingida (se aplic\u00e1vel)",
+      "default": 0
+    },
+    "percentual_comissao": {
+      "type": "number",
+      "description": "Percentual da comiss\u00e3o. Ex: 1.5 para 1.5%"
+    },
+    "base_calculo": {
+      "type": "string",
+      "enum": [
+        "total",
+        "excedente"
+      ],
+      "default": "total",
+      "description": "A comiss\u00e3o incide sobre o valor total ou apenas sobre o que exceder a meta?"
+    },
+    "ativa": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "nome_politica",
+    "cargo_id",
+    "tipo_meta",
+    "percentual_comissao"
+  ]
+}

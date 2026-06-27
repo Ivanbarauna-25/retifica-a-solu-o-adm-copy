@@ -1,0 +1,48 @@
+{
+  "name": "FormaPagamento",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome da forma de pagamento"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "dinheiro",
+        "cartao_credito",
+        "cartao_debito",
+        "pix",
+        "ted",
+        "doc",
+        "boleto",
+        "cheque"
+      ],
+      "description": "Tipo da forma de pagamento"
+    },
+    "taxa_percentual": {
+      "type": "number",
+      "description": "Taxa percentual cobrada (ex: 3.5 para 3,5%)",
+      "default": 0
+    },
+    "taxa_fixa": {
+      "type": "number",
+      "description": "Taxa fixa cobrada por transa\u00e7\u00e3o",
+      "default": 0
+    },
+    "prazo_recebimento": {
+      "type": "number",
+      "description": "Prazo em dias para recebimento",
+      "default": 0
+    },
+    "ativa": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a forma de pagamento est\u00e1 ativa"
+    }
+  },
+  "required": [
+    "nome",
+    "tipo"
+  ]
+}

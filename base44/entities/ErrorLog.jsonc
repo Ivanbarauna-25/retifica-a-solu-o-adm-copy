@@ -1,0 +1,109 @@
+{
+  "name": "ErrorLog",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "Mensagem do erro"
+    },
+    "stack": {
+      "type": "string",
+      "description": "Stack trace bruto"
+    },
+    "source": {
+      "type": "string",
+      "description": "Origem (errorboundary, window.onerror, unhandledrejection)"
+    },
+    "url": {
+      "type": "string",
+      "description": "URL onde ocorreu"
+    },
+    "file": {
+      "type": "string",
+      "description": "Arquivo de origem (quando dispon\u00edvel)"
+    },
+    "line": {
+      "type": "number",
+      "description": "Linha (quando dispon\u00edvel)",
+      "default": 0
+    },
+    "column": {
+      "type": "number",
+      "description": "Coluna (quando dispon\u00edvel)",
+      "default": 0
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Navegador do usu\u00e1rio"
+    },
+    "component": {
+      "type": "string",
+      "description": "Componente/p\u00e1gina (quando conhecido)"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "critical"
+      ],
+      "default": "error"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "em_analise",
+        "resolvido",
+        "ignorado"
+      ],
+      "default": "novo"
+    },
+    "count": {
+      "type": "number",
+      "description": "Ocorr\u00eancias agregadas",
+      "default": 1
+    },
+    "first_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Primeira ocorr\u00eancia"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time",
+      "description": "\u00daltima ocorr\u00eancia"
+    },
+    "occurrence_count": {
+      "type": "number",
+      "description": "Contador de ocorr\u00eancias",
+      "default": 1
+    },
+    "fingerprint": {
+      "type": "string",
+      "description": "Fingerprint \u00fanico para agrupar erros similares"
+    },
+    "extra": {
+      "type": "string",
+      "description": "JSON extra (contexto, an\u00e1lise IA, prompts, etc.)"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "ID de correla\u00e7\u00e3o para agrupamento"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "prod",
+        "staging",
+        "dev"
+      ],
+      "default": "prod"
+    }
+  },
+  "required": [
+    "message",
+    "source"
+  ]
+}

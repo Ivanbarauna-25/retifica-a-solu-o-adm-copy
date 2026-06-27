@@ -1,0 +1,82 @@
+{
+  "name": "EPI",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do EPI"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do EPI"
+    },
+    "numero_ca": {
+      "type": "string",
+      "description": "N\u00famero do Certificado de Aprova\u00e7\u00e3o (CA)"
+    },
+    "validade_ca": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de validade do CA"
+    },
+    "vida_util_meses": {
+      "type": "number",
+      "description": "Vida \u00fatil do EPI em meses"
+    },
+    "categoria": {
+      "type": "string",
+      "enum": [
+        "cabeca",
+        "olhos_face",
+        "auditivo",
+        "respiratorio",
+        "tronco",
+        "membros_superiores",
+        "membros_inferiores",
+        "corpo_inteiro",
+        "quedas"
+      ],
+      "description": "Categoria do EPI"
+    },
+    "unidade": {
+      "type": "string",
+      "default": "UN",
+      "description": "Unidade de medida (UN, PAR, KIT, etc.)"
+    },
+    "preco_referencia": {
+      "type": "number",
+      "description": "Pre\u00e7o de refer\u00eancia para cota\u00e7\u00e3o"
+    },
+    "fornecedor_padrao_id": {
+      "type": "string",
+      "description": "ID do fornecedor padr\u00e3o"
+    },
+    "cargos_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs dos cargos que utilizam este EPI"
+    },
+    "foto_url": {
+      "type": "string",
+      "description": "URL da foto do EPI"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ativo",
+        "inativo"
+      ],
+      "default": "ativo"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es adicionais"
+    }
+  },
+  "required": [
+    "nome",
+    "categoria"
+  ]
+}

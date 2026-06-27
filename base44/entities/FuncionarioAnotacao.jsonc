@@ -1,0 +1,40 @@
+{
+  "name": "FuncionarioAnotacao",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio relacionado"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "ferias",
+        "aumento_salarial",
+        "alteracao_cargo",
+        "medida_disciplinar",
+        "outros"
+      ],
+      "description": "Tipo da anota\u00e7\u00e3o"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da anota\u00e7\u00e3o"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada da anota\u00e7\u00e3o"
+    },
+    "anexo_url": {
+      "type": "string",
+      "description": "URL de anexo opcional"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "tipo",
+    "data",
+    "descricao"
+  ]
+}

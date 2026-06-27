@@ -1,0 +1,66 @@
+{
+  "name": "ImportacaoPonto",
+  "type": "object",
+  "properties": {
+    "data_importacao": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da importa\u00e7\u00e3o"
+    },
+    "arquivo_nome": {
+      "type": "string",
+      "description": "Nome do arquivo importado"
+    },
+    "arquivo_hash": {
+      "type": "string",
+      "description": "Hash MD5 do conte\u00fado para evitar duplicatas"
+    },
+    "conteudo_txt": {
+      "type": "string",
+      "description": "Conte\u00fado colado manualmente (opcional)"
+    },
+    "periodo_inicio": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da primeira batida encontrada"
+    },
+    "periodo_fim": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da \u00faltima batida encontrada"
+    },
+    "total_linhas": {
+      "type": "number",
+      "description": "Total de linhas processadas",
+      "default": 0
+    },
+    "total_registros_validos": {
+      "type": "number",
+      "description": "Total de registros v\u00e1lidos importados",
+      "default": 0
+    },
+    "total_ignorados": {
+      "type": "number",
+      "description": "Total de registros ignorados",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "processando",
+        "concluida",
+        "erro"
+      ],
+      "default": "processando",
+      "description": "Status da importa\u00e7\u00e3o"
+    },
+    "log_erros": {
+      "type": "string",
+      "description": "Log de erros encontrados durante a importa\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "data_importacao",
+    "status"
+  ]
+}

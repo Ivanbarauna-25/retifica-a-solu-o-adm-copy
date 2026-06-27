@@ -1,0 +1,144 @@
+{
+  "name": "FolhaPagamento",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio"
+    },
+    "plano_contas_id": {
+      "type": "string",
+      "description": "ID da conta principal do plano de contas (ex: Despesas com Pessoal)"
+    },
+    "competencia": {
+      "type": "string",
+      "description": "Compet\u00eancia no formato AAAA-MM"
+    },
+    "dias_trabalhados": {
+      "type": "number",
+      "description": "N\u00famero de dias efetivamente trabalhados no m\u00eas (para c\u00e1lculo proporcional)",
+      "default": 0
+    },
+    "data_inicio_competencia": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de in\u00edcio do funcion\u00e1rio nesta compet\u00eancia (para quem come\u00e7a no meio do m\u00eas)"
+    },
+    "salario_base": {
+      "type": "number",
+      "description": "Sal\u00e1rio base",
+      "default": 0
+    },
+    "comissoes": {
+      "type": "number",
+      "description": "Comiss\u00f5es",
+      "default": 0
+    },
+    "horas_extras": {
+      "type": "number",
+      "description": "Valor das horas extras",
+      "default": 0
+    },
+    "bonus": {
+      "type": "number",
+      "description": "B\u00f4nus e gratifica\u00e7\u00f5es",
+      "default": 0
+    },
+    "outras_entradas": {
+      "type": "number",
+      "description": "Outras entradas",
+      "default": 0
+    },
+    "adiantamentos": {
+      "type": "number",
+      "description": "Adiantamentos concedidos",
+      "default": 0
+    },
+    "faltas": {
+      "type": "number",
+      "description": "Desconto por faltas",
+      "default": 0
+    },
+    "encargos": {
+      "type": "number",
+      "description": "Encargos (INSS, IR, etc)",
+      "default": 0
+    },
+    "outras_saidas": {
+      "type": "number",
+      "description": "Outras sa\u00eddas/descontos",
+      "default": 0
+    },
+    "total_entradas": {
+      "type": "number",
+      "description": "Total de entradas"
+    },
+    "total_saidas": {
+      "type": "number",
+      "description": "Total de sa\u00eddas"
+    },
+    "salario_liquido": {
+      "type": "number",
+      "description": "Sal\u00e1rio l\u00edquido"
+    },
+    "data_pagamento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do pagamento"
+    },
+    "status_pagamento": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "pago_parcial",
+        "pago"
+      ],
+      "default": "pendente",
+      "description": "Status do pagamento"
+    },
+    "valor_pago": {
+      "type": "number",
+      "description": "Valor efetivamente pago (para pagamentos parciais)",
+      "default": 0
+    },
+    "saldo_restante": {
+      "type": "number",
+      "description": "Saldo restante a pagar",
+      "default": 0
+    },
+    "data_baixa": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da baixa do pagamento"
+    },
+    "conta_bancaria_id": {
+      "type": "string",
+      "description": "ID da conta banc\u00e1ria utilizada no pagamento"
+    },
+    "forma_pagamento": {
+      "type": "string",
+      "description": "Forma de pagamento utilizada"
+    },
+    "movimentacao_financeira_id": {
+      "type": "string",
+      "description": "ID da movimenta\u00e7\u00e3o financeira gerada"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "competencia",
+    "total_entradas",
+    "total_saidas",
+    "salario_liquido"
+  ],
+  "rls": {
+    "create": null,
+    "read": null,
+    "update": null,
+    "delete": null
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "name": "Peca",
+  "type": "object",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo da pe\u00e7a"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o da pe\u00e7a"
+    },
+    "fabricante": {
+      "type": "string",
+      "description": "Fabricante da pe\u00e7a"
+    },
+    "ncm": {
+      "type": "string",
+      "description": "NCM - Nomenclatura Comum do Mercosul (8 d\u00edgitos)"
+    },
+    "cst": {
+      "type": "string",
+      "description": "CST - C\u00f3digo de Situa\u00e7\u00e3o Tribut\u00e1ria"
+    },
+    "cfop": {
+      "type": "string",
+      "description": "CFOP - C\u00f3digo Fiscal de Opera\u00e7\u00f5es e Presta\u00e7\u00f5es"
+    },
+    "origem": {
+      "type": "string",
+      "description": "Origem da mercadoria (0=Nacional, 1=Estrangeira, etc.)"
+    },
+    "aliquota_icms": {
+      "type": "number",
+      "description": "Al\u00edquota do ICMS (%)",
+      "default": 0
+    },
+    "aliquota_ipi": {
+      "type": "number",
+      "description": "Al\u00edquota do IPI (%)",
+      "default": 0
+    },
+    "ean": {
+      "type": "string",
+      "description": "C\u00f3digo de barras EAN"
+    },
+    "unidade": {
+      "type": "string",
+      "description": "Unidade de medida (UN, PC, KG, etc.)",
+      "default": "UN"
+    },
+    "preco_custo": {
+      "type": "number",
+      "description": "Pre\u00e7o de custo"
+    },
+    "preco_venda": {
+      "type": "number",
+      "description": "Pre\u00e7o de venda"
+    },
+    "quantidade_estoque": {
+      "type": "number",
+      "description": "Quantidade em estoque",
+      "default": 0
+    },
+    "quantidade_minima": {
+      "type": "number",
+      "description": "Estoque m\u00ednimo",
+      "default": 5
+    },
+    "localizacao": {
+      "type": "string",
+      "description": "Localiza\u00e7\u00e3o f\u00edsica no estoque"
+    },
+    "tipo_entrada": {
+      "type": "string",
+      "enum": [
+        "consumo",
+        "revenda",
+        "remessa",
+        "uso_consumo",
+        "ativo_imobilizado"
+      ],
+      "default": "revenda",
+      "description": "Tipo de entrada do produto"
+    }
+  },
+  "required": [
+    "codigo",
+    "descricao",
+    "preco_custo",
+    "preco_venda"
+  ]
+}

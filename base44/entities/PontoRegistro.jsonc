@@ -1,0 +1,72 @@
+{
+  "name": "PontoRegistro",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio (quando mapeado)"
+    },
+    "user_id_relogio": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio no rel\u00f3gio de ponto (EnNo)"
+    },
+    "nome_arquivo": {
+      "type": "string",
+      "description": "Nome do funcion\u00e1rio conforme aparece no arquivo TXT"
+    },
+    "data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da batida"
+    },
+    "hora": {
+      "type": "string",
+      "description": "Hora da batida (HH:mm:ss)"
+    },
+    "data_hora": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora completa da batida"
+    },
+    "origem": {
+      "type": "string",
+      "enum": [
+        "relogio",
+        "manual",
+        "ajuste"
+      ],
+      "default": "relogio",
+      "description": "Origem do registro"
+    },
+    "metodo": {
+      "type": "string",
+      "description": "M\u00e9todo de registro (Mode do arquivo)"
+    },
+    "dispositivo_id": {
+      "type": "string",
+      "description": "ID do dispositivo/rel\u00f3gio (TMNo)"
+    },
+    "importacao_id": {
+      "type": "string",
+      "description": "ID da importa\u00e7\u00e3o que gerou este registro"
+    },
+    "raw_linha": {
+      "type": "string",
+      "description": "Linha original do arquivo TXT"
+    },
+    "valido": {
+      "type": "boolean",
+      "default": true,
+      "description": "Indica se o registro \u00e9 v\u00e1lido"
+    },
+    "motivo_invalido": {
+      "type": "string",
+      "description": "Motivo da invalida\u00e7\u00e3o do registro"
+    }
+  },
+  "required": [
+    "user_id_relogio",
+    "data_hora",
+    "origem"
+  ]
+}

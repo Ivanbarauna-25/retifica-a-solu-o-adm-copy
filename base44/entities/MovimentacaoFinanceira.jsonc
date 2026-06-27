@@ -1,0 +1,220 @@
+{
+  "name": "MovimentacaoFinanceira",
+  "type": "object",
+  "properties": {
+    "tipo_movimentacao": {
+      "type": "string",
+      "enum": [
+        "credito",
+        "debito",
+        "investimento"
+      ],
+      "description": "Tipo de movimenta\u00e7\u00e3o: cr\u00e9dito (receita), d\u00e9bito (despesa), investimento"
+    },
+    "numero_documento": {
+      "type": "string",
+      "description": "N\u00famero do documento (OS, NF, boleto, etc)"
+    },
+    "contato_tipo": {
+      "type": "string",
+      "enum": [
+        "cliente",
+        "funcionario",
+        "fornecedor"
+      ],
+      "description": "Tipo do contato"
+    },
+    "contato_id": {
+      "type": "string",
+      "description": "ID do contato (cliente, funcion\u00e1rio ou fornecedor)"
+    },
+    "data_faturamento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do faturamento/emiss\u00e3o"
+    },
+    "data_vencimento": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de vencimento"
+    },
+    "data_baixa": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da baixa/pagamento"
+    },
+    "competencia": {
+      "type": "string",
+      "description": "Compet\u00eancia no formato AAAA-MM"
+    },
+    "historico": {
+      "type": "string",
+      "description": "Hist\u00f3rico/descri\u00e7\u00e3o da movimenta\u00e7\u00e3o"
+    },
+    "valor_total": {
+      "type": "number",
+      "description": "Valor total da movimenta\u00e7\u00e3o"
+    },
+    "desconto": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor do desconto"
+    },
+    "juros": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor de juros"
+    },
+    "multa": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor de multa"
+    },
+    "forma_pagamento_id": {
+      "type": "string",
+      "description": "ID da forma de pagamento"
+    },
+    "forma_pagamento_baixa_id": {
+      "type": "string",
+      "description": "ID da forma de pagamento utilizada na baixa"
+    },
+    "condicao_pagamento_id": {
+      "type": "string",
+      "description": "ID da condi\u00e7\u00e3o de pagamento"
+    },
+    "conta_bancaria_id": {
+      "type": "string",
+      "description": "ID da conta banc\u00e1ria"
+    },
+    "conta_bancaria_baixa_id": {
+      "type": "string",
+      "description": "ID da conta banc\u00e1ria da baixa"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "pago",
+        "parcial",
+        "vencido",
+        "cancelado"
+      ],
+      "default": "pendente",
+      "description": "Status da movimenta\u00e7\u00e3o"
+    },
+    "origem": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "os",
+        "orcamento",
+        "compras",
+        "folha_pagamento",
+        "renegociacao",
+        "nfe_saida"
+      ],
+      "default": "manual",
+      "description": "Origem da movimenta\u00e7\u00e3o"
+    },
+    "os_id": {
+      "type": "string",
+      "description": "ID da Ordem de Servi\u00e7o (se origem = os)"
+    },
+    "orcamento_id": {
+      "type": "string",
+      "description": "ID do Or\u00e7amento (se origem = orcamento)"
+    },
+    "nota_fiscal_id": {
+      "type": "string",
+      "description": "ID da Nota Fiscal de Entrada (se origem = compras)"
+    },
+    "nota_fiscal_saida_id": {
+      "type": "string",
+      "description": "ID da Nota Fiscal de Sa\u00edda (se origem = nfe_saida)"
+    },
+    "parcelas": {
+      "type": "array",
+      "description": "Parcelas da movimenta\u00e7\u00e3o",
+      "items": {
+        "type": "object",
+        "properties": {
+          "numero_parcela": {
+            "type": "number"
+          },
+          "data_vencimento": {
+            "type": "string",
+            "format": "date"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pendente",
+              "pago",
+              "vencido"
+            ]
+          },
+          "data_baixa": {
+            "type": "string",
+            "format": "date"
+          },
+          "numero_duplicata": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "planos_contas": {
+      "type": "array",
+      "description": "Planos de contas vinculados (rateio)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "plano_contas_id": {
+            "type": "string"
+          },
+          "valor": {
+            "type": "number"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "debito",
+              "credito"
+            ]
+          },
+          "observacao": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "anexos": {
+      "type": "array",
+      "description": "URLs de anexos (comprovantes, boletos, etc)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre a movimenta\u00e7\u00e3o"
+    },
+    "motivo_baixa": {
+      "type": "string",
+      "description": "Motivo/observa\u00e7\u00e3o da baixa"
+    },
+    "motivo_cancelamento": {
+      "type": "string",
+      "description": "Motivo do cancelamento"
+    }
+  },
+  "required": [
+    "tipo_movimentacao",
+    "numero_documento",
+    "data_faturamento",
+    "valor_total"
+  ]
+}

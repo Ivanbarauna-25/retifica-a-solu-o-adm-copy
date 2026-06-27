@@ -1,0 +1,53 @@
+{
+  "name": "CondicaoPagamento",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome da condi\u00e7\u00e3o (ex: \u00c0 Vista, 30 dias, 2x sem juros)"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "a_vista",
+        "parcelado",
+        "prazo"
+      ],
+      "description": "Tipo da condi\u00e7\u00e3o"
+    },
+    "num_parcelas": {
+      "type": "number",
+      "description": "N\u00famero de parcelas",
+      "default": 1
+    },
+    "intervalo_dias": {
+      "type": "number",
+      "description": "Intervalo entre parcelas em dias",
+      "default": 30
+    },
+    "desconto_percentual": {
+      "type": "number",
+      "description": "Desconto percentual para pagamento \u00e0 vista",
+      "default": 0
+    },
+    "juros_percentual": {
+      "type": "number",
+      "description": "Juros percentual para parcelamento",
+      "default": 0
+    },
+    "entrada_minima": {
+      "type": "number",
+      "description": "Valor m\u00ednimo de entrada",
+      "default": 0
+    },
+    "ativa": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a condi\u00e7\u00e3o est\u00e1 ativa"
+    }
+  },
+  "required": [
+    "nome",
+    "tipo"
+  ]
+}

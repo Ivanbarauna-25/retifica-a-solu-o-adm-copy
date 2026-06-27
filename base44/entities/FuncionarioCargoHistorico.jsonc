@@ -1,0 +1,75 @@
+{
+  "name": "FuncionarioCargoHistorico",
+  "type": "object",
+  "properties": {
+    "funcionario_id": {
+      "type": "string",
+      "description": "ID do funcion\u00e1rio",
+      "x-foreign-key": "Funcionario"
+    },
+    "cargo_anterior_id": {
+      "type": "string",
+      "description": "ID do cargo anterior",
+      "x-foreign-key": "Cargo"
+    },
+    "cargo_anterior": {
+      "type": "string",
+      "description": "Nome do cargo anterior"
+    },
+    "cargo_novo_id": {
+      "type": "string",
+      "description": "ID do novo cargo",
+      "x-foreign-key": "Cargo"
+    },
+    "cargo_novo": {
+      "type": "string",
+      "description": "Nome do novo cargo"
+    },
+    "data_vigencia": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de vig\u00eancia da mudan\u00e7a"
+    },
+    "motivo": {
+      "type": "string",
+      "description": "Motivo da mudan\u00e7a de cargo"
+    },
+    "solicitante_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio solicitante"
+    },
+    "aprovador_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio aprovador designado"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "solicitado",
+        "aprovado",
+        "reprovado"
+      ],
+      "default": "solicitado",
+      "description": "Status da solicita\u00e7\u00e3o"
+    },
+    "data_aprovacao": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da aprova\u00e7\u00e3o/reprova\u00e7\u00e3o"
+    },
+    "motivo_reprovacao": {
+      "type": "string",
+      "description": "Motivo da reprova\u00e7\u00e3o"
+    },
+    "observacoes_aprovacao": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es do aprovador"
+    }
+  },
+  "required": [
+    "funcionario_id",
+    "cargo_novo_id",
+    "data_vigencia",
+    "status"
+  ]
+}

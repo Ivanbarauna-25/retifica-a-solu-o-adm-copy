@@ -1,0 +1,102 @@
+{
+  "name": "Cargo",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome do cargo"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o das responsabilidades do cargo"
+    },
+    "nivel_hierarquico": {
+      "type": "number",
+      "description": "N\u00edvel hier\u00e1rquico do cargo (1=mais alto, quanto maior o n\u00famero mais baixo na hierarquia)",
+      "default": 5
+    },
+    "permissoes_modulos_acoes": {
+      "type": "array",
+      "description": "Permiss\u00f5es granulares: define quais a\u00e7\u00f5es podem ser realizadas em cada m\u00f3dulo",
+      "items": {
+        "type": "object",
+        "properties": {
+          "modulo": {
+            "type": "string"
+          },
+          "acoes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "modulo",
+          "acoes"
+        ]
+      },
+      "default": []
+    },
+    "permissoes_aprovacao": {
+      "type": "array",
+      "description": "Tipos de solicita\u00e7\u00f5es que usu\u00e1rios deste cargo podem aprovar",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "permissoes_especiais": {
+      "type": "array",
+      "description": "Permiss\u00f5es especiais adicionais do cargo",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "tem_comissao": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o cargo tem direito a comiss\u00e3o"
+    },
+    "tipo_comissao": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "individual",
+        "empresa",
+        null
+      ],
+      "description": "Tipo de comiss\u00e3o: individual (sobre vendas do funcion\u00e1rio) ou empresa (sobre vendas totais)"
+    },
+    "percentual_comissao": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentual da comiss\u00e3o (ex: 2.5 para 2.5%)"
+    },
+    "meta_minima_individual": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor m\u00ednimo de vendas individuais para come\u00e7ar a receber comiss\u00e3o"
+    },
+    "meta_minima_empresa": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor m\u00ednimo de vendas da empresa para ter direito a comiss\u00e3o"
+    },
+    "base_calculo_comissao": {
+      "type": "string",
+      "enum": [
+        "total",
+        "excedente"
+      ],
+      "default": "total",
+      "description": "A comiss\u00e3o incide sobre o valor total ou apenas sobre o que exceder a meta?"
+    }
+  },
+  "required": [
+    "nome"
+  ]
+}

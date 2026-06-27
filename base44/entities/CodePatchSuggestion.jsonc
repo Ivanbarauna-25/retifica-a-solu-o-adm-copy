@@ -1,0 +1,45 @@
+{
+  "name": "CodePatchSuggestion",
+  "type": "object",
+  "properties": {
+    "file_path": {
+      "type": "string",
+      "description": "Caminho do arquivo a ser alterado"
+    },
+    "change_type": {
+      "type": "string",
+      "enum": [
+        "edit",
+        "create",
+        "delete"
+      ],
+      "default": "edit"
+    },
+    "patch": {
+      "type": "string",
+      "description": "Patch/diff ou trechos de c\u00f3digo sugeridos"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es do agente"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sugerido",
+        "aprovado",
+        "rejeitado",
+        "aplicado"
+      ],
+      "default": "sugerido"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Tarefa vinculada (CodeFixTask)"
+    }
+  },
+  "required": [
+    "patch",
+    "status"
+  ]
+}

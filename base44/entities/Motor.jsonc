@@ -1,0 +1,56 @@
+{
+  "name": "Motor",
+  "type": "object",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo do motor"
+    },
+    "fabricante": {
+      "type": "string",
+      "description": "Fabricante do motor"
+    },
+    "modelo": {
+      "type": "string",
+      "description": "Modelo do motor"
+    },
+    "potencia": {
+      "type": "string",
+      "description": "Pot\u00eancia do motor (ex: 100 CV, 1.0, 1.6)"
+    },
+    "cilindradas": {
+      "type": "string",
+      "description": "Cilindradas (ex: 1000cc, 1600cc)"
+    },
+    "combustivel": {
+      "type": "string",
+      "enum": [
+        "flex",
+        "gasolina",
+        "etanol",
+        "diesel",
+        "gnv",
+        "eletrico",
+        "hibrido"
+      ],
+      "description": "Tipo de combust\u00edvel"
+    },
+    "ano_fabricacao": {
+      "type": "string",
+      "description": "Ano de fabrica\u00e7\u00e3o do motor"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre o motor"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o motor est\u00e1 ativo no sistema"
+    }
+  },
+  "required": [
+    "fabricante",
+    "modelo"
+  ]
+}

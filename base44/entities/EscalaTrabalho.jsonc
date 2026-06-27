@@ -1,0 +1,66 @@
+{
+  "name": "EscalaTrabalho",
+  "type": "object",
+  "properties": {
+    "nome": {
+      "type": "string",
+      "description": "Nome da escala"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "fixa",
+        "semanal",
+        "turno"
+      ],
+      "default": "fixa",
+      "description": "Tipo de escala"
+    },
+    "dias_semana": {
+      "type": "string",
+      "description": "Dias da semana (1=Segunda, 2=Ter\u00e7a... 7=Domingo). Ex: 1,2,3,4,5"
+    },
+    "hora_entrada_prevista": {
+      "type": "string",
+      "description": "Hora de entrada prevista (HH:mm)"
+    },
+    "hora_saida_prevista": {
+      "type": "string",
+      "description": "Hora de sa\u00edda prevista (HH:mm)"
+    },
+    "intervalo_inicio_previsto": {
+      "type": "string",
+      "description": "In\u00edcio do intervalo (HH:mm)"
+    },
+    "intervalo_fim_previsto": {
+      "type": "string",
+      "description": "Fim do intervalo (HH:mm)"
+    },
+    "tolerancia_minutos": {
+      "type": "number",
+      "default": 5,
+      "description": "Toler\u00e2ncia em minutos para atraso"
+    },
+    "carga_diaria_minutos": {
+      "type": "number",
+      "description": "Carga hor\u00e1ria di\u00e1ria em minutos"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a escala est\u00e1 ativa"
+    },
+    "escala_padrao": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se esta \u00e9 a escala padr\u00e3o para novos funcion\u00e1rios"
+    }
+  },
+  "required": [
+    "nome",
+    "tipo",
+    "hora_entrada_prevista",
+    "hora_saida_prevista",
+    "carga_diaria_minutos"
+  ]
+}

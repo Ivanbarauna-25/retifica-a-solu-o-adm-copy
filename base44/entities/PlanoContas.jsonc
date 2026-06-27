@@ -1,0 +1,39 @@
+{
+  "name": "PlanoContas",
+  "type": "object",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo da conta"
+    },
+    "nome": {
+      "type": "string",
+      "description": "Nome da conta"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "receita",
+        "despesa",
+        "ativo",
+        "passivo"
+      ],
+      "description": "Tipo da conta"
+    },
+    "categoria_id": {
+      "type": "string",
+      "description": "ID da Categoria vinculada"
+    },
+    "ativa": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a conta est\u00e1 ativa"
+    }
+  },
+  "required": [
+    "codigo",
+    "nome",
+    "tipo",
+    "categoria_id"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "name": "CaixaAbertura",
+  "type": "object",
+  "properties": {
+    "conta_bancaria_id": {
+      "type": "string",
+      "description": "ID da conta de caixa"
+    },
+    "usuario_abertura": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que abriu o caixa"
+    },
+    "usuario_fechamento": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que fechou o caixa"
+    },
+    "data_abertura": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da abertura"
+    },
+    "data_fechamento": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora do fechamento"
+    },
+    "saldo_inicial": {
+      "type": "number",
+      "description": "Saldo inicial declarado",
+      "default": 0
+    },
+    "saldo_final_sistema": {
+      "type": "number",
+      "description": "Saldo calculado pelo sistema",
+      "default": 0
+    },
+    "saldo_final_contado": {
+      "type": "number",
+      "description": "Saldo contado no fechamento",
+      "default": 0
+    },
+    "diferenca": {
+      "type": "number",
+      "description": "Diferen\u00e7a entre contado e sistema",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "aberto",
+        "fechado"
+      ],
+      "default": "aberto"
+    },
+    "observacoes_abertura": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es na abertura"
+    },
+    "observacoes_fechamento": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es no fechamento"
+    },
+    "conferencia_numerario": {
+      "type": "object",
+      "description": "Contagem de notas e moedas no fechamento"
+    },
+    "total_entradas": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de entradas no per\u00edodo"
+    },
+    "total_saidas": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de sa\u00eddas no per\u00edodo"
+    },
+    "total_vendas": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de vendas no per\u00edodo"
+    },
+    "total_sangrias": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de sangrias no per\u00edodo"
+    },
+    "total_suprimentos": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de suprimentos no per\u00edodo"
+    }
+  },
+  "required": [
+    "conta_bancaria_id",
+    "usuario_abertura",
+    "data_abertura",
+    "saldo_inicial"
+  ]
+}

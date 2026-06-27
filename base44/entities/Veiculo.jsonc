@@ -1,0 +1,61 @@
+{
+  "name": "Veiculo",
+  "type": "object",
+  "properties": {
+    "cliente_id": {
+      "type": "string",
+      "description": "ID do cliente propriet\u00e1rio do ve\u00edculo"
+    },
+    "placa": {
+      "type": "string",
+      "description": "Placa do ve\u00edculo"
+    },
+    "marca": {
+      "type": "string",
+      "description": "Marca do ve\u00edculo"
+    },
+    "modelo": {
+      "type": "string",
+      "description": "Modelo do ve\u00edculo"
+    },
+    "ano_fabricacao": {
+      "type": "string",
+      "description": "Ano de fabrica\u00e7\u00e3o"
+    },
+    "cor": {
+      "type": "string",
+      "description": "Cor do ve\u00edculo"
+    },
+    "chassi": {
+      "type": "string",
+      "description": "N\u00famero do chassi"
+    },
+    "renavam": {
+      "type": "string",
+      "description": "N\u00famero do RENAVAM"
+    },
+    "combustivel": {
+      "type": "string",
+      "enum": [
+        "flex",
+        "gasolina",
+        "etanol",
+        "diesel",
+        "gnv",
+        "eletrico",
+        "hibrido"
+      ],
+      "description": "Tipo de combust\u00edvel"
+    },
+    "km_atual": {
+      "type": "number",
+      "description": "Quilometragem atual"
+    }
+  },
+  "required": [
+    "cliente_id",
+    "placa",
+    "marca",
+    "modelo"
+  ]
+}
