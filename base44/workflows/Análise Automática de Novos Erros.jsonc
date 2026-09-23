@@ -1,0 +1,37 @@
+{
+  "name": "An\u00e1lise Autom\u00e1tica de Novos Erros",
+  "description": "Analisa automaticamente quando um novo erro \u00e9 registrado no sistema",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "ErrorLog"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "an_lise_autom_tica_de_novos_erros",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "analyzeErrorWithAI",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "analyzeErrorWithAI"
+  }
+}
